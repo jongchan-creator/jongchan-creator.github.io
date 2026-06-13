@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>나의 지식창고</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg2: #f8f8f6;
+      --bg3: #f2f1ee;
+      --text: #1a1a18;
+      --text2: #5a5a56;
+      --text3: #9a9a94;
+      --border: rgba(0,0,0,0.12);
+      --border2: rgba(0,0,0,0.22);
+      --radius: 8px;
+      --radius-lg: 12px;
+      --success-bg: #eaf3de;
+      --success: #3b6d11;
+      --warn-bg: #faeeda;
+      --warn: #854f0b;
+      --danger-bg: #fcebeb;
+      --danger: #a32d2d;
+      --danger-border: rgba(163,45,45,0.35);
+      --info-bg: #e6f1fb;
+      --info: #185fa5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1e1e1c;
+        --bg2: #282825;
+        --bg3: #2f2f2c;
+        --text: #f0f0ec;
+        --text2: #b0b0a8;
+        --text3: #70706a;
+        --border: rgba(255,255,255,0.12);
+        --border2: rgba(255,255,255,0.22);
+        --success-bg: #173404;
+        --success: #97c459;
+        --warn-bg: #412402;
+        --warn: #ef9f27;
+        --danger-bg: #501313;
+        --danger: #f09595;
+        --danger-border: rgba(240,149,149,0.35);
+        --info-bg: #042c53;
+        --info: #85b7eb;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: var(--bg3);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    #app {
+      max-width: 800px;
+      margin: 0 auto;
+      background: var(--bg);
+      min-height: 100vh;
+      border-left: 0.5px solid var(--border);
+      border-right: 0.5px solid var(--border);
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .logo {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.05rem;
+      cursor: pointer;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .logo i { color: var(--text2); font-size: 17px; }
+    .nav-links { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; }
+    .nav-btn {
+      padding: 0.32rem 0.6rem;
+      font-size: 12px;
+      color: var(--text2);
+      background: transparent;
+      border: 0.5px solid transparent;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.12s;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--bg2);
+      color: var(--text);
+      border-color: var(--border2);
+      font-weight: 500;
+    }
+    .btn-new {
+      margin-left: 4px;
+      padding: 0.32rem 0.7rem;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--bg2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-new:hover { background: var(--bg3); }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1.5rem 2rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .hero h1 {
+      font-family: Georgia, serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+    .hero p { font-size: 0.9rem; color: var(--text2); margin-bottom: 1.25rem; }
+    .hero-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .hero-btn {
+      padding: 0.45rem 1rem;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hero-btn.book   { background: var(--success-bg); color: var(--success); }
+    .hero-btn.econ   { background: var(--warn-bg);    color: var(--warn); }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; max-width: 380px; margin: 0 auto; }
+    .search-wrap i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text3); pointer-events: none; }
+    .search-wrap input { width: 100%; padding-left: 30px; }
+
+    /* ── Stat cards ── */
+    .stats { display: flex; justify-content: center; gap: 10px; padding: 1.5rem 1.25rem 0; }
+    .stat-card {
+      width: 140px;
+      background: var(--bg2);
+      padding: 1rem;
+      border-radius: var(--radius);
+      text-align: center;
+      cursor: pointer;
+      border: 0.5px solid var(--border);
+      transition: border-color 0.12s;
+    }
+    .stat-card:hover { border-color: var(--border2); }
+    .stat-card i { font-size: 20px; color: var(--text2); display: block; margin-bottom: 6px; }
+    .stat-num { font-size: 1.5rem; font-weight: 500; line-height: 1; }
+    .stat-label { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.875rem;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .section-title.serif { font-family: Georgia, serif; font-size: 1.05rem; }
+    .section-count { font-size: 0.8rem; font-family: -apple-system, sans-serif; color: var(--text3); font-weight: 400; margin-left: 4px; }
+
+    /* ── Grid ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+
+    /* ── Post card ── */
+    .post-card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .post-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .card-date { font-size: 11px; color: var(--text3); }
+    .card-title { font-size: 0.925rem; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
+    .card-book { font-size: 11px; color: var(--text3); margin-bottom: 5px; display: flex; align-items: center; gap: 3px; }
+    .card-preview { font-size: 0.825rem; color: var(--text2); margin-bottom: 8px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 3px; }
+    .tag { font-size: 10px; padding: 2px 7px; border-radius: var(--radius); background: var(--bg2); color: var(--text2); border: 0.5px solid var(--border); }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+    .badge.book { background: var(--success-bg); color: var(--success); }
+    .badge.econ { background: var(--warn-bg); color: var(--warn); }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 2.5rem;
+      background: var(--bg2);
+      border-radius: var(--radius-lg);
+      color: var(--text3);
+      font-size: 0.9rem;
+    }
+
+    /* ── Post view ── */
+    .post-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; color: var(--text2);
+      background: transparent; border: none; cursor: pointer; padding: 0;
+    }
+    .back-btn:hover { color: var(--text); }
+    .action-btns { display: flex; gap: 5px; }
+    .btn-edit {
+      padding: 0.3rem 0.65rem; font-size: 12px; color: var(--text2);
+      background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .btn-edit:hover { border-color: var(--border2); color: var(--text); }
+    .btn-del {
+      padding: 0.3rem 0.65rem; font-size: 12px; color: var(--danger);
+      background: transparent; border: 0.5px solid var(--danger-border); border-radius: var(--radius); cursor: pointer;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .del-confirm {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--danger-bg); padding: 0.3rem 0.75rem; border-radius: var(--radius);
+      font-size: 12px; color: var(--danger);
+    }
+    .del-confirm button {
+      font-size: 12px; cursor: pointer; background: transparent; border: none; color: var(--danger);
+    }
+    .del-confirm button.yes {
+      font-weight: 500;
+      border: 0.5px solid var(--danger-border);
+      border-radius: var(--radius);
+      padding: 2px 7px;
+    }
+    .del-confirm button.no { color: var(--text2); margin-left: 2px; }
+
+    .post-body { max-width: 640px; margin: 0 auto; padding: 1.5rem 1.25rem; }
+    .post-body h1 { font-family: Georgia, serif; font-size: 1.6rem; font-weight: 400; margin: 0.75rem 0; line-height: 1.3; }
+    .book-info {
+      display: flex; align-items: center; gap: 7px;
+      padding: 0.5rem 0.875rem;
+      background: var(--bg2); border-radius: var(--radius); margin-bottom: 1rem;
+    }
+    .book-info i { font-size: 15px; color: var(--text2); flex-shrink: 0; }
+    .book-info strong { font-size: 0.875rem; font-weight: 500; }
+    .book-info span { font-size: 0.8rem; color: var(--text2); }
+    .content-area { border-top: 0.5px solid var(--border); padding-top: 1.1rem; margin-bottom: 1.25rem; }
+    .content-area h3 { font-size: 0.975rem; font-weight: 500; margin: 1.1rem 0 0.3rem; padding-bottom: 0.3rem; border-bottom: 0.5px solid var(--border); }
+    .content-area h3:first-child { margin-top: 0; }
+    .content-area p { margin: 0.2rem 0; line-height: 1.8; color: var(--text2); font-size: 0.925rem; }
+    .content-area strong { font-weight: 500; color: var(--text); }
+    .post-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .post-date { font-size: 11px; color: var(--text3); }
+
+    /* ── Editor ── */
+    .editor-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1.25rem; border-bottom: 0.5px solid var(--border);
+      flex-wrap: wrap; gap: 8px;
+    }
+    .editor-nav .logo-text { font-family: Georgia, serif; font-size: 1.05rem; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .editor-nav .logo-text i { color: var(--text2); font-size: 17px; }
+    .editor-actions { display: flex; gap: 6px; align-items: center; }
+    .saved-msg { font-size: 12px; color: var(--success); display: flex; align-items: center; gap: 3px; }
+    .btn-cancel {
+      padding: 0.32rem 0.7rem; font-size: 12px; color: var(--text2);
+      background: transparent; border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer;
+    }
+    .btn-save {
+      padding: 0.32rem 0.8rem; font-size: 12px; font-weight: 500; color: var(--text);
+      background: var(--bg2); border: 0.5px solid var(--border2); border-radius: var(--radius); cursor: pointer;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-save:not(:disabled):hover { background: var(--bg3); }
+
+    .editor-form { max-width: 620px; margin: 0 auto; padding: 1.25rem; }
+    .form-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 500; display: block; }
+    .form-label span { font-weight: 400; color: var(--text3); }
+    .form-group { margin-bottom: 0.875rem; }
+    .cat-btns { display: flex; gap: 6px; }
+    .cat-btn {
+      flex: 1; padding: 0.5rem; font-size: 12px; font-weight: 500;
+      border: 0.5px solid var(--border); border-radius: var(--radius); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      color: var(--text2); background: var(--bg2); transition: all 0.12s;
+    }
+    .cat-btn.book.active { color: var(--success); background: var(--success-bg); border-color: var(--success); }
+    .cat-btn.econ.active { color: var(--warn); background: var(--warn-bg); border-color: var(--warn); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    input, textarea {
+      width: 100%; padding: 0.5rem 0.625rem;
+      background: var(--bg); color: var(--text);
+      border: 0.5px solid var(--border2); border-radius: var(--radius);
+      font-size: 13px; font-family: inherit; outline: none;
+    }
+    input:focus, textarea:focus { border-color: var(--text3); box-shadow: 0 0 0 2px rgba(128,128,128,0.12); }
+    textarea.mono { font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.75; resize: vertical; min-height: 240px; }
+    .md-guide {
+      background: var(--bg2); border-radius: var(--radius);
+      padding: 0.75rem 1rem; font-size: 12px; color: var(--text2); line-height: 1.7;
+    }
+    .md-guide strong { font-weight: 500; color: var(--text); }
+    code { font-family: 'Courier New', monospace; font-size: 11px; background: var(--bg3); padding: 1px 4px; border-radius: 3px; }
+
+    /* ── Sections / pages ── */
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-content { padding: 1.25rem; }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 1.4rem; }
+      .grid { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── NAVIGATION ── -->
+  <nav>
+    <a class="logo" onclick="showPage('home')">
+      <i class="ti ti-books"></i>나의 지식창고
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn active" id="nav-home"     onclick="showPage('home')"><i class="ti ti-home"></i>홈</button>
+      <button class="nav-btn"        id="nav-books"    onclick="showPage('books')"><i class="ti ti-book-2"></i>독서기록</button>
+      <button class="nav-btn"        id="nav-economics" onclick="showPage('economics')"><i class="ti ti-chart-bar"></i>경제공부</button>
+      <button class="btn-new" onclick="openEditor(null,'book')"><i class="ti ti-pencil-plus"></i>새 글</button>
+    </div>
+  </nav>
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <h1>읽고, 배우고, 기록하다</h1>
+      <p>책에서 만난 인사이트와 경제 공부 내용을 차곡차곡 쌓아가는 나만의 지식 공간</p>
+      <div class="hero-btns">
+        <button class="hero-btn book" onclick="openEditor(null,'book')"><i class="ti ti-book-upload"></i>독서 기록 추가</button>
+        <button class="hero-btn econ" onclick="openEditor(null,'economics')"><i class="ti ti-notes"></i>경제 공부 추가</button>
+      </div>
+      <div class="search-wrap">
+        <i class="ti ti-search"></i>
+        <input type="text" id="search-input" placeholder="제목, 내용, 태그 검색..." oninput="onSearch(this.value)"/>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card" onclick="showPage('books')">
+        <i class="ti ti-book-2"></i>
+        <div class="stat-num" id="stat-book">0</div>
+        <div class="stat-label">독서 기록</div>
+      </div>
+      <div class="stat-card" onclick="showPage('economics')">
+        <i class="ti ti-chart-line"></i>
+        <div class="stat-num" id="stat-econ">0</div>
+        <div class="stat-label">경제 공부</div>
+      </div>
+    </div>
+
+    <div class="page-content" id="home-list-wrap">
+      <div class="section-header">
+        <span class="section-title" id="home-section-title"><i class="ti ti-clock"></i>최근 기록</span>
+      </div>
+      <div class="grid" id="home-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── BOOKS ── -->
+  <div class="page" id="page-books">
+    <div class="page-content">
+      <div class="section-header">
+        <span class="section-title serif">독서기록<span class="section-count" id="book-count"></span></span>
+        <button class="btn-new" onclick="openEditor(null,'book')"><i class="ti ti-plus"></i>새 글 추가</button>
+      </div>
+      <div class="grid" id="book-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── ECONOMICS ── -->
+  <div class="page" id="page-economics">
+    <div class="page-content">
+      <div class="section-header">
+        <span class="section-title serif">경제공부<span class="section-count" id="econ-count"></span></span>
+        <button class="btn-new" onclick="openEditor(null,'economics')"><i class="ti ti-plus"></i>새 글 추가</button>
+      </div>
+      <div class="grid" id="econ-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── POST VIEW ── -->
+  <div class="page" id="page-post">
+    <div class="post-nav">
+      <button class="back-btn" id="back-btn" onclick="goBack()"><i class="ti ti-arrow-left"></i>목록으로</button>
+      <div class="action-btns">
+        <button class="btn-edit" id="edit-btn" onclick="editCurrent()"><i class="ti ti-edit"></i>수정</button>
+        <button class="btn-del" id="del-btn" onclick="showDelConfirm()"><i class="ti ti-trash"></i>삭제</button>
+        <div class="del-confirm" id="del-confirm" style="display:none">
+          <span>정말 삭제할까요?</span>
+          <button class="yes" onclick="deleteCurrent()">삭제</button>
+          <button class="no" onclick="hideDelConfirm()">취소</button>
+        </div>
+      </div>
+    </div>
+    <div class="post-body">
+      <div id="post-badge"></div>
+      <h1 id="post-title"></h1>
+      <div class="book-info" id="post-book-info" style="display:none">
+        <i class="ti ti-book-2"></i>
+        <strong id="post-book-title"></strong>
+        <span id="post-author"></span>
+      </div>
+      <div class="content-area" id="post-content"></div>
+      <div class="post-tags" id="post-tags"></div>
+      <p class="post-date" id="post-date"></p>
+    </div>
+  </div>
+
+  <!-- ── EDITOR ── -->
+  <div class="page" id="page-editor">
+    <div class="editor-nav">
+      <span class="logo-text"><i class="ti ti-books"></i>나의 지식창고</span>
+      <div class="editor-actions">
+        <span class="saved-msg" id="saved-msg" style="display:none"><i class="ti ti-check"></i>저장됨</span>
+        <button class="btn-cancel" onclick="cancelEditor()">취소</button>
+        <button class="btn-save" id="save-btn" onclick="submitPost()" disabled>
+          <i class="ti ti-device-floppy"></i><span id="save-label">저장하기</span>
+        </button>
+      </div>
+    </div>
+    <div class="editor-form">
+      <div class="form-group">
+        <label class="form-label">카테고리</label>
+        <div class="cat-btns">
+          <button class="cat-btn book active" id="cat-book"  onclick="setCat('book')"><i class="ti ti-book-2"></i>독서기록</button>
+          <button class="cat-btn econ"        id="cat-econ"  onclick="setCat('economics')"><i class="ti ti-chart-line"></i>경제공부</button>
+        </div>
+      </div>
+      <div id="book-fields">
+        <div class="grid-2">
+          <div><label class="form-label">책 제목</label><input type="text" id="e-book" placeholder="책 제목"/></div>
+          <div><label class="form-label">저자</label><input type="text" id="e-author" placeholder="저자"/></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">제목 *</label>
+        <input type="text" id="e-title" placeholder="글 제목을 입력하세요" oninput="validateForm()" style="font-size:0.975rem"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">내용 * <span>— ## 소제목, **굵게** 사용 가능</span></label>
+        <textarea class="mono" id="e-body" oninput="validateForm()" placeholder="## 소제목
+
+내용을 자유롭게 적어요. **중요한 내용**은 이렇게 강조할 수 있어요.
+
+## 또 다른 소제목
+
+계속 이어서 작성하세요."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">태그 <span>쉼표로 구분</span></label>
+        <input type="text" id="e-tags" placeholder="예: 투자, 심리학, 재테크"/>
+      </div>
+      <div class="md-guide">
+        <strong>마크다운 가이드</strong><br>
+        <code>## 소제목</code> → 구분선 있는 소제목&nbsp;&nbsp;|&nbsp;&nbsp;<code>**텍스트**</code> → <strong>굵게 강조</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────
+const STORAGE_KEY = 'jisik-changgo-v1';
+const SAMPLE = [
+  { id:'s1', category:'book', title:'돈의 심리학 — 핵심 메모', bookTitle:'돈의 심리학', author:'모건 하우절',
+    content:'## 핵심 교훈\n\n돈에 관한 결정은 수학이 아니라 심리의 문제다. 우리는 대부분 경험으로 돈을 배운다.\n\n## 운과 위험\n\n빌 게이츠 같은 성공 사례에서 운의 역할을 과소평가하기 쉽다. 실패도 마찬가지다.\n\n## 복리의 진정한 의미\n\n복리의 마법은 살아남는 자에게만 일어난다. 부를 쌓는 것보다 지키는 것이 더 어렵다.',
+    tags:['투자','심리학','재테크'], date:'2024-03-15' },
+  { id:'s2', category:'economics', title:'금리와 채권 가격의 관계', bookTitle:'', author:'',
+    content:'## 기본 원칙\n\n금리가 오르면 채권 가격은 내린다. 투자의 가장 기본적인 원칙 중 하나다.\n\n## 왜 반대로 움직일까?\n\n새로 발행된 채권의 금리가 올라가면, 기존 낮은 금리 채권은 매력이 떨어져 가격이 하락한다.\n\n## 듀레이션 개념\n\n채권 만기가 길수록 금리 변화에 더 민감하다.',
+    tags:['금리','채권','기초경제'], date:'2024-03-20' },
+  { id:'s3', category:'book', title:'원칙 — 레이 달리오의 삶과 일', bookTitle:'원칙 (Principles)', author:'레이 달리오',
+    content:'## 현실을 있는 그대로 보라\n\n달리오는 현실 직시가 성공의 첫 걸음이라 말한다. 고통스러운 진실도 마주해야 발전한다.\n\n## 실수는 학습의 재료\n\n실수 → 반성 → 원칙 수립 → 적용의 사이클이 성장을 만든다.\n\n## 극단적 솔직함\n\n신뢰할 수 있는 조직은 불편한 진실도 말할 수 있어야 한다.',
+    tags:['경영','자기계발','원칙'], date:'2024-04-05' },
+  { id:'s4', category:'economics', title:'인플레이션 기초 개념 정리', bookTitle:'', author:'',
+    content:'## 인플레이션이란?\n\n물가가 전반적으로 지속적으로 오르는 현상. 같은 돈으로 살 수 있는 물건이 줄어든다.\n\n## 주요 원인\n\n수요 증가(수요 견인), 공급 감소(비용 상승), 통화량 증가가 세 가지 주요 원인이다.\n\n## 중앙은행의 역할\n\n금리 인상 → 대출 감소 → 소비 감소 → 물가 안정. 통화정책의 기본 메커니즘이다.',
+    tags:['인플레이션','통화정책','기초경제'], date:'2024-04-12' },
+];
+
+let posts = [];
+let currentPostId = null;
+let editingId = null;
+let currentCat = 'book';
+let prevPage = 'home';
+let searchQ = '';
+
+function loadPosts() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { posts = JSON.parse(raw); return; }
+  } catch(e) {}
+  posts = SAMPLE;
+  savePosts();
+}
+function savePosts() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(posts)); } catch(e){}
+}
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function fmtDate(d) {
+  if (!d) return '';
+  return new Date(d + 'T00:00:00').toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric' });
+}
+function sorted() { return [...posts].sort((a,b) => b.date > a.date ? 1 : -1); }
+
+// ── Navigation ──────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('active');
+  if (name === 'home')      renderHome();
+  if (name === 'books')     renderList('books');
+  if (name === 'economics') renderList('economics');
+  window.scrollTo(0,0);
+}
+
+// ── Render helpers ──────────────────────────────────────────
+function badgeHTML(cat) {
+  return cat === 'book'
+    ? `<span class="badge book"><i class="ti ti-book-2"></i>독서기록</span>`
+    : `<span class="badge econ"><i class="ti ti-chart-line"></i>경제공부</span>`;
+}
+
+function postCardHTML(post) {
+  const preview = post.content.replace(/##\s*/g,'').replace(/\*\*/g,'').split('\n').filter(l=>l.trim()).slice(1,3).join(' ');
+  const bookLine = post.bookTitle ? `<p class="card-book"><i class="ti ti-book"></i>${post.bookTitle}${post.author ? ' · ' + post.author : ''}</p>` : '';
+  const tagsHTML = post.tags.length ? `<div class="tag-list">${post.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : '';
+  return `<div class="post-card" onclick="openPost('${post.id}')">
+    <div class="card-meta">${badgeHTML(post.category)}<span class="card-date">${fmtDate(post.date)}</span></div>
+    <p class="card-title">${esc(post.title)}</p>
+    ${bookLine}
+    ${preview ? `<p class="card-preview">${esc(preview)}</p>` : ''}
+    ${tagsHTML}
+  </div>`;
+}
+
+function emptyHTML(msg) { return `<div class="empty" style="grid-column:1/-1">${msg}</div>`; }
+
+function renderHome() {
+  const all = sorted();
+  document.getElementById('stat-book').textContent = posts.filter(p=>p.category==='book').length;
+  document.getElementById('stat-econ').textContent = posts.filter(p=>p.category==='economics').length;
+  const filtered = searchQ ? all.filter(p =>
+    p.title.includes(searchQ) || p.content.includes(searchQ) ||
+    p.tags.some(t=>t.includes(searchQ)) ||
+    (p.bookTitle||'').includes(searchQ) || (p.author||'').includes(searchQ)
+  ) : all.slice(0,6);
+  const title = searchQ
+    ? `<i class="ti ti-search"></i>"${esc(searchQ)}" 검색 결과 ${filtered.length}개`
+    : `<i class="ti ti-clock"></i>최근 기록`;
+  document.getElementById('home-section-title').innerHTML = title;
+  document.getElementById('home-grid').innerHTML = filtered.length
+    ? filtered.map(postCardHTML).join('')
+    : emptyHTML(searchQ ? '검색 결과가 없어요.' : '아직 기록이 없어요. 첫 번째 글을 써보세요!');
+}
+
+function renderList(page) {
+  const cat = page === 'books' ? 'book' : 'economics';
+  const items = sorted().filter(p => p.category === cat);
+  if (page === 'books') {
+    document.getElementById('book-count').textContent = `(${items.length}편)`;
+    document.getElementById('book-grid').innerHTML = items.length ? items.map(postCardHTML).join('') : emptyHTML('아직 독서 기록이 없어요.');
+  } else {
+    document.getElementById('econ-count').textContent = `(${items.length}편)`;
+    document.getElementById('econ-grid').innerHTML = items.length ? items.map(postCardHTML).join('') : emptyHTML('아직 경제 공부 내용이 없어요.');
+  }
+}
+
+function onSearch(q) {
+  searchQ = q.trim();
+  renderHome();
+}
+
+// ── Post view ───────────────────────────────────────────────
+function openPost(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  currentPostId = id;
+  prevPage = post.category === 'book' ? 'books' : 'economics';
+  document.getElementById('post-badge').innerHTML = badgeHTML(post.category);
+  document.getElementById('post-title').textContent = post.title;
+  if (post.bookTitle) {
+    document.getElementById('post-book-info').style.display = 'flex';
+    document.getElementById('post-book-title').textContent = post.bookTitle;
+    document.getElementById('post-author').textContent = post.author ? '— ' + post.author : '';
+  } else {
+    document.getElementById('post-book-info').style.display = 'none';
+  }
+  document.getElementById('post-content').innerHTML = renderMd(post.content);
+  document.getElementById('post-tags').innerHTML = post.tags.map(t=>`<span class="tag"># ${esc(t)}</span>`).join('');
+  document.getElementById('post-date').textContent = fmtDate(post.date) + (post.updatedDate && post.updatedDate !== post.date ? ' · 수정됨 ' + fmtDate(post.updatedDate) : '');
+  hideDelConfirm();
+  showPage('post');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+}
+
+function goBack() { showPage(prevPage); }
+function showDelConfirm() { document.getElementById('del-confirm').style.display='flex'; document.getElementById('del-btn').style.display='none'; }
+function hideDelConfirm() { document.getElementById('del-confirm').style.display='none'; document.getElementById('del-btn').style.display='flex'; }
+function deleteCurrent() {
+  posts = posts.filter(p => p.id !== currentPostId);
+  savePosts();
+  showPage('home');
+}
+function editCurrent() { openEditor(currentPostId); }
+
+function renderMd(text) {
+  return text.split('\n').map(line => {
+    if (line.startsWith('## ')) return `<h3>${esc(line.slice(3))}</h3>`;
+    if (!line.trim()) return '<div style="height:0.3rem"></div>';
+    const html = esc(line).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    return `<p>${html}</p>`;
+  }).join('');
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── Editor ──────────────────────────────────────────────────
+function openEditor(id, defaultCat) {
+  editingId = id;
+  const post = id ? posts.find(p => p.id === id) : null;
+  currentCat = post ? post.category : (defaultCat || 'book');
+  document.getElementById('e-title').value  = post ? post.title : '';
+  document.getElementById('e-book').value   = post ? (post.bookTitle || '') : '';
+  document.getElementById('e-author').value = post ? (post.author || '') : '';
+  document.getElementById('e-body').value   = post ? post.content : '';
+  document.getElementById('e-tags').value   = post ? post.tags.join(', ') : '';
+  document.getElementById('save-label').textContent = id ? '수정 완료' : '저장하기';
+  document.getElementById('saved-msg').style.display = 'none';
+  setCatUI(currentCat);
+  validateForm();
+  showPage('editor');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+}
+
+function setCat(cat) { currentCat = cat; setCatUI(cat); }
+function setCatUI(cat) {
+  ['book','econ'].forEach(c => {
+    document.getElementById('cat-' + c).classList.remove('active');
+  });
+  document.getElementById(cat === 'book' ? 'cat-book' : 'cat-econ').classList.add('active');
+  document.getElementById('book-fields').style.display = cat === 'book' ? 'block' : 'none';
+}
+
+function validateForm() {
+  const ok = document.getElementById('e-title').value.trim() && document.getElementById('e-body').value.trim();
+  document.getElementById('save-btn').disabled = !ok;
+}
+
+function submitPost() {
+  const title = document.getElementById('e-title').value.trim();
+  const body  = document.getElementById('e-body').value.trim();
+  if (!title || !body) return;
+  const tags = document.getElementById('e-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const bookTitle = document.getElementById('e-book').value.trim();
+  const author    = document.getElementById('e-author').value.trim();
+
+  if (editingId) {
+    posts = posts.map(p => p.id === editingId
+      ? { ...p, title, category: currentCat, bookTitle, author, content: body, tags, updatedDate: todayStr() }
+      : p);
+    savePosts();
+    document.getElementById('saved-msg').style.display = 'flex';
+    currentPostId = editingId;
+    openPost(editingId);
+  } else {
+    const np = { id: Date.now() + '', date: todayStr(), category: currentCat, title, bookTitle, author, content: body, tags };
+    posts = [np, ...posts];
+    savePosts();
+    openPost(np.id);
+  }
+}
+
+function cancelEditor() {
+  if (editingId) openPost(editingId);
+  else showPage('home');
+}
+
+// ── Init ────────────────────────────────────────────────────
+loadPosts();
+renderHome();
+</script>
+</body>
+</html>
