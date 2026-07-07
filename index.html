@@ -2607,6 +2607,8 @@ body #page-about > div > p:not(:first-of-type) {
 }
 #page-research .research-header {
     padding-top: 0.0rem;
+    max-width: 1300px;
+    margin: 0 auto;
 }
 
 /* 제목 '리서치' 네온 효과 완전히 제거 및 순백색 적용 */
@@ -3902,7 +3904,7 @@ body #page-about > div > p:not(:first-of-type) {
   
 </div>
 <div class="page" id="page-about">
-    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="padding:1.5rem 2.5rem 4rem;">
     <div style="font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.88);margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,.6),0 0 22px rgba(255,255,255,.25)">ABOUT</div>
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(255,255,255,.28)">NEWNORMAL</h1>
     <p style="font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.5);font-weight:300">나만의 지식 아카이브</p>
@@ -4998,6 +5000,7 @@ var runParallax = function(){
   function tick(){
     const currentY = window.scrollY; targetVelocity = currentY - lastY; lastY = currentY;
     velocity = lerp(velocity, targetVelocity, 0.2);
+    if(Math.abs(velocity) < 0.08) velocity = 0; // 서브픽셀 꼬리 제거(하단 플리커 방지)
 
     let anyVisible = false;
     cards.forEach(function(card){
@@ -5013,14 +5016,16 @@ var runParallax = function(){
         if(norm < -1) norm = -1; if(norm > 1) norm = 1;
         // scale(1.18)로 생긴 약 9% 여유 안에서만 세로 이동 → 가장자리 안 드러남
         var shiftPct = norm * ratio * 7; // 카드 높이 대비 % (최대 약 ±7%)
-        bg.style.transform = 'scale(1.18) translateY(' + shiftPct.toFixed(2) + '%)';
+        var sp = shiftPct.toFixed(1);
+        if(bg.__sp !== sp){ bg.__sp = sp; bg.style.transform = 'scale(1.18) translateY(' + sp + '%)'; }
       }
       var floatY = velocity * 1.4 * ratio;
       // 과한 튐 방지: 최대 ±42px로 제한
       if(floatY > 42) floatY = 42; if(floatY < -42) floatY = -42;
       // reveal 떠오름이 완전히 끝난(reveal-done) 카드만 패럴랙스 적용 — 떠오르는 중엔 건드리지 않음
+      var fy = Math.round(floatY); if(Math.abs(fy) < 1) fy = 0;
       if(!card.classList.contains('reveal-up') || card.classList.contains('reveal-done')){
-        card.style.transform = 'translateY(' + floatY.toFixed(2) + 'px)';
+        if(card.__fy !== fy){ card.__fy = fy; card.style.transform = 'translateY(' + fy + 'px)'; }
       }
     });
 
