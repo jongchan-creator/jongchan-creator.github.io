@@ -4,6 +4,16 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>NEWNORMAL</title>
+<link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
+<link rel="apple-touch-icon" href="https://jongchan-creator.github.io/favicon.png"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="NEWNORMAL"/>
+<meta property="og:description" content="읽고, 보고, 배우고, 기록하는 개인 지식 아카이브 — 경제·미디어 리서치와 자산 기록을 한 곳에."/>
+<meta property="og:url" content="https://jongchan-creator.github.io/"/>
+<meta property="og:image" content="https://jongchan-creator.github.io/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Cormorant+Garamond:wght@600;700&family=Fredoka+One&family=Jua&family=Michroma&family=Noto+Sans+KR:wght@300;400;500&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Gothic+A1:wght@700;900&display=swap" rel="stylesheet"/>
@@ -3349,6 +3359,19 @@ body #page-about > div > p:not(:first-of-type) {
           .tw-mbtn.has{border-color:rgba(204,255,0,.5);color:#ccff00;background:rgba(204,255,0,.07)}
           .tw-memo{width:100%;min-height:76px;background:rgba(16,18,10,.85);border:1px solid rgba(204,255,0,.16);border-radius:8px;padding:9px 11px;color:#f0ede6;font-size:12px;font-family:'Pretendard',sans-serif;line-height:1.6;outline:none;resize:vertical;box-sizing:border-box}
           .tw-memo:focus{border-color:rgba(204,255,0,.45)}
+          .cs-fs{border:1px solid rgba(204,255,0,.1);border-radius:13px;padding:18px 20px 16px;margin-top:16px;background:rgba(204,255,0,.018)}
+          .cs-fs-t{display:flex;align-items:center;gap:9px;margin-bottom:14px;font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.09em;color:rgba(204,255,0,.75)}
+          .cs-fs-t .no{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:1px solid rgba(204,255,0,.35);border-radius:6px;font-size:10px;color:#ccff00;background:rgba(204,255,0,.06)}
+          .cs-fs .cs-grid{margin:0}
+          /* 안내·참고용 요소: 아이스 블루 (본문 라임과 대비) */
+          .cs-info{border-color:rgba(125,200,255,.18) !important;background:rgba(125,200,255,.03) !important}
+          .cs-info summary{color:rgba(155,212,255,.85) !important}
+          .cs-info[open] summary{border-bottom-color:rgba(125,200,255,.14) !important}
+          .cs-info .cs-chip{background:rgba(125,200,255,.07);border-color:rgba(125,200,255,.3);color:#9ed7ff}
+          .cs-hint{background:rgba(125,200,255,.08);border-color:rgba(125,200,255,.38);color:#9ed7ff}
+          .cs-bullets{border-top-color:rgba(125,200,255,.16)}
+          .cs-bullets div::before{color:rgba(125,200,255,.55)}
+          .cs-bullets b{color:rgba(155,212,255,.85)}
           /* ── 세련화: 섹션 넘버 박스 · 카드 프레임 · 구조화 텍스트 ── */
           .rs-sec .n{font-size:17px;padding:3px 11px;border:1px solid rgba(204,255,0,.32);border-radius:8px;background:rgba(204,255,0,.05);box-shadow:inset 0 0 12px rgba(204,255,0,.06),0 0 10px rgba(204,255,0,.12)}
           .rs-card{border:1px solid rgba(204,255,0,.11) !important;border-radius:18px;box-shadow:0 16px 44px -24px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
@@ -3392,50 +3415,84 @@ body #page-about > div > p:not(:first-of-type) {
             <div class="macro-card-title" style="color:rgba(204,255,0,.85); text-shadow:0 0 6px rgba(204,255,0,.4); font-size:15px !important; letter-spacing:.03em;">
               Tenbagger Lab <span class="sim-tag" style="color:#ccff00; border-color:rgba(204,255,0,.3); font-size:11px; margin-left:6px;">10배 주 후보 발굴</span>
             </div>
-            <div class="cs-pills">
-              <span class="cs-pill"><b>①</b> 아직 작은 시가총액</span>
-              <span class="cs-pill"><b>②</b> 매출의 빠르고 꾸준한 성장</span>
-              <span class="cs-pill"><b>③</b> 높은 매출총이익률 · 해자</span>
-              <span class="cs-pill"><b>④</b> 성장 대비 저평가 (PSR)</span>
-              <span class="cs-pill"><b>⑤</b> 고점 대비 눌림목</span>
+            <p style="color:rgba(240,237,230,.72); font-size:12.5px; line-height:1.65; margin:8px 0 2px; font-family:'Pretendard',sans-serif;">아래 다섯 가지 텐베거 발현 조건을 조합해, 미국 상장사 중 10배 성장 잠재 후보를 걸러냅니다.</p>
+
+            <div style="font-family:'Pretendard',sans-serif;font-size:11px;font-weight:800;letter-spacing:.14em;color:rgba(204,255,0,.65);margin:18px 0 2px">TENBAGGER CONDITIONS — 발현 조건 5</div>
+            <div class="tw-steps" style="grid-template-columns:repeat(auto-fit,minmax(215px,1fr))">
+              <div class="tw-step"><div class="k">① 아직 작은 시가총액</div><p>$5B→$50B는 가능해도 $500B→$5T는 어렵습니다. 출발점이 작아야 10배가 산수로 성립합니다.</p></div>
+              <div class="tw-step"><div class="k">② 매출의 빠른 성장</div><p>텐베거의 연료. 이익보다 먼저 오는 연 15~20%+ 매출 고성장이 장기 복리를 만듭니다.</p></div>
+              <div class="tw-step"><div class="k">③ 높은 매출총이익률</div><p>마진은 가격결정력·해자의 흔적. 성장이 이익으로 전환될 때의 폭발력을 결정합니다.</p></div>
+              <div class="tw-step"><div class="k">④ 성장 대비 저평가</div><p>PSR은 적자 성장주도 재는 자. 낮을수록 시장이 아직 못 알아본 기업일 확률이 높습니다.</p></div>
+              <div class="tw-step"><div class="k">⑤ 고점 대비 눌림목</div><p>좋은 기업을 조정 구간에서. 진입가가 최종 수익률의 절반을 결정합니다.</p></div>
             </div>
             <div class="cs-badges">
-              <span class="cs-hint">빈칸 = 그 조건은 무시하고 검색</span>
-              <span class="cs-hint dim">FMP 무료 API 키 필요</span>
+              <span class="cs-hint">숫자 칸을 비워두면 그 조건은 무시</span>
+              <span class="cs-hint dim">FMP 무료 키 · 하루 250회 · 카드 등록 불필요</span>
             </div>
-            <details class="cs-why"><summary>각 조건을 쓰는 이유 — 텐베거 관점 (클릭해서 펼치기/접기)</summary><div class="cs-why-list">
-              <div class="cs-why-row"><span class="cs-chip">시총 상한</span><p>10배의 산수 — $5B→$50B는 가능해도 $500B→$5T는 어렵습니다. 피터 린치의 텐베거 대부분이 중소형에서 나왔습니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">매출 CAGR</span><p>텐베거의 연료. 이익보다 먼저 오는 것이 매출의 고성장입니다 (연 15~20%+).</p></div>
+
+
+            <details class="cs-why cs-info"><summary>각 입력 조건의 상세 근거 — 텐베거 관점 (펼치기/접기)</summary><div class="cs-why-list">
+              <div class="cs-why-row"><span class="cs-chip">시총 상한</span><p>10배의 산수 — 피터 린치의 텐베거 대부분이 중소형에서 나왔습니다. 기본값 $50B 이하.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">매출 CAGR</span><p>최근 3년 연평균 매출 성장률. 15~20% 이상이 텐베거의 통과선입니다.</p></div>
               <div class="cs-why-row"><span class="cs-chip">연속 증가</span><p>일회성 특수가 아닌 추세적 성장인지 — 꾸준함이 질적 증거입니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">매출총이익률</span><p>마진 = 가격결정력·해자의 흔적. 성장이 이익으로 전환될 때의 폭발력을 결정합니다 (SW 60%+, 제조 30%+ 양호).</p></div>
-              <div class="cs-why-row"><span class="cs-chip">PSR</span><p>적자 성장주도 재는 자. 성장률 대비 낮을수록 시장이 아직 못 알아본 기업일 확률이 높습니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">PER · 흑자</span><p>이익 나는 기업의 과열 점검·보수 필터. 단, 초기 텐베거는 적자가 흔하니 상황 따라 비워두세요.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">고점대비</span><p>좋은 기업을 조정 구간에서. 진입가가 수익률의 절반입니다. 단, 하락엔 이유가 있을 수 있으니 개별 분석 필수.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">매출총이익률</span><p>SW·플랫폼 60%+, 제조업 30%+면 양호. 마진이 클수록 이익 전환 폭발력이 큽니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">PSR</span><p>시총 ÷ 연매출. 성장률 대비 낮을수록 저평가. 통상 5 이하에서 기회를 찾습니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">PER · 흑자</span><p>이익 나는 기업의 과열 점검·보수 필터. 초기 텐베거는 적자가 흔하니 상황 따라 비워두세요.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">고점대비</span><p>52주 최고가 대비 하락률. 단, 하락엔 이유가 있을 수 있으니 개별 분석은 필수입니다.</p></div>
               <div class="cs-why-row"><span class="cs-chip">검증 종목 수</span><p>종목당 API 2회 소모. 무료 250회/일 예산 안에서 조절하세요.</p></div>
             </div></details>
-            <div class="cs-grid">
-              <div class="cs-field" style="min-width:230px"><label>FMP API 키</label><input type="password" id="csKey" placeholder="무료 키 붙여넣기" style="width:230px" autocomplete="off"></div>
-              <div class="cs-field"><label>거래소</label><select id="csExch"><option value="NASDAQ,NYSE,AMEX">전체(미국)</option><option value="NASDAQ">NASDAQ</option><option value="NYSE">NYSE</option><option value="AMEX">AMEX</option></select></div>
-              <div class="cs-field"><label>섹터</label><select id="csSector"><option value="">전체</option><option>Technology</option><option>Communication Services</option><option>Consumer Cyclical</option><option>Consumer Defensive</option><option>Energy</option><option>Financial Services</option><option>Healthcare</option><option>Industrials</option><option>Basic Materials</option><option>Real Estate</option><option>Utilities</option></select></div>
-              <div class="cs-field" style="min-width:230px"><label>티커 직접 추가 (쉼표로 여러 개)</label><input type="text" id="csTickers" placeholder="예: PLTR, IONQ, HIMS" style="width:230px" autocomplete="off"></div>
-              <div class="cs-field"><label>시총 최소 ($B)</label><input type="number" id="csMcapMin" value="0.3" min="0" step="0.1"></div>
-              <div class="cs-field"><label>시총 최대 ($B) · 텐베거 핵심</label><input type="number" id="csMcapMax" value="50" min="0" step="1"></div>
-              <div class="cs-field"><label>매출 3년 CAGR 최소 (%)</label><input type="number" id="csCagr" value="15"></div>
-              <div class="cs-field"><label>매출 연속 증가</label><select id="csStreak"><option value="0">무시</option><option value="2" selected>2년 이상</option><option value="3">3년 이상</option></select></div>
-              <div class="cs-field"><label>매출총이익률 최소 (%)</label><input type="number" id="csGm" placeholder="예: 40"></div>
-              <div class="cs-field"><label>PSR 이하 (빈칸=무시)</label><input type="number" id="csPsr" placeholder="예: 5"></div>
-              <div class="cs-field"><label>PER 이하 (빈칸=무시)</label><input type="number" id="csPe" placeholder="예: 30"></div>
-              <div class="cs-field"><label>고점대비 하락 최소 (%)</label><input type="number" id="csDd" placeholder="예: 20"></div>
-              <div class="cs-field"><label>정밀검증 종목 수</label><select id="csN"><option value="20">20 (호출 절약)</option><option value="30" selected>30</option><option value="40">40</option></select></div>
-              <div class="cs-field"><label>정렬</label><select id="csSort"><option value="cagr">매출성장률 ↓</option><option value="psr">PSR ↑</option><option value="pe">PER ↑</option><option value="mcap">시가총액 ↓</option><option value="dd">하락폭 ↓</option></select></div>
-              <div class="cs-field" style="justify-content:flex-end"><label style="visibility:hidden">.</label><label style="display:flex;align-items:center;gap:7px;color:rgba(240,237,230,.8);font-size:12px;cursor:pointer"><input type="checkbox" id="csProfit" style="width:15px;height:15px;accent-color:#ccff00"> 순이익 흑자만</label></div>
+
+            <div class="cs-fs">
+              <div class="cs-fs-t"><span class="no">1</span>검색 대상 — 어디서 찾을까</div>
+              <div class="cs-grid">
+                <div class="cs-field" style="min-width:230px"><label>FMP API 키</label><input type="password" id="csKey" placeholder="무료 키 붙여넣기 (발급법은 위 가이드)" style="width:230px" autocomplete="off"></div>
+                <div class="cs-field"><label>거래소</label><select id="csExch"><option value="NASDAQ,NYSE,AMEX">전체(미국)</option><option value="NASDAQ">NASDAQ</option><option value="NYSE">NYSE</option><option value="AMEX">AMEX</option></select></div>
+                <div class="cs-field"><label>섹터</label><select id="csSector"><option value="">전체</option><option>Technology</option><option>Communication Services</option><option>Consumer Cyclical</option><option>Consumer Defensive</option><option>Energy</option><option>Financial Services</option><option>Healthcare</option><option>Industrials</option><option>Basic Materials</option><option>Real Estate</option><option>Utilities</option></select></div>
+                <div class="cs-field" style="min-width:230px"><label>티커 직접 추가 (쉼표로 여러 개)</label><input type="text" id="csTickers" placeholder="예: PLTR, IONQ, HIMS" style="width:230px" autocomplete="off"></div>
+              </div>
+              <details class="cs-why cs-info" style="margin:14px 0 2px"><summary>FMP 무료 API 키 발급 방법 — 처음이라면 여기부터 (2분 소요)</summary><div class="cs-why-list" style="grid-template-columns:1fr">
+              <div class="cs-why-row"><span class="cs-chip">01 · 접속</span><p><b style="color:rgba(240,237,230,.85)">site.financialmodelingprep.com</b> 에 접속해 우측 상단 <b style="color:rgba(240,237,230,.85)">Sign Up</b>을 누릅니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">02 · 가입</span><p><b style="color:rgba(240,237,230,.85)">Sign up with Google</b>(구글 계정 가입)이 가장 빠릅니다. 무료 플랜이면 충분합니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">03 · 대시보드</span><p>로그인 후 상단 메뉴의 <b style="color:rgba(240,237,230,.85)">Dashboard</b>로 이동합니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">04 · 키 복사</span><p>화면의 <b style="color:rgba(240,237,230,.85)">API Key</b> 항목에 보이는 긴 영문·숫자 문자열이 내 키입니다. 복사하세요. (타인에게 공유 금지)</p></div>
+              <div class="cs-why-row"><span class="cs-chip">05 · 붙여넣기</span><p>아래 <b style="color:rgba(240,237,230,.85)">① 검색 대상</b>의 "FMP API 키" 칸에 붙여넣으면 이 브라우저에 자동 저장됩니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">06 · 확인</span><p>옆의 <b style="color:rgba(240,237,230,.85)">키 진단</b> 버튼으로 내 키가 정상 작동하는지 즉시 확인할 수 있습니다.</p></div>
+            </div></details>
             </div>
-            <div style="display:flex;align-items:center;margin-top:10px">
-              <button class="cs-run" id="csRun">텐베거 스크리닝 실행</button>
-              <button class="cs-run" id="csDiag" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:rgba(240,237,230,.8)" title="내 키로 어떤 데이터를 쓸 수 있는지 8개 엔드포인트 테스트 (API 8회 소모)">키 진단</button>
-              <span class="cs-status" id="csStatus"></span>
+
+            <div class="cs-fs">
+              <div class="cs-fs-t"><span class="no">2</span>성장 조건 — 얼마나 빠르고 꾸준한가</div>
+              <div class="cs-grid">
+                <div class="cs-field"><label>시총 최소 ($B)</label><input type="number" id="csMcapMin" value="0.3" min="0" step="0.1"></div>
+                <div class="cs-field"><label>시총 최대 ($B) · 텐베거 핵심</label><input type="number" id="csMcapMax" value="50" min="0" step="1"></div>
+                <div class="cs-field"><label>매출 3년 CAGR 최소 (%)</label><input type="number" id="csCagr" value="15"></div>
+                <div class="cs-field"><label>매출 연속 증가</label><select id="csStreak"><option value="0">무시</option><option value="2" selected>2년 이상</option><option value="3">3년 이상</option></select></div>
+                <div class="cs-field"><label>매출총이익률 최소 (%)</label><input type="number" id="csGm" placeholder="예: 40"></div>
+              </div>
             </div>
-            <div id="csDiagOut" style="margin-top:10px"></div>
+
+            <div class="cs-fs">
+              <div class="cs-fs-t"><span class="no">3</span>밸류에이션 · 타이밍 — 비싸지 않은가, 지금인가</div>
+              <div class="cs-grid" style="align-items:flex-end">
+                <div class="cs-field"><label>PSR 이하 (빈칸=무시)</label><input type="number" id="csPsr" placeholder="예: 5"></div>
+                <div class="cs-field"><label>PER 이하 (빈칸=무시)</label><input type="number" id="csPe" placeholder="예: 30"></div>
+                <div class="cs-field"><label>고점대비 하락 최소 (%)</label><input type="number" id="csDd" placeholder="예: 20"></div>
+                <div class="cs-field"><label style="visibility:hidden">.</label><label style="display:flex;align-items:center;gap:7px;color:rgba(240,237,230,.8);font-size:12px;cursor:pointer;padding:9px 0"><input type="checkbox" id="csProfit" style="width:15px;height:15px;accent-color:#ccff00"> 순이익 흑자만</label></div>
+              </div>
+            </div>
+
+            <div class="cs-fs">
+              <div class="cs-fs-t"><span class="no">4</span>실행</div>
+              <div class="cs-grid" style="align-items:flex-end">
+                <div class="cs-field"><label>정밀검증 종목 수</label><select id="csN"><option value="20">20 (호출 절약)</option><option value="30" selected>30</option><option value="40">40</option></select></div>
+                <div class="cs-field"><label>정렬</label><select id="csSort"><option value="cagr">매출성장률 ↓</option><option value="psr">PSR ↑</option><option value="pe">PER ↑</option><option value="mcap">시가총액 ↓</option><option value="dd">하락폭 ↓</option></select></div>
+                <div class="cs-field"><label style="visibility:hidden">.</label><button class="cs-run" id="csRun">텐베거 스크리닝 실행</button></div>
+                <div class="cs-field"><label style="visibility:hidden">.</label><button class="cs-run" id="csDiag" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:rgba(240,237,230,.8)" title="내 키로 어떤 데이터를 쓸 수 있는지 8개 엔드포인트 테스트 (API 8회 소모)">키 진단</button></div>
+                <div class="cs-field" style="flex:1;min-width:200px"><label style="visibility:hidden">.</label><span class="cs-status" id="csStatus" style="margin-left:0;padding:9px 0;display:inline-block"></span></div>
+              </div>
+            </div>
+
+            <div id="csDiagOut" style="margin-top:12px"></div>
             <div id="csResults"></div>
             <div class="cs-bullets">
               <div><span><b>1차 후보</b> = 내장 유니버스(미국 주요 성장·대표주 ~500종목) + 직접 추가 티커. 무료 플랜이 스크리너 API를 막아(402) 우회하는 방식입니다.</span></div>
@@ -3845,16 +3902,15 @@ body #page-about > div > p:not(:first-of-type) {
   
 </div>
 <div class="page" id="page-about">
-    <div style="padding:30px 2.5rem 4rem">
-    <div style="max-width:760px; background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:38px 46px 44px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
-    <div style="font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.3);margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif">ABOUT</div>
-    <h1 style="font-family:'Fredoka One',cursive;font-size:3rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:.02em">NEWNORMAL</h1>
-    <p style="font-size:11px;letter-spacing:.16em;color:rgba(201,169,110,.5);margin-bottom:2rem;font-weight:300">나만의 지식 아카이브</p>
-    <div style="width:40px;height:.5px;background:rgba(201,169,110,.3);margin-bottom:2rem"></div>
-    <p style="font-size:14px;color:rgba(255,255,255,.35);line-height:1.95;font-weight:300;max-width:480px;letter-spacing:.02em">읽고, 보고, 배우고, 기록하는 개인 지식 아카이브입니다.<br/>경제와 미디어 속 숨은 맥락을 찾아보며 세상을 읽는 감각을 기릅니다.</p>
+    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.88);margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,.6),0 0 22px rgba(255,255,255,.25)">ABOUT</div>
+    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(255,255,255,.28)">NEWNORMAL</h1>
+    <p style="font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.5);font-weight:300">나만의 지식 아카이브</p>
+    <div class="cove-line cv-white" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
+    <p class="hold-desc">읽고, 보고, 배우고, 기록하는 개인 지식 아카이브입니다.<br/>경제와 미디어 속 숨은 맥락을 찾아보며 세상을 읽는 감각을 기릅니다.</p>
             
-            <div class="cove-line cv-white" style="max-width:480px; margin-top:40px; margin-bottom:24px;"></div>
-            <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:12px; font-family:'Orbitron', sans-serif; font-weight:600;">DATA SYSTEM MANAGEMENT</div>
+            <div style="max-width:700px; background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:56px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
+    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:12px; font-family:'Orbitron', sans-serif; font-weight:600;">DATA SYSTEM MANAGEMENT</div>
           <p style="font-size:12.5px; color:rgba(255,255,255,.3); line-height:1.7; margin-bottom:24px; font-weight:300; letter-spacing:0.01em;">도메인 주소가 변경되거나 브라우저 기록 청소 시 데이터 유실을 막기 위해<br/>현재까지 기록된 모든 데이터를 백업하고 원클릭으로 복구할 수 있습니다.</p>
 <div style="display:flex; gap:14px;">
   <button class="db-btn db-export" onclick="window.dbLock('export')">
@@ -3868,8 +3924,9 @@ body #page-about > div > p:not(:first-of-type) {
     <div class="sh"></div>
   </button>
 </div>  
+    </div>
 
-    <div class="cove-line cv-white" style="max-width:480px; margin-top:44px; margin-bottom:24px;"></div>
+    <div style="max-width:700px; background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:64px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
     <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:12px; font-family:'Orbitron', sans-serif; font-weight:600;">CLOUD ARCHIVE — 사용자별 분리 저장</div>
     <p style="font-size:12.5px; color:rgba(255,255,255,.32); line-height:1.8; margin-bottom:16px; font-weight:300; max-width:560px;">
       우측 상단 <b style="color:rgba(201,169,110,.85); font-weight:600;">LOGIN</b>으로 구글 계정에 로그인하면, 이 홈페이지에 기록하는 모든 내용이
@@ -7204,6 +7261,15 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
         });
       });
       g.addEventListener('mouseleave', function(){ g.classList.remove('nav-closing'); });
+      /* 다른 카테고리로 마우스 이동 시: 열려있던(호버·클릭 포커스 포함) 다른 드롭다운 즉시 접기 */
+      g.addEventListener('mouseenter', function(){
+        g.classList.remove('nav-closing');
+        document.querySelectorAll('.nav-group').forEach(function(o){
+          if(o===g) return;
+          o.classList.add('nav-closing');
+          var f=o.querySelector(':focus'); if(f && f.blur) f.blur();
+        });
+      });
     });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wire);
