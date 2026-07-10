@@ -6,6 +6,7 @@
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
 <link rel="apple-touch-icon" href="https://jongchan-creator.github.io/favicon.png"/>
+<meta name="nn-build" content="20260708B"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="NEWNORMAL"/>
 <meta property="og:description" content="읽고, 보고, 배우고, 기록하는 개인 지식 아카이브 — 경제·미디어 리서치와 자산 기록을 한 곳에."/>
@@ -281,9 +282,6 @@ body::before{
 .fn-sub{font-size:clamp(11px,1.1vw,13px);color:rgba(255,255,255,.36);line-height:1.9;max-width:400px;margin-bottom:clamp(1.5rem,2.8vh,2.2rem);opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;font-family:'Pretendard','Noto Sans KR',sans-serif;font-weight:300;letter-spacing:.02em}
 .fn-sub.show{opacity:1;transform:translateY(0)}
 
-.scroll-hint{position:absolute;bottom:185px;right:3rem;z-index:21;font-size:9px;letter-spacing:.22em;color:rgba(255,255,255,.15);display:flex;align-items:center;gap:.5rem;opacity:0;transition:opacity .6s}
-.scroll-hint.show{opacity:1}
-.scroll-hint::before{content:'';width:26px;height:.5px;background:rgba(255,255,255,.12)}
 
 /* ══════════════════════════
    CONTENT SECTIONS
@@ -471,30 +469,36 @@ body::before{
   --tt-border: rgba(255,255,255,0.07); /* 테두리 색 */
   --tt-bottom: 6px;    /* 히어로 바닥에서 마퀴까지 거리 (클수록 위로 올라감) */
   position:absolute; left:0; right:0; bottom:var(--tt-bottom); z-index:20;
-  max-width:var(--tt-maxw); width:auto; margin:0 auto;
+  max-width:var(--tt-maxw); width:auto; margin:0 auto; /* 카드 기준용: 아래 bq-card는 뷰포트 기준 */
   padding:0 var(--tt-padx); display:flex; flex-direction:column; gap:var(--tt-gap);
   /* 아련하게 스르륵 — 느리고 부드럽게 + 소프트포커스(블러→선명) */
   opacity:0; transform:translateY(16px); filter:blur(5px);
   transition:opacity 1.8s cubic-bezier(.25,.46,.45,.94), transform 1.8s cubic-bezier(.25,.46,.45,.94), filter 1.8s cubic-bezier(.25,.46,.45,.94);
 }
 .home-tickers.show{ opacity:1; transform:translateY(0); filter:blur(0); }
-.bq-card{position:absolute;right:0;bottom:calc(100% + 18px);width:380px;max-width:44vw;
+.bq-card{position:absolute;right:2vw;bottom:calc(100% + 18px);width:440px;max-width:46vw;cursor:pointer;
   background:linear-gradient(160deg,rgba(14,13,11,.55),rgba(8,8,8,.42));
   -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
   border:1px solid rgba(201,169,110,.22);border-radius:15px;
   box-shadow:0 18px 48px -20px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05);
-  padding:14px 16px 13px;z-index:5;pointer-events:none;
-  opacity:0;transform:translateY(8px);transition:opacity .9s ease,transform .9s ease}
-.bq-card.show{opacity:1;transform:translateY(0)}
-.bq-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:9.5px;letter-spacing:.24em;color:rgba(212,184,130,.8);text-shadow:0 0 8px rgba(201,169,110,.4);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+  padding:14px 16px 13px;z-index:30;pointer-events:auto;
+  opacity:0;transition:opacity .7s ease}
+.bq-card.show{opacity:1}
+.bq-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.24em;color:rgba(212,184,130,.8);text-shadow:0 0 8px rgba(201,169,110,.4);margin-bottom:9px;display:flex;align-items:center;gap:8px}
 .bq-eyebrow::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,.3),transparent)}
 .bq-row{display:flex;gap:12px;align-items:flex-start}
-.bq-cover{width:42px;height:60px;border-radius:4px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.6);border:.5px solid rgba(255,255,255,.1)}
+.bq-cover{width:50px;height:71px;border-radius:4px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.6);border:.5px solid rgba(255,255,255,.1)}
 .bq-cover.ph{display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,.08);border:.5px dashed rgba(201,169,110,.35);color:rgba(212,184,130,.7);font-size:15px}
 .bq-meta{flex:1;min-width:0}
-.bq-t{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:rgba(240,237,230,.92);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bq-a{font-family:'Pretendard',sans-serif;font-size:10.5px;color:rgba(212,184,130,.72);margin-top:2px;letter-spacing:.03em}
-.bq-q{font-family:'Cormorant Garamond','Cormorant',serif;font-style:italic;font-size:14px;line-height:1.6;color:rgba(240,237,230,.82);margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.bq-t{font-family:'Pretendard',sans-serif;font-size:14.5px;font-weight:700;color:rgba(240,237,230,.92);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bq-a{font-family:'Pretendard',sans-serif;font-size:12px;color:rgba(212,184,130,.72);margin-top:2px;letter-spacing:.03em}
+.bq-q{font-family:'Pretendard','Noto Sans KR',sans-serif;font-style:normal;font-weight:400;font-size:14px;line-height:1.65;letter-spacing:-.01em;color:rgba(240,237,230,.86);margin-top:9px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:color .3s}
+.bq-card{transition:opacity .7s ease,transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease,border-color .35s ease}
+.bq-card.show:hover{transform:translateY(-4px);border-color:rgba(201,169,110,.5);box-shadow:0 22px 60px -18px rgba(0,0,0,.9),0 0 0 1px rgba(201,169,110,.25),inset 0 1px 0 rgba(255,255,255,.08)}
+.bq-card.show:hover .bq-q{color:rgba(240,237,230,1)}
+.bq-card.show:hover .bq-t{color:#f4e9d2}
+.bq-card::after{content:'편집 →';position:absolute;top:13px;right:16px;font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.08em;color:rgba(201,169,110,.9);opacity:0;transform:translateX(-4px);transition:opacity .3s,transform .3s}
+.bq-card.show:hover::after{opacity:1;transform:translateX(0)}
 .bq-q::before{content:'\201C';color:rgba(212,184,130,.85);font-size:1.25em;margin-right:2px}
 .bq-q::after{content:'\201D';color:rgba(212,184,130,.85);font-size:1.25em;margin-left:2px}
 @media(max-width:960px){.bq-card{display:none}}
@@ -688,7 +692,7 @@ body::before{
     height: auto;
     max-height: 320px;
   }
-  .editor-main { height: 60vh; }
+  .editor-main { height: auto; min-height: 900px; }
 }
 @media (max-width: 560px) {
   .company-grid { grid-template-columns: 1fr; }
@@ -946,6 +950,8 @@ body::before{
 }
 .note-group-header:hover { background: rgba(255,255,255,.04); }
 .note-group-header:hover .note-group-del { opacity: 1; }
+.note-group-del { opacity: .6 !important; font-size:9px !important; border:1px solid rgba(216,112,112,.3) !important; border-radius:8px !important; padding:2px 7px !important; color:rgba(216,112,112,.75) !important; white-space:nowrap; }
+.note-group-del:hover { opacity: 1 !important; color:#fff !important; background:rgba(216,112,112,.8) !important; border-color:transparent !important; }
 .note-group-arrow {
   font-size: 13px;
   color: rgba(201,169,110,.8);
@@ -988,14 +994,15 @@ body::before{
 .note-group-icon:hover { background: rgba(201,169,110,.2); }
 /* 하위 토글 추가 버튼 */
 .note-group-addsub {
-  background: none; border: none;
-  color: rgba(201,169,110,.55);
-  cursor: pointer; font-size: 10px;
-  opacity: 0; transition: opacity .15s, color .15s;
-  flex-shrink: 0;
-  white-space: nowrap;
+  background: rgba(201,169,110,.1); border: 1px solid rgba(201,169,110,.25);
+  color: rgba(201,169,110,.8);
+  cursor: pointer; font-size: 9.5px; font-weight:600;
+  opacity: .55; transition: opacity .15s, color .15s, background .15s;
+  flex-shrink: 0; white-space: nowrap;
+  border-radius: 9px; padding: 2px 8px;
 }
 .note-group-header:hover .note-group-addsub { opacity: 1; }
+.note-group-addsub:hover { background: rgba(201,169,110,.2); }
 .note-group-addsub:hover { color: #d8c08a; }
 .note-group-body {
   padding-left: 14px;
@@ -1180,7 +1187,7 @@ body::before{
   border: 0.5px solid rgba(255,255,255,.08);
   border-radius: 14px;
   overflow: hidden;
-  background: rgba(10,10,10,.35);
+  background: rgba(10,10,10,.62);
 }
 /* 기본: 작성 패널 숨김 (목록만 표시) */
 .editor-layout .editor-main { display: none; }
@@ -1195,7 +1202,8 @@ body::before{
   margin: 30px 0 0;
   height: 72vh;
   min-height: 480px;
-}
+
+  height: auto; min-height: 1180px;}
 .editor-layout.editing .editor-main { display: flex; }
 .editor-sidebar {
   display: flex;
@@ -1277,6 +1285,7 @@ body::before{
 }
 .page-item-header .page-del-btn { margin-left: auto; }
 .page-title-text {
+  margin-left: 0;
   font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
@@ -1289,6 +1298,8 @@ body::before{
   color: #f0ede6;
 }
 .page-date-text {
+  margin-top: 3px;
+  padding-left: 0 !important;
   font-size: 10px;
   color: rgba(255, 255, 255, 0.2);
   font-family: 'Orbitron', sans-serif;
@@ -1333,14 +1344,16 @@ body::before{
   border: none;
   border-radius: 14px;
   padding: 16px 0 0;
-  height: calc(100% - 20px);
+  height: auto;
+  min-height: 1150px;
   margin: 10px 10px 10px 0;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 8px 30px rgba(0,0,0,0.3);
 }
 .editor-scroll-area {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: visible;
+  min-height: 1050px;
   padding: 0 2.4rem 1.8rem;
 }
 .editor-scroll-area::-webkit-scrollbar { width: 10px; }
@@ -1413,9 +1426,93 @@ body::before{
   width: 100%;
 }
 .note-title-input::placeholder { color: rgba(0,0,0,0.25); }
+.nn-props{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px;padding-bottom:16px;border-bottom:1px solid rgba(0,0,0,.07)}
+.nn-prop{display:flex;align-items:center;gap:14px;padding:4px 0;font-size:13.5px}
+.np-k{flex-shrink:0;width:122px;color:#9b9b98;display:flex;align-items:center;gap:7px;font-size:13px;user-select:none;cursor:default}
+.np-v{flex:1;color:#2a2a2a;min-height:1.45em;outline:none;border-radius:5px;padding:1px 6px;transition:background .12s}
+.np-v:hover{background:rgba(0,0,0,.03)}
+.np-v:focus{background:rgba(0,0,0,.045)}
+.np-v:empty::before{content:attr(data-ph);color:#c6c6c2}
+.np-note{font-size:11.5px;color:#a09f9b;background:rgba(0,0,0,.035);border-left:3px solid rgba(201,169,110,.55);padding:9px 13px;border-radius:0 9px 9px 0;margin:10px 0 12px;line-height:1.65;user-select:none}
+.np-note b{color:#7a6a4a}
+.np-stars{display:inline-flex;gap:3px;align-items:center;cursor:pointer;line-height:1}
+.np-stars .st{position:relative;width:19px;height:19px;display:inline-block}
+.np-stars .st::before{content:'';position:absolute;inset:0;-webkit-clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:linear-gradient(145deg,#eceae2,#cfccc2);box-shadow:none}
+.np-stars .st .fill{position:absolute;inset:0;overflow:hidden;width:0}
+.np-stars .st .fill::before{content:'';position:absolute;top:0;left:0;width:19px;height:19px;-webkit-clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:linear-gradient(145deg,#ffe9a8 0%,#f5c542 45%,#e0a020 100%);filter:drop-shadow(0 1.5px 1px rgba(150,100,10,.6))}
+.np-stars .st .h1,.np-stars .st .h2{position:absolute;top:0;height:100%;width:50%;z-index:2}
+.np-stars .st .h1{left:0}.np-stars .st .h2{right:0}
+.np-stars .rate-num{margin-left:7px;font-size:12px;color:#8a7a52;font-weight:700;font-family:'Pretendard',sans-serif}
+.np-cat{position:relative;cursor:pointer;display:inline-flex;align-items:center}
+.cat-chip{display:inline-flex;align-items:center;background:rgba(201,169,110,.14);color:#8a6d3b;border:1px solid rgba(201,169,110,.3);border-radius:20px;padding:2px 12px;font-size:12px;font-weight:600;font-family:'Pretendard',sans-serif}
+.cat-chip.empty{background:rgba(0,0,0,.04);color:#b0b0ac;border-color:rgba(0,0,0,.1)}
+.cat-menu{position:fixed;z-index:99996;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:11px;box-shadow:0 14px 40px rgba(0,0,0,.2);padding:6px;min-width:190px;font-family:'Pretendard',sans-serif}
+.cat-menu .ci{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;color:#333}
+.cat-menu .ci:hover{background:rgba(201,169,110,.1)}
+.cat-menu .ci .lbl{flex:1}
+.cat-menu .ci .ed,.cat-menu .ci .dl{opacity:0;font-size:11px;color:#999;padding:1px 5px;border-radius:5px;border:1px solid rgba(0,0,0,.1)}
+.cat-menu .ci:hover .ed,.cat-menu .ci:hover .dl{opacity:1}
+.cat-menu .ci .ed:hover{color:#8a6d3b;border-color:#c9a96e}
+.cat-menu .ci .dl:hover{color:#c0392b;border-color:#e0a0a0}
+.cat-menu .add{display:flex;align-items:center;gap:6px;padding:8px 9px;border-radius:7px;cursor:pointer;font-size:12.5px;color:#8a6d3b;font-weight:700;border-top:1px solid rgba(0,0,0,.07);margin-top:4px}
+.cat-menu .add:hover{background:rgba(201,169,110,.1)}
+.cat-menu .none{color:#999;font-weight:400}
+.cat-menu .ci .dot{position:static!important;width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-right:3px;animation:none!important;box-shadow:0 0 0 1.5px #fff,0 0 0 2.5px rgba(0,0,0,.06)}
+.cat-menu .ci .pl{opacity:0;font-size:11px;cursor:pointer;padding:1px 3px}
+.cat-menu .ci:hover .pl{opacity:.85}
+.cat-menu .ci{position:relative}
+.pal-pop{position:absolute;right:6px;top:100%;z-index:5;background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.2);padding:7px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;width:170px}
+.pal-pop .sw{width:19px;height:19px;border-radius:5px;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.pal-pop .sw:hover{transform:scale(1.12);box-shadow:0 0 0 2px rgba(201,169,110,.6)}
+/* 완독 카드 카테고리 뱃지 */
+.pg-cat-badge{display:inline-flex;align-items:center;font-size:9.5px;font-weight:700;font-family:'Pretendard',sans-serif;padding:1px 7px;border-radius:11px;letter-spacing:.02em;flex-shrink:0;margin-left:6px}
+/* 완독 정렬 바 */
+.bk-sort-btn{font-family:'Pretendard',sans-serif;font-size:10px;font-weight:700;color:#1a1a1a;background:rgba(201,169,110,.85);border:1px solid transparent;border-radius:13px;padding:3px 11px;cursor:pointer;transition:.15s;white-space:nowrap;flex-shrink:0}
+.bk-sort-btn:hover{color:rgba(240,237,230,.92);border-color:rgba(201,169,110,.45)}
+.bk-sort-menu{position:fixed;z-index:99996;background:#16160f;border:1px solid rgba(201,169,110,.25);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);padding:5px;min-width:118px}
+.bk-sort-menu .bsi{font-family:'Pretendard',sans-serif;font-size:11.5px;color:rgba(240,237,230,.7);padding:7px 12px;border-radius:7px;cursor:pointer}
+.bk-sort-menu .bsi:hover{background:rgba(201,169,110,.14);color:#fff}
+.bk-sort-menu .bsi.on{color:#e6c98a;font-weight:700}
+.bk-sort-menu .bsi.on::before{content:'✓ '}
+#bkGoalHost{flex-shrink:0;width:calc((100% - 44px)/3)}
+#lexQuizHost{position:absolute;top:96px;right:2.5rem;z-index:5;width:calc((100% - 5rem - 44px)/3)}
+.bk-goal{width:100%;box-sizing:border-box;background:rgba(10,10,12,.62);border:1px solid rgba(201,169,110,.22);border-radius:13px;padding:13px 15px}
+.bk-goal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:nowrap;white-space:nowrap}
+.bk-goal-top .t{display:flex;align-items:center;gap:5px}
+.bk-goal-top .t{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.16em;color:rgba(201,169,110,.85)}
+.bk-goal-set{display:flex;align-items:center;gap:6px;font-family:'Pretendard',sans-serif;font-size:11px;color:rgba(240,237,230,.55)}
+.bk-goal-set input, .bk-goal-year{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:7px;color:#f0ede6;font-size:12px;font-weight:700;text-align:center;padding:3px 2px;font-family:'Pretendard',sans-serif;-moz-appearance:textfield}
+.bk-goal-set input::-webkit-outer-spin-button,.bk-goal-set input::-webkit-inner-spin-button,.bk-goal-year::-webkit-outer-spin-button,.bk-goal-year::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.bk-goal-num{width:44px}
+.bk-goal-year{width:54px;color:#e6c98a}
+.bk-goal-set input:focus{outline:none;border-color:rgba(201,169,110,.5)}
+.bk-goal-bar{height:9px;border-radius:6px;background:rgba(255,255,255,.07);overflow:hidden;position:relative}
+.bk-goal-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#c9a96e,#e6c98a);transition:width .5s ease;box-shadow:0 0 10px rgba(201,169,110,.5)}
+.bk-goal-meta{display:flex;justify-content:space-between;margin-top:7px;font-family:'Pretendard',sans-serif;font-size:10.5px;color:rgba(240,237,230,.5)}
+.bk-goal-meta b{color:#e6c98a;font-weight:700}
+.nn-cal{position:fixed;z-index:99995;background:#ffffff;border:1px solid rgba(0,0,0,.12);border-radius:13px;box-shadow:0 16px 44px rgba(0,0,0,.22);padding:13px 14px 12px;width:256px;font-family:'Pretendard',sans-serif;user-select:none}
+.nn-cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.nn-cal-h b{font-size:13.5px;color:#2a2a2a;font-weight:700;letter-spacing:.02em}
+.nn-cal-nav{display:flex;gap:4px}
+.nn-cal-nav button{width:24px;height:24px;border:1px solid rgba(0,0,0,.1);background:#fff;border-radius:7px;cursor:pointer;font-size:12px;color:#555;line-height:1}
+.nn-cal-nav button:hover{background:rgba(0,0,0,.05)}
+.nn-cal-w{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:3px}
+.nn-cal-w span{text-align:center;font-size:10.5px;color:#9b9b98;padding:3px 0;font-weight:600}
+.nn-cal-w span:first-child{color:#d97070}
+.nn-cal-w span:last-child{color:#6f92c9}
+.nn-cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.nn-cal-g button{aspect-ratio:1;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:12.5px;color:#333;line-height:1}
+.nn-cal-g button:hover{background:rgba(0,0,0,.06)}
+.nn-cal-g button.today{box-shadow:inset 0 0 0 1.5px #c9a96e;font-weight:700}
+.nn-cal-g button.sun{color:#d97070}
+.nn-cal-g button.sat{color:#6f92c9}
+.nn-cal-g .blank{visibility:hidden}
+.nn-toast{position:fixed;left:50%;bottom:40px;transform:translateX(-50%) translateY(20px);background:rgba(30,20,20,.95);color:#fff;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;padding:12px 22px;border-radius:11px;box-shadow:0 12px 40px rgba(0,0,0,.4);border:1px solid rgba(216,112,112,.4);z-index:999999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:86vw;text-align:center}
+.nn-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.nn-toast .ic{color:#ff9d9d;margin-right:7px}
 .note-editable-body {
   width: 100%;
-  min-height: 70vh;
+  min-height: 1100px;
   color: #2a2a2a;
   font-size: 14.5px;
   line-height: 1.8;
@@ -1891,6 +1988,74 @@ body::before{
 #lexicon-editor-layout:not(.editing) .note-group { background: #ffffff !important; border: 1px solid rgba(0, 0, 0, 0.08) !important; border-radius: 12px !important; padding: 16px !important; min-height: 1100px !important; max-height: none !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important; }
 #lexicon-editor-layout:not(.editing) .note-group-body { flex: 1 !important; overflow-y: auto !important; padding-right: 6px !important; margin-bottom: 8px !important; display: flex !important; flex-direction: column !important; gap: 12px !important; }
 #lexicon-editor-layout:not(.editing) .note-ungrouped { display: none !important; }
+/* LEXICON 단어장: 카드 격자 */
+#lexicon-editor-layout:not(.editing) .note-group-body { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)) !important; gap:10px !important; flex-direction:row !important; align-content:start !important; padding-left:0 !important; margin-left:0 !important; border-left:none !important; }
+.lex-card{position:relative;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:11px;padding:12px 12px 11px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:box-shadow .18s,border-color .18s,transform .18s;cursor:default;min-height:96px;display:flex;flex-direction:column;gap:6px}
+.lex-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.12);border-color:rgba(174,177,180,.5);transform:translateY(-2px)}
+.lex-card.dragging{opacity:.4}
+.lex-card.drop-before{box-shadow:-3px 0 0 rgba(174,177,180,.8)}
+.lex-card.drop-after{box-shadow:3px 0 0 rgba(174,177,180,.8)}
+.lex-term{font-family:'Pretendard',sans-serif;font-size:15px;font-weight:800;color:#1a1a1a;letter-spacing:-.01em;outline:none;line-height:1.3;word-break:break-word}
+.lex-term:empty::before{content:attr(data-ph);color:#c2c2be;font-weight:600}
+.lex-def{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:400;color:#555;line-height:1.55;outline:none;flex:1;word-break:break-word}
+.lex-def:empty::before{content:attr(data-ph);color:#cbcbc7}
+.lex-del{position:absolute;top:7px;right:8px;width:18px;height:18px;border:none;background:transparent;color:#bbb;font-size:11px;cursor:pointer;border-radius:5px;opacity:0;transition:opacity .15s,background .15s,color .15s;line-height:1}
+.lex-card:hover .lex-del{opacity:1}
+.lex-del:hover{background:rgba(216,112,112,.12);color:#d85050}
+/* LEXICON 50개 자동 하위 토글 */
+.lex-chunk{grid-column:1/-1;margin:2px 0 4px}
+.lex-chunk-head{display:flex;align-items:center;gap:8px;padding:7px 11px;background:#eef0f1;border:1px solid rgba(0,0,0,.06);border-radius:8px;cursor:pointer;user-select:none;transition:background .15s}
+.lex-chunk-head:hover{background:#e6e9ea}
+.lex-chunk-arr{font-size:11px;color:#888;flex-shrink:0}
+.lex-chunk-t{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:#3a3a3a;letter-spacing:.02em}
+.lex-chunk-c{margin-left:auto;font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:600;color:#777;background:rgba(0,0,0,.06);padding:1px 8px;border-radius:999px}
+.lex-chunk-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-top:9px}
+.lex-chunk.collapsed .lex-chunk-body{display:none}
+/* LEXICON 암기 상태 + 세련된 삭제 */
+.lex-actions{position:absolute;top:6px;right:7px;display:flex;gap:3px;align-items:center;z-index:2}
+.lex-mem{width:19px;height:19px;border:1px solid rgba(0,0,0,.14);background:#fff;border-radius:50%;font-size:11px;line-height:1;color:#b8b8b4;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s;flex-shrink:0}
+.lex-mem:hover{border-color:rgba(0,0,0,.3);color:#666}
+.lex-del{position:static !important;width:19px;height:19px;opacity:0;border:none;background:transparent;color:#c9c9c5;font-size:11px;cursor:pointer;border-radius:5px;display:flex;align-items:center;justify-content:center;transition:opacity .15s,background .15s,color .15s;line-height:1;flex-shrink:0}
+.lex-card:hover .lex-del{opacity:1}
+.lex-del:hover{background:rgba(216,112,112,.12);color:#d85050}
+/* 외운 단어: 초록 체크 + 카드 톤 다운 */
+.lex-card.mem-known{border-color:rgba(74,180,120,.45);background:linear-gradient(180deg,#f4fbf6,#eef8f1)}
+.lex-card.mem-known .lex-mem{border-color:rgba(74,180,120,.6);background:rgba(74,180,120,.14);color:#3a9d63}
+.lex-card.mem-known .lex-term{color:#4a8a63}
+/* 헷갈리는 단어: 앰버 강조 */
+.lex-card.mem-hard{border-color:rgba(230,150,60,.5);background:linear-gradient(180deg,#fef8ee,#fdf2e0)}
+.lex-card.mem-hard .lex-mem{border-color:rgba(230,150,60,.65);background:rgba(230,150,60,.16);color:#c47a1a}
+.lex-card.mem-hard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#e6963c;border-radius:11px 0 0 11px}
+/* 삭제 애니메이션 */
+.lex-card.lex-removing{opacity:0;transform:scale(.9);transition:opacity .2s,transform .2s}
+/* 인라인 삭제 확인 오버레이 */
+.lex-confirm{position:absolute;inset:0;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;opacity:0;transition:opacity .18s;z-index:5}
+.lex-confirm.show{opacity:1}
+.lex-confirm .lc-msg{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:#333}
+.lex-confirm .lc-btns{display:flex;gap:6px}
+.lex-confirm button{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;padding:5px 13px;border-radius:7px;cursor:pointer;border:1px solid transparent;transition:.15s}
+.lex-confirm .lc-no{background:rgba(0,0,0,.05);color:#666;border-color:rgba(0,0,0,.1)}
+.lex-confirm .lc-no:hover{background:rgba(0,0,0,.09)}
+.lex-confirm .lc-yes{background:#e05555;color:#fff}
+.lex-confirm .lc-yes:hover{background:#c93e3e}
+/* LEXICON 쪽지시험 패널 */
+.lex-quiz .lq-tag{font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:700;color:rgba(174,177,180,.9);background:rgba(174,177,180,.14);border:1px solid rgba(174,177,180,.3);border-radius:10px;padding:1px 8px;letter-spacing:.02em}
+.lq-term{font-family:'Pretendard',sans-serif;font-size:19px;font-weight:800;color:#f0ede6;letter-spacing:-.01em;text-align:center;margin:10px 0 8px;word-break:break-word;line-height:1.3}
+.lq-def{font-family:'Pretendard',sans-serif;font-size:12px;line-height:1.55;color:rgba(240,237,230,.35);background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:9px;padding:9px 11px;min-height:38px;text-align:center;cursor:pointer;transition:.2s;word-break:break-word}
+.lq-def.show{color:rgba(240,237,230,.92);background:rgba(174,177,180,.1);border-style:solid;border-color:rgba(174,177,180,.32);cursor:default}
+.lq-btns{display:flex;gap:6px;margin-top:9px}
+.lq-b{flex:1;font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:700;padding:7px 6px;border-radius:8px;cursor:pointer;transition:.15s;border:1px solid}
+.lq-show{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16);color:rgba(240,237,230,.75)}
+.lq-show:hover{border-color:rgba(174,177,180,.5);color:#fff}
+.lq-next{background:rgba(174,177,180,.14);border-color:rgba(174,177,180,.4);color:#d5d8db}
+.lq-next:hover{background:rgba(174,177,180,.24)}
+.lq-empty{font-family:'Pretendard',sans-serif;font-size:11px;line-height:1.6;color:rgba(240,237,230,.4);text-align:center;padding:14px 4px}
+.lq-filter{font-family:'Pretendard',sans-serif;font-size:9px;font-weight:700;color:rgba(240,237,230,.55);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:2px 8px;cursor:pointer;letter-spacing:.02em;transition:.15s;white-space:nowrap}
+.lq-filter:hover{border-color:rgba(174,177,180,.5);color:#fff}
+.lq-filter.on{background:rgba(174,177,180,.16);border-color:rgba(174,177,180,.5);color:#d5d8db}
+.lq-tagrow{display:flex;justify-content:flex-end;margin-top:-2px}
+/* 단어 추가 버튼(그룹 하단 addPage) */
+#lexicon-editor-layout:not(.editing) .kanban-add-btn{grid-column:1/-1 !important;margin-top:2px}
 #lexicon-editor-layout:not(.editing) .note-group-header { background: #f5f3ee !important; margin-bottom: 14px !important; padding: 10px 12px !important; border-radius: 8px !important; border: 0.5px solid rgba(0, 0, 0, 0.05) !important; }
 #lexicon-editor-layout:not(.editing) .note-group-name { color: #1a1a1a !important; }
 #lexicon-editor-layout:not(.editing) .note-group-arrow { color: #555555 !important; }
@@ -2749,7 +2914,7 @@ body #page-about > div > p:not(:first-of-type) {
         <div class="tv-ticker-wrap home-tt" id="homeTicker2"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div></div></div>
       </div>
           </section>
-    <div class="scroll-hint" id="scrollHint">SCROLL</div>
+
   </div><!-- /hero -->
 
 <section class="company-section">
@@ -3174,12 +3339,13 @@ body #page-about > div > p:not(:first-of-type) {
 
 <!-- Simple placeholder pages -->
 <div class="page" id="page-lexicon">
-  <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+  <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
     <div style="font-size:9px;letter-spacing:.26em;color:#aeb1b4;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(174,177,180,.6),0 0 22px rgba(174,177,180,.25)">LEXICON</div>
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(174,177,180,.3)">어휘 및 개념 사전</h1>
     <p style="font-size:11px;letter-spacing:.16em;color:rgba(174,177,180,.5);font-weight:300">Advanced Terminology &amp; Concept Archive</p>
     <div class="cove-line cv-gray" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
     <p class="hold-desc">독서, 매크로 및 인텔리전스 리서치 도중 새롭게 습득한 핵심 어휘를 저장합니다.<br/>도메인별로 분류된 패널을 통해 지식의 밀도를 한 차원 높여갑니다.</p>
+    <div id="lexQuizHost"></div>
     
     <div class="editor-layout books-board" id="lexicon-editor-layout">
       <div class="editor-sidebar" id="lexor-layout-box">
@@ -3193,12 +3359,13 @@ body #page-about > div > p:not(:first-of-type) {
   </div>
 </div>
 <div class="page" id="page-books">
-    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
     <div style="font-size:9px;letter-spacing:.26em;color:#c9a96e;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(201,169,110,.6),0 0 22px rgba(201,169,110,.25)">BOOKS</div>
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(201,169,110,.3)">독서 기록</h1>
     <p style="font-size:11px;letter-spacing:.16em;color:rgba(201,169,110,.5);font-weight:300">Reading Insight Engine</p>
     <div class="cove-line" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
-    <p class="hold-desc">읽고 싶은 책부터 완독한 책까지 한눈에 관리합니다.<br/>단순한 독서 기록을 넘어, 투자의 통찰을 넓히는 지식 서재입니다.</p>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px"><p class="hold-desc" style="margin:0">읽고 싶은 책부터 완독한 책까지 한눈에 관리합니다.<br/>단순한 독서 기록을 넘어, 투자의 통찰을 넓히는 지식 서재입니다.</p>
+    <div id="bkGoalHost"></div></div>
     
     <div class="editor-layout books-board" id="books-editor-layout">
       <div class="editor-sidebar">
@@ -3929,33 +4096,46 @@ body #page-about > div > p:not(:first-of-type) {
     </div>
 
     <div style="max-width:700px; background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:64px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:12px; font-family:'Orbitron', sans-serif; font-weight:600;">CLOUD ARCHIVE — 사용자별 분리 저장</div>
-    <p style="font-size:12.5px; color:rgba(255,255,255,.32); line-height:1.8; margin-bottom:16px; font-weight:300; max-width:560px;">
-      우측 상단 <b style="color:rgba(201,169,110,.85); font-weight:600;">LOGIN</b>으로 구글 계정에 로그인하면, 이 홈페이지에 기록하는 모든 내용이
-      <b style="color:rgba(240,237,230,.7); font-weight:500;">본인 계정 전용 클라우드 공간(users/내ID)</b>에 자동 저장됩니다.
-      사용자마다 공간이 완전히 분리되어 있어 <b style="color:rgba(240,237,230,.7); font-weight:500;">서로의 데이터를 열람하거나 수정할 수 없으며</b>,
-      로그인하지 않으면 이 기기(브라우저)에만 저장되는 로컬 모드로 동작합니다.
+    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:16px; font-family:'Orbitron', sans-serif; font-weight:600;">CLOUD ARCHIVE — 사용자별 분리 저장</div>
+    <p style="font-size:13px; color:rgba(255,255,255,.62); line-height:1.9; margin-bottom:14px; font-weight:300; max-width:580px;">
+      이 홈페이지는 회원가입 절차 없이 <b style="color:rgba(240,237,230,.85); font-weight:500;">구글 계정으로 바로 로그인</b>해서 씁니다.
+      우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> 버튼을 누르고 본인 구글 계정을 선택하면, 그때부터 이 사이트에 기록하는 모든 내용
+      (독서·어휘·경제·미디어 노트, 자산·보유종목, 워치리스트, 메모 등)이 <b style="color:rgba(240,237,230,.85); font-weight:500;">본인 전용 클라우드 공간</b>에 실시간으로 안전하게 보관됩니다.
     </p>
-
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:26px 0 12px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW IT WORKS — 운영 방식</div>
-    <div style="max-width:560px; display:flex; flex-direction:column; gap:9px;">
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.6); font-size:8px; margin-top:6px;">◆</span><span><b style="color:rgba(240,237,230,.65); font-weight:500;">화면(코드)</b>은 GitHub Pages에, <b style="color:rgba(240,237,230,.65); font-weight:500;">데이터</b>는 Google Firebase에 따로 삽니다. 디자인·기능이 업데이트되어도 저장된 기록은 영향을 받지 않습니다.</span></div>
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.6); font-size:8px; margin-top:6px;">◆</span><span>기록을 수정하면 <b style="color:rgba(240,237,230,.65); font-weight:500;">약 1.5초 뒤 자동으로 클라우드에 반영</b>됩니다. 저장 버튼은 따로 없습니다.</span></div>
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.6); font-size:8px; margin-top:6px;">◆</span><span>계정별 접근 제한은 Firebase 보안 규칙이 서버 차원에서 강제합니다. 코드가 공개되어도 타인의 데이터에는 접근할 수 없습니다.</span></div>
+    <p style="font-size:13px; color:rgba(255,255,255,.62); line-height:1.9; margin-bottom:16px; font-weight:300; max-width:580px;">
+      사용자마다 저장 공간이 <b style="color:rgba(240,237,230,.85); font-weight:500;">완전히 분리</b>되어 있어, 다른 사람이 내 기록을 열람하거나 수정하는 것은 불가능합니다.
+      로그인하지 않아도 사용할 수 있으며, 이 경우 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">지금 쓰는 브라우저에만</b> 저장되는 로컬 모드로 동작합니다
+      (다른 기기에서는 보이지 않으니, 여러 기기를 오간다면 로그인을 권장합니다).
+    </p>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 4px;">
+      <a href="https://myaccount.google.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:#e0c389; text-decoration:none; background:rgba(201,169,110,.1); border:1px solid rgba(201,169,110,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔐 내 구글 계정 관리 ↗</a>
+      <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:#9ed7ff; text-decoration:none; background:rgba(125,200,255,.08); border:1px solid rgba(125,200,255,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🛡 보안 규칙 문서 ↗</a>
     </div>
 
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:26px 0 12px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW TO USE — 사용 방법</div>
-    <div style="max-width:560px; display:flex; flex-direction:column; gap:9px;">
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.85); font-weight:700; font-size:11px;">01</span><span>우측 상단 LOGIN → 구글 계정 선택. 첫 로그인이면 <b style="color:rgba(240,237,230,.65); font-weight:500;">지금 이 기기에 있던 기록이 내 클라우드로 이관</b>됩니다.</span></div>
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.85); font-weight:700; font-size:11px;">02</span><span>이후에는 평소처럼 쓰면 됩니다. 지식금고(BOOKS·LEXICON·ECONOMICS·MEDIA), 자산(ASSETS), 보유종목(HOLDINGS), 텐베거 워치리스트·메모, 최근 검색, API 키가 자동 동기화됩니다.</span></div>
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.85); font-weight:700; font-size:11px;">03</span><span>다른 기기·브라우저에서 같은 계정으로 로그인하면 <b style="color:rgba(240,237,230,.65); font-weight:500;">클라우드의 기록이 자동 복원</b>됩니다.</span></div>
-      <div style="display:flex; gap:10px; font-size:12px; color:rgba(255,255,255,.35); line-height:1.7; font-weight:300;"><span style="color:rgba(201,169,110,.85); font-weight:700; font-size:11px;">04</span><span>버튼(계정 이름)을 다시 누르면 로그아웃 — 기기의 기록은 남고 자동 저장만 꺼집니다. 위의 BACKUP 버튼으로 주기적 JSON 백업도 권장합니다.</span></div>
+    <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
+    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:30px 0 16px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW IT WORKS — 운영 방식</div>
+    <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
+      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">화면(코드)과 데이터는 따로 삽니다.</b> 홈페이지의 디자인·기능은 <b style="color:rgba(240,237,230,.85); font-weight:500;">GitHub Pages</b>에, 내가 입력한 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">Google Firebase</b>에 저장됩니다. 덕분에 사이트가 업데이트되거나 디자인이 바뀌어도 그동안 쌓아온 기록은 전혀 사라지지 않습니다.</span></div>
+      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">저장 버튼이 없습니다.</b> 무언가를 입력하거나 수정하면 <b style="color:rgba(240,237,230,.85); font-weight:500;">약 1.5초 뒤 자동으로</b> 클라우드에 반영됩니다. 따로 "저장"을 누를 필요 없이, 쓰는 순간 곧바로 보관됩니다.</span></div>
+      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">보안은 서버가 강제합니다.</b> 계정별 접근 제한은 Firebase 보안 규칙이 서버 차원에서 처리하므로, 설령 이 사이트의 코드가 공개되더라도 다른 사람이 내 데이터에 접근할 수 있는 통로는 열리지 않습니다.</span></div>
     </div>
 
-    <p style="font-size:10.5px; color:rgba(255,255,255,.22); line-height:1.7; margin-top:22px; font-weight:300; max-width:560px; letter-spacing:.02em;">
-      무료 요금제 기준 하루 읽기 5만 회 · 쓰기 2만 회 · 총 1GiB 저장 공간이 제공되며, 개인 아카이브 용도로는 충분합니다.
-      항목당 저장 한도(1MiB) 때문에 책 표지 등 이미지는 파일이 아닌 URL 방식으로 넣는 것을 권장합니다.
-    </p>
+    <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
+    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:30px 0 16px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW TO USE — 사용 방법</div>
+    <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
+      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">로그인하기.</b> 우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> → 구글 계정 선택. 처음 로그인하는 것이라면, 지금까지 이 기기에만 있던 기록이 <b style="color:rgba(240,237,230,.85); font-weight:500;">자동으로 내 클라우드로 옮겨집니다</b> (기존 기록이 사라지지 않으니 안심하세요).</span></div>
+      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">평소처럼 쓰기.</b> 이후에는 신경 쓸 것 없이 그냥 쓰면 됩니다. 지식금고(BOOKS·LEXICON·ECONOMICS·MEDIA), 자산(ASSETS), 보유종목(HOLDINGS), 텐베거 워치리스트·메모, 최근 검색, API 키까지 <b style="color:rgba(240,237,230,.85); font-weight:500;">모두 자동으로 동기화</b>됩니다.</span></div>
+      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">다른 기기에서 이어서.</b> 집·회사·휴대폰 등 어디서든 같은 구글 계정으로 로그인하면 <b style="color:rgba(240,237,230,.85); font-weight:500;">클라우드의 기록이 그대로 복원</b>되어 이어서 작업할 수 있습니다.</span></div>
+      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">로그아웃 & 백업.</b> 우측 상단 버튼(로그인하면 계정 이름으로 바뀜)을 다시 누르면 로그아웃됩니다 — 이 기기의 기록은 남고 자동 저장만 꺼집니다. 만약을 대비해 위쪽 <b style="color:#e0c389; font-weight:600;">BACKUP DATA</b> 버튼으로 주기적으로 JSON 파일 백업도 받아두면 더욱 안전합니다.</span></div>
+    </div>
+
+    <div style="background:rgba(125,200,255,.05); border:1px solid rgba(125,200,255,.18); border-radius:12px; padding:16px 18px; margin-top:32px; max-width:580px;">
+      <div style="font-size:11px; font-weight:700; color:rgba(155,212,255,.9); margin-bottom:8px; letter-spacing:.04em; font-family:'Pretendard',sans-serif;">💡 알아두면 좋은 점</div>
+      <p style="font-size:12px; color:rgba(255,255,255,.55); line-height:1.85; font-weight:300; margin:0;">
+        무료 요금제 기준 <b style="color:rgba(240,237,230,.8); font-weight:500;">하루 읽기 5만 회 · 쓰기 2만 회 · 총 1GiB 저장 공간</b>이 제공되며, 개인 아카이브 용도로는 차고 넘칩니다.
+        다만 항목 하나당 저장 한도(1MiB)가 있어, 책 표지 같은 이미지는 <b style="color:rgba(240,237,230,.8); font-weight:500;">파일 업로드가 아닌 이미지 URL 방식</b>으로 넣는 것을 권장합니다.
+      </p>
+    </div>
 
 
   </div></div> </div>
@@ -4072,6 +4252,7 @@ function runAnim(){
       cls('fnSub','show');      
       cls('volBadge','show');    
       cls('nnDeco','show');     
+      if(window.__bqIntro){ window.__bqIntro(); } else { window.__bqIntroPending = true; } /* 모듈 로드 전이면 예약 */
       cls('fnCtas','show');     
       var lw = document.querySelector('.logo-wrap'); if(lw) lw.classList.add('intro-shown'); 
     }, 150);
@@ -5102,6 +5283,16 @@ window.KnowledgeNotes = {
       if(!this.data[t]) this.data[t] = [];
       if(savedGroups && savedGroups[t]) {
         this.groups[t] = savedGroups[t];
+        /* books 필수 3그룹 보정: 저장본에 누락된 기본 그룹 복원 */
+        if (t === 'books') {
+          var need = [
+            { id: 'grp_books_wish', name: '사고 싶은 책 🛒', collapsed: false, parentId: null, icon: '🛒' },
+            { id: 'grp_books_reading', name: '읽는 중 📖', collapsed: false, parentId: null, icon: '📖' },
+            { id: 'grp_books_done', name: '완독 📚', collapsed: false, parentId: null, icon: '📚' }
+          ];
+          var have = this.groups[t].map(function(g){ return g.id; });
+          need.forEach(function(ng, idx){ if(have.indexOf(ng.id)<0){ this.groups[t].splice(idx,0,ng); } }, this);
+        }
       } else {
         if (t === 'books') {
           this.groups[t] = [
@@ -5120,6 +5311,26 @@ window.KnowledgeNotes = {
         }
       }
       this.data[t].forEach(function(p){ if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2,9); });
+      /* 예시 책: 서재가 비어있는 방문자에게 FROM MY LIBRARY 시연용 */
+      if (t === 'books' && !this.data.books.some(function(b){ return b && b.id === 'p_seed_lynch'; })) {
+        this.data.books.push({
+          id: 'p_seed_lynch',
+          title: '전설로 떠나는 월가의 영웅',
+          icon: '',
+          cover: 'https://covers.openlibrary.org/b/isbn/0743200403-L.jpg',
+          date: '2026-07-05',
+          groupId: 'grp_books_done',
+          content: '<div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">✍️ 작가</span><span class="np-v" contenteditable="true" data-ph="비어 있음">피터 린치</span></div><div class="nn-prop"><span class="np-k">⭐ 별점</span><span class="np-stars" data-rating="4.5"><i class="st" data-v="1"><b class="h1" data-half="0.5"></b><b class="h2" data-half="1.0"></b></i><i class="st" data-v="2"><b class="h1" data-half="1.5"></b><b class="h2" data-half="2.0"></b></i><i class="st" data-v="3"><b class="h1" data-half="2.5"></b><b class="h2" data-half="3.0"></b></i><i class="st" data-v="4"><b class="h1" data-half="3.5"></b><b class="h2" data-half="4.0"></b></i><i class="st" data-v="5"><b class="h1" data-half="4.5"></b><b class="h2" data-half="5.0"></b></i></span></div><div class="nn-prop"><span class="np-k">🏷️ 종류</span><span class="np-cat" data-cat="투자"><span class="cat-chip">투자</span></span></div><div class="nn-prop"><span class="np-k">📅 읽기 시작한 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/01">2026/06/21 (일)</span></div><div class="nn-prop"><span class="np-k">🏁 다 읽은 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/08">2026/07/05 (일)</span></div></div><div class="np-note" contenteditable="false" style="border-left-color:rgba(127,168,212,.6)">📖 <b>이 책은 예시입니다.</b> BOOKS 사용법을 보여드리기 위한 샘플이에요. 위 작가·날짜·별점·종류를 눌러 직접 편집해 보고, 아래 구절도 자유롭게 바꿔보세요. 필요 없으면 카드의 ✕로 삭제하면 됩니다.</div><div style="font-weight:700;margin-top:12px">📌 인상 깊은 구절</div><div class="np-note" contenteditable="false">💡 점(•)에 쓴 문장은 이 책이 <b>완독</b> 그룹에 있을 때 홈 화면의 FROM MY LIBRARY 카드에 랜덤으로 표시됩니다. 백스페이스로 점을 지운 일반 줄은 표시되지 않아 자유 메모로 쓸 수 있어요.</div><ul><li>일상 속에서 위대한 기업의 단서를 가장 먼저 발견하는 사람은 언제나 평범한 개인 투자자다.</li><li>시장의 조정을 예측하려 애쓰다 잃은 돈이, 조정 그 자체로 잃은 돈보다 훨씬 많다.</li><li>텐베거의 비밀은 단순하다 — 뛰어난 기업을, 충분히 오래, 흔들리지 않고 보유하는 것.</li></ul><div><br></div>'
+        });
+      }
+      /* 구버전 시드(예시 안내 없는)면 최신 안내 포함본으로 1회 교체 */
+      if (t === 'books') {
+        var _seed = this.data.books.filter(function(b){ return b && b.id === 'p_seed_lynch'; })[0];
+        if (_seed && (_seed.content||'').indexOf('이 책은 예시입니다') === -1) {
+          _seed.groupId = 'grp_books_done';
+          _seed.content = '<div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">✍️ 작가</span><span class="np-v" contenteditable="true" data-ph="비어 있음">피터 린치</span></div><div class="nn-prop"><span class="np-k">⭐ 별점</span><span class="np-stars" data-rating="4.5"><i class="st" data-v="1"><b class="h1" data-half="0.5"></b><b class="h2" data-half="1.0"></b></i><i class="st" data-v="2"><b class="h1" data-half="1.5"></b><b class="h2" data-half="2.0"></b></i><i class="st" data-v="3"><b class="h1" data-half="2.5"></b><b class="h2" data-half="3.0"></b></i><i class="st" data-v="4"><b class="h1" data-half="3.5"></b><b class="h2" data-half="4.0"></b></i><i class="st" data-v="5"><b class="h1" data-half="4.5"></b><b class="h2" data-half="5.0"></b></i></span></div><div class="nn-prop"><span class="np-k">🏷️ 종류</span><span class="np-cat" data-cat="투자"><span class="cat-chip">투자</span></span></div><div class="nn-prop"><span class="np-k">📅 읽기 시작한 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/01">2026/06/21 (일)</span></div><div class="nn-prop"><span class="np-k">🏁 다 읽은 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/08">2026/07/05 (일)</span></div></div><div class="np-note" contenteditable="false" style="border-left-color:rgba(127,168,212,.6)">📖 <b>이 책은 예시입니다.</b> BOOKS 사용법을 보여드리기 위한 샘플이에요. 위 작가·날짜·별점·종류를 눌러 직접 편집해 보고, 아래 구절도 자유롭게 바꿔보세요. 필요 없으면 카드의 ✕로 삭제하면 됩니다.</div><div style="font-weight:700;margin-top:12px">📌 인상 깊은 구절</div><div class="np-note" contenteditable="false">💡 점(•)에 쓴 문장은 이 책이 <b>완독</b> 그룹에 있을 때 홈 화면의 FROM MY LIBRARY 카드에 랜덤으로 표시됩니다. 백스페이스로 점을 지운 일반 줄은 표시되지 않아 자유 메모로 쓸 수 있어요.</div><ul><li>일상 속에서 위대한 기업의 단서를 가장 먼저 발견하는 사람은 언제나 평범한 개인 투자자다.</li><li>시장의 조정을 예측하려 애쓰다 잃은 돈이, 조정 그 자체로 잃은 돈보다 훨씬 많다.</li><li>텐베거의 비밀은 단순하다 — 뛰어난 기업을, 충분히 오래, 흔들리지 않고 보유하는 것.</li></ul><div><br></div>';
+        }
+      }
     }, this);
 
     this.renderSidebar('books');
@@ -5220,11 +5431,16 @@ window.KnowledgeNotes = {
     var newPage = {
       id: 'note_' + Date.now(),
       title: type === 'books' ? '제목 없는 페이지' : (type === 'lexicon' ? '새로운 용어 혹은 단어 기입' : '제목 없는 페이지'),
-      content: (type==='books' ? '<div style="font-weight:700">📌 인상 깊은 구절</div><ul><li>여기에 구절을 하나씩 적어주세요 (점 하나 = 구절 하나)</li><li><br></li><li><br></li></ul><div><br></div>' : ''), date: dateStr, groupId: groupId || null,
-      icon: type === 'books' ? '📖' : (type === 'lexicon' ? '📇' : '📄')
+      content: (type==='books' ? '<div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">✍️ 작가</span><span class="np-v" contenteditable="true" data-ph="비어 있음"></span></div><div class="nn-prop"><span class="np-k">⭐ 별점</span><span class="np-stars" data-rating="0"><i class="st" data-v="1"><b class="h1" data-half="0.5"></b><b class="h2" data-half="1.0"></b></i><i class="st" data-v="2"><b class="h1" data-half="1.5"></b><b class="h2" data-half="2.0"></b></i><i class="st" data-v="3"><b class="h1" data-half="2.5"></b><b class="h2" data-half="3.0"></b></i><i class="st" data-v="4"><b class="h1" data-half="3.5"></b><b class="h2" data-half="4.0"></b></i><i class="st" data-v="5"><b class="h1" data-half="4.5"></b><b class="h2" data-half="5.0"></b></i></span></div><div class="nn-prop"><span class="np-k">🏷️ 종류</span><span class="np-cat" data-cat=""><span class="cat-chip empty">선택 안 함</span></span></div><div class="nn-prop"><span class="np-k">📅 읽기 시작한 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/01"></span></div><div class="nn-prop"><span class="np-k">🏁 다 읽은 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/08"></span></div></div><div style="font-weight:700;margin-top:12px">📌 인상 깊은 구절</div><div class="np-note" contenteditable="false">💡 점(•)에 쓴 문장은 이 책이 <b>완독</b> 그룹에 있을 때 홈 화면의 FROM MY LIBRARY 카드에 랜덤으로 표시됩니다. 백스페이스로 점을 지운 일반 줄은 표시되지 않아 자유 메모로 쓸 수 있어요.</div><ul><li><br></li></ul><div><br></div>' : ''), date: dateStr, groupId: groupId || null,
+      icon: type === 'books' ? '' : (type === 'lexicon' ? '📇' : '📄')
     };
     this.data[type].unshift(newPage);
-    this.save(); this.select(type, newPage.id);
+    if(type==='lexicon'){
+      this.save(); this.renderSidebar(type);
+      var self=this; setTimeout(function(){ var c=document.getElementById('item-'+newPage.id); if(c){ var t=c.querySelector('.lex-term'); if(t){ t.focus(); } c.scrollIntoView({block:'nearest'}); } }, 50);
+    } else {
+      this.save(); this.select(type, newPage.id);
+    }
   },
 
   select: function(type, id) {
@@ -5255,7 +5471,10 @@ window.KnowledgeNotes = {
   update: function(type, id, field, value) {
     var target = this.data[type].find(function(n) { return n.id === id; });
     if (target) {
-      target[field] = value; target.date = this._nowStr(); this.save();
+      target[field] = value;
+      if (type !== 'lexicon') { target.date = this._nowStr(); }
+      this.save();
+      if (type === 'lexicon') { return; } /* 단어장은 인라인 편집 중이라 DOM 재기록 불필요 */
       if (field === 'title') {
         var sideEl = document.querySelector('#item-' + id + ' .page-title-text');
         if (sideEl) sideEl.textContent = value || '제목 없는 페이지';
@@ -5385,8 +5604,69 @@ window.KnowledgeNotes = {
     var imgs = urls.map(function(u){ return '<img src="'+u+'">'; }).join(''); var html = '<div class="nn-gallery nn-gallery-' + layout + '" contenteditable="false">' + imgs + '</div><p><br></p>'; this.execCmd('insertHTML', html);
   },
 
+  lexConfirmDelete: function(card, id){
+    var self=this;
+    if(card.querySelector('.lex-confirm')) return;
+    var ov=document.createElement('div'); ov.className='lex-confirm';
+    ov.innerHTML='<div class="lc-msg">삭제할까요?</div><div class="lc-btns"><button class="lc-no">취소</button><button class="lc-yes">삭제</button></div>';
+    ov.querySelector('.lc-no').onclick=function(e){ e.stopPropagation(); ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },180); };
+    ov.querySelector('.lc-yes').onclick=function(e){ e.stopPropagation();
+      card.classList.add('lex-removing');
+      setTimeout(function(){
+        self.data.lexicon = self.data.lexicon.filter(function(n){ return n.id!==id; });
+        self.save(); self.renderSidebar('lexicon');
+      }, 200);
+    };
+    card.appendChild(ov);
+    requestAnimationFrame(function(){ ov.classList.add('show'); });
+  },
+
+  _buildLexCard: function(note){
+    var self=this;
+    var card=document.createElement('div'); card.className='lex-card'; card.id='item-'+note.id; card.draggable=true;
+    card.ondragstart=function(e){ e.stopPropagation(); e.dataTransfer.setData('text/plain', note.id); card.classList.add('dragging'); self._draggingPageId=note.id; };
+    card.ondragend=function(){ card.classList.remove('dragging'); };
+    card.ondragover=function(e){ e.preventDefault(); e.stopPropagation(); var d=self._draggingPageId; if(d&&d!==note.id){ var r=card.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; card.classList.toggle('drop-after',after); card.classList.toggle('drop-before',!after); } };
+    card.ondragleave=function(){ card.classList.remove('drop-before','drop-after'); };
+    card.ondrop=function(e){ e.preventDefault(); e.stopPropagation(); card.classList.remove('drop-before','drop-after'); var d=e.dataTransfer.getData('text/plain'); if(!d||d===note.id) return; var r=card.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; self.reorderPage('lexicon', d, note.id, after); };
+    /* 암기 상태 클래스 */
+    if(note.mem==='known') card.classList.add('mem-known');
+    else if(note.mem==='hard') card.classList.add('mem-hard');
+    /* 상단 우측 액션: 암기 토글 + 삭제 */
+    var actions=document.createElement('div'); actions.className='lex-actions';
+    var memBtn=document.createElement('button'); memBtn.className='lex-mem'; memBtn.type='button';
+    var _mt={known:'✓ 외웠어요', hard:'✕ 헷갈려요'};
+    memBtn.title='암기 상태 (클릭: 미정 → 외움 → 헷갈림)';
+    memBtn.innerHTML = note.mem==='known' ? '✓' : (note.mem==='hard' ? '✕' : '○');
+    memBtn.onclick=function(e){ e.stopPropagation();
+      var nxt = note.mem==='known' ? 'hard' : (note.mem==='hard' ? '' : 'known');
+      self.update('lexicon', note.id, 'mem', nxt);
+      card.classList.remove('mem-known','mem-hard');
+      if(nxt==='known') card.classList.add('mem-known'); else if(nxt==='hard') card.classList.add('mem-hard');
+      memBtn.innerHTML = nxt==='known' ? '✓' : (nxt==='hard' ? '✕' : '○');
+    };
+    var del=document.createElement('button'); del.className='lex-del'; del.innerHTML='&#10005;'; del.title='삭제';
+    del.onclick=function(e){ e.stopPropagation(); self.lexConfirmDelete(card, note.id); };
+    actions.appendChild(memBtn); actions.appendChild(del);
+    /* 단어(제목) — contentEditable */
+    var term=document.createElement('div'); term.className='lex-term'; term.contentEditable='true';
+    term.setAttribute('data-ph','단어 · 용어'); term.textContent=note.title==='새로운 용어 혹은 단어 기입'?'':(note.title||'');
+    term.oninput=function(){ self.update('lexicon', note.id, 'title', this.textContent.trim()||'새로운 용어 혹은 단어 기입'); };
+    term.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); var d=card.querySelector('.lex-def'); if(d) d.focus(); } };
+    /* 뜻(내용) — contentEditable, 순수 텍스트 */
+    var def=document.createElement('div'); def.className='lex-def'; def.contentEditable='true';
+    def.setAttribute('data-ph','뜻 · 설명을 입력하세요');
+    var plain=(note.content||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+    def.textContent=plain;
+    def.oninput=function(){ self.update('lexicon', note.id, 'content', this.textContent); };
+    card.appendChild(actions); card.appendChild(term); card.appendChild(def);
+    return card;
+  },
+
   _buildPageItem: function(type, note, activeId) {
-    var self = this; var item = document.createElement('div'); item.className = 'page-item' + (note.id === activeId ? ' active' : ''); item.id = 'item-' + note.id; item.draggable = true;
+    var self = this;
+    if (type === 'lexicon') { return self._buildLexCard(note); }
+    var item = document.createElement('div'); item.className = 'page-item' + (note.id === activeId ? ' active' : ''); item.id = 'item-' + note.id; item.draggable = true;
     item.onclick = function() { self.select(type, note.id); };
     item.ondragstart = function(e){ e.stopPropagation(); e.dataTransfer.setData('text/plain', note.id); item.classList.add('dragging'); self._draggingPageId = note.id; };
     item.ondragend = function(){ item.classList.remove('dragging'); };
@@ -5398,13 +5678,24 @@ window.KnowledgeNotes = {
       var coverBtn = document.createElement('div'); coverBtn.className = 'book-cover' + (note.cover ? ' has-img' : ''); if (note.cover) coverBtn.style.backgroundImage = 'url(' + note.cover + ')'; else coverBtn.innerHTML = '&#43;<br>표지';
       coverBtn.onclick = function(e){ e.stopPropagation(); self.changeBookCover(type, note.id); }; contentWrap.appendChild(coverBtn);
     }
-    var header = document.createElement('div'); header.className = 'page-item-header'; header.style.flex = '1'; header.style.minWidth = '0'; header.style.display = 'flex'; header.style.flexDirection = 'column';
+    var header = document.createElement('div'); header.className = 'page-item-header'; header.style.flex = '1'; header.style.minWidth = '0'; header.style.display = 'flex'; header.style.flexDirection = 'column'; header.style.alignItems = 'stretch'; header.style.gap = '0';
     var topRow = document.createElement('div'); topRow.style.display = 'flex'; topRow.style.alignItems = 'center'; topRow.style.gap = '5px'; topRow.style.width = '100%';
-    var pIcon = document.createElement('span'); pIcon.className = 'page-icon'; pIcon.textContent = note.icon || '📄'; pIcon.onclick = function(e){ e.stopPropagation(); self.changePageIcon(type, note.id); };
+    var pIcon = document.createElement('span'); pIcon.className = 'page-icon'; pIcon.textContent = (note.icon != null ? note.icon : '📄'); if(type==='books'){ pIcon.style.display='none'; } pIcon.onclick = function(e){ e.stopPropagation(); self.changePageIcon(type, note.id); };
     var titleSpan = document.createElement('span'); titleSpan.className = 'page-title-text'; titleSpan.textContent = note.title || '제목 없는 페이지';
+    if(type==='books'){
+      try{
+        var mcat=/data-cat="([^"]*)"/.exec(note.content||''); var cv=mcat?mcat[1]:'';
+        if(cv){ var badge=document.createElement('span'); badge.className='pg-cat-badge'; badge.textContent=cv;
+          var col=(window.__nnCatColor?window.__nnCatColor(cv):'#c9a96e')||'#c9a96e';
+          var m6=/^#?([0-9a-f]{6})$/i.exec(col); var n6=m6?parseInt(m6[1],16):0xc9a96e;
+          badge.style.color=col; badge.style.background='rgba('+((n6>>16)&255)+','+((n6>>8)&255)+','+(n6&255)+',.16)';
+          topRow.__catBadge = badge;
+        }
+      }catch(e){}
+    }
     var delBtn = document.createElement('button'); delBtn.className = 'page-del-btn'; delBtn.innerHTML = '&#10005;'; delBtn.onclick = function(e) { self.delete(type, note.id, e); };
-    topRow.appendChild(pIcon); topRow.appendChild(titleSpan); topRow.appendChild(delBtn);
-    var dateDiv = document.createElement('div'); dateDiv.className = 'page-date-text'; dateDiv.textContent = note.date ? (note.date + ' · 수정됨') : '';
+    if(!(type==='books')){ topRow.appendChild(pIcon); } topRow.appendChild(titleSpan); if(topRow.__catBadge) topRow.appendChild(topRow.__catBadge); topRow.appendChild(delBtn);
+    var dateDiv = document.createElement('div'); dateDiv.className = 'page-date-text'; dateDiv.style.paddingLeft = '0'; dateDiv.style.alignSelf = 'flex-start'; dateDiv.style.textAlign = 'left'; dateDiv.textContent = note.date ? (note.date + ' · 수정됨') : '';
     header.appendChild(topRow); header.appendChild(dateDiv); contentWrap.appendChild(header); item.appendChild(contentWrap); return item;
   },
 
@@ -5420,21 +5711,80 @@ window.KnowledgeNotes = {
     var gHeader = document.createElement('div'); gHeader.className = 'note-group-header';
     var arrow = document.createElement('span'); arrow.className = 'note-group-arrow'; arrow.innerHTML = g.collapsed ? '&#9656;' : '&#9662;'; arrow.onclick = function(e){ e.stopPropagation(); self.toggleGroup(type, g.id); };
     var gIcon = document.createElement('span'); gIcon.className = 'note-group-icon'; gIcon.textContent = g.icon || '📁'; gIcon.setAttribute('data-gicon', g.id); gIcon.onclick = function(e){ e.stopPropagation(); self.changeGroupIcon(type, g.id); };
-    var gName = document.createElement('span'); gName.className = 'note-group-name'; gName.textContent = g.name; gName.setAttribute('data-gname', g.id); gName.ondblclick = function(e){ e.stopPropagation(); self.startInlineRename(type, g.id); };
+    var gName = document.createElement('span'); gName.className = 'note-group-name'; gName.textContent = (g.name||'').replace(/\s*[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\uFE0F]+\s*$/u,'').trim(); gName.setAttribute('data-gname', g.id); gName.ondblclick = function(e){ e.stopPropagation(); self.startInlineRename(type, g.id); };
     var gAddSub = document.createElement('button'); gAddSub.className = 'note-group-addsub'; gAddSub.innerHTML = '&#43;토글'; gAddSub.onclick = function(e){ e.stopPropagation(); self.createGroup(type, g.id); };
-    var gDel = document.createElement('button'); gDel.className = 'note-group-del'; gDel.innerHTML = '&#10005;'; gDel.onclick = function(e){ self.deleteGroup(type, g.id, e); };
+    var gDel = document.createElement('button'); gDel.className = 'note-group-del'; gDel.innerHTML = '&#10005; 삭제'; gDel.title='이 그룹(토글) 삭제'; gDel.onclick = function(e){ self.deleteGroup(type, g.id, e); };
     gHeader.appendChild(arrow); gHeader.appendChild(gIcon); gHeader.appendChild(gName);
     var pagesInGroup = self.data[type].filter(function(n){ return n.groupId === g.id; });
     var gCount = document.createElement('span'); gCount.className = 'note-group-count'; gCount.textContent = pagesInGroup.length; gHeader.appendChild(gCount);
-    gHeader.appendChild(gAddSub); gHeader.appendChild(gDel);
+    gHeader.appendChild(gAddSub); if(g.parentId){ gHeader.appendChild(gDel); }
+    if(type==='books' && g.id==='grp_books_done'){
+      var LBL={date:'최신순',rating:'별점순',cat:'카테고리별'};
+      var sortBtn=document.createElement('button'); sortBtn.className='bk-sort-btn';
+      sortBtn.innerHTML=(LBL[self._booksSort||'date'])+' ▾';
+      sortBtn.onclick=function(e){
+        e.stopPropagation();
+        var old=document.querySelector('.bk-sort-menu'); if(old){ old.remove(); if(old.__for===g.id) return; }
+        var menu=document.createElement('div'); menu.className='bk-sort-menu'; menu.__for=g.id;
+        ['date','rating','cat'].forEach(function(k){
+          var it=document.createElement('div'); it.className='bsi'+((self._booksSort||'date')===k?' on':''); it.textContent=LBL[k];
+          it.onclick=function(ev){ ev.stopPropagation(); self._booksSort=k; menu.remove(); self.renderSidebar('books'); };
+          menu.appendChild(it);
+        });
+        document.body.appendChild(menu);
+        var r=sortBtn.getBoundingClientRect();
+        menu.style.left=Math.min(r.left, window.innerWidth-menu.offsetWidth-8)+'px';
+        menu.style.top=(r.bottom+4)+'px';
+        setTimeout(function(){ document.addEventListener('mousedown', function h(ev){ if(!menu.contains(ev.target)&&ev.target!==sortBtn){ menu.remove(); document.removeEventListener('mousedown',h); } }); },0);
+      };
+      gHeader.insertBefore(sortBtn, gAddSub);
+    }
     gHeader.ondragover = function(e){ e.preventDefault(); e.stopPropagation(); gHeader.classList.add('group-drop-target'); };
     gHeader.ondragleave = function(){ gHeader.classList.remove('group-drop-target'); };
     gHeader.ondrop = function(e){ e.preventDefault(); e.stopPropagation(); gHeader.classList.remove('group-drop-target'); var pageId = e.dataTransfer.getData('text/plain'); if(pageId){ if(g.collapsed) g.collapsed = false; self.moveToGroup(type, pageId, g.id); } };
     groupEl.appendChild(gHeader);
     var gBody = document.createElement('div'); gBody.className = 'note-group-body'; self._attachDrop(gBody, type, g.id);
     var childGroups = (self.groups[type] || []).filter(function(x){ return x.parentId === g.id; }); childGroups.forEach(function(cg){ gBody.appendChild(self._buildGroup(type, cg, activeId)); });
-    if(pagesInGroup.length === 0 && childGroups.length === 0){ var empty = document.createElement('div'); empty.className = 'note-group-empty'; empty.textContent = '여기로 페이지를 끌어다 놓으세요'; gBody.appendChild(empty); } 
-    else { pagesInGroup.forEach(function(note){ gBody.appendChild(self._buildPageItem(type, note, activeId)); }); }
+    if(pagesInGroup.length === 0 && childGroups.length === 0){ var empty = document.createElement('div'); empty.className = 'note-group-empty'; empty.textContent = (type==='lexicon' ? '＋ 아래 버튼으로 첫 단어를 추가해 보세요' : (type==='books' ? '여기로 책을 끌어다 놓으세요' : '여기로 페이지를 끌어다 놓으세요')); gBody.appendChild(empty); } 
+    else {
+      var _pg = pagesInGroup.slice();
+      if(type==='books' && g.id==='grp_books_done'){
+        var mode = self._booksSort || 'date';
+        function _rating(n){ var m=/data-rating="([\d.]+)"/.exec(n.content||''); return m?parseFloat(m[1]):0; }
+        function _cat(n){ var m=/data-cat="([^"]*)"/.exec(n.content||''); return m?m[1]:''; }
+        if(mode==='rating') _pg.sort(function(a,b){ return _rating(b)-_rating(a); });
+        else if(mode==='cat') _pg.sort(function(a,b){ return (_cat(a)||'힣').localeCompare(_cat(b)||'힣','ko'); });
+        else _pg.sort(function(a,b){ return String(b.date||'').localeCompare(String(a.date||'')); });
+      }
+      if(type==='lexicon' && _pg.length>50){
+        /* 50개 단위 접이식 하위 묶음 */
+        var CHUNK=50;
+        var foldStore={}; try{ foldStore=JSON.parse(localStorage.getItem('nn_lex_fold_v1')||'{}'); }catch(e){}
+        for(var ci=0; ci<_pg.length; ci+=CHUNK){
+          (function(ci){
+            var slice=_pg.slice(ci, ci+CHUNK);
+            var from=ci+1, to=ci+slice.length;
+            var chunkKey=g.id+'_'+ci;
+            var collapsed = !!foldStore[chunkKey];
+            var sec=document.createElement('div'); sec.className='lex-chunk'+(collapsed?' collapsed':'');
+            var sh=document.createElement('div'); sh.className='lex-chunk-head';
+            sh.innerHTML='<span class="lex-chunk-arr">'+(collapsed?'▸':'▾')+'</span><span class="lex-chunk-t">'+from+' – '+to+'</span><span class="lex-chunk-c">'+slice.length+'</span>';
+            sh.onclick=function(e){
+              e.stopPropagation();
+              var fs={}; try{ fs=JSON.parse(localStorage.getItem('nn_lex_fold_v1')||'{}'); }catch(e){}
+              fs[chunkKey]=!fs[chunkKey];
+              try{ localStorage.setItem('nn_lex_fold_v1', JSON.stringify(fs)); }catch(e){}
+              self.renderSidebar('lexicon');
+            };
+            var sbody=document.createElement('div'); sbody.className='lex-chunk-body';
+            slice.forEach(function(note){ sbody.appendChild(self._buildPageItem(type, note, activeId)); });
+            sec.appendChild(sh); sec.appendChild(sbody); gBody.appendChild(sec);
+          })(ci);
+        }
+      } else {
+        _pg.forEach(function(note){ gBody.appendChild(self._buildPageItem(type, note, activeId)); });
+      }
+    }
     if (type === 'books' || type === 'lexicon') {
       var addCardBtn = document.createElement('button'); addCardBtn.className = 'kanban-add-btn'; addCardBtn.innerHTML = type === 'books' ? '&#43; 새 책 추가' : '&#43; 새 용어·개념 추가';
       addCardBtn.onclick = function(e) { e.stopPropagation(); self.create(type, g.id); }; gBody.appendChild(addCardBtn);
@@ -5442,10 +5792,89 @@ window.KnowledgeNotes = {
     groupEl.appendChild(gBody); return groupEl;
   },
 
+  _buildLexQuiz: function(){
+    var self=this;
+    if(self._lexQuizExKnown===undefined){ try{ self._lexQuizExKnown = localStorage.getItem('nn_lex_quiz_exknown')==='1'; }catch(e){ self._lexQuizExKnown=false; } }
+    var exKnown = self._lexQuizExKnown;
+    var pool=(self.data.lexicon||[]).filter(function(n){
+      var t=(n.title||'').trim(); if(!t||t==='새로운 용어 혹은 단어 기입') return false;
+      var d=(n.content||'').replace(/<[^>]+>/g,'').trim(); if(!d) return false;
+      if(exKnown && n.mem==='known') return false;
+      return true;
+    });
+    var gp=document.createElement('div'); gp.className='bk-goal lex-quiz';
+    if(pool.length<1){
+      var allCount=(self.data.lexicon||[]).filter(function(n){ var t=(n.title||'').trim(); return t&&t!=='새로운 용어 혹은 단어 기입'&&(n.content||'').replace(/<[^>]+>/g,'').trim(); }).length;
+      if(exKnown && allCount>0){
+        gp.innerHTML='<div class="bk-goal-top"><span class="t">📝 VOCAB QUIZ</span><button class="lq-filter on">외운 것 제외</button></div>'
+          +'<div class="lq-empty">아직 안 외운 단어가 없어요! 🎉<br>버튼을 눌러 전체 단어로 볼 수 있어요.</div>';
+        var fb2=gp.querySelector('.lq-filter');
+        if(fb2) fb2.onclick=function(e){ e.stopPropagation(); self._lexQuizExKnown=false; try{ localStorage.setItem('nn_lex_quiz_exknown','0'); }catch(x){} self._lexQuizCur=null; var host=document.getElementById('lexQuizHost'); if(host){ host.innerHTML=''; host.appendChild(self._buildLexQuiz()); } };
+      } else {
+        gp.innerHTML='<div class="bk-goal-top"><span class="t">📝 VOCAB QUIZ</span></div>'
+          +'<div class="lq-empty">단어와 뜻을 등록하면<br>랜덤 쪽지시험이 시작됩니다.</div>';
+      }
+      return gp;
+    }
+    var cur = self._lexQuizCur;
+    if(!cur || pool.indexOf(cur)<0){ cur = pool[Math.floor(Math.random()*pool.length)]; self._lexQuizCur=cur; self._lexQuizShown=false; }
+    var grpName=(function(){ var g=(self.groups.lexicon||[]).filter(function(x){return x.id===cur.groupId;})[0]; return g?(g.name||'').replace(/\s*[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\uFE0F]+\s*$/u,'').trim():''; })();
+    var defText=(cur.content||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+    var shown=self._lexQuizShown;
+    gp.innerHTML='<div class="bk-goal-top"><span class="t">📝 VOCAB QUIZ</span>'
+      +'<button class="lq-filter'+(exKnown?' on':'')+'" title="암기 완료(✓) 단어 제외 여부">'+(exKnown?'외운 것 제외':'전체 단어')+'</button></div>'
+      +(grpName?'<div class="lq-tagrow"><span class="lq-tag">'+grpName+'</span></div>':'')
+      +'<div class="lq-term">'+ (cur.title||'') +'</div>'
+      +'<div class="lq-def'+(shown?' show':'')+'">'+ (shown? defText : '뜻을 떠올려 보세요 · 탭하면 정답') +'</div>'
+      +'<div class="lq-btns">'
+      +  '<button class="lq-b lq-show">'+(shown?'뜻 숨기기':'정답 보기')+'</button>'
+      +  '<button class="lq-b lq-next">다음 단어 →</button>'
+      +'</div>';
+    var defEl=gp.querySelector('.lq-def');
+    gp.querySelector('.lq-show').onclick=function(e){ e.stopPropagation(); self._lexQuizShown=!self._lexQuizShown; refresh(); };
+    defEl.onclick=function(e){ e.stopPropagation(); if(!self._lexQuizShown){ self._lexQuizShown=true; refresh(); } };
+    gp.querySelector('.lq-next').onclick=function(e){ e.stopPropagation();
+      var pick=cur; if(pool.length>1){ while(pick===cur){ pick=pool[Math.floor(Math.random()*pool.length)]; } }
+      self._lexQuizCur=pick; self._lexQuizShown=false; refresh();
+    };
+    var fb=gp.querySelector('.lq-filter');
+    if(fb) fb.onclick=function(e){ e.stopPropagation();
+      self._lexQuizExKnown=!self._lexQuizExKnown;
+      try{ localStorage.setItem('nn_lex_quiz_exknown', self._lexQuizExKnown?'1':'0'); }catch(x){}
+      self._lexQuizCur=null; self._lexQuizShown=false; refresh();
+    };
+    function refresh(){ var host=document.getElementById('lexQuizHost'); if(host){ host.innerHTML=''; host.appendChild(self._buildLexQuiz()); } }
+    return gp;
+  },
+
+  _buildReadingGoal: function(){
+    var self=this;
+    var store={}; try{ store=JSON.parse(localStorage.getItem('nn_book_goal_v1')||'{}'); }catch(e){}
+    var yr = store.__year || new Date().getFullYear();
+    var goal = parseInt(store[yr]||'0',10)||0;
+    var doneCount = self.data.books.filter(function(b){ return b && b.groupId==='grp_books_done'; }).length;
+    var pct = goal>0 ? Math.min(100, Math.round(doneCount/goal*100)) : 0;
+    var gp=document.createElement('div'); gp.className='bk-goal';
+    gp.innerHTML='<div class="bk-goal-top">'
+      +'<span class="t"><input type="number" class="bk-goal-year" value="'+yr+'" title="연도"> READING GOAL</span>'
+      +'<span class="bk-goal-set">목표 <input type="number" min="0" class="bk-goal-num" value="'+(goal||'')+'" placeholder="0"> 권</span></div>'
+      +'<div class="bk-goal-bar"><div class="bk-goal-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="bk-goal-meta"><span>완독 <b>'+doneCount+'</b> / '+(goal||'—')+' 권</span><span>달성률 <b>'+(goal>0?pct+'%':'—')+'</b></span></div>';
+    function save(o){ try{ localStorage.setItem('nn_book_goal_v1', JSON.stringify(o)); }catch(e){} }
+    var yInp=gp.querySelector('.bk-goal-year'), nInp=gp.querySelector('.bk-goal-num');
+    yInp.onclick=function(e){ e.stopPropagation(); };
+    yInp.onchange=function(){ var o={}; try{ o=JSON.parse(localStorage.getItem('nn_book_goal_v1')||'{}'); }catch(e){} o.__year=parseInt(this.value,10)||new Date().getFullYear(); save(o); self.renderSidebar('books'); };
+    nInp.onclick=function(e){ e.stopPropagation(); };
+    nInp.onchange=function(){ var o={}; try{ o=JSON.parse(localStorage.getItem('nn_book_goal_v1')||'{}'); }catch(e){} o[yInp.value]=parseInt(this.value,10)||0; save(o); self.renderSidebar('books'); };
+    return gp;
+  },
+
   renderSidebar: function(type) {
     var container = document.getElementById(type + '-sidebar-list'); if (!container) return; container.innerHTML = '';
     var self = this; var activeId = this.activeIds[type]; var groups = this.groups[type] || [];
     groups.filter(function(g){ return !g.parentId; }).forEach(function(g){ container.appendChild(self._buildGroup(type, g, activeId)); });
+    if(type==='books'){ var gh=document.getElementById('bkGoalHost'); if(gh){ gh.innerHTML=''; gh.appendChild(self._buildReadingGoal()); } }
+    if(type==='lexicon'){ var qh=document.getElementById('lexQuizHost'); if(qh){ qh.innerHTML=''; qh.appendChild(self._buildLexQuiz()); } }
     var ungrouped = document.createElement('div'); ungrouped.className = 'note-ungrouped'; self._attachDrop(ungrouped, type, null);
     var loosePages = this.data[type].filter(function(n){ return !n.groupId; }); loosePages.forEach(function(note){ ungrouped.appendChild(self._buildPageItem(type, note, activeId)); });
     container.appendChild(ungrouped);
@@ -5466,6 +5895,28 @@ window.KnowledgeNotes = {
     toolbar.querySelectorAll('[data-back]').forEach(function(b){ b.onmousedown = function(e){ e.preventDefault(); }; b.onclick = function(){ var c = this.dataset.back; self.execCmd('hiliteColor', c) || self.execCmd('backColor', c); }; });
     var titleInp = document.createElement('input'); titleInp.type = 'text'; titleInp.className = 'note-title-input'; titleInp.value = note.title; titleInp.placeholder = type === 'lexicon' ? '새로운 용어 혹은 단어 기입' : '제목 없는 페이지'; titleInp.oninput = function() { self.update(type, note.id, 'title', this.value); };
     var editableBody = document.createElement('div'); editableBody.className = 'note-editable-body'; editableBody.contentEditable = 'true'; editableBody.innerHTML = note.content; editableBody.oninput = function() { self.update(type, note.id, 'content', this.innerHTML); };
+    if(type === 'books'){
+      /* 줄바꿈 시 기본 입력 모드 = 불릿: 리스트 밖에서 Enter로 생긴 새 줄을 자동으로 점 목록으로 전환 */
+      editableBody.addEventListener('keyup', function(e){
+        if(e.key !== 'Enter' || e.shiftKey) return;
+        var sel = window.getSelection(); if(!sel || !sel.rangeCount) return;
+        var node = sel.anchorNode; if(!node) return;
+        var el = node.nodeType === 1 ? node : node.parentElement; if(!el || !editableBody.contains(el)) return;
+        if(el.closest('li, ul, ol, table, .nn-props, .nn-callout, .nn-check, .nn-gallery, h1, h2, h3, blockquote')) return;
+        document.execCommand('insertUnorderedList');
+      });
+      /* 빈 점에서 백스페이스 → 점 제거(일반 줄) — 홈 카드에 안 나가는 자유 메모용 */
+      editableBody.addEventListener('keydown', function(e){
+        if(e.key !== 'Backspace') return;
+        var sel = window.getSelection(); if(!sel || !sel.rangeCount || !sel.isCollapsed) return;
+        var node = sel.anchorNode; if(!node) return;
+        var el2 = node.nodeType === 1 ? node : node.parentElement; if(!el2) return;
+        var li = el2.closest('li'); if(!li || !editableBody.contains(li)) return;
+        if((li.textContent||'').trim() !== '') return;
+        e.preventDefault();
+        document.execCommand('insertUnorderedList');
+      });
+    }
     editableBody.onclick = function(e) { if (e.target.tagName === 'IMG') { var currentWidth = e.target.style.width || "100%"; var newWidth = prompt("사진 가로 크기 입력:", currentWidth); if (newWidth) { e.target.style.width = newWidth; self.update(type, note.id, 'content', this.innerHTML); } } };
     editableBody.onclick = (function(prevHandler){ return function(e){ if(prevHandler) prevHandler.call(this, e); var td = e.target.closest ? e.target.closest('td') : null; if(td && td.closest('table.nn-table')){ self.showTablePopup(td, type, note.id, editableBody); } else if(!e.target.closest || !e.target.closest('.nn-table-popup')) { self.hideTablePopup(); } }; })(editableBody.onclick);
     mainContainer.appendChild(toolbar); var scrollArea = document.createElement('div'); scrollArea.className = 'editor-scroll-area'; scrollArea.appendChild(titleInp); scrollArea.appendChild(editableBody); mainContainer.appendChild(scrollArea);
@@ -6559,6 +7010,107 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 .as-sec-add{display:flex;gap:8px;}
 .as-sec-add input{flex:1;background:rgba(22,22,28,.7);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 12px;color:#f0ede6;font-size:13px;font-family:'Pretendard',sans-serif;box-sizing:border-box;}
 .as-sec-add input:focus{outline:none;border-color:var(--as-red);}
+
+/* ═══════════════════════════════════════════
+   MOBILE RESPONSIVE — 통합 대응 (≤768px)
+   ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── 네비게이션: 가로 스크롤 가능한 한 줄 ── */
+  .nav { padding: .6rem 1rem !important; flex-wrap: nowrap !important; gap: 4px !important; }
+  .nav-links { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; max-width: 62vw; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nbtn { font-size: 10px !important; padding: 6px 7px !important; white-space: nowrap; }
+  .nav-dropdown { font-size: 11px; }
+  .wbtn { font-size: 10px !important; padding: 6px 10px !important; flex-shrink: 0; }
+  .logo-wrap .nn-word { font-size: 15px !important; }
+  .logo-home-txt { font-size: 15px !important; }
+
+  /* ── 드롭다운: 모바일에선 탭하면 아래로 펼침(절대배치 유지하되 폭 확보) ── */
+  .nav-dropdown { min-width: 140px; right: auto; left: 0; }
+
+  /* ── 히어로: 좌측 카피/시계 축소 ── */
+  .final { padding: 70px 6vw 40px !important; }
+  .fn-eyebrow, .fn-title { max-width: 88vw; }
+  .nn-deco-text { font-size: .62rem !important; letter-spacing: .16em !important; white-space: normal !important; }
+  .fn-sub { font-size: 11px !important; max-width: 82vw !important; }
+
+  /* ── 마퀴(티커): 폰트·간격 축소 ── */
+  .home-tickers { --tt-padx: 12px; }
+  .ht-row { font-size: 11px !important; }
+
+  /* ── FROM MY LIBRARY 카드: 모바일 숨김(이미 960 이하 숨김이나 확실히) ── */
+  .bq-card { display: none !important; }
+
+  /* ── 페이지 공통 헤더/컨테이너 패딩 축소 ── */
+  #page-macro > div, #page-lexicon > div, #page-media > div,
+  #page-books > div, #page-economics > div, #page-research > div,
+  #page-about > div, #page-holdings > div, #page-assets > div {
+    padding-left: 1.1rem !important; padding-right: 1.1rem !important;
+    max-width: 100% !important;
+  }
+  /* 페이지 제목 크기 축소 */
+  #page-macro h1, #page-lexicon h1, #page-media h1, #page-books h1,
+  #page-economics h1, #page-about h1, .hold-h1 {
+    font-size: 2.1rem !important;
+  }
+  .research-header h1, #page-research h1 { font-size: 2rem !important; }
+
+  /* ── BOOKS/LEXICON 칸반: 3열 → 1열 세로 스택 ── */
+  #books-editor-layout:not(.editing) .editor-sidebar-list,
+  #lexicon-sidebar-list {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  /* 독서 목표 패널: 헤더 아래 전체폭 */
+  #page-books > div > div:first-of-type { flex-direction: column !important; align-items: stretch !important; }
+  #bkGoalHost { width: 100% !important; margin-top: 12px; }
+  .bk-goal { width: 100% !important; box-sizing: border-box; }
+
+  /* 편집 모드: 사이드바+본문 세로 스택 */
+  #books-editor-layout.editing, #lexicon-editor-layout.editing,
+  #media-editor-layout.editing, #economics-editor-layout.editing {
+    grid-template-columns: 1fr !important;
+  }
+  .editor-main { min-height: 620px !important; margin: 8px 0 0 !important; }
+  .note-editable-body { min-height: 560px !important; }
+
+  /* ── 홀딩스: 사이드바 가로 배치 이미 있음, 위젯 높이 조정 ── */
+  .hold-layout { grid-template-columns: 1fr !important; }
+  .hw-widget, .tv-widget { min-height: 300px; }
+
+  /* ── 리서치: 카드/그리드 1열 ── */
+  .rs-card, .macro-card.span2 { grid-column: span 12 !important; }
+  .cs-grid { flex-direction: column !important; }
+  .cs-field { width: 100% !important; }
+  .cs-field input, .cs-field select { width: 100% !important; box-sizing: border-box; }
+  .tw-steps, .cs-terms { grid-template-columns: 1fr !important; }
+  .cs-pills, .cs-badges { gap: 6px; }
+
+  /* ── 매크로 카드 그리드 1열 ── */
+  .macro-grid, .company-grid { grid-template-columns: 1fr !important; }
+
+  /* ── 어바웃 패널 전체폭 ── */
+  #page-about .cv-white, #page-about [style*="max-width:700px"],
+  #page-about [style*="max-width:760px"] { max-width: 100% !important; }
+
+  /* ── 별점/카테고리: 터치 영역 유지 ── */
+  .np-stars .st { width: 22px; height: 22px; }
+  .np-props .nn-prop { font-size: 13px; }
+  .np-k { width: 108px !important; }
+
+  /* ── 표/오버플로우 방지 ── */
+  table { max-width: 100% !important; display: block; overflow-x: auto; }
+  img, video, iframe { max-width: 100% !important; }
+}
+
+/* 아주 작은 화면(≤400px) 추가 미세조정 */
+@media (max-width: 400px) {
+  #page-macro h1, #page-books h1, #page-lexicon h1, #page-media h1,
+  #page-economics h1, #page-about h1, .hold-h1 { font-size: 1.8rem !important; }
+  .nbtn { font-size: 9px !important; padding: 5px 5px !important; }
+  .final { padding: 64px 5vw 34px !important; }
+}
+
 </style>
 
 <div id="masterTooltip"></div>
@@ -7780,8 +8332,12 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
       tpl.innerHTML=n.content;
       /* 저자: 표에서 '저자' 셀 다음 칸 */
       var author='';
-      var tds=tpl.querySelectorAll('td');
-      for(var i=0;i<tds.length-1;i++){ if(textOf(tds[i])==='저자'){ var v=textOf(tds[i+1]); if(v&&v.length<40) author=v; break; } }
+      var pks=tpl.querySelectorAll('.np-k');
+      for(var i=0;i<pks.length;i++){ if(textOf(pks[i]).indexOf('작가')!==-1){ var pv=pks[i].nextElementSibling; if(pv){ var t0=textOf(pv); if(t0&&t0.length<40) author=t0; } break; } }
+      if(!author){
+        var tds=tpl.querySelectorAll('td');
+        for(var i2=0;i2<tds.length-1;i2++){ if(textOf(tds[i2])==='저자'){ var v=textOf(tds[i2+1]); if(v&&v.length<40) author=v; break; } }
+      }
       /* 구절: 불릿(li) 항목 = 구절 하나 (인용 블록도 허용) */
       var qs=[];
       tpl.querySelectorAll('li').forEach(function(b){
@@ -7791,8 +8347,20 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
         qs.push(t);
       });
       tpl.querySelectorAll('blockquote').forEach(function(b){ var t=textOf(b); if(t.length>=6&&t.length<=240) qs.push(t); });
+      if(!qs.length){
+        /* 폴백: 불릿이 없는 예전 페이지 — 일반 줄(한 줄 = 한 구절)로 인정 */
+        var skip={'저자':1,'읽기 시작':1,'완독일':1,'도서명':1,'평점':1};
+        tpl.querySelectorAll('div,p').forEach(function(b){
+          if(b.closest('table,ul,ol,blockquote,.nn-props,.np-note')) return;
+          if(b.querySelector('table,ul,ol,blockquote,div,p')) return;
+          var t=textOf(b);
+          if(!t||skip[t]||t.length<6||t.length>240) return;
+          if(t.indexOf('인상 깊은 구절')!==-1) return;
+          qs.push(t);
+        });
+      }
       if(!qs.length) return;
-      pool.push({title:n.title||'무제', cover:n.cover||'', author:author, qs:qs});
+      pool.push({id:n.id, title:n.title||'무제', cover:n.cover||'', author:author, qs:qs});
     });
     return pool;
   }
@@ -7801,7 +8369,10 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
     if(!el) el=document.getElementById('bqCard');
     if(!el) return;
     var pool=extract();
-    if(!pool.length){ el.classList.remove('show'); return; }
+    if(!pool.length){
+      el.classList.remove('show');
+      return;
+    }
     var bi=Math.floor(Math.random()*pool.length);
     var b=pool[bi];
     var q=b.qs[Math.floor(Math.random()*b.qs.length)];
@@ -7818,16 +8389,238 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
       +'</div></div>'
       +'<div class="bq-q">'+esc(q)+'</div>';
     el.classList.remove('show');
+    el.__bookId = b.id;
     setTimeout(function(){ el.innerHTML=inner; el.classList.add('show'); }, 350);
   }
   function tick(){ if(document.hidden){ return; } var home=document.getElementById('page-home'); if(home&&!home.classList.contains('active')) return; show(); }
+  var booted=false;
+  window.__bqIntro=function(){ if(booted) return; booted=true; tick(); };
   function start(){
     el=document.getElementById('bqCard'); if(!el) return;
-    setTimeout(tick, 2600);
+    el.addEventListener('click', function(){
+      var id=el.__bookId; if(!id) return;
+      try{
+        if(typeof switchPage==='function') switchPage('books');
+        if(window.KnowledgeNotes && KnowledgeNotes.select){
+          setTimeout(function(){ KnowledgeNotes.select('books', id); }, 60);
+        }
+      }catch(e){}
+    });
+    if(window.__bqIntroPending && !booted){ booted=true; tick(); }   /* 인트로가 먼저 호출했으면 즉시 */
+    setTimeout(function(){ if(!booted){ booted=true; tick(); } }, 600); /* 폴백도 대폭 단축 */
     timer=setInterval(tick, 30000);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start);
   else start();
+})();
+</script>
+<script>
+/* ── 별점(0.5단위) + 책 종류 카테고리 (추가/삭제/수정) ── */
+(function(){
+  var CATKEY='nn_book_categories_v1';
+  var PAL=['#c9a96e','#7fa8d4','#8fb98f','#d48fa8','#b28ad4','#d4b48f','#8fc9c9','#d49a7f','#a8b0bb','#c98f8f'];
+  var DEF=[['소설','#d48fa8'],['인문','#b28ad4'],['경제','#7fa8d4'],['경영','#8fb98f'],['투자','#c9a96e'],['과학','#8fc9c9'],['역사','#d4b48f'],['에세이','#d49a7f'],['자기계발','#d4c98f'],['기타','#a8b0bb']].map(function(x){return {name:x[0],color:x[1]};});
+  function cats(){ try{ var a=JSON.parse(localStorage.getItem(CATKEY)); if(Array.isArray(a)&&a.length){ return a.map(function(x){ return (typeof x==='string')?{name:x,color:PAL[0]}:x; }); } }catch(e){} return DEF.map(function(x){return {name:x.name,color:x.color};}); }
+  function saveCats(a){ try{ localStorage.setItem(CATKEY, JSON.stringify(a)); }catch(e){} }
+  function catColor(name){ if(!name) return ''; var f=cats().filter(function(c){return c.name===name;})[0]; return f?f.color:'#c9a96e'; }
+  window.__nnCatColor=catColor;
+  function fireSave(node){ var eb=node.closest('.note-editable-body'); if(eb) eb.dispatchEvent(new Event('input',{bubbles:false})); }
+
+  /* 별점 채움 렌더 */
+  function paintStars(box){
+    var r=parseFloat(box.getAttribute('data-rating'))||0;
+    box.querySelectorAll('.st').forEach(function(st,idx){
+      var v=idx+1;
+      var f=st.querySelector('.fill'); if(!f){ f=document.createElement('span'); f.className='fill'; st.insertBefore(f, st.firstChild); }
+      var pct = r>=v ? 100 : (r>=v-0.5 ? 50 : 0);
+      f.style.width=pct+'%';
+    });
+    var num=box.querySelector('.rate-num'); if(!num){ num=document.createElement('span'); num.className='rate-num'; box.appendChild(num); }
+    num.textContent=r>0 ? r.toFixed(1) : '';
+  }
+  function initStars(root){ (root||document).querySelectorAll('.np-stars').forEach(paintStars); }
+
+  document.addEventListener('click', function(e){
+    /* 별점 클릭: 반쪽 단위 */
+    var half=e.target.closest('.np-stars .h1, .np-stars .h2');
+    if(half){
+      var box=half.closest('.np-stars');
+      var val=parseFloat(half.getAttribute('data-half'));
+      var cur=parseFloat(box.getAttribute('data-rating'))||0;
+      if(cur===val) val=val-0.5<=0 && val<=0.5 ? 0 : val; /* 같은 곳 재클릭시 그대로 */
+      box.setAttribute('data-rating', String(val));
+      paintStars(box); fireSave(box);
+      return;
+    }
+    /* 카테고리 칩 클릭 → 메뉴 */
+    var cat=e.target.closest('.np-cat');
+    if(cat){ openCatMenu(cat); return; }
+  });
+
+  var menu=null, menuTarget=null;
+  function closeMenu(){ if(menu){ menu.remove(); menu=null; menuTarget=null; } }
+  document.addEventListener('mousedown', function(e){ if(menu && !menu.contains(e.target) && !(menuTarget&&menuTarget.contains(e.target))) closeMenu(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeMenu(); });
+
+  function tint(chip, color){
+    if(color){ chip.style.background=hexA(color,.16); chip.style.borderColor=hexA(color,.5); chip.style.color=color; }
+    else { chip.style.background=''; chip.style.borderColor=''; chip.style.color=''; }
+  }
+  function hexA(hex,a){ var m=/^#?([0-9a-f]{6})$/i.exec(hex||''); if(!m) return 'rgba(201,169,110,'+a+')'; var n=parseInt(m[1],16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+  function setCat(target, val){
+    target.setAttribute('data-cat', val||'');
+    var chip=target.querySelector('.cat-chip');
+    if(!chip){ chip=document.createElement('span'); chip.className='cat-chip'; target.appendChild(chip); }
+    chip.textContent = val || '선택 안 함';
+    chip.classList.toggle('empty', !val);
+    tint(chip, val?catColor(val):'');
+    fireSave(target);
+  }
+  /* 기존 저장된 칩들 색 입히기 */
+  function paintChips(root){ (root||document).querySelectorAll('.np-cat').forEach(function(t){ var v=t.getAttribute('data-cat')||''; var chip=t.querySelector('.cat-chip'); if(chip) tint(chip, v?catColor(v):''); }); }
+  function openCatMenu(target){
+    closeMenu(); menuTarget=target;
+    menu=document.createElement('div'); menu.className='cat-menu';
+    render();
+    document.body.appendChild(menu);
+    var r=target.getBoundingClientRect();
+    menu.style.left=Math.min(r.left, window.innerWidth-menu.offsetWidth-8)+'px';
+    menu.style.top=Math.min(r.bottom+5, window.innerHeight-menu.offsetHeight-8)+'px';
+
+    function render(){
+      var list=cats(); var cur=target.getAttribute('data-cat')||'';
+      var h='';
+      h+='<div class="ci" data-pick=""><span class="dot" style="visibility:hidden"></span><span class="lbl none">선택 안 함</span></div>';
+      list.forEach(function(c){
+        h+='<div class="ci" data-pick="'+c.name+'"><span class="dot" style="background:'+c.color+'"></span><span class="lbl">'+(c.name===cur?'✓ ':'')+c.name+'</span><span class="pl" data-pl="'+c.name+'" title="색상">🎨</span><span class="ed" data-ed="'+c.name+'">수정</span><span class="dl" data-dl="'+c.name+'">삭제</span></div>';
+      });
+      h+='<div class="add" data-add="1">＋ 새 종류 추가</div>';
+      menu.innerHTML=h;
+      menu.querySelectorAll('[data-pick]').forEach(function(el){
+        el.onclick=function(ev){ if(ev.target.closest('.ed,.dl,.pl')) return; setCat(target, el.getAttribute('data-pick')); closeMenu(); };
+      });
+      menu.querySelectorAll('.pl').forEach(function(el){
+        el.onclick=function(ev){ ev.stopPropagation(); openPalette(el, el.getAttribute('data-pl')); };
+      });
+      menu.querySelectorAll('.ed').forEach(function(el){
+        el.onclick=function(ev){ ev.stopPropagation(); var old=el.getAttribute('data-ed'); var nv=prompt('종류 이름 수정', old); if(nv==null) return; nv=nv.trim(); if(!nv) return; var a=cats(); for(var i=0;i<a.length;i++){ if(a[i].name===old){ a[i].name=nv; break; } } saveCats(a); if((target.getAttribute('data-cat')||'')===old) setCat(target,nv); paintChips(); render(); };
+      });
+      menu.querySelectorAll('.dl').forEach(function(el){
+        el.onclick=function(ev){ ev.stopPropagation(); var c=el.getAttribute('data-dl'); if(!confirm('"'+c+'" 종류를 삭제할까요?')) return; var a=cats().filter(function(x){return x.name!==c;}); saveCats(a); if((target.getAttribute('data-cat')||'')===c) setCat(target,''); render(); };
+      });
+      menu.querySelector('[data-add]').onclick=function(){ var nv=prompt('새 종류 이름'); if(nv==null) return; nv=nv.trim(); if(!nv) return; var a=cats(); if(!a.some(function(x){return x.name===nv;})){ a.push({name:nv,color:PAL[a.length%PAL.length]}); saveCats(a); } render(); };
+    }
+    function openPalette(anchorEl, name){
+      var old=menu.querySelector('.pal-pop'); if(old) old.remove();
+      var pop=document.createElement('div'); pop.className='pal-pop';
+      PAL.concat(['#e05252','#52b788','#4a90d9','#e0a800','#9b59b6','#e67e22']).forEach(function(col){
+        var s=document.createElement('span'); s.className='sw'; s.style.background=col;
+        s.onclick=function(ev){ ev.stopPropagation(); var a=cats(); for(var i=0;i<a.length;i++){ if(a[i].name===name){ a[i].color=col; break; } } saveCats(a); if((target.getAttribute('data-cat')||'')===name) setCat(target,name); paintChips(); render(); };
+        pop.appendChild(s);
+      });
+      anchorEl.closest('.ci').appendChild(pop);
+    }
+  }
+
+  /* 에디터 열릴 때 별점 초기 렌더 (동적 노트) */
+  var mo=new MutationObserver(function(muts){
+    muts.forEach(function(m){ [].forEach.call(m.addedNodes||[], function(n){
+      if(n.nodeType===1){ if(n.querySelector) initStars(n); if(n.classList&&n.classList.contains('np-stars')) paintStars(n); if(n.querySelector) paintChips(n); }
+    }); });
+  });
+  function boot(){ initStars(document); paintChips(document); mo.observe(document.body,{childList:true,subtree:true}); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+/* ── 날짜 속성 칸: 실시간 달력 팝업으로 입력 ── */
+(function(){
+  var pop=null, target=null, vy=0, vm=0;
+  var WD=['일','월','화','수','목','금','토'];
+  function pad(n){ return (n<10?'0':'')+n; }
+  function build(){
+    pop=document.createElement('div'); pop.className='nn-cal'; pop.style.display='none';
+    document.body.appendChild(pop);
+    document.addEventListener('mousedown', function(e){
+      if(pop.style.display==='none') return;
+      if(pop.contains(e.target) || (target && (e.target===target || target.contains(e.target)))) return;
+      hide();
+    });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') hide(); });
+  }
+  function render(){
+    var today=new Date(), ty=today.getFullYear(), tm=today.getMonth(), td=today.getDate();
+    var first=new Date(vy,vm,1).getDay(), days=new Date(vy,vm+1,0).getDate();
+    var h='<div class="nn-cal-h"><b>'+vy+'년 '+(vm+1)+'월</b><div class="nn-cal-nav"><button data-nav="-1">‹</button><button data-nav="1">›</button></div></div>';
+    h+='<div class="nn-cal-w">'+WD.map(function(w){ return '<span>'+w+'</span>'; }).join('')+'</div>';
+    h+='<div class="nn-cal-g">';
+    for(var b=0;b<first;b++) h+='<button class="blank"></button>';
+    for(var d=1;d<=days;d++){
+      var wd=(first+d-1)%7;
+      var cls=(wd===0?'sun':(wd===6?'sat':''))+((vy===ty&&vm===tm&&d===td)?' today':'');
+      h+='<button data-d="'+d+'" class="'+cls.trim()+'">'+d+'</button>';
+    }
+    h+='</div>';
+    pop.innerHTML=h;
+    pop.querySelectorAll('[data-nav]').forEach(function(b){
+      b.onclick=function(){ vm+=parseInt(this.dataset.nav,10); if(vm<0){vm=11;vy--;} if(vm>11){vm=0;vy++;} render(); };
+    });
+    pop.querySelectorAll('[data-d]').forEach(function(b){
+      b.onclick=function(){ pick(vy,vm,parseInt(this.dataset.d,10)); };
+    });
+  }
+  var toastEl=null, toastT=null;
+  function toast(msg){
+    if(!toastEl){ toastEl=document.createElement('div'); toastEl.className='nn-toast'; document.body.appendChild(toastEl); }
+    toastEl.innerHTML='<span class="ic">\u26a0</span>'+msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+  function parseDate(txt){
+    var m=/(\d{4})\/(\d{1,2})\/(\d{1,2})/.exec(txt||''); if(!m) return null;
+    return new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+  }
+  function pick(y,m,d){
+    if(!target) return;
+    var picked=new Date(y,m,d);
+    /* 읽기 시작 ↔ 다 읽은 날짜 순서 검증 */
+    var kText=(target.previousElementSibling&&target.previousElementSibling.textContent)||'';
+    var props=target.closest('.nn-props');
+    if(props){
+      var isStart=/읽기 시작/.test(kText), isEnd=/다 읽은|완독/.test(kText);
+      var rows=props.querySelectorAll('.np-v');
+      var startV=null, endV=null;
+      rows.forEach(function(v){
+        var k=(v.previousElementSibling&&v.previousElementSibling.textContent)||'';
+        if(/읽기 시작/.test(k)) startV=parseDate(v.textContent);
+        if(/다 읽은|완독/.test(k)) endV=parseDate(v.textContent);
+      });
+      if(isStart && endV && picked>endV){ toast('읽기 시작한 날짜는 다 읽은 날짜보다 이후일 수 없어요.'); return; }
+      if(isEnd && startV && picked<startV){ toast('다 읽은 날짜는 읽기 시작한 날짜보다 이전일 수 없어요.'); return; }
+    }
+    target.textContent=y+'/'+pad(m+1)+'/'+pad(d)+' ('+WD[picked.getDay()]+')';
+    var eb=target.closest('.note-editable-body');
+    if(eb) eb.dispatchEvent(new Event('input',{bubbles:false}));
+    hide();
+  }
+  function show(el){
+    target=el;
+    var now=new Date(); vy=now.getFullYear(); vm=now.getMonth();
+    var m=(el.textContent||'').match(/(\d{4})\/(\d{1,2})/);
+    if(m){ vy=parseInt(m[1],10); vm=parseInt(m[2],10)-1; }
+    render();
+    var r=el.getBoundingClientRect();
+    pop.style.display='block';
+    pop.style.left=Math.max(8, Math.min(r.left, window.innerWidth-272))+'px';
+    pop.style.top=Math.min(r.bottom+6, window.innerHeight-330)+'px';
+  }
+  function hide(){ if(pop) pop.style.display='none'; target=null; }
+  document.addEventListener('click', function(e){
+    var v=e.target.closest('.np-v'); if(!v) return;
+    var k=v.previousElementSibling;
+    if(!k || !k.classList || !k.classList.contains('np-k')) return;
+    if(!/날짜|읽기 시작|완독/.test(k.textContent||'')) return;
+    if(!pop) build();
+    show(v);
+  });
 })();
 </script>
 </body>
