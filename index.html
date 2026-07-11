@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Cormorant+Garamond:wght@600;700&family=Fredoka+One&family=Jua&family=Michroma&family=Noto+Sans+KR:wght@300;400;500&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Gothic+A1:wght@700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Cormorant+Garamond:wght@600;700&family=Fredoka+One&family=Jua&family=Michroma&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500;600&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Gothic+A1:wght@700;900&display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -301,8 +301,8 @@ body::before{
 .macro-desc{font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.06em;line-height:1.7;max-width:520px;font-family:'Pretendard','Noto Sans KR',sans-serif;font-weight:300}
 .macro-meta{display:flex;align-items:center;gap:1.5rem;margin-top:1.2rem}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;animation:pulse 2s ease-in-out infinite;flex-shrink:0;box-shadow:0 0 8px rgba(76,175,80,.8),0 0 16px rgba(76,175,80,.4)}
-.macro-ts{font-size:10px;letter-spacing:.12em;color:rgba(255,255,255,.28)}
-.refresh-btn{background:transparent;border:.5px solid rgba(255,255,255,.12);color:rgba(255,255,255,.35);font-size:9px;letter-spacing:.14em;padding:.3rem .8rem;cursor:pointer;transition:all .2s;margin-left:auto}
+.macro-ts{font-size:11px;letter-spacing:.1em;color:rgba(255,175,140,.85);font-weight:500}
+.refresh-btn{background:rgba(255,110,64,.08);border:.5px solid rgba(255,110,64,.35);color:rgba(255,185,155,.95);font-size:10px;font-weight:500;letter-spacing:.1em;padding:.4rem .9rem;cursor:pointer;transition:all .2s;margin-left:auto;border-radius:5px}
 .refresh-btn:hover{border-color:rgba(201,169,110,.4);color:#c9a96e}
 
 /* ── NEW MACRO STYLES ── */
@@ -311,8 +311,8 @@ body::before{
 .key-input{background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.12);color:#f0ede6;font-size:10px;letter-spacing:.04em;padding:.35rem .7rem;width:260px;outline:none;font-family:'Pretendard',sans-serif;transition:border-color .2s}
 .key-input:focus{border-color:rgba(201,169,110,.5)}
 .key-input::placeholder{color:rgba(255,255,255,.25)}
-.key-hint{font-size:9.5px;letter-spacing:.04em;color:rgba(255,255,255,.28);margin-top:.8rem;line-height:1.6;font-family:'Pretendard',sans-serif;font-weight:300}
-.key-hint a{color:rgba(201,169,110,.7);text-decoration:none;border-bottom:.5px solid rgba(201,169,110,.3)}
+.key-hint{font-size:11px;letter-spacing:.02em;color:rgba(255,255,255,.55);margin-top:1rem;line-height:1.7;font-family:'Pretendard',sans-serif;font-weight:300;background:rgba(255,110,64,.05);border-left:2px solid rgba(255,110,64,.4);padding:9px 13px;border-radius:0 7px 7px 0;max-width:560px}
+.key-hint a{color:rgba(255,185,155,.95);font-weight:500;text-decoration:none;border-bottom:1px solid rgba(255,110,64,.5)}
 .key-hint a:hover{color:#c9a96e}
 
 
@@ -323,9 +323,9 @@ body::before{
 .macro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,110,64,.5) 20%,rgba(255,110,64,.5) 80%,transparent);box-shadow:0 0 8px rgba(255,110,64,.35),0 0 16px rgba(255,110,64,.15);opacity:.5;transition:opacity .4s}
 .macro-card:hover::before{opacity:1}
 .macro-card.span2{grid-column:1 / -1}
-.macro-card-title{font-size:9px;letter-spacing:.26em;color:rgba(255,200,175,.82);margin-bottom:1.1rem;display:flex;align-items:center;gap:.6rem;text-shadow:0 0 5px rgba(255,110,64,.4),0 0 11px rgba(255,110,64,.18)}
+.macro-card-title{font-size:11px;font-weight:600;letter-spacing:.2em;color:rgba(255,175,140,.98);margin-bottom:1.1rem;display:flex;align-items:center;gap:.6rem;font-family:'Pretendard',sans-serif;text-shadow:0 0 6px rgba(255,110,64,.55),0 0 14px rgba(255,110,64,.3)}
 .macro-card-title::after{content:'';flex:1;height:.5px;background:rgba(255,255,255,.06)}
-.sim-tag{font-size:8px;color:rgba(201,169,110,.4);letter-spacing:.08em;padding:.1rem .4rem;border:.5px solid rgba(201,169,110,.18);flex-shrink:0}
+.sim-tag{font-size:8.5px;color:rgba(255,175,140,.75);letter-spacing:.06em;padding:.15rem .5rem;border:.5px solid rgba(255,110,64,.35);border-radius:4px;flex-shrink:0;background:rgba(255,110,64,.06)}
 .live-tag{font-size:8px;color:rgba(76,175,80,.6);letter-spacing:.08em;padding:.1rem .4rem;border:.5px solid rgba(76,175,80,.25);flex-shrink:0}
 
 /* index grid (3 col) */
@@ -476,28 +476,28 @@ body::before{
   transition:opacity 1.8s cubic-bezier(.25,.46,.45,.94), transform 1.8s cubic-bezier(.25,.46,.45,.94), filter 1.8s cubic-bezier(.25,.46,.45,.94);
 }
 .home-tickers.show{ opacity:1; transform:translateY(0); filter:blur(0); }
-.bq-card{position:absolute;right:2vw;bottom:calc(100% + 18px);width:440px;max-width:46vw;cursor:pointer;
-  background:linear-gradient(160deg,rgba(14,13,11,.55),rgba(8,8,8,.42));
-  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
-  border:1px solid rgba(201,169,110,.22);border-radius:15px;
+.bq-card{position:absolute;right:2vw;bottom:calc(100% + 18px);width:540px;max-width:52vw;cursor:pointer;
+  background:linear-gradient(160deg,rgba(14,13,11,.6),rgba(8,8,8,.46));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(201,169,110,.24);border-radius:15px;
   box-shadow:0 18px 48px -20px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05);
-  padding:14px 16px 13px;z-index:30;pointer-events:auto;
+  padding:0;z-index:30;pointer-events:auto;overflow:hidden;
   opacity:0;transition:opacity .7s ease}
 .bq-card.show{opacity:1}
-.bq-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.24em;color:rgba(212,184,130,.8);text-shadow:0 0 8px rgba(201,169,110,.4);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.bq-eyebrow{font-family:'Orbitron',sans-serif;font-weight:600;font-size:10px;letter-spacing:.25em;color:rgba(224,201,140,.98);text-shadow:0 0 6px rgba(201,169,110,.6),0 0 16px rgba(201,169,110,.35);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .bq-eyebrow::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,169,110,.3),transparent)}
-.bq-row{display:flex;gap:12px;align-items:flex-start}
-.bq-cover{width:50px;height:71px;border-radius:4px;object-fit:cover;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.6);border:.5px solid rgba(255,255,255,.1)}
-.bq-cover.ph{display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,.08);border:.5px dashed rgba(201,169,110,.35);color:rgba(212,184,130,.7);font-size:15px}
-.bq-meta{flex:1;min-width:0}
-.bq-t{font-family:'Pretendard',sans-serif;font-size:14.5px;font-weight:700;color:rgba(240,237,230,.92);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bq-a{font-family:'Pretendard',sans-serif;font-size:12px;color:rgba(212,184,130,.72);margin-top:2px;letter-spacing:.03em}
-.bq-q{font-family:'Pretendard','Noto Sans KR',sans-serif;font-style:normal;font-weight:400;font-size:14px;line-height:1.65;letter-spacing:-.01em;color:rgba(240,237,230,.86);margin-top:9px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:color .3s}
+.bq-row{display:flex;gap:0;align-items:stretch}
+.bq-cover{width:118px;align-self:stretch;border-radius:0;object-fit:cover;flex-shrink:0;box-shadow:6px 0 18px rgba(0,0,0,.5);border:none;border-right:1px solid rgba(201,169,110,.2)}
+.bq-cover.ph{width:118px;align-self:stretch;display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,.08);border:none;border-right:1px solid rgba(201,169,110,.25);color:rgba(212,184,130,.7);font-size:30px;flex-shrink:0}
+.bq-meta{flex:1;min-width:0;padding:15px 18px 15px 16px;display:flex;flex-direction:column}
+.bq-t{font-family:'Pretendard',sans-serif;font-size:16px;font-weight:800;color:rgba(244,241,234,.96);letter-spacing:.005em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bq-a{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:600;color:rgba(224,201,140,.95);margin-top:4px;letter-spacing:.02em;text-shadow:0 0 8px rgba(201,169,110,.25)}
+.bq-q{font-family:'Noto Serif KR','Cormorant Garamond',serif;font-style:normal;font-weight:400;font-size:13.5px;line-height:1.7;letter-spacing:.005em;color:rgba(240,237,230,.82);margin-top:10px;padding-top:11px;border-top:1px solid rgba(201,169,110,.4);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;transition:color .3s}
 .bq-card{transition:opacity .7s ease,transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s ease,border-color .35s ease}
 .bq-card.show:hover{transform:translateY(-4px);border-color:rgba(201,169,110,.5);box-shadow:0 22px 60px -18px rgba(0,0,0,.9),0 0 0 1px rgba(201,169,110,.25),inset 0 1px 0 rgba(255,255,255,.08)}
 .bq-card.show:hover .bq-q{color:rgba(240,237,230,1)}
 .bq-card.show:hover .bq-t{color:#f4e9d2}
-.bq-card::after{content:'편집 →';position:absolute;top:13px;right:16px;font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.08em;color:rgba(201,169,110,.9);opacity:0;transform:translateX(-4px);transition:opacity .3s,transform .3s}
+.bq-card::after{content:'편집 →';position:absolute;top:15px;right:18px;font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.08em;color:rgba(201,169,110,.9);opacity:0;transform:translateX(-4px);transition:opacity .3s,transform .3s;z-index:2}
 .bq-card.show:hover::after{opacity:1;transform:translateX(0)}
 .bq-q::before{content:'\201C';color:rgba(212,184,130,.85);font-size:1.25em;margin-right:2px}
 .bq-q::after{content:'\201D';color:rgba(212,184,130,.85);font-size:1.25em;margin-left:2px}
@@ -767,10 +767,10 @@ body::before{
 .ref-lane-title {
   font-size: 11px;
   letter-spacing: .25em;
-  color: rgba(212,184,130,.92);
+  color: rgba(224,201,140,.98);
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
-  text-shadow: 0 0 6px rgba(201,169,110,.55), 0 0 16px rgba(201,169,110,.3);
+  text-shadow: 0 0 6px rgba(201,169,110,.6), 0 0 16px rgba(201,169,110,.35);
 }
 .ref-lane-sub {
   font-size: 10px;
@@ -1474,12 +1474,13 @@ body::before{
 .bk-sort-menu .bsi:hover{background:rgba(201,169,110,.14);color:#fff}
 .bk-sort-menu .bsi.on{color:#e6c98a;font-weight:700}
 .bk-sort-menu .bsi.on::before{content:'✓ '}
-#bkGoalHost{flex-shrink:0;width:calc((100% - 44px)/3)}
+#bkGoalHost{position:absolute;right:0;bottom:0;z-index:5;width:calc((100% - 44px)/3)}
 #lexQuizHost{position:absolute;top:96px;right:2.5rem;z-index:5;width:calc((100% - 5rem - 44px)/3)}
 .bk-goal{width:100%;box-sizing:border-box;background:rgba(10,10,12,.62);border:1px solid rgba(201,169,110,.22);border-radius:13px;padding:13px 15px}
 .bk-goal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:nowrap;white-space:nowrap}
 .bk-goal-top .t{display:flex;align-items:center;gap:5px}
-.bk-goal-top .t{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.16em;color:rgba(201,169,110,.85)}
+.bk-goal-top .t{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.18em;color:#f0d9a8;text-shadow:0 0 4px rgba(224,195,137,.9),0 0 9px rgba(201,169,110,.7),0 0 18px rgba(201,169,110,.45),0 0 30px rgba(201,169,110,.25);animation:neonGold 3.5s ease-in-out infinite}
+@keyframes neonGold{0%,100%{text-shadow:0 0 4px rgba(224,195,137,.9),0 0 9px rgba(201,169,110,.7),0 0 18px rgba(201,169,110,.45),0 0 30px rgba(201,169,110,.25)}50%{text-shadow:0 0 5px rgba(224,195,137,1),0 0 12px rgba(201,169,110,.85),0 0 24px rgba(201,169,110,.6),0 0 40px rgba(201,169,110,.35)}}
 .bk-goal-set{display:flex;align-items:center;gap:6px;font-family:'Pretendard',sans-serif;font-size:11px;color:rgba(240,237,230,.55)}
 .bk-goal-set input, .bk-goal-year{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:7px;color:#f0ede6;font-size:12px;font-weight:700;text-align:center;padding:3px 2px;font-family:'Pretendard',sans-serif;-moz-appearance:textfield}
 .bk-goal-set input::-webkit-outer-spin-button,.bk-goal-set input::-webkit-inner-spin-button,.bk-goal-year::-webkit-outer-spin-button,.bk-goal-year::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
@@ -1928,6 +1929,57 @@ body::before{
 .note-group-empty { color: #888888 !important; border-color: rgba(0, 0, 0, 0.12) !important; background: rgba(0, 0, 0, 0.02) !important; }
 .book-cover { width: 44px !important; height: 62px !important; border-radius: 4px !important; background-color: rgba(0, 0, 0, 0.04) !important; background-size: cover !important; background-position: center !important; border: 0.5px dashed rgba(0, 0, 0, 0.15) !important; flex-shrink: 0 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; font-size: 10px !important; color: #666663 !important; transition: all 0.2s !important; line-height: 1.3 !important; text-align: center !important; }
 .book-cover:hover { border-color: rgba(201, 169, 110, 0.8) !important; color: rgba(201, 169, 110, 1) !important; }
+/* 책 표지 슬롯 호버 툴팁 (body 최상위 고정 — 잘림 없음) */
+.cover-tip-float{position:fixed;width:228px;background:rgba(14,13,11,.98);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(201,169,110,.4);border-radius:12px;padding:14px 16px;box-shadow:0 18px 50px -12px rgba(0,0,0,.85);opacity:0;transform:translateY(4px);transition:opacity .18s,transform .18s;z-index:2000000;pointer-events:none;left:-9999px;top:-9999px}
+.cover-tip-float.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.cover-tip-title{font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:700;color:rgba(224,201,140,.98);margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.01em}
+.cover-tip-float .ch-step{display:flex;gap:8px;align-items:flex-start;margin-top:9px;font-family:'Pretendard',sans-serif;font-size:11px;line-height:1.5;color:rgba(255,255,255,.72);font-weight:300;text-align:left}
+.cover-tip-float .ch-step:first-of-type{margin-top:0}
+.cover-tip-float .ch-step b{color:rgba(240,237,230,.92);font-weight:600}
+.cover-tip-float .ch-n{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:rgba(201,169,110,.9);color:#12100c;font-weight:700;font-size:9.5px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.cover-tip-float a{color:rgba(224,201,140,.95);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.4)}
+.cover-tip-float a:hover{color:#f0d9a8}
+/* 책 표지 설정 모달 (세련된 커스텀) */
+.cover-modal-ov{position:fixed;inset:0;background:rgba(6,6,8,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:3000000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;padding:20px}
+.cover-modal-ov.show{opacity:1}
+.cover-modal{width:340px;max-width:92vw;background:linear-gradient(165deg,rgba(26,24,20,.98),rgba(16,15,13,.98));border:1px solid rgba(201,169,110,.3);border-radius:18px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);transform:scale(.94) translateY(8px);transition:transform .24s cubic-bezier(.22,1,.36,1)}
+.cover-modal-ov.show .cover-modal{transform:scale(1) translateY(0)}
+.cm-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cm-ic{font-size:24px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,.12);border:1px solid rgba(201,169,110,.3);border-radius:12px;flex-shrink:0}
+.cm-title{font-family:'Pretendard',sans-serif;font-size:15px;font-weight:800;color:#f0ede6;letter-spacing:-.01em}
+.cm-sub{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:300;color:rgba(255,255,255,.45);margin-top:2px}
+.cm-preview{width:100%;height:150px;border-radius:12px;background:rgba(255,255,255,.03);border:1px dashed rgba(201,169,110,.3);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px}
+.cm-preview img{width:100%;height:100%;object-fit:contain}
+.cm-prev-ph{font-family:'Pretendard',sans-serif;font-size:12px;color:rgba(255,255,255,.3);font-weight:300}
+.cm-prev-err{font-family:'Pretendard',sans-serif;font-size:11px;color:rgba(230,130,110,.8);font-weight:400;text-align:center;padding:10px}
+.cm-input{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:11px 13px;font-family:'Pretendard',sans-serif;font-size:12.5px;color:#f0ede6;outline:none;transition:.18s}
+.cm-input:focus{border-color:rgba(201,169,110,.6);background:rgba(201,169,110,.06);box-shadow:0 0 0 3px rgba(201,169,110,.1)}
+.cm-input::placeholder{color:rgba(255,255,255,.28)}
+.cm-hint{font-family:'Pretendard',sans-serif;font-size:10.5px;line-height:1.6;color:rgba(255,255,255,.45);font-weight:300;margin:10px 2px 16px}
+.cm-hint a{color:rgba(224,201,140,.9);text-decoration:none;border-bottom:1px solid rgba(201,169,110,.35)}
+.cm-hint a:hover{color:#f0d9a8}
+.cm-hint b{color:rgba(240,237,230,.75);font-weight:600}
+.cm-btns{display:flex;gap:8px;justify-content:flex-end}
+.cm-btn{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:9px 16px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:.16s}
+.cm-cancel{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.6)}
+.cm-cancel:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85)}
+.cm-clear{background:rgba(216,80,80,.12);border-color:rgba(216,80,80,.35);color:rgba(230,140,130,.95)}
+.cm-clear:hover{background:rgba(216,80,80,.2)}
+.cm-save{background:linear-gradient(135deg,#e0c389,#c9a96e);border-color:rgba(201,169,110,.5);color:#1a140a;font-weight:700}
+.cm-save:hover{background:linear-gradient(135deg,#f0d9a8,#d4b57e);box-shadow:0 4px 16px rgba(201,169,110,.4)}
+
+/* ABOUT 링크 버튼 네온 hover */
+.about-link{position:relative}
+.about-link.al-gold:hover{border-color:rgba(224,201,140,.9)!important;color:#f0d9a8!important;box-shadow:0 0 8px rgba(201,169,110,.5),0 0 18px rgba(201,169,110,.35),inset 0 0 12px rgba(201,169,110,.1);text-shadow:0 0 8px rgba(224,201,140,.7)}
+.about-link.al-blue:hover{border-color:rgba(155,212,255,.9)!important;color:#c4e6ff!important;box-shadow:0 0 8px rgba(125,200,255,.5),0 0 18px rgba(125,200,255,.35),inset 0 0 12px rgba(125,200,255,.1);text-shadow:0 0 8px rgba(155,212,255,.7)}
+.about-link.al-white:hover{border-color:rgba(255,255,255,.85)!important;color:#fff!important;box-shadow:0 0 8px rgba(255,255,255,.4),0 0 18px rgba(255,255,255,.25),inset 0 0 12px rgba(255,255,255,.08);text-shadow:0 0 8px rgba(255,255,255,.6)}
+.about-link.al-orange:hover{border-color:rgba(255,180,100,.9)!important;color:#ffd9a8!important;box-shadow:0 0 8px rgba(255,170,60,.5),0 0 18px rgba(255,170,60,.35),inset 0 0 12px rgba(255,170,60,.1);text-shadow:0 0 8px rgba(255,190,120,.7)}
+.pg-star-row{display:flex;align-items:center;gap:1px;margin-top:5px}
+.pg-star{font-size:12px;line-height:1;color:rgba(0,0,0,.14)}
+.pg-star.full{color:#e0a020}
+.pg-star.half{position:relative;color:rgba(0,0,0,.14)}
+.pg-star.half::before{content:'★';position:absolute;left:0;top:0;width:50%;overflow:hidden;color:#e0a020}
+.pg-star-num{font-family:'Orbitron',sans-serif;font-size:9.5px;font-weight:600;color:#c9922a;margin-left:5px}
 .book-cover.has-img { border-style: solid !important; border-color: rgba(0, 0, 0, 0.08) !important; font-size: 0 !important; }
 
 /* 버튼 스타일 다크 보정 */
@@ -2038,6 +2090,48 @@ body::before{
 .lex-confirm .lc-no:hover{background:rgba(0,0,0,.09)}
 .lex-confirm .lc-yes{background:#e05555;color:#fff}
 .lex-confirm .lc-yes:hover{background:#c93e3e}
+/* MEDIA 카드 (영상 아카이브) */
+#media-editor-layout:not(.editing) .note-group-body { display:grid !important; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)) !important; gap:14px !important; flex-direction:row !important; align-content:start !important; padding-left:0 !important; margin-left:0 !important; border-left:none !important; }
+#media-editor-layout:not(.editing) .kanban-add-btn{grid-column:1/-1 !important;margin-top:2px}
+#media-editor-layout:not(.editing) .note-ungrouped{display:grid !important;grid-template-columns:repeat(auto-fill,minmax(220px,1fr)) !important;gap:14px !important;padding:0 !important}
+/* 미디어: 고정높이·내부스크롤 해제 → 카드 수에 맞춰 자연스럽게 확장 */
+#media-editor-layout:not(.editing){height:auto !important;max-height:none !important;}
+#media-editor-layout:not(.editing) .editor-sidebar{height:auto !important;max-height:none !important;min-height:400px !important;overflow:visible !important;}
+#media-editor-layout:not(.editing) .editor-sidebar-list{flex:none !important;overflow:visible !important;height:auto !important;max-height:none !important;}
+#media-editor-layout:not(.editing) .editor-main{display:none !important;}
+#media-editor-layout:not(.editing) .note-group-body{border-left:none !important;padding-left:0 !important;margin-left:0 !important;}
+.media-card{position:relative;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:13px;padding:0 0 12px;box-shadow:0 2px 10px rgba(0,0,0,.07);transition:box-shadow .18s,transform .18s,border-color .18s;cursor:default;display:flex;flex-direction:column;overflow:hidden}
+.media-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.14);transform:translateY(-2px);border-color:rgba(178,138,212,.4)}
+.media-card.dragging{opacity:.4}
+.media-card.drop-before{box-shadow:-3px 0 0 rgba(178,138,212,.8)}
+.media-card.drop-after{box-shadow:3px 0 0 rgba(178,138,212,.8)}
+.media-thumb{position:relative;width:100%;aspect-ratio:16/9;background:#12121a;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.media-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.media-thumb .media-play{position:absolute;inset:0;margin:auto;width:44px;height:44px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;padding-left:3px;transition:.2s;pointer-events:none}
+.media-thumb:hover .media-play{background:rgba(226,73,73,.92);transform:scale(1.08)}
+.media-thumb.empty{cursor:default;background:linear-gradient(160deg,#1a1a24,#0f0f16)}
+.media-thumb-hint{font-family:'Pretendard',sans-serif;font-size:11px;line-height:1.6;color:rgba(255,255,255,.4);text-align:center;padding:10px}
+.media-link-ph{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.7);font-family:'Pretendard',sans-serif;font-size:12px;padding:14px}
+.media-link-ph span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.media-url{border:none;border-bottom:1px solid rgba(0,0,0,.08);background:rgba(0,0,0,.015);font-family:'Pretendard',sans-serif;font-size:10.5px;color:#666;padding:7px 12px;outline:none;width:100%;box-sizing:border-box}
+.media-url:focus{background:rgba(178,138,212,.06);border-bottom-color:rgba(178,138,212,.4)}
+.media-title{font-family:'Pretendard',sans-serif;font-size:14px;font-weight:800;color:#1a1a1a;letter-spacing:-.01em;outline:none;line-height:1.35;padding:10px 12px 4px;word-break:break-word}
+.media-title:empty::before{content:attr(data-ph);color:#c2c2be;font-weight:600}
+.media-memo{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:400;color:#555;line-height:1.6;outline:none;padding:2px 12px 4px;word-break:break-word;min-height:20px}
+.media-memo:empty::before{content:attr(data-ph);color:#cbcbc7}
+.media-del{position:absolute;top:8px;right:8px;z-index:3;width:24px;height:24px;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:11px;cursor:pointer;border-radius:6px;opacity:0;transition:opacity .15s,background .15s;display:flex;align-items:center;justify-content:center}
+.media-card:hover .media-del{opacity:1}
+.media-del:hover{background:rgba(216,80,80,.9)}
+/* 미디어: 토글 안/밖 구분 */
+.media-loose-label{grid-column:1/-1;display:flex;align-items:center;gap:9px;font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;color:#d8c9a8;margin:24px 0 8px;padding:10px 15px;background:linear-gradient(90deg,rgba(201,169,110,.14),rgba(201,169,110,.04));border:1px solid rgba(201,169,110,.28);border-left:3px solid rgba(201,169,110,.75);border-radius:0 10px 10px 0;letter-spacing:.01em;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.media-loose-label .mll-ic{font-size:14px;filter:saturate(1.1)}
+.media-loose-label .mll-c{margin-left:auto;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:#e0c389;background:rgba(201,169,110,.18);border:1px solid rgba(201,169,110,.3);padding:2px 9px;border-radius:999px}
+/* 토글 안 카드: 보라 강조 바 + 선명 */
+.media-card.in-group::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#b28ad4,#8a6ab0);border-radius:13px 0 0 13px;z-index:4}
+/* 미분류 카드: 점선 테두리 + 살짝 흐리게 + 배지 */
+.media-card.no-group{border-style:dashed;border-color:rgba(0,0,0,.18);opacity:.92}
+.media-card.no-group .media-thumb{filter:saturate(.85)}
+.media-card.no-group::before{content:'미분류';position:absolute;top:8px;left:8px;z-index:4;font-family:'Pretendard',sans-serif;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:6px;letter-spacing:.02em}
 /* LEXICON 쪽지시험 패널 */
 .lex-quiz .lq-tag{font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:700;color:rgba(174,177,180,.9);background:rgba(174,177,180,.14);border:1px solid rgba(174,177,180,.3);border-radius:10px;padding:1px 8px;letter-spacing:.02em}
 .lq-term{font-family:'Pretendard',sans-serif;font-size:19px;font-weight:800;color:#f0ede6;letter-spacing:-.01em;text-align:center;margin:10px 0 8px;word-break:break-word;line-height:1.3}
@@ -2056,6 +2150,7 @@ body::before{
 .lq-tagrow{display:flex;justify-content:flex-end;margin-top:-2px}
 /* 단어 추가 버튼(그룹 하단 addPage) */
 #lexicon-editor-layout:not(.editing) .kanban-add-btn{grid-column:1/-1 !important;margin-top:2px}
+#lexicon-editor-layout:not(.editing) .note-ungrouped{display:grid !important;grid-template-columns:repeat(auto-fill,minmax(148px,1fr)) !important;gap:10px !important;padding:0 !important}
 #lexicon-editor-layout:not(.editing) .note-group-header { background: #f5f3ee !important; margin-bottom: 14px !important; padding: 10px 12px !important; border-radius: 8px !important; border: 0.5px solid rgba(0, 0, 0, 0.05) !important; }
 #lexicon-editor-layout:not(.editing) .note-group-name { color: #1a1a1a !important; }
 #lexicon-editor-layout:not(.editing) .note-group-arrow { color: #555555 !important; }
@@ -3218,7 +3313,7 @@ body #page-about > div > p:not(:first-of-type) {
         <div class="macro-ts" id="macroTs">연결 중...</div>
         <input id="finnhubKey" class="key-input" placeholder="Finnhub API 키 입력 (주식 실시간용)" />
         <button class="refresh-btn" id="saveKeyBtn">키 저장</button>
-        <button class="refresh-btn" id="macroRefresh">&#8635; 새로고침</button>
+        <button class="refresh-btn" id="macroRefresh" style="margin-left:0">&#8635; 새로고침</button>
       </div>
       <div class="key-hint" id="keyHint">
         주식 실시간 시세를 보려면 <a href="https://finnhub.io/register" target="_blank">finnhub.io</a>에서 무료 키를 발급받아 입력하세요 (분당 60회 무료). 키가 없으면 주식은 종가 기준으로 표시됩니다.
@@ -3364,8 +3459,10 @@ body #page-about > div > p:not(:first-of-type) {
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(201,169,110,.3)">독서 기록</h1>
     <p style="font-size:11px;letter-spacing:.16em;color:rgba(201,169,110,.5);font-weight:300">Reading Insight Engine</p>
     <div class="cove-line" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
-    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px"><p class="hold-desc" style="margin:0">읽고 싶은 책부터 완독한 책까지 한눈에 관리합니다.<br/>단순한 독서 기록을 넘어, 투자의 통찰을 넓히는 지식 서재입니다.</p>
-    <div id="bkGoalHost"></div></div>
+    <div style="position:relative">
+      <p class="hold-desc" style="margin:0">읽고 싶은 책부터 완독한 책까지 한눈에 관리합니다.<br/>단순한 독서 기록을 넘어, 투자의 통찰을 넓히는 지식 서재입니다.</p>
+      <div id="bkGoalHost"></div>
+    </div>
     
     <div class="editor-layout books-board" id="books-editor-layout">
       <div class="editor-sidebar">
@@ -3390,7 +3487,7 @@ body #page-about > div > p:not(:first-of-type) {
     
     <div class="editor-layout" id="economics-editor-layout">
       <div class="editor-sidebar">
-        <button class="add-page-btn" onclick="KnowledgeNotes.create('economics')">+ 새 페이지 추가</button>
+        <button class="add-page-btn" onclick="KnowledgeNotes.create('economics','grp_econ_main')">+ 새 페이지 추가</button>
         <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('economics')">+ 새 그룹(토글)</button>
         <div id="economics-sidebar-list" class="editor-sidebar-list"></div>
       </div>
@@ -3413,7 +3510,7 @@ body #page-about > div > p:not(:first-of-type) {
     
     <div class="editor-layout" id="media-editor-layout">
       <div class="editor-sidebar">
-        <button class="add-page-btn" onclick="KnowledgeNotes.create('media')">+ 새 페이지 추가</button>
+        <button class="add-page-btn" onclick="KnowledgeNotes.create('media','grp_media_main')">+ 새 영상·미디어 추가</button>
         <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('media')">+ 새 그룹(토글)</button>
         <div id="media-sidebar-list" class="editor-sidebar-list"></div>
       </div>
@@ -4096,7 +4193,7 @@ body #page-about > div > p:not(:first-of-type) {
     </div>
 
     <div style="max-width:700px; background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:64px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:16px; font-family:'Orbitron', sans-serif; font-weight:600;">CLOUD ARCHIVE — 사용자별 분리 저장</div>
+    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:0 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>CLOUD ARCHIVE — 사용자별 분리 저장</div>
     <p style="font-size:13px; color:rgba(255,255,255,.62); line-height:1.9; margin-bottom:14px; font-weight:300; max-width:580px;">
       이 홈페이지는 회원가입 절차 없이 <b style="color:rgba(240,237,230,.85); font-weight:500;">구글 계정으로 바로 로그인</b>해서 씁니다.
       우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> 버튼을 누르고 본인 구글 계정을 선택하면, 그때부터 이 사이트에 기록하는 모든 내용
@@ -4107,13 +4204,15 @@ body #page-about > div > p:not(:first-of-type) {
       로그인하지 않아도 사용할 수 있으며, 이 경우 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">지금 쓰는 브라우저에만</b> 저장되는 로컬 모드로 동작합니다
       (다른 기기에서는 보이지 않으니, 여러 기기를 오간다면 로그인을 권장합니다).
     </p>
-    <div style="display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 4px;">
-      <a href="https://myaccount.google.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:#e0c389; text-decoration:none; background:rgba(201,169,110,.1); border:1px solid rgba(201,169,110,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔐 내 구글 계정 관리 ↗</a>
-      <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:#9ed7ff; text-decoration:none; background:rgba(125,200,255,.08); border:1px solid rgba(125,200,255,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🛡 보안 규칙 문서 ↗</a>
+    <div style="display:flex; flex-direction:column; gap:9px; margin:22px 0 4px; max-width:340px;">
+      <a href="https://myaccount.google.com/" target="_blank" rel="noopener" class="about-link al-gold" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#e0c389; text-decoration:none; background:rgba(201,169,110,.1); border:1px solid rgba(201,169,110,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔐 내 구글 계정 관리 ↗</a>
+      <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" class="about-link al-blue" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#9ed7ff; text-decoration:none; background:rgba(125,200,255,.08); border:1px solid rgba(125,200,255,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🛡 보안 규칙 문서 ↗</a>
+      <a href="https://github.com/jongchan-creator/jongchan-creator.github.io" target="_blank" rel="noopener" class="about-link al-white" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#e6e6e6; text-decoration:none; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.28); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">⌨ GitHub 저장소 (코드) ↗</a>
+      <a href="https://console.firebase.google.com/project/newnormal-lilac/overview" target="_blank" rel="noopener" class="about-link al-orange" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#ffca7a; text-decoration:none; background:rgba(255,170,60,.09); border:1px solid rgba(255,170,60,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔥 Firebase 콘솔 (데이터) ↗</a>
     </div>
 
     <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:30px 0 16px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW IT WORKS — 운영 방식</div>
+    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:32px 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>HOW IT WORKS — 운영 방식</div>
     <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
       <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">화면(코드)과 데이터는 따로 삽니다.</b> 홈페이지의 디자인·기능은 <b style="color:rgba(240,237,230,.85); font-weight:500;">GitHub Pages</b>에, 내가 입력한 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">Google Firebase</b>에 저장됩니다. 덕분에 사이트가 업데이트되거나 디자인이 바뀌어도 그동안 쌓아온 기록은 전혀 사라지지 않습니다.</span></div>
       <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">저장 버튼이 없습니다.</b> 무언가를 입력하거나 수정하면 <b style="color:rgba(240,237,230,.85); font-weight:500;">약 1.5초 뒤 자동으로</b> 클라우드에 반영됩니다. 따로 "저장"을 누를 필요 없이, 쓰는 순간 곧바로 보관됩니다.</span></div>
@@ -4121,7 +4220,7 @@ body #page-about > div > p:not(:first-of-type) {
     </div>
 
     <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin:30px 0 16px; font-family:'Orbitron', sans-serif; font-weight:600;">HOW TO USE — 사용 방법</div>
+    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:32px 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>HOW TO USE — 사용 방법</div>
     <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
       <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">로그인하기.</b> 우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> → 구글 계정 선택. 처음 로그인하는 것이라면, 지금까지 이 기기에만 있던 기록이 <b style="color:rgba(240,237,230,.85); font-weight:500;">자동으로 내 클라우드로 옮겨집니다</b> (기존 기록이 사라지지 않으니 안심하세요).</span></div>
       <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">평소처럼 쓰기.</b> 이후에는 신경 쓸 것 없이 그냥 쓰면 됩니다. 지식금고(BOOKS·LEXICON·ECONOMICS·MEDIA), 자산(ASSETS), 보유종목(HOLDINGS), 텐베거 워치리스트·메모, 최근 검색, API 키까지 <b style="color:rgba(240,237,230,.85); font-weight:500;">모두 자동으로 동기화</b>됩니다.</span></div>
@@ -5222,6 +5321,8 @@ var runParallax = function(){
 
 
 /* ══ 노션 스타일 서식 지정, 이미지 클릭 크기 조절 및 자동 정렬 통합 엔진 (문법 완전 교정본) ══ */
+var ECON_SEED_CONTENT = '<div class="np-note" contenteditable="false" style="border-left-color:rgba(204,255,0,.5)">📝 <b>예시 페이지입니다.</b> ECONOMICS 탭 사용법을 보여드리는 샘플이에요. 자유롭게 수정하거나 카드의 ✕로 삭제하세요.</div><h2>72의 법칙 (Rule of 72)</h2><p>복리 수익률로 <b>원금이 두 배</b>가 되는 데 걸리는 시간을 빠르게 어림하는 방법. <b>72 ÷ 연이율(%)</b> = 대략적인 소요 연수.</p><ul><li>연 6% → 72 ÷ 6 = <b>약 12년</b>이면 자산이 2배</li><li>연 9% → 72 ÷ 9 = <b>약 8년</b></li><li>인플레이션에도 적용 — 물가가 연 3%씩 오르면 24년 뒤 화폐가치는 절반</li></ul><blockquote>작은 수익률 차이가 장기적으로 자산 규모를 완전히 바꾼다 — 복리는 시간의 함수다.</blockquote><p><br></p>';
+var MEDIA_SEED_CONTENT = '<div class="np-note" contenteditable="false" style="border-left-color:rgba(178,138,212,.6)">📝 <b>예시 페이지입니다.</b> MEDIA 탭 사용법을 보여드리는 샘플이에요. 다큐·영상·팟캐스트에서 얻은 인사이트를 이렇게 정리하세요. 자유롭게 수정하거나 ✕로 삭제하세요.</div><h2>다큐멘터리 · Inside Job (2010)</h2><div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">🎬 유형</span><span class="np-v" contenteditable="true">다큐멘터리</span></div><div class="nn-prop"><span class="np-k">⭐ 추천도</span><span class="np-v" contenteditable="true">★★★★★</span></div></div><p>2008 금융위기의 구조적 원인을 추적한 다큐. 파생상품·신용평가사·규제 실패가 어떻게 맞물렸는지 보여준다.</p><div style="font-weight:700;margin-top:12px">📌 핵심 메모</div><ul><li>위기는 예측 불가능한 사고가 아니라 <b>인센티브 구조가 만든 필연</b>이었다.</li><li>리스크를 감춘 금융상품일수록 등급은 높았다 — 복잡성은 종종 위험의 위장막이다.</li></ul><p><br></p>';
 window.KnowledgeNotes = {
   data: { books: [], lexicon: [], economics: [], media: [] },
   activeIds: { books: null, lexicon: null, economics: null, media: null },
@@ -5267,7 +5368,7 @@ window.KnowledgeNotes = {
           '<p><br></p>';
 
         this.data = {
-          books: [{ id: 'note_default_book', title: '돈의 심리학 (기본 독서 템플릿)', content: initialBookContent, date: this._nowStr(), groupId: 'grp_books_reading', icon: '📖' }],
+          books: [],
           lexicon: [], economics: [], media: []
         };
       }
@@ -5293,6 +5394,18 @@ window.KnowledgeNotes = {
           var have = this.groups[t].map(function(g){ return g.id; });
           need.forEach(function(ng, idx){ if(have.indexOf(ng.id)<0){ this.groups[t].splice(idx,0,ng); } }, this);
         }
+        /* economics/media 기본 그룹 보정 */
+        if (t === 'economics' && !this.groups[t].some(function(g){ return g.id==='grp_econ_main'; })) {
+          this.groups[t].unshift({ id: 'grp_econ_main', name: '핵심 개념 (예시) 📈', collapsed: false, parentId: null, icon: '📈' });
+        }
+        if (t === 'media' && !this.groups[t].some(function(g){ return g.id==='grp_media_main'; })) {
+          this.groups[t].unshift({ id: 'grp_media_main', name: '아카이브 (예시) 🎬', collapsed: false, parentId: null, icon: '🎬' });
+        }
+        /* 예전 이름 → (예시) 라벨 1회 갱신 */
+        this.groups[t].forEach(function(g){
+          if(g.id==='grp_econ_main' && g.name==='핵심 개념 📈') g.name='핵심 개념 (예시) 📈';
+          if(g.id==='grp_media_main' && g.name==='아카이브 🎬') g.name='아카이브 (예시) 🎬';
+        });
       } else {
         if (t === 'books') {
           this.groups[t] = [
@@ -5306,6 +5419,10 @@ window.KnowledgeNotes = {
             { id: 'grp_lexicon_general', name: '일반 관련 💡', collapsed: false, parentId: null, icon: '💡' },
             { id: 'grp_lexicon_english', name: '영어 단어 🔤', collapsed: false, parentId: null, icon: '📇' }
           ];
+        } else if (t === 'economics') {
+          this.groups[t] = [ { id: 'grp_econ_main', name: '핵심 개념 (예시) 📈', collapsed: false, parentId: null, icon: '📈' } ];
+        } else if (t === 'media') {
+          this.groups[t] = [ { id: 'grp_media_main', name: '아카이브 (예시) 🎬', collapsed: false, parentId: null, icon: '🎬' } ];
         } else {
           this.groups[t] = [];
         }
@@ -5322,6 +5439,13 @@ window.KnowledgeNotes = {
           groupId: 'grp_books_done',
           content: '<div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">✍️ 작가</span><span class="np-v" contenteditable="true" data-ph="비어 있음">피터 린치</span></div><div class="nn-prop"><span class="np-k">⭐ 별점</span><span class="np-stars" data-rating="4.5"><i class="st" data-v="1"><b class="h1" data-half="0.5"></b><b class="h2" data-half="1.0"></b></i><i class="st" data-v="2"><b class="h1" data-half="1.5"></b><b class="h2" data-half="2.0"></b></i><i class="st" data-v="3"><b class="h1" data-half="2.5"></b><b class="h2" data-half="3.0"></b></i><i class="st" data-v="4"><b class="h1" data-half="3.5"></b><b class="h2" data-half="4.0"></b></i><i class="st" data-v="5"><b class="h1" data-half="4.5"></b><b class="h2" data-half="5.0"></b></i></span></div><div class="nn-prop"><span class="np-k">🏷️ 종류</span><span class="np-cat" data-cat="투자"><span class="cat-chip">투자</span></span></div><div class="nn-prop"><span class="np-k">📅 읽기 시작한 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/01">2026/06/21 (일)</span></div><div class="nn-prop"><span class="np-k">🏁 다 읽은 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/08">2026/07/05 (일)</span></div></div><div class="np-note" contenteditable="false" style="border-left-color:rgba(127,168,212,.6)">📖 <b>이 책은 예시입니다.</b> BOOKS 사용법을 보여드리기 위한 샘플이에요. 위 작가·날짜·별점·종류를 눌러 직접 편집해 보고, 아래 구절도 자유롭게 바꿔보세요. 필요 없으면 카드의 ✕로 삭제하면 됩니다.</div><div style="font-weight:700;margin-top:12px">📌 인상 깊은 구절</div><div class="np-note" contenteditable="false">💡 점(•)에 쓴 문장은 이 책이 <b>완독</b> 그룹에 있을 때 홈 화면의 FROM MY LIBRARY 카드에 랜덤으로 표시됩니다. 백스페이스로 점을 지운 일반 줄은 표시되지 않아 자유 메모로 쓸 수 있어요.</div><ul><li>일상 속에서 위대한 기업의 단서를 가장 먼저 발견하는 사람은 언제나 평범한 개인 투자자다.</li><li>시장의 조정을 예측하려 애쓰다 잃은 돈이, 조정 그 자체로 잃은 돈보다 훨씬 많다.</li><li>텐베거의 비밀은 단순하다 — 뛰어난 기업을, 충분히 오래, 흔들리지 않고 보유하는 것.</li></ul><div><br></div>'
         });
+      }
+      /* 예시 페이지: economics / media (사용법 시연용) */
+      if (t === 'economics' && !this.data.economics.some(function(p){ return p && p.id === 'p_seed_econ'; })) {
+        this.data.economics.push({ id: 'p_seed_econ', title: '72의 법칙 (예시 작성)', icon: '📈', date: this._nowStr(), groupId: 'grp_econ_main', content: ECON_SEED_CONTENT });
+      }
+      if (t === 'media' && !this.data.media.some(function(p){ return p && p.id === 'p_seed_media'; })) {
+        this.data.media.push({ id: 'p_seed_media', title: '[예시] TERAFAB — 사상 최대 반도체 팹', icon: '🎬', date: this._nowStr(), groupId: 'grp_media_main', url: 'https://www.youtube.com/watch?v=Txt3Wodav1o', content: 'Tesla·SpaceX·xAI가 로직·메모리·첨단 패키징을 한 지붕 아래 통합하는 초대형 반도체 제조 시설(TERAFAB) 구상. 수직 통합이 칩 공급망과 AI 하드웨어 경쟁에 어떤 의미인지 짚어볼 것. (예시 카드 — 링크를 붙이면 썸네일이 자동으로 뜹니다. ✕로 삭제하세요.)' });
       }
       /* 구버전 시드(예시 안내 없는)면 최신 안내 포함본으로 1회 교체 */
       if (t === 'books') {
@@ -5432,12 +5556,15 @@ window.KnowledgeNotes = {
       id: 'note_' + Date.now(),
       title: type === 'books' ? '제목 없는 페이지' : (type === 'lexicon' ? '새로운 용어 혹은 단어 기입' : '제목 없는 페이지'),
       content: (type==='books' ? '<div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">✍️ 작가</span><span class="np-v" contenteditable="true" data-ph="비어 있음"></span></div><div class="nn-prop"><span class="np-k">⭐ 별점</span><span class="np-stars" data-rating="0"><i class="st" data-v="1"><b class="h1" data-half="0.5"></b><b class="h2" data-half="1.0"></b></i><i class="st" data-v="2"><b class="h1" data-half="1.5"></b><b class="h2" data-half="2.0"></b></i><i class="st" data-v="3"><b class="h1" data-half="2.5"></b><b class="h2" data-half="3.0"></b></i><i class="st" data-v="4"><b class="h1" data-half="3.5"></b><b class="h2" data-half="4.0"></b></i><i class="st" data-v="5"><b class="h1" data-half="4.5"></b><b class="h2" data-half="5.0"></b></i></span></div><div class="nn-prop"><span class="np-k">🏷️ 종류</span><span class="np-cat" data-cat=""><span class="cat-chip empty">선택 안 함</span></span></div><div class="nn-prop"><span class="np-k">📅 읽기 시작한 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/01"></span></div><div class="nn-prop"><span class="np-k">🏁 다 읽은 날짜</span><span class="np-v" contenteditable="true" data-ph="예: 2026/07/08"></span></div></div><div style="font-weight:700;margin-top:12px">📌 인상 깊은 구절</div><div class="np-note" contenteditable="false">💡 점(•)에 쓴 문장은 이 책이 <b>완독</b> 그룹에 있을 때 홈 화면의 FROM MY LIBRARY 카드에 랜덤으로 표시됩니다. 백스페이스로 점을 지운 일반 줄은 표시되지 않아 자유 메모로 쓸 수 있어요.</div><ul><li><br></li></ul><div><br></div>' : ''), date: dateStr, groupId: groupId || null,
-      icon: type === 'books' ? '' : (type === 'lexicon' ? '📇' : '📄')
+      icon: (type === 'books' || type === 'economics') ? '' : (type === 'lexicon' ? '📇' : '📄')
     };
     this.data[type].unshift(newPage);
     if(type==='lexicon'){
       this.save(); this.renderSidebar(type);
       var self=this; setTimeout(function(){ var c=document.getElementById('item-'+newPage.id); if(c){ var t=c.querySelector('.lex-term'); if(t){ t.focus(); } c.scrollIntoView({block:'nearest'}); } }, 50);
+    } else if(type==='media'){
+      this.save(); this.renderSidebar(type);
+      var self2=this; setTimeout(function(){ var c=document.getElementById('item-'+newPage.id); if(c){ var u=c.querySelector('.media-url'); if(u){ u.focus(); } c.scrollIntoView({block:'nearest'}); } }, 50);
     } else {
       this.save(); this.select(type, newPage.id);
     }
@@ -5472,9 +5599,9 @@ window.KnowledgeNotes = {
     var target = this.data[type].find(function(n) { return n.id === id; });
     if (target) {
       target[field] = value;
-      if (type !== 'lexicon') { target.date = this._nowStr(); }
+      if (type !== 'lexicon' && type !== 'media') { target.date = this._nowStr(); }
       this.save();
-      if (type === 'lexicon') { return; } /* 단어장은 인라인 편집 중이라 DOM 재기록 불필요 */
+      if (type === 'lexicon' || type === 'media') { return; } /* 인라인 카드 편집 중 DOM 재기록 불필요 */
       if (field === 'title') {
         var sideEl = document.querySelector('#item-' + id + ' .page-title-text');
         if (sideEl) sideEl.textContent = value || '제목 없는 페이지';
@@ -5491,12 +5618,72 @@ window.KnowledgeNotes = {
     this.showEmojiPicker(anchor, function(emoji){ note.icon = emoji; self.save(); self.renderSidebar(type); });
   },
 
+  _ensureCoverTip: function(){
+    var self=this;
+    if(self._coverTipEl && self._coverTipEl.isConnected) return self._coverTipEl;
+    var tip=document.createElement('div'); tip.className='cover-tip-float';
+    tip.innerHTML='<div class="cover-tip-title">🖼️ 책 표지 넣는 법</div>'
+      +'<div class="ch-step"><span class="ch-n">1</span><div>이 <b>점선 슬롯</b>을 <b>클릭</b>하세요.</div></div>'
+      +'<div class="ch-step"><span class="ch-n">2</span><div>표지 이미지의 <b>URL</b>을 붙여넣고 확인.</div></div>'
+      +'<div class="ch-step"><span class="ch-n">3</span><div>URL은 <a href="https://www.google.com/search?q=book+cover&tbm=isch" target="_blank" rel="noopener">구글 이미지</a>·<a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library</a>에서 <b>우클릭 → 이미지 주소 복사</b>.</div></div>';
+    document.body.appendChild(tip);
+    self._coverTipEl=tip;
+    tip.addEventListener('mouseenter', function(){ self._coverTipHover=true; });
+    tip.addEventListener('mouseleave', function(){ self._coverTipHover=false; self._scheduleHideCoverTip(); });
+    return tip;
+  },
+  _showCoverTip: function(slot){
+    var self=this;
+    if(self._coverTipHideTimer){ clearTimeout(self._coverTipHideTimer); self._coverTipHideTimer=null; }
+    var tip=self._ensureCoverTip();
+    self._coverTipSlot=slot;
+    /* 위치 계산 (툴팁이 이미 렌더돼 있어 크기 정확) */
+    var r=slot.getBoundingClientRect();
+    var tw=tip.offsetWidth||228, th=tip.offsetHeight||160;
+    var left=r.right+12, top=r.top + r.height/2 - th/2;
+    if(left+tw > window.innerWidth-10){ left=r.left-12-tw; }
+    if(left < 10){ left=Math.max(10, r.left); top=r.bottom+10; }
+    if(top < 10) top=10;
+    if(top+th > window.innerHeight-10) top=Math.max(10, window.innerHeight-10-th);
+    tip.style.left=Math.round(left)+'px'; tip.style.top=Math.round(top)+'px';
+    tip.classList.add('show');
+  },
+  _scheduleHideCoverTip: function(){
+    var self=this;
+    if(self._coverTipHideTimer) clearTimeout(self._coverTipHideTimer);
+    self._coverTipHideTimer=setTimeout(function(){
+      if(self._coverTipHover) return;
+      if(self._coverTipEl) self._coverTipEl.classList.remove('show');
+    }, 120);
+  },
+  _hideCoverTip: function(){ this._scheduleHideCoverTip(); },
+
   changeBookCover: function(type, id) {
-    var url = prompt("책 표지의 이미지 URL를 입력하세요:");
-    if (url !== null) {
-      var note = this.data[type].find(function(n) { return n.id === id; });
-      if (note) { note.cover = url.trim(); this.save(); this.renderSidebar(type); }
-    }
+    var self=this;
+    var note = this.data[type].find(function(n){ return n.id === id; });
+    if(!note) return;
+    /* 기존 모달 제거 */
+    var old=document.getElementById('coverModal'); if(old) old.remove();
+    var ov=document.createElement('div'); ov.id='coverModal'; ov.className='cover-modal-ov';
+    ov.innerHTML=
+      '<div class="cover-modal">'
+      +'<div class="cm-head"><span class="cm-ic">🖼️</span><div><div class="cm-title">책 표지 설정</div><div class="cm-sub">이미지 URL을 붙여넣으세요</div></div></div>'
+      +'<div class="cm-preview" id="cmPrev">'+(note.cover?'<img src="'+note.cover+'" alt="">':'<span class="cm-prev-ph">미리보기</span>')+'</div>'
+      +'<input type="text" class="cm-input" id="cmInput" placeholder="https://... 표지 이미지 주소" value="'+(note.cover||'').replace(/"/g,'&quot;')+'">'
+      +'<div class="cm-hint">💡 <a href="https://www.google.com/search?q=book+cover&tbm=isch" target="_blank" rel="noopener">구글 이미지</a>·<a href="https://openlibrary.org" target="_blank" rel="noopener">Open Library</a>에서 표지를 <b>우클릭 → 이미지 주소 복사</b></div>'
+      +'<div class="cm-btns"><button class="cm-btn cm-cancel">취소</button>'+(note.cover?'<button class="cm-btn cm-clear">표지 삭제</button>':'')+'<button class="cm-btn cm-save">저장</button></div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    var input=ov.querySelector('#cmInput'), prev=ov.querySelector('#cmPrev');
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
+    function apply(v){ note.cover=(v||'').trim(); self.save(); self.renderSidebar(type); close(); }
+    input.oninput=function(){ var v=this.value.trim(); if(v){ prev.innerHTML='<img src="'+v.replace(/"/g,'&quot;')+'" alt="" onerror="this.parentNode.innerHTML=\'<span class=&quot;cm-prev-err&quot;>이미지를 불러올 수 없어요</span>\'">'; } else { prev.innerHTML='<span class="cm-prev-ph">미리보기</span>'; } };
+    input.onkeydown=function(e){ if(e.key==='Enter'){ apply(input.value); } if(e.key==='Escape'){ close(); } };
+    ov.querySelector('.cm-cancel').onclick=close;
+    ov.querySelector('.cm-save').onclick=function(){ apply(input.value); };
+    var clr=ov.querySelector('.cm-clear'); if(clr) clr.onclick=function(){ apply(''); };
+    ov.onclick=function(e){ if(e.target===ov) close(); };
+    requestAnimationFrame(function(){ ov.classList.add('show'); input.focus(); });
   },
 
   showEmojiPicker: function(anchor, onPick){
@@ -5621,6 +5808,143 @@ window.KnowledgeNotes = {
     requestAnimationFrame(function(){ ov.classList.add('show'); });
   },
 
+  _scrollTarget: function(){
+    /* 실제로 스크롤되는 요소를 찾는다: page-media 조상 중 스크롤 가능한 것, 없으면 window */
+    var el=document.getElementById('page-media');
+    var node=el;
+    while(node && node!==document.body){
+      var st=getComputedStyle(node);
+      if((st.overflowY==='auto'||st.overflowY==='scroll') && node.scrollHeight>node.clientHeight+4) return node;
+      node=node.parentElement;
+    }
+    /* document 스크롤러 */
+    return (document.scrollingElement||document.documentElement||document.body);
+  },
+  _doScroll: function(dy){
+    var t=this._scrollTarget();
+    if(t===window || t===document.scrollingElement || t===document.documentElement || t===document.body){
+      window.scrollBy(0, dy);
+    } else {
+      t.scrollTop += dy;
+    }
+  },
+  _startDragScroll: function(){
+    var self=this;
+    if(self._dragScrollOn) return;
+    self._dragScrollOn=true; self._dragEdge=0;
+    /* 드래그 중 마우스 휠 → 스크롤 (썸네일 잡은 채 휠 돌려도 이동) */
+    self._onDragWheel=function(e){
+      var dy = e.deltaY;
+      if(dy===undefined || dy===0){ if(e.wheelDelta!==undefined) dy=-e.wheelDelta; else if(e.detail) dy=e.detail*40; }
+      if(dy){ self._doScroll(dy); if(e.cancelable) e.preventDefault(); }
+    };
+    /* 마우스가 화면 상/하단(전체 폭)에 오면 자동 스크롤 — 좌우 위치 무관 */
+    self._onDragOver=function(e){
+      var h=window.innerHeight, edge=110;
+      if(e.clientY < edge) self._dragEdge=-Math.ceil((edge-e.clientY)/4);
+      else if(e.clientY > h-edge) self._dragEdge=Math.ceil((e.clientY-(h-edge))/4);
+      else self._dragEdge=0;
+    };
+    /* drag 계열 + 일반 마우스 이동 모두 대응 */
+    window.addEventListener('wheel', self._onDragWheel, {passive:false, capture:true});
+    document.addEventListener('wheel', self._onDragWheel, {passive:false, capture:true});
+    document.addEventListener('mousewheel', self._onDragWheel, {passive:false, capture:true});
+    document.addEventListener('DOMMouseScroll', self._onDragWheel, {passive:false, capture:true});
+    document.addEventListener('dragover', self._onDragOver, {passive:true});
+    document.addEventListener('drag', self._onDragOver, {passive:true});
+    var step=function(){
+      if(!self._dragScrollOn) return;
+      if(self._dragEdge!==0) self._doScroll(self._dragEdge);
+      self._dragScrollRAF=requestAnimationFrame(step);
+    };
+    self._dragScrollRAF=requestAnimationFrame(step);
+  },
+  _stopDragScroll: function(){
+    var self=this;
+    self._dragScrollOn=false; self._dragEdge=0;
+    if(self._onDragWheel){
+      window.removeEventListener('wheel', self._onDragWheel, {capture:true});
+      document.removeEventListener('wheel', self._onDragWheel, {capture:true});
+      document.removeEventListener('mousewheel', self._onDragWheel, {capture:true});
+      document.removeEventListener('DOMMouseScroll', self._onDragWheel, {capture:true});
+    }
+    if(self._onDragOver){ document.removeEventListener('dragover', self._onDragOver); document.removeEventListener('drag', self._onDragOver); }
+    if(self._dragScrollRAF) cancelAnimationFrame(self._dragScrollRAF);
+  },
+  _ytId: function(url){
+    if(!url) return null;
+    var m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  },
+  _buildMediaCard: function(note){
+    var self=this;
+    var card=document.createElement('div'); card.className='media-card'+(note.groupId?' in-group':' no-group'); card.id='item-'+note.id; card.draggable=true;
+    card.ondragstart=function(e){ e.stopPropagation(); e.dataTransfer.setData('text/plain', note.id); card.classList.add('dragging'); self._draggingPageId=note.id; self._startDragScroll(); };
+    card.ondragend=function(){ card.classList.remove('dragging'); self._stopDragScroll(); };
+    card.ondragover=function(e){ e.preventDefault(); e.stopPropagation(); var d=self._draggingPageId; if(d&&d!==note.id){ var r=card.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; card.classList.toggle('drop-after',after); card.classList.toggle('drop-before',!after); } };
+    card.ondragleave=function(){ card.classList.remove('drop-before','drop-after'); };
+    card.ondrop=function(e){ e.preventDefault(); e.stopPropagation(); card.classList.remove('drop-before','drop-after'); var d=e.dataTransfer.getData('text/plain'); if(!d||d===note.id) return; var r=card.getBoundingClientRect(); var after=(e.clientY-r.top)>r.height/2; self.reorderPage('media', d, note.id, after); };
+    /* 삭제 */
+    var del=document.createElement('button'); del.className='media-del'; del.innerHTML='&#10005;'; del.title='삭제';
+    del.onclick=function(e){ e.stopPropagation(); self.mediaConfirmDelete(card, note.id); };
+    card.appendChild(del);
+    /* 썸네일 영역 */
+    var thumb=document.createElement('div'); thumb.className='media-thumb';
+    var yid=self._ytId(note.url||'');
+    function paintThumb(){
+      var id=self._ytId(note.url||'');
+      if(id){
+        thumb.classList.remove('empty');
+        thumb.innerHTML='<img src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg" alt="" loading="lazy"><span class="media-play">▶</span>';
+        thumb.onclick=function(e){ e.stopPropagation(); window.open('https://www.youtube.com/watch?v='+id,'_blank','noopener'); };
+      } else if(note.url){
+        thumb.classList.remove('empty');
+        thumb.innerHTML='<div class="media-link-ph">🔗<span>'+ (note.url.replace(/^https?:\/\//,'').slice(0,42)) +'</span></div>';
+        thumb.onclick=function(e){ e.stopPropagation(); window.open(note.url,'_blank','noopener'); };
+      } else {
+        thumb.classList.add('empty');
+        thumb.innerHTML='<div class="media-thumb-hint">▶ 유튜브·영상 링크를 붙여넣으면<br>썸네일이 자동으로 나타나요</div>';
+        thumb.onclick=null;
+      }
+    }
+    paintThumb();
+    card.appendChild(thumb);
+    /* URL 입력 */
+    var urlIn=document.createElement('input'); urlIn.className='media-url'; urlIn.type='text';
+    urlIn.placeholder='🔗 영상 링크 붙여넣기 (YouTube 등)'; urlIn.value=note.url||'';
+    urlIn.onclick=function(e){ e.stopPropagation(); };
+    urlIn.oninput=function(){ self.update('media', note.id, 'url', this.value.trim()); paintThumb(); };
+    card.appendChild(urlIn);
+    /* 제목 */
+    var title=document.createElement('div'); title.className='media-title'; title.contentEditable='true';
+    title.setAttribute('data-ph','제목 · 영상 이름'); title.textContent=(note.title&&note.title!=='제목 없는 페이지')?note.title:'';
+    title.onclick=function(e){ e.stopPropagation(); };
+    title.oninput=function(){ self.update('media', note.id, 'title', this.textContent.trim()||'제목 없는 페이지'); };
+    card.appendChild(title);
+    /* 메모 */
+    var memo=document.createElement('div'); memo.className='media-memo'; memo.contentEditable='true';
+    memo.setAttribute('data-ph','간단한 메모 · 인상 깊은 점을 적어보세요');
+    var plain=(note.content||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+    memo.textContent=plain;
+    memo.onclick=function(e){ e.stopPropagation(); };
+    memo.oninput=function(){ self.update('media', note.id, 'content', this.textContent); };
+    card.appendChild(memo);
+    return card;
+  },
+  mediaConfirmDelete: function(card, id){
+    var self=this;
+    if(card.querySelector('.lex-confirm')) return;
+    var ov=document.createElement('div'); ov.className='lex-confirm';
+    ov.innerHTML='<div class="lc-msg">삭제할까요?</div><div class="lc-btns"><button class="lc-no">취소</button><button class="lc-yes">삭제</button></div>';
+    ov.querySelector('.lc-no').onclick=function(e){ e.stopPropagation(); ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },180); };
+    ov.querySelector('.lc-yes').onclick=function(e){ e.stopPropagation();
+      card.classList.add('lex-removing');
+      setTimeout(function(){ self.data.media=self.data.media.filter(function(n){ return n.id!==id; }); self.save(); self.renderSidebar('media'); }, 200);
+    };
+    card.appendChild(ov);
+    requestAnimationFrame(function(){ ov.classList.add('show'); });
+  },
+
   _buildLexCard: function(note){
     var self=this;
     var card=document.createElement('div'); card.className='lex-card'; card.id='item-'+note.id; card.draggable=true;
@@ -5666,6 +5990,7 @@ window.KnowledgeNotes = {
   _buildPageItem: function(type, note, activeId) {
     var self = this;
     if (type === 'lexicon') { return self._buildLexCard(note); }
+    if (type === 'media') { return self._buildMediaCard(note); }
     var item = document.createElement('div'); item.className = 'page-item' + (note.id === activeId ? ' active' : ''); item.id = 'item-' + note.id; item.draggable = true;
     item.onclick = function() { self.select(type, note.id); };
     item.ondragstart = function(e){ e.stopPropagation(); e.dataTransfer.setData('text/plain', note.id); item.classList.add('dragging'); self._draggingPageId = note.id; };
@@ -5675,12 +6000,18 @@ window.KnowledgeNotes = {
     item.ondrop = function(e){ e.preventDefault(); e.stopPropagation(); item.classList.remove('drop-before','drop-after'); var dragId = e.dataTransfer.getData('text/plain'); if(!dragId || dragId === note.id) return; var r = item.getBoundingClientRect(); var after = (e.clientY - r.top) > r.height / 2; self.reorderPage(type, dragId, note.id, after); };
     var contentWrap = document.createElement('div'); contentWrap.style.display = 'flex'; contentWrap.style.gap = '12px'; contentWrap.style.alignItems = 'flex-start'; contentWrap.style.width = '100%';
     if (type === 'books') {
-      var coverBtn = document.createElement('div'); coverBtn.className = 'book-cover' + (note.cover ? ' has-img' : ''); if (note.cover) coverBtn.style.backgroundImage = 'url(' + note.cover + ')'; else coverBtn.innerHTML = '&#43;<br>표지';
+      var coverBtn = document.createElement('div'); coverBtn.className = 'book-cover' + (note.cover ? ' has-img' : '');
+      if (note.cover) { coverBtn.style.backgroundImage = 'url(' + note.cover + ')'; }
+      else {
+        coverBtn.innerHTML = '&#43;<br>표지';
+        coverBtn.onmouseenter = function(){ self._showCoverTip(coverBtn); };
+        coverBtn.onmouseleave = function(){ self._scheduleHideCoverTip(); };
+      }
       coverBtn.onclick = function(e){ e.stopPropagation(); self.changeBookCover(type, note.id); }; contentWrap.appendChild(coverBtn);
     }
     var header = document.createElement('div'); header.className = 'page-item-header'; header.style.flex = '1'; header.style.minWidth = '0'; header.style.display = 'flex'; header.style.flexDirection = 'column'; header.style.alignItems = 'stretch'; header.style.gap = '0';
     var topRow = document.createElement('div'); topRow.style.display = 'flex'; topRow.style.alignItems = 'center'; topRow.style.gap = '5px'; topRow.style.width = '100%';
-    var pIcon = document.createElement('span'); pIcon.className = 'page-icon'; pIcon.textContent = (note.icon != null ? note.icon : '📄'); if(type==='books'){ pIcon.style.display='none'; } pIcon.onclick = function(e){ e.stopPropagation(); self.changePageIcon(type, note.id); };
+    var pIcon = document.createElement('span'); pIcon.className = 'page-icon'; pIcon.textContent = (note.icon != null ? note.icon : '📄'); if(type==='books' || type==='economics'){ pIcon.style.display='none'; } pIcon.onclick = function(e){ e.stopPropagation(); self.changePageIcon(type, note.id); };
     var titleSpan = document.createElement('span'); titleSpan.className = 'page-title-text'; titleSpan.textContent = note.title || '제목 없는 페이지';
     if(type==='books'){
       try{
@@ -5696,7 +6027,27 @@ window.KnowledgeNotes = {
     var delBtn = document.createElement('button'); delBtn.className = 'page-del-btn'; delBtn.innerHTML = '&#10005;'; delBtn.onclick = function(e) { self.delete(type, note.id, e); };
     if(!(type==='books')){ topRow.appendChild(pIcon); } topRow.appendChild(titleSpan); if(topRow.__catBadge) topRow.appendChild(topRow.__catBadge); topRow.appendChild(delBtn);
     var dateDiv = document.createElement('div'); dateDiv.className = 'page-date-text'; dateDiv.style.paddingLeft = '0'; dateDiv.style.alignSelf = 'flex-start'; dateDiv.style.textAlign = 'left'; dateDiv.textContent = note.date ? (note.date + ' · 수정됨') : '';
-    header.appendChild(topRow); header.appendChild(dateDiv); contentWrap.appendChild(header); item.appendChild(contentWrap); return item;
+    header.appendChild(topRow); header.appendChild(dateDiv);
+    /* 완독 카드: 목록에서 별점 미리보기 */
+    if(type==='books' && note.groupId==='grp_books_done'){
+      try{
+        var mr=/data-rating="([0-9.]+)"/.exec(note.content||''); var rating=mr?parseFloat(mr[1]):0;
+        if(rating>0){
+          var starRow=document.createElement('div'); starRow.className='pg-star-row';
+          var full=Math.floor(rating), half=(rating-full)>=0.5;
+          var sh='';
+          for(var si=0; si<5; si++){
+            if(si<full) sh+='<span class="pg-star full">★</span>';
+            else if(si===full && half) sh+='<span class="pg-star half">★</span>';
+            else sh+='<span class="pg-star">★</span>';
+          }
+          starRow.innerHTML=sh+'<span class="pg-star-num">'+rating.toFixed(1)+'</span>';
+          starRow.style.alignSelf='flex-start';
+          header.appendChild(starRow);
+        }
+      }catch(e){}
+    }
+    contentWrap.appendChild(header); item.appendChild(contentWrap); return item;
   },
 
   _attachDrop: function(zone, type, targetGroupId) {
@@ -5717,7 +6068,7 @@ window.KnowledgeNotes = {
     gHeader.appendChild(arrow); gHeader.appendChild(gIcon); gHeader.appendChild(gName);
     var pagesInGroup = self.data[type].filter(function(n){ return n.groupId === g.id; });
     var gCount = document.createElement('span'); gCount.className = 'note-group-count'; gCount.textContent = pagesInGroup.length; gHeader.appendChild(gCount);
-    gHeader.appendChild(gAddSub); if(g.parentId){ gHeader.appendChild(gDel); }
+    gHeader.appendChild(gAddSub); var _canDel = g.parentId || (type==='economics') || (type==='media'); if(_canDel){ gHeader.appendChild(gDel); }
     if(type==='books' && g.id==='grp_books_done'){
       var LBL={date:'최신순',rating:'별점순',cat:'카테고리별'};
       var sortBtn=document.createElement('button'); sortBtn.className='bk-sort-btn';
@@ -5786,7 +6137,7 @@ window.KnowledgeNotes = {
       }
     }
     if (type === 'books' || type === 'lexicon') {
-      var addCardBtn = document.createElement('button'); addCardBtn.className = 'kanban-add-btn'; addCardBtn.innerHTML = type === 'books' ? '&#43; 새 책 추가' : '&#43; 새 용어·개념 추가';
+      var addCardBtn = document.createElement('button'); addCardBtn.className = 'kanban-add-btn'; addCardBtn.innerHTML = type === 'books' ? '&#43; 새 책 추가' : (type === 'media' ? '&#43; 새 영상·미디어 추가' : (type === 'lexicon' ? '&#43; 새 용어·개념 추가' : '&#43; 새 페이지 추가'));
       addCardBtn.onclick = function(e) { e.stopPropagation(); self.create(type, g.id); }; gBody.appendChild(addCardBtn);
     }
     groupEl.appendChild(gBody); return groupEl;
@@ -5812,7 +6163,7 @@ window.KnowledgeNotes = {
         if(fb2) fb2.onclick=function(e){ e.stopPropagation(); self._lexQuizExKnown=false; try{ localStorage.setItem('nn_lex_quiz_exknown','0'); }catch(x){} self._lexQuizCur=null; var host=document.getElementById('lexQuizHost'); if(host){ host.innerHTML=''; host.appendChild(self._buildLexQuiz()); } };
       } else {
         gp.innerHTML='<div class="bk-goal-top"><span class="t">📝 VOCAB QUIZ</span></div>'
-          +'<div class="lq-empty">단어와 뜻을 등록하면<br>랜덤 쪽지시험이 시작됩니다.</div>';
+          +'<div class="lq-empty">어휘를 등록하면<br>이곳에서 복습할 수 있어요.</div>';
       }
       return gp;
     }
@@ -5875,8 +6226,14 @@ window.KnowledgeNotes = {
     groups.filter(function(g){ return !g.parentId; }).forEach(function(g){ container.appendChild(self._buildGroup(type, g, activeId)); });
     if(type==='books'){ var gh=document.getElementById('bkGoalHost'); if(gh){ gh.innerHTML=''; gh.appendChild(self._buildReadingGoal()); } }
     if(type==='lexicon'){ var qh=document.getElementById('lexQuizHost'); if(qh){ qh.innerHTML=''; qh.appendChild(self._buildLexQuiz()); } }
-    var ungrouped = document.createElement('div'); ungrouped.className = 'note-ungrouped'; self._attachDrop(ungrouped, type, null);
-    var loosePages = this.data[type].filter(function(n){ return !n.groupId; }); loosePages.forEach(function(note){ ungrouped.appendChild(self._buildPageItem(type, note, activeId)); });
+    var loosePages = this.data[type].filter(function(n){ return !n.groupId; });
+    if(type==='media' && loosePages.length){
+      var looseLabel = document.createElement('div'); looseLabel.className='media-loose-label';
+      looseLabel.innerHTML='<span class="mll-ic">📥</span> 미분류 — 아직 토글에 넣지 않은 영상 <span class="mll-c">'+loosePages.length+'</span>';
+      container.appendChild(looseLabel);
+    }
+    var ungrouped = document.createElement('div'); ungrouped.className = 'note-ungrouped' + (type==='media'?' media-loose':''); self._attachDrop(ungrouped, type, null);
+    loosePages.forEach(function(note){ ungrouped.appendChild(self._buildPageItem(type, note, activeId)); });
     container.appendChild(ungrouped);
   },
 
@@ -6679,6 +7036,16 @@ window.addEventListener('load', function(){
     return restored;
   }
 
+  function cloudToast(msg, kind){
+    var t=document.getElementById('nnCloudToast');
+    if(!t){ t=document.createElement('div'); t.id='nnCloudToast'; document.body.appendChild(t); }
+    t.className='nn-cloud-toast'+(kind==='ok'?' ok':(kind==='out'?' out':''));
+    t.innerHTML=msg;
+    requestAnimationFrame(function(){ t.classList.add('show'); });
+    clearTimeout(t.__timer); t.__timer=setTimeout(function(){ t.classList.remove('show'); }, 3400);
+  }
+  window.__cloudToast = cloudToast;
+
   onAuthStateChanged(auth, async (user) => {
     if (user){
       currentUser = user;
@@ -6688,23 +7055,39 @@ window.addEventListener('load', function(){
       if (b) b.onclick = () => {
         if (confirm('로그아웃할까요?\n(이 기기의 데이터는 남고, 클라우드 자동 저장만 꺼집니다)')){
           sessionStorage.removeItem('nn_cloud_boot');
+          cloudToast('👋 로그아웃되었습니다 · 로컬 모드', 'out');
           signOut(auth);
         }
       };
+      /* 자동 로그인 안내 토스트 (버튼 클릭 없이 세션 복귀 시) */
+      var justClicked = sessionStorage.getItem('nn_login_click')==='1';
+      sessionStorage.removeItem('nn_login_click');
+      var welcomeName = (user.displayName || '').split(' ')[0] || first;
       /* 세션당 1회: 클라우드 → 로컬 복원 후 새로고침 (모든 탭이 다시 읽도록) */
       if (sessionStorage.getItem('nn_cloud_boot') !== user.uid){
+        cloudToast((justClicked?'':'🔓 ')+'<b>'+welcomeName+'</b>님, 클라우드에 연결되었습니다'+(justClicked?'':' · 자동 로그인'), 'ok');
         const restored = await pullAll(user.uid);
         sessionStorage.setItem('nn_cloud_boot', user.uid);
-        if (restored) location.reload();
+        if (restored) { sessionStorage.setItem('nn_reloaded_welcome', welcomeName); location.reload(); }
+      } else {
+        /* 새로고침 직후 환영 토스트 (복원 reload 후) */
+        var rw = sessionStorage.getItem('nn_reloaded_welcome');
+        if (rw){ sessionStorage.removeItem('nn_reloaded_welcome'); cloudToast('☁️ <b>'+rw+'</b>님의 아카이브를 불러왔습니다', 'ok'); }
       }
     } else {
       currentUser = null;
       setBtnState('local');
       const b = document.querySelector('.wbtn');
-      if (b) b.onclick = () => signInWithPopup(auth, provider).catch(err => {
-        console.log('로그인 실패/취소:', err && err.code);
-        if (err && err.code === 'auth/popup-blocked') alert('브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.');
-      });
+      if (b) b.onclick = () => {
+        sessionStorage.setItem('nn_login_click','1');
+        cloudToast('🔐 구글 계정으로 로그인 중…', 'ok');
+        signInWithPopup(auth, provider).catch(err => {
+          sessionStorage.removeItem('nn_login_click');
+          console.log('로그인 실패/취소:', err && err.code);
+          var tt=document.getElementById('nnCloudToast'); if(tt) tt.classList.remove('show');
+          if (err && err.code === 'auth/popup-blocked') cloudToast('⚠ 브라우저가 팝업을 차단했어요. 팝업 허용 후 다시 시도해주세요.', 'out');
+        });
+      };
     }
   });
 </script>
@@ -7111,6 +7494,14 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
   .final { padding: 64px 5vw 34px !important; }
 }
 
+
+/* 클라우드 로그인 토스트 */
+.nn-cloud-toast{position:fixed;top:26px;left:50%;transform:translateX(-50%) translateY(-18px);background:rgba(18,18,22,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#f0ede6;font-family:'Pretendard',sans-serif;font-size:13.5px;font-weight:400;padding:13px 24px;border-radius:13px;box-shadow:0 16px 50px -12px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06);border:1px solid rgba(201,169,110,.3);z-index:9999999;opacity:0;transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:88vw;text-align:center;letter-spacing:-.01em}
+.nn-cloud-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.nn-cloud-toast b{color:#e0c389;font-weight:700}
+.nn-cloud-toast.ok{border-color:rgba(201,169,110,.4)}
+.nn-cloud-toast.out{border-color:rgba(174,177,180,.35)}
+.nn-cloud-toast.out b{color:#d5d8db}
 </style>
 
 <div id="masterTooltip"></div>
@@ -8365,14 +8756,17 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
     return pool;
   }
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  var _retry=0;
   function show(){
     if(!el) el=document.getElementById('bqCard');
     if(!el) return;
     var pool=extract();
     if(!pool.length){
       el.classList.remove('show');
+      if(_retry<20){ _retry++; setTimeout(show, 400); } /* 시드북 저장/데이터 로드 대기 — 최대 8초 재시도 */
       return;
     }
+    _retry=0;
     var bi=Math.floor(Math.random()*pool.length);
     var b=pool[bi];
     var q=b.qs[Math.floor(Math.random()*b.qs.length)];
@@ -8382,17 +8776,28 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
     var coverHtml=b.cover
       ? '<img class="bq-cover" src="'+esc(b.cover)+'" alt="" onerror="this.outerHTML=\'<div class=&quot;bq-cover ph&quot;>&#128214;</div>\'">'
       : '<div class="bq-cover ph">&#128214;</div>';
-    var inner='<div class="bq-eyebrow">FROM MY LIBRARY</div>'
-      +'<div class="bq-row">'+coverHtml
-      +'<div class="bq-meta"><div class="bq-t">'+esc(b.title)+'</div>'
+    var inner='<div class="bq-row">'+coverHtml
+      +'<div class="bq-meta">'
+      +'<div class="bq-eyebrow">FROM MY LIBRARY</div>'
+      +'<div class="bq-t">'+esc(b.title)+'</div>'
       +(b.author?'<div class="bq-a">'+esc(b.author)+'</div>':'')
-      +'</div></div>'
-      +'<div class="bq-q">'+esc(q)+'</div>';
+      +'<div class="bq-q">'+esc(q)+'</div>'
+      +'</div></div>';
     el.classList.remove('show');
     el.__bookId = b.id;
     setTimeout(function(){ el.innerHTML=inner; el.classList.add('show'); }, 350);
   }
-  function tick(){ if(document.hidden){ return; } var home=document.getElementById('page-home'); if(home&&!home.classList.contains('active')) return; show(); }
+  var _tickRetry=0;
+  function tick(){
+    if(document.hidden){ return; }
+    var home=document.getElementById('page-home');
+    if(home&&!home.classList.contains('active')){
+      /* 홈이 아직 활성화 전(인트로 중)이면 잠시 후 재시도 — 시크릿모드 등 타이밍 대응 */
+      if(_tickRetry<25){ _tickRetry++; setTimeout(tick, 300); }
+      return;
+    }
+    _tickRetry=0; show();
+  }
   var booted=false;
   window.__bqIntro=function(){ if(booted) return; booted=true; tick(); };
   function start(){
