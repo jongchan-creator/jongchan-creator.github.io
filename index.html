@@ -4,8 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>NEWNORMAL</title>
-<link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png?v=4"/>
-<link rel="apple-touch-icon" href="https://jongchan-creator.github.io/favicon.png?v=4"/>
+<link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
+<link rel="apple-touch-icon" href="https://jongchan-creator.github.io/favicon.png"/>
 <meta name="nn-build" content="20260708B"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="NEWNORMAL"/>
@@ -301,18 +301,99 @@ body::before{
 .macro-desc{font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.06em;line-height:1.7;max-width:520px;font-family:'Pretendard','Noto Sans KR',sans-serif;font-weight:300}
 .macro-meta{display:flex;align-items:center;gap:1.5rem;margin-top:1.2rem}
 .live-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;animation:pulse 2s ease-in-out infinite;flex-shrink:0;box-shadow:0 0 8px rgba(76,175,80,.8),0 0 16px rgba(76,175,80,.4)}
-.macro-ts{font-size:11px;letter-spacing:.1em;color:rgba(255,175,140,.85);font-weight:500}
 .refresh-btn{background:rgba(255,110,64,.08);border:.5px solid rgba(255,110,64,.35);color:rgba(255,185,155,.95);font-size:10px;font-weight:500;letter-spacing:.1em;padding:.4rem .9rem;cursor:pointer;transition:all .2s;margin-left:auto;border-radius:5px}
 .refresh-btn:hover{border-color:rgba(201,169,110,.4);color:#c9a96e}
 
 /* ── NEW MACRO STYLES ── */
 
 /* ── KEY INPUT ── */
-.key-input{background:rgba(255,255,255,.03);border:.5px solid rgba(255,255,255,.12);color:#f0ede6;font-size:10px;letter-spacing:.04em;padding:.35rem .7rem;width:260px;outline:none;font-family:'Pretendard',sans-serif;transition:border-color .2s}
 .key-input:focus{border-color:rgba(201,169,110,.5)}
 .key-input::placeholder{color:rgba(255,255,255,.25)}
-.key-hint{font-size:11px;letter-spacing:.02em;color:rgba(255,255,255,.55);margin-top:1rem;line-height:1.7;font-family:'Pretendard',sans-serif;font-weight:300;background:rgba(255,110,64,.05);border-left:2px solid rgba(255,110,64,.4);padding:9px 13px;border-radius:0 7px 7px 0;max-width:560px}
+.key-hint{font-size:11.5px;letter-spacing:.02em;color:rgba(255,255,255,.8);margin-top:1rem;line-height:1.7;font-family:'Pretendard',sans-serif;font-weight:300;background:rgba(20,16,14,.4);border:1px solid rgba(255,110,64,.22);border-left:3px solid rgba(255,110,64,.6);padding:11px 15px;border-radius:0 9px 9px 0;max-width:560px}
 .key-hint a{color:rgba(255,185,155,.95);font-weight:500;text-decoration:none;border-bottom:1px solid rgba(255,110,64,.5)}
+/* 매크로 통합 패널 (시계·데이터소스·키 입력·안내) */
+.macro-panel{position:relative;max-width:600px;margin-top:20px;background:linear-gradient(155deg,rgba(28,20,16,.62),rgba(18,14,12,.55));border:1px solid rgba(255,110,64,.24);border-radius:16px;padding:16px 18px;box-shadow:0 12px 40px -18px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.04)}
+.mp-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mp-live{display:inline-flex;align-items:center;gap:10px}
+.mp-live .live-dot{width:8px;height:8px;border-radius:50%;background:#ff6e40;box-shadow:0 0 8px rgba(255,110,64,.9),0 0 16px rgba(255,110,64,.5);animation:mpPulse 2s ease-in-out infinite;flex-shrink:0}
+@keyframes mpPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.82)}}
+.mp-live-txt{display:flex;flex-direction:column;line-height:1.25}
+.mp-live-label{font-family:'Orbitron',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.22em;color:rgba(255,140,100,.9)}
+.macro-ts{font-family:'Pretendard',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;color:#ffd4b8}
+.mp-src{display:inline-flex;align-items:center;gap:7px;font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:300;color:rgba(255,255,255,.5)}
+.mp-src b{font-weight:600;color:rgba(255,185,155,.85);margin-left:2px}
+.mp-src-dot{width:5px;height:5px;border-radius:50%;background:rgba(120,220,150,.9);box-shadow:0 0 6px rgba(120,220,150,.7)}
+.mp-divider{height:1px;background:linear-gradient(90deg,rgba(255,110,64,.3),rgba(255,110,64,.06),transparent);margin:14px 0}
+.mp-key-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.mp-key-title{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;color:rgba(255,195,160,.95);letter-spacing:.01em}
+.fmp-key-badge{font-family:'Pretendard',sans-serif;font-size:9px;font-weight:700;padding:2px 9px;border-radius:999px;letter-spacing:.02em;background:rgba(255,255,255,.08);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.15)}
+.fmp-key-badge.ok{background:rgba(74,180,120,.2);color:#7ee0a8;border-color:rgba(74,180,120,.5)}
+.fmp-key-badge.empty{background:rgba(255,255,255,.08);color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.15)}
+.mp-key-row{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
+.key-input{flex:1;min-width:200px;background:rgba(10,8,7,.45);border:1px solid rgba(255,110,64,.28);color:#f0ede6;font-size:11.5px;letter-spacing:.02em;padding:.62rem .9rem;outline:none;font-family:'Pretendard',sans-serif;border-radius:9px;transition:border-color .2s,box-shadow .2s}
+.key-input::placeholder{color:rgba(255,255,255,.3)}
+.key-input:focus{border-color:rgba(255,110,64,.6);box-shadow:0 0 0 3px rgba(255,110,64,.12)}
+.mp-btn{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:700;padding:.62rem 1rem;border-radius:9px;cursor:pointer;transition:.16s;border:1px solid;white-space:nowrap;letter-spacing:.02em}
+.mp-btn-save{background:linear-gradient(135deg,rgba(255,130,80,.9),rgba(255,110,64,.85));border-color:rgba(255,110,64,.5);color:#1a0e08}
+.mp-btn-save:hover{background:linear-gradient(135deg,rgba(255,150,100,1),rgba(255,125,80,.95));box-shadow:0 4px 16px rgba(255,110,64,.4)}
+.mp-btn-refresh{background:rgba(255,110,64,.08);border-color:rgba(255,110,64,.3);color:rgba(255,185,155,.9)}
+.mp-btn-refresh:hover{background:rgba(255,110,64,.16);border-color:rgba(255,110,64,.5)}
+.macro-panel .key-hint{margin-top:11px;background:transparent;border:none;padding:0;font-size:11px;color:rgba(255,255,255,.55);max-width:none;line-height:1.65}
+.macro-panel .key-hint b{color:rgba(255,185,155,.9);font-weight:600}
+.macro-panel .macro-keyguide{margin-top:13px;background:rgba(255,110,64,.05);border:1px solid rgba(255,110,64,.18)}
+/* 발급 가이드 오른쪽 펼침 (패널 옆 빈 공간 활용 — 패널 높이 불변) */
+@media (min-width:1100px){
+  /* 펼쳐도 details 자체는 세로 공간 그대로 (여백·테두리 제거) */
+  .macro-panel > .macro-keyguide[open]{padding-bottom:0;overflow:visible}
+  .macro-panel > .macro-keyguide[open] > summary{border-bottom:none}
+  /* 말풍선: 패널(relative) 기준 오른쪽에, 패널과 같은 상하 높이(top·bottom 0)로 길쭉하게 */
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body{
+    position:absolute;left:calc(100% + 16px);top:0;bottom:0;width:540px;
+    background:linear-gradient(155deg,rgba(28,20,16,.62),rgba(18,14,12,.55));
+    border:1px solid rgba(255,110,64,.24);border-radius:16px;padding:15px 18px;
+    box-shadow:0 12px 40px -18px rgba(0,0,0,.72),inset 0 1px 0 rgba(255,255,255,.04);
+    z-index:30;overflow:hidden;
+    display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:2px 20px;align-content:center;
+    animation:mkgSlideIn .28s cubic-bezier(.22,1,.36,1)}
+  /* intro는 두 열 전체 폭 차지 */
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body .mkg-intro{grid-column:1 / -1}
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body::before{
+    content:'';position:absolute;right:100%;top:26px;border:8px solid transparent;border-right-color:rgba(255,110,64,.24)}
+}
+@keyframes mkgSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@media (min-width:1100px){
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body .mkg-intro{padding:0 0 9px;font-size:11px;line-height:1.6;border-bottom:1px solid rgba(255,110,64,.16);margin-bottom:6px}
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body .mkg-row{padding:6px 0;font-size:10.8px;line-height:1.5;gap:9px;align-items:flex-start}
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body .mkg-n{width:18px;height:18px;font-size:9.5px}
+  .macro-panel > .macro-keyguide[open] .mkg-guide-body .mkg-link{margin-top:4px;font-size:10px;padding:4px 9px}
+}
+
+/* 매크로 FMP 키 발급 가이드 */
+.macro-keyguide{max-width:560px;margin-top:12px;background:rgba(20,16,14,.42);border:1px solid rgba(255,110,64,.24);border-radius:10px;overflow:hidden}
+.macro-keyguide summary{cursor:pointer;list-style:none;padding:12px 15px;font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:rgba(255,195,160,.98);user-select:none;transition:background .15s;display:flex;align-items:center;gap:10px}
+.mkg-sum-txt{flex:1;min-width:0}
+.mkg-sum-ind{flex-shrink:0;position:relative;display:inline-flex;align-items:center;justify-content:flex-end;min-width:52px}
+/* 닫힘 상태: '클릭 ▾' 힌트가 은은히 깜빡임 */
+.mkg-ind-closed{font-family:'Pretendard',sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,140,100,.9);background:rgba(255,110,64,.12);border:1px solid rgba(255,110,64,.35);border-radius:999px;padding:2px 9px;white-space:nowrap;animation:mkgHintPulse 2.4s ease-in-out infinite;transition:opacity .2s}
+@keyframes mkgHintPulse{0%,100%{opacity:.65;box-shadow:0 0 0 0 rgba(255,110,64,0)}50%{opacity:1;box-shadow:0 0 10px 0 rgba(255,110,64,.35)}}
+/* 펼침 화살표: 기본 숨김 */
+.mkg-ind-arrow{position:absolute;right:-30px;font-size:22px;font-weight:300;color:rgba(255,150,110,.98);opacity:0;transform:translateX(-8px) scaleX(1.6);transform-origin:right center;transition:opacity .4s ease,transform .4s ease;text-shadow:0 0 8px rgba(255,110,64,.7),0 0 18px rgba(255,110,64,.4);pointer-events:none;white-space:nowrap}
+/* 펼치면: 힌트 숨기고 화살표 페이드인 */
+.macro-keyguide[open] .mkg-ind-closed{opacity:0;pointer-events:none}
+.macro-keyguide[open] .mkg-ind-arrow{opacity:0}
+@media (min-width:1100px){ .macro-panel > .macro-keyguide[open] .mkg-ind-arrow{opacity:1;transform:translateX(0) scaleX(1.6);animation:mkgArrowNudge 1.6s ease-in-out infinite;right:-34px} }
+@keyframes mkgArrowNudge{0%,100%{transform:translateX(0) scaleX(1.6)}50%{transform:translateX(7px) scaleX(1.6)}}
+.macro-keyguide summary::-webkit-details-marker{display:none}
+.macro-keyguide summary:hover{background:rgba(255,110,64,.07)}
+.macro-keyguide[open] summary{border-bottom:1px solid rgba(255,110,64,.14)}
+.mkg-intro{font-size:11.5px;line-height:1.7;color:rgba(255,255,255,.78);font-weight:300;padding:12px 15px 4px}
+.mkg-intro b{color:rgba(255,185,155,.9);font-weight:600}
+.mkg-row{display:flex;gap:11px;align-items:flex-start;padding:8px 15px;font-family:'Pretendard',sans-serif;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.8);font-weight:300}
+.mkg-row b{color:rgba(240,237,230,.9);font-weight:600}
+.mkg-n{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:rgba(255,110,64,.85);color:#1a0e08;font-weight:700;font-size:10px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.mkg-link{display:inline-block;margin-top:5px;font-size:11px;font-weight:600;color:#ffca7a;text-decoration:none;background:rgba(255,170,60,.09);border:1px solid rgba(255,170,60,.35);border-radius:7px;padding:5px 11px;transition:.18s}
+.mkg-link:hover{background:rgba(255,170,60,.18);border-color:rgba(255,170,60,.6);box-shadow:0 0 10px rgba(255,170,60,.3)}
+.macro-keyguide[open]{padding-bottom:10px}
 .key-hint a:hover{color:#c9a96e}
 
 
@@ -413,7 +494,7 @@ body::before{
 @media(max-width:860px){.hold-layout{grid-template-columns:1fr}}
 .hold-side{position:sticky;top:100px;display:flex;flex-direction:column;gap:.5rem}
 @media(max-width:860px){.hold-side{position:static;flex-direction:row;flex-wrap:wrap}}
-.hold-item{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:.7rem 1.7rem .7rem 1.05rem;border-radius:8px;cursor:grab;background:rgba(178,138,212,.04);border:.5px solid rgba(178,138,212,.14);transition:transform .18s, background .2s, border-color .2s, box-shadow .2s;color:#f0ede6;font-family:'Pretendard',sans-serif;flex:0 0 auto;--bc:#b28ad4}
+.hold-item{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:.7rem 1.7rem .7rem 1.05rem;border-radius:8px;cursor:grab;background:rgba(30,22,40,.55);border:1px solid rgba(178,138,212,.3);transition:transform .18s, background .2s, border-color .2s, box-shadow .2s;color:#f0ede6;font-family:'Pretendard',sans-serif;flex:0 0 auto;--bc:#b28ad4}
 .hold-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bc);opacity:0;transition:opacity .2s, box-shadow .2s}
 .hold-item:hover{background:color-mix(in srgb, var(--bc) 13%, rgba(10,10,12,.5));border-color:color-mix(in srgb, var(--bc) 55%, transparent);box-shadow:0 0 22px -5px var(--bc);transform:translateX(3px)}
 .hold-item:hover::before{opacity:1;box-shadow:0 0 12px var(--bc)}
@@ -428,7 +509,7 @@ body::before{
 .hold-item .hold-grip{position:absolute;right:.55rem;top:50%;transform:translateY(-50%);font-size:13px;line-height:1;color:rgba(255,255,255,.16);transition:color .2s;pointer-events:none}
 .hold-item:hover .hold-grip{color:color-mix(in srgb, var(--bc) 60%, transparent)}
 .hold-detail{display:flex;flex-direction:column;gap:1.2rem;min-width:0}
-.hold-detail-title{font-size:10px;letter-spacing:.14em;color:rgba(178,138,212,.85);font-family:'Bebas Neue',sans-serif;text-shadow:0 0 8px rgba(178,138,212,.4)}
+.hold-detail-title{font-size:12.5px;letter-spacing:.12em;color:rgba(210,180,240,.98);font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(178,138,212,.6);font-weight:600}
 .hold-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
 @media(max-width:720px){.hold-row{grid-template-columns:1fr}}
 .hold-w{position:relative;width:100%;border-radius:8px;overflow:hidden;border:.5px solid rgba(178,138,212,.16);box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),0 0 18px rgba(178,138,212,.05);background:rgba(8,8,8,.55)}
@@ -530,6 +611,17 @@ body::before{
 .t-err{text-align:center;padding:.8rem 0;font-size:10px;letter-spacing:.1em;color:rgba(244,67,54,.4)}
 /* stock rank badge + rank change */
 .rk-badge{flex-shrink:0;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#c9a96e;border:.5px solid rgba(201,169,110,.3);border-radius:50%;background:rgba(201,169,110,.05);letter-spacing:0}
+/* 시총 TOP30 — 로고·티커·국적 디자인 */
+.stock-row .t-left{display:flex;align-items:center;gap:10px}
+.stk-logo-wrap{flex-shrink:0;width:30px;height:30px;border-radius:7px;overflow:hidden;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center}
+.stk-logo{width:100%;height:100%;object-fit:contain;background:#fff}
+.stk-logo-fb{width:100%;height:100%;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#c9a96e;background:rgba(201,169,110,.12)}
+.stk-info{min-width:0}
+.stk-head{display:flex;align-items:baseline;gap:7px;line-height:1.1;flex-wrap:wrap}
+.stk-ticker{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#f0ede6;letter-spacing:.02em}
+.stk-ctry{font-size:12px;line-height:1;filter:saturate(1.1)}
+.stk-name{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:#d9b878;text-shadow:0 0 8px rgba(201,169,110,.25);letter-spacing:-.01em}
+.stock-row .t-sub{margin-top:2px}
 .t-name{color:rgba(255,255,255,.35);font-weight:400;font-size:10px;font-family:'Pretendard',sans-serif}
 .rk-up{color:#4caf50;font-size:8px;margin-left:.3em}
 .rk-dn{color:#f44336;font-size:8px;margin-left:.3em}
@@ -566,24 +658,24 @@ body::before{
   border-radius: 20px;
   overflow: hidden;
   text-decoration: none;
-  cursor: pointer;
+  background: #0c0c0e;
+  cursor: default;
   transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease;
 }
-.comp-card:hover { box-shadow: 0 28px 60px rgba(0,0,0,0.7); }
+
 .comp-bg {
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center 30%;
+  background-position: center center;
   background-repeat: no-repeat;
   transform: scale(1.18);
-  transform-origin: center 30%;
   backface-visibility: hidden;
 }
 .comp-card::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -1px;
   background: linear-gradient(180deg,
     rgba(8,8,8,0) 20%,
     rgba(8,8,8,0.55) 55%,
@@ -612,8 +704,8 @@ body::before{
 }
 .comp-desc, .comp-btn {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity .4s ease, transform .45s cubic-bezier(0.16,1,0.3,1);
+  transform: translateY(12px);
+  transition: opacity .38s cubic-bezier(0.22,1,0.36,1), transform .38s cubic-bezier(0.22,1,0.36,1);
 }
 .comp-card:hover .comp-desc, .comp-card:hover .comp-btn { opacity: 1; transform: translateY(0); }
 .comp-tag {
@@ -640,10 +732,7 @@ body::before{
   line-height: 1.7;
   margin-bottom: 20px;
   letter-spacing: .02em;
-  opacity: 0;
-  transition: opacity 0.35s ease 0.05s;
 }
-.comp-card:hover .comp-desc { opacity: 1; }
 .comp-btn {
   display: inline-flex;
   align-items: center;
@@ -658,25 +747,24 @@ body::before{
   color: rgba(255,255,255,.85);
   background: rgba(255,255,255,.1);
   backdrop-filter: blur(8px);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s, background 0.2s, border-color 0.2s;
+  text-decoration: none;
+  transition: opacity .38s cubic-bezier(0.22,1,0.36,1), transform .38s cubic-bezier(0.22,1,0.36,1), background 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
-.comp-card:hover .comp-btn {
-  opacity: 1;
-  transform: translateY(0);
+.comp-btn:hover {
+  background: var(--comp-hi, rgba(255,255,255,.2));
+  border-color: var(--comp-hi, rgba(255,255,255,.6));
+  color: #0e0e10;
+  box-shadow: 0 0 18px -2px var(--comp-hi, rgba(255,255,255,.4));
+  transform: translateY(-2px);
 }
-.comp-btn:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.5); }
+.comp-btn .cb-arrow{ transition: transform .25s ease; }
+.comp-content{ pointer-events: none; }
+.comp-btn{ pointer-events: auto; cursor: pointer; }
+.comp-btn:hover .cb-arrow{ transform: translateX(4px); }
 
 /* per-company accent colors */
-.c-tesla:hover .comp-name { color: #ff4444; }
-.c-nvidia:hover .comp-name { color: #9cf500; }
-.c-iren:hover .comp-name { color: #33ffcc; }
-.c-rocket:hover .comp-name { color: #ffffff; }
-.c-dram:hover .comp-name { color: #66f0ff; }
-.c-google:hover .comp-name { color: #73a5ff; }
-.c-circle:hover .comp-name { color: #be9eff; }
-.c-inflection:hover .comp-name { color: #ff9e80; }
+.comp-card:hover .comp-name{ color: var(--comp-hi, #c9a96e); }
+.comp-card{ transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
 
 @media (max-width: 900px) {
   .company-grid { grid-template-columns: 1fr; }
@@ -3016,268 +3104,20 @@ body #page-about > div > p:not(:first-of-type) {
   <div class="port-header reveal-up">
     <span class="ref-lane-title">HOLDINGS HUB</span>
     <span class="ref-lane-sub">기업 공식 홈페이지</span>
+    <button class="hub-edit-toggle" id="hubEditToggle" type="button" onclick="window.hubToggleEdit()">✎ 편집</button><button class="hub-edit-toggle hub-cancel-btn" id="hubCancelBtn" type="button" onclick="window.hubCancelEdit()" style="display:none">✕ 취소</button>
   </div>
   <div class="cove-line reveal-up"></div>
-  <div class="company-grid">
-    
-    <a href="https://www.tesla.com" target="_blank" class="comp-card c-tesla reveal-up" data-parallax="0.12">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/tesla.com" alt="Tesla" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Automotive &amp; Energy</div>
-        <div class="comp-name">TESLA</div>
-        <div class="comp-desc">FSD & ESS & ROBOTICS & ROBOTAXI</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.nvidia.com" target="_blank" class="comp-card c-nvidia reveal-up" data-parallax="0.18">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1697577418970-95d99b5a55cf?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/nvidia.com" alt="Nvidia" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">AI Computing Platform</div>
-        <div class="comp-name">NVIDIA</div>
-        <div class="comp-desc">GPU를 필두로 하여 AI 내러티브를 지배하는 빅테크</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.iren.com" target="_blank" class="comp-card c-iren reveal-up" data-parallax="0.10">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/iren.com" alt="Iren" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Next-Gen Data Center</div>
-        <div class="comp-name">IREN</div>
-        <div class="comp-desc">AI 데이터센터 &amp; 전력 인프라 기업</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.rocketlabusa.com" target="_blank" class="comp-card c-rocket reveal-up" data-parallax="0.22">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/rocketlabusa.com" alt="Rocket Lab" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Space Systems &amp; Launch</div>
-        <div class="comp-name">ROCKET LAB</div>
-        <div class="comp-desc">항공우주 제조 & 발사 서비스 제공사</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.roundhillinvestments.com" target="_blank" class="comp-card c-dram reveal-up" data-parallax="0.15">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/roundhillinvestments.com" alt="Roundhill" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Roundhill Investments</div>
-        <div class="comp-name">DRAM ETF</div>
-        <div class="comp-desc">메모리 반도체 산업 집중 ETF</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.google.com" target="_blank" class="comp-card c-google reveal-up" data-parallax="0.20">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1766371900950-929959f2bb67?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/google.com" alt="Google" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Alphabet</div>
-        <div class="comp-name">GOOGLE</div>
-        <div class="comp-desc">세계 최대의 검색·AI·광고 플랫폼</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.circle.com" target="_blank" class="comp-card c-circle reveal-up" data-parallax="0.14">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1671469904766-a3728219d3b7?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/circle.com" alt="Circle" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Stablecoin Issuer</div>
-        <div class="comp-name">CIRCLE</div>
-        <div class="comp-desc">USDC 스테이블코인 발행사 · 디지털 달러</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-    <a href="https://www.infleqtion.com" target="_blank" class="comp-card c-inflection reveal-up" data-parallax="0.16">
-      <div class="comp-bg" style="background-image:url('https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80')"></div>
-      <div class="comp-logo"><img src="https://logo.clearbit.com/infleqtion.com" alt="Infleqtion" onerror="this.style.display='none'"></div>
-      <div class="comp-content">
-        <div class="comp-tag">Quantum AI</div>
-        <div class="comp-name">INFLEQTION</div>
-        <div class="comp-desc">중성원자 양자컴퓨팅 기반 AI 스타트업</div>
-        <div class="comp-btn">홈페이지 &#10142;</div>
-      </div>
-    </a>
-
-  </div>
+  <div class="company-grid" id="hubGrid"></div>
 </section>
 <section class="company-section ref-lane-section">
   <div class="ref-lane-wrap">
     <div class="ref-lane-header reveal-up">
       <span class="ref-lane-title">REFERENCE DESK</span>
       <span class="ref-lane-sub">주식 · ETF · 리서치 · 부동산 · 매크로 · 가상자산 · 인텔리전스</span>
+      <button class="hub-edit-toggle" id="rdEditToggle" type="button" onclick="window.rdToggleEdit()">✎ 편집</button><button class="hub-edit-toggle hub-cancel-btn" id="rdCancelBtn" type="button" onclick="window.rdCancelEdit()" style="display:none">✕ 취소</button>
     </div>
     <div class="cove-line reveal-up"></div>
-
-    <div class="ref-lane reveal-up">
-      <div class="ref-lane-label">EQUITY</div>
-      <div class="ref-lane-chips">
-<a href="https://www.google.com/finance/beta" target="_blank" class="ref-chip">
-          <span class="rc-name">Google Finance</span><span class="rc-desc">글로벌 시세 플랫폼</span>
-        </a>
-<a href="https://finance.yahoo.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Yahoo Finance</span><span class="rc-desc">글로벌 시세 플랫폼</span>
-        </a>
-<a href="https://seekingalpha.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Seeking Alpha</span><span class="rc-desc">글로벌 퀀트 · 어닝</span>
-        </a>
-        <a href="https://finviz.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Finviz</span><span class="rc-desc">Heatmap</span>
-        </a>
-<a href="https://kr.tradingview.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">TradingView</span><span class="rc-desc">차트 · 지표</span>
-        </a>
-<a href="https://stockanalysis.com/watchlist/" target="_blank" class="ref-chip">
-          <span class="rc-name">StockAnalysis</span><span class="rc-desc">PT 탐색</span>
-        </a>
-        <a href="https://finbox.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Finbox</span><span class="rc-desc">적정 주가 모델링</span>
-        </a>
-        <a href="https://fanding.kr/feeds" target="_blank" class="ref-chip">
-          <span class="rc-name">팬딩</span><span class="rc-desc">투자 커뮤니티</span>
-        </a>
-<a href="https://padorbubu.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">파돌부부</span><span class="rc-desc">아이렌 분석</span>
-        </a>
-        <a href="https://www.dataroma.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Dataroma</span><span class="rc-desc">고래 포트폴리오</span>
-        </a>
-      </div>
-    </div>
-<div class="ref-lane reveal-up">
-      <div class="ref-lane-label">ETF &amp; FLOW</div>
-      <div class="ref-lane-chips">
-        <a href="https://www.etf.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">ETF.com</span><span class="rc-desc">미국 ETF 상세 분석</span>
-        </a>
-        <a href="https://kind.krx.co.kr/" target="_blank" class="ref-chip">
-          <span class="rc-name">KIND 한국거래소</span><span class="rc-desc">국내 자금 동향 · 공매도</span>
-        </a>
-<a href="https://timeetf.co.kr/m11_view.php?idx=6&cate=001" target="_blank" class="ref-chip">
-          <span class="rc-name">TIMEFOLIO AI ETF</span><span class="rc-desc">구성종목 참고</span>
-        </a>
-      </div>
-    </div>
-<div class="ref-lane reveal-up">
-      <div class="ref-lane-label">RESEARCH</div>
-      <div class="ref-lane-chips">
-        <a href="https://consensus.hankyung.com/analysis/list?skinType=industry" target="_blank" class="ref-chip">
-          <span class="rc-name">한경 컨센서스</span><span class="rc-desc">국내외 리포트 통합</span>
-        </a>
-        <a href="https://www.hankyung.com/globalmarket/usa-stock-nasdaq100" target="_blank" class="ref-chip">
-          <span class="rc-name">한경 글로벌마켓</span><span class="rc-desc">S&P500·나스닥</span>
-        </a>
-        <a href="https://securities.miraeasset.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">미래에셋 리서치</span><span class="rc-desc">글로벌 투자 전략</span>
-        </a>
-        <a href="https://www1.kiwoom.com/h/invest/research/VAnalCCView?dummyVal=0" target="_blank" class="ref-chip">
-          <span class="rc-name">키움증권 리서치</span><span class="rc-desc">해외기업 분석</span>
-        </a>
-        <a href="https://www.hanaw.com/main/research/research/RC_080000_P.cmd?tabIdx=3" target="_blank" class="ref-chip">
-          <span class="rc-name">하나증권 리서치</span><span class="rc-desc">산업 및 매크로</span>
-        </a>
-        <a href="https://www.myasset.com/myasset/research/rs_list/rs_list.cmd?cd006=&cd007=RE02&cd008=&searchKeyGubun=&keyword=&jongMok_keyword=&keyword_in=&startCalendar=&endCalendar=&pgCnt=&page=1#spot" target="_blank" class="ref-chip">
-          <span class="rc-name">유안타증권 리서치</span><span class="rc-desc">글로벌 인더스트리</span>
-        </a>
-      </div>
-    </div>
-    <div class="ref-lane reveal-up">
-      <div class="ref-lane-label">REAL ESTATE</div>
-      <div class="ref-lane-chips">
-        <a href="https://land.naver.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">네이버 부동산</span><span class="rc-desc">실거래가 · 시세</span>
-        </a>
-        
-        <a href="https://kbland.kr/" target="_blank" class="ref-chip">
-          <span class="rc-name">KB부동산</span><span class="rc-desc">매물 통계 · 시세</span>
-        </a>
-<a href="https://asil.kr/" target="_blank" class="ref-chip">
-          <span class="rc-name">아실</span><span class="rc-desc">아파트 빅데이터 분석</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="ref-lane reveal-up">
-      <div class="ref-lane-label">MACRO</div>
-      <div class="ref-lane-chips">
- <a href="https://www.saveticker.com/login" target="_blank" class="ref-chip">
-          <span class="rc-name">오선 Save</span><span class="rc-desc">실시간 뉴스</span>
-        </a>
-<a href="https://kr.investing.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Investing.com</span><span class="rc-desc">실시간 속보 · 캘린더</span>
-        </a>
-        <a href="https://polymarket.com/ko" target="_blank" class="ref-chip">
-          <span class="rc-name">Polymarket</span><span class="rc-desc">예측 시장</span>
-        </a>
-<a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="ref-chip">
-          <span class="rc-name">Fear &amp; Greed</span><span class="rc-desc">CNN 공포탐욕지수</span>
-        </a>
-        <a href="https://www.forbes.com/real-time-billionaires/" target="_blank" class="ref-chip">
-          <span class="rc-name">Forbes 부자 순위</span><span class="rc-desc">글로벌 부자 순위</span>
-        </a>
-        <a href="https://companiesmarketcap.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Market Cap Rank</span><span class="rc-desc">시가총액 랭킹</span>
-        </a>
-        <a href="https://x.com/home" target="_blank" class="ref-chip">
-          <span class="rc-name">X</span><span class="rc-desc">Raw data & Article</span>
-        </a>
-<a href="https://truthsocial.com/@realDonaldTrump" target="_blank" class="ref-chip">
-          <span class="rc-name">Truth Social</span><span class="rc-desc">트럼프 피드</span>
-        </a>
-        <a href="https://fred.stlouisfed.org/" target="_blank" class="ref-chip">
-          <span class="rc-name">FRED</span><span class="rc-desc">연준 경제 통계 데이터</span>
-        </a>
-        <a href="https://tradingeconomics.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Trading Economics</span><span class="rc-desc">글로벌 지표 캘린더</span>
-        </a>
-        <a href="https://ecos.bok.or.kr/" target="_blank" class="ref-chip">
-          <span class="rc-name">ECOS 한국은행</span><span class="rc-desc">국내 거시경제 지표</span>
-        </a>
-      </div>
-    </div>
-<div class="ref-lane reveal-up">
-      <div class="ref-lane-label">CRYPTO</div>
-      <div class="ref-lane-chips">
-        <a href="https://cryptoquant.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">CryptoQuant</span><span class="rc-desc">기관급 온체인 데이터</span>
-        </a>
-        <a href="https://coinmarketcap.com/ko/" target="_blank" class="ref-chip">
-          <span class="rc-name">CoinMarketCap</span><span class="rc-desc">글로벌 시세 · 점유율</span>
-        </a>
-        <a href="https://defillama.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">DefiLlama</span><span class="rc-desc">디파이 TVL 자금 추적</span>
-        </a>
-      </div>
-    </div>
-    <div class="ref-lane reveal-up">
-      <div class="ref-lane-label">INTELLIGENCE</div>
-      <div class="ref-lane-chips">
-        <a href="http://openinsider.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Open Insider</span><span class="rc-desc">내부자 거래 추적</span>
-        </a>
-        <a href="https://shortvolume.com/index.php?t=GOOG" target="_blank" class="ref-chip">
-          <span class="rc-name">Short Volume</span><span class="rc-desc">공매도 데이터</span>
-        </a>
-        <a href="https://www.sec.gov/edgar/search/" target="_blank" class="ref-chip">
-          <span class="rc-name">SEC EDGAR</span><span class="rc-desc">미국 기업 공시 원문</span>
-        </a>
-        <a href="https://dart.fss.or.kr/" target="_blank" class="ref-chip">
-          <span class="rc-name">DART 전자공시</span><span class="rc-desc">국내 기업 공시 원문</span>
-        </a>
-        <a href="https://www.visualcapitalist.com/" target="_blank" class="ref-chip">
-          <span class="rc-name">Visual Capitalist</span><span class="rc-desc">글로벌 인포그래픽</span>
-        </a>
-      </div>
-    </div>
+    <div id="rdLanes"></div>
   </div>
 </section>
   <!-- CONTENT -->
@@ -3308,15 +3148,36 @@ body #page-about > div > p:not(:first-of-type) {
       <p style="font-size:11px;letter-spacing:.16em;color:rgba(255,110,64,.5);font-weight:300">Real-Time Market Dashboard</p>
       <div class="cove-line cv-orange" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
       <p class="macro-desc" style="margin-top:18px">전 세계 증시·환율·금리·원자재·암호화폐와 시총 상위 기업 주가를 한 곳에서.<br/>달러 자산은 실시간 환율로 원화를 함께 표시합니다.</p>
-      <div class="macro-meta">
-        <div class="live-dot" id="liveDot"></div>
-        <div class="macro-ts" id="macroTs">연결 중...</div>
-        <input id="finnhubKey" class="key-input" placeholder="Finnhub API 키 입력 (주식 실시간용)" />
-        <button class="refresh-btn" id="saveKeyBtn">키 저장</button>
-        <button class="refresh-btn" id="macroRefresh" style="margin-left:0">&#8635; 새로고침</button>
-      </div>
-      <div class="key-hint" id="keyHint">
-        주식 실시간 시세를 보려면 <a href="https://finnhub.io/register" target="_blank">finnhub.io</a>에서 무료 키를 발급받아 입력하세요 (분당 60회 무료). 키가 없으면 주식은 종가 기준으로 표시됩니다.
+      <div class="macro-panel">
+        <div class="mp-top">
+          <div class="mp-live"><div class="live-dot" id="liveDot"></div><div class="mp-live-txt"><span class="mp-live-label">LIVE</span><span class="macro-ts" id="macroTs">연결 중...</span></div></div>
+          <div class="mp-src"><span class="mp-src-dot"></span>데이터 <b id="mpSrcName">FMP · CoinGecko · ExchangeRate</b></div>
+        </div>
+        <div class="mp-divider"></div>
+        <div class="mp-key">
+          <div class="mp-key-head">
+            <span class="mp-key-title">🔑 FMP API 키</span>
+            <span class="fmp-key-badge" id="fmpKeyBadge">미입력</span>
+          </div>
+          <div class="mp-key-row">
+            <input id="fmpKeyMacro" class="key-input" placeholder="FMP API 키를 붙여넣으세요" />
+            <button class="mp-btn mp-btn-save" id="saveFmpBtn">저장 후 적용</button>
+            <button class="mp-btn mp-btn-refresh" id="macroRefresh">&#8635; 새로고침</button>
+          </div>
+          <div class="key-hint" id="keyHint">
+            <b>FMP 무료 키 하나면</b> 전 세계 지수·원자재·시총 상위 주가가 실제 값으로 표시됩니다 (하루 250회까지 완전 무료). RESEARCH 탭에서 이미 키를 넣었다면 <b>여기서도 자동으로 함께 적용</b>됩니다.
+          </div>
+        </div>
+        <details class="macro-keyguide"><summary><span class="mkg-sum-txt">🔑 FMP 무료 API 키 발급 방법 — 처음이라면 여기부터 (약 2분 · 완전 무료)</span><span class="mkg-sum-ind"><span class="mkg-ind-closed">클릭</span><span class="mkg-ind-arrow" aria-hidden="true">⟶</span></span></summary>
+          <div class="mkg-guide-body">
+          <div class="mkg-intro">FMP(Financial Modeling Prep)는 전 세계 지수·주식·원자재 시세를 제공하는 무료 데이터 서비스예요. 한 번 발급하면 <b>MACRO·RESEARCH 탭에서 함께 사용</b>됩니다.</div>
+          <div class="mkg-row"><span class="mkg-n">01</span><div><b>접속</b> — 아래 버튼으로 FMP 가입 페이지를 엽니다. <a href="https://site.financialmodelingprep.com/register" target="_blank" rel="noopener" class="mkg-link">FMP 회원가입 페이지 열기 ↗</a></div></div>
+          <div class="mkg-row"><span class="mkg-n">02</span><div><b>가입</b> — <b>Sign up with Google</b>(구글 계정 가입)이 가장 빠릅니다. 요금제는 <b>Free(무료)</b>를 선택하세요.</div></div>
+          <div class="mkg-row"><span class="mkg-n">03</span><div><b>대시보드</b> — 로그인 후 대시보드로 이동합니다. <a href="https://site.financialmodelingprep.com/developer/docs/dashboard" target="_blank" rel="noopener" class="mkg-link">내 대시보드 열기 ↗</a></div></div>
+          <div class="mkg-row"><span class="mkg-n">04</span><div><b>키 복사</b> — 화면의 <b>API Key</b> 항목에 보이는 긴 영문·숫자 문자열을 복사하세요. <span style="color:rgba(255,150,120,.85)">(비밀번호처럼 타인에게 공유 금지)</span></div></div>
+          <div class="mkg-row"><span class="mkg-n">05</span><div><b>붙여넣기</b> — 위 칸에 붙여넣고 <b>저장 후 적용</b>을 누르면 이 브라우저에 저장되고 곧바로 실시간 데이터가 켜집니다.</div></div>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -3388,7 +3249,7 @@ body #page-about > div > p:not(:first-of-type) {
       <!-- ════════ 데이터 (하단) ════════ -->
       <!-- GLOBAL INDICES -->
       <div class="macro-card span2">
-        <div class="macro-card-title">전세계 주요지수 &nbsp; GLOBAL INDICES <span class="sim-tag" id="idxTag">참고용</span></div>
+        <div class="macro-card-title">주요 지수 ETF &nbsp; INDEX ETFs <span class="sim-tag" id="idxTag">참고용</span></div>
         <div class="idx-grid" id="indexRows"><div class="t-loading">불러오는 중...</div></div>
       </div>
 
@@ -3405,7 +3266,7 @@ body #page-about > div > p:not(:first-of-type) {
 
       <!-- RATES & POLICY -->
       <div class="macro-card">
-        <div class="macro-card-title">금리 &middot; 정책 &nbsp; RATES</div>
+        <div class="macro-card-title">금리 &middot; 정책 &nbsp; RATES <span class="sim-tag">참고 수치 · 수동 갱신</span></div>
         <div id="ratesRows"><div class="t-loading">불러오는 중...</div></div>
       </div>
       <!-- COMMODITIES -->
@@ -3423,10 +3284,10 @@ body #page-about > div > p:not(:first-of-type) {
 
     <div class="macro-note">
       <div class="note-txt">
-        실시간: <span class="api-tag">CoinGecko</span> <span class="api-tag">ExchangeRate-API</span> <span class="api-tag">Finnhub</span> (키 입력시 주식·지수·VIX) &nbsp;|&nbsp;
-        지수·원자재 일부는 키 없을 때 샘플로 표시됩니다.
+        실시간: <span class="api-tag">FMP</span> (지수·원자재·주가) <span class="api-tag">CoinGecko</span> (암호화폐) <span class="api-tag">ExchangeRate-API</span> (환율) &nbsp;|&nbsp;
+        FMP 키가 없으면 지수·원자재·주가는 참고값으로 표시됩니다. 금리는 참고 수치입니다.
       </div>
-      <div class="note-txt" id="macroAutoNote">30초마다 자동 갱신</div>
+      <div class="note-txt" id="macroAutoNote">FMP 키 입력 시 5분마다 자동 갱신 · 무료 250회/일</div>
     </div>
   </div>
   
@@ -3600,7 +3461,7 @@ body #page-about > div > p:not(:first-of-type) {
           .cs-why-row p{margin:0;font-family:'Pretendard',sans-serif;font-size:12px;line-height:1.65;color:rgba(240,237,230,.68)}
           .cs-legend{margin-top:13px;padding:13px 15px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-family:'Pretendard',sans-serif;font-size:11.5px;line-height:1.75;color:rgba(240,237,230,.6)}
           .cs-legend b{color:rgba(204,255,0,.78)}
-          .hw-krw{font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:600;color:rgba(255,255,255,.58);letter-spacing:.04em;margin:4px 0 10px;min-height:14px}
+          .hw-krw{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,.82);letter-spacing:.03em;margin:5px 0 11px;min-height:14px;background:rgba(20,16,24,.4);border-left:2px solid rgba(178,138,212,.5);padding:7px 12px;border-radius:0 7px 7px 0}
           .hw-krw b{color:#c9a96e}
           #fxHelp02{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-4px 0 16px;min-height:30px}
           .fx-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(204,255,0,.05);border:1px solid rgba(204,255,0,.22);border-radius:8px;padding:6px 12px;font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:600;color:rgba(240,237,230,.82);letter-spacing:.02em}
@@ -3693,7 +3554,7 @@ body #page-about > div > p:not(:first-of-type) {
             </div>
             <div class="cs-badges">
               <span class="cs-hint">숫자 칸을 비워두면 그 조건은 무시</span>
-              <span class="cs-hint dim">FMP 무료 키 · 하루 250회 · 카드 등록 불필요</span>
+              <span class="cs-hint dim">FMP 무료 키 · 하루 250회까지 완전 무료</span>
             </div>
 
 
@@ -3716,13 +3577,14 @@ body #page-about > div > p:not(:first-of-type) {
                 <div class="cs-field"><label>섹터</label><select id="csSector"><option value="">전체</option><option>Technology</option><option>Communication Services</option><option>Consumer Cyclical</option><option>Consumer Defensive</option><option>Energy</option><option>Financial Services</option><option>Healthcare</option><option>Industrials</option><option>Basic Materials</option><option>Real Estate</option><option>Utilities</option></select></div>
                 <div class="cs-field" style="min-width:230px"><label>티커 직접 추가 (쉼표로 여러 개)</label><input type="text" id="csTickers" placeholder="예: PLTR, IONQ, HIMS" style="width:230px" autocomplete="off"></div>
               </div>
-              <details class="cs-why cs-info" style="margin:14px 0 2px"><summary>FMP 무료 API 키 발급 방법 — 처음이라면 여기부터 (2분 소요)</summary><div class="cs-why-list" style="grid-template-columns:1fr">
-              <div class="cs-why-row"><span class="cs-chip">01 · 접속</span><p><b style="color:rgba(240,237,230,.85)">site.financialmodelingprep.com</b> 에 접속해 우측 상단 <b style="color:rgba(240,237,230,.85)">Sign Up</b>을 누릅니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">02 · 가입</span><p><b style="color:rgba(240,237,230,.85)">Sign up with Google</b>(구글 계정 가입)이 가장 빠릅니다. 무료 플랜이면 충분합니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">03 · 대시보드</span><p>로그인 후 상단 메뉴의 <b style="color:rgba(240,237,230,.85)">Dashboard</b>로 이동합니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">04 · 키 복사</span><p>화면의 <b style="color:rgba(240,237,230,.85)">API Key</b> 항목에 보이는 긴 영문·숫자 문자열이 내 키입니다. 복사하세요. (타인에게 공유 금지)</p></div>
-              <div class="cs-why-row"><span class="cs-chip">05 · 붙여넣기</span><p>아래 <b style="color:rgba(240,237,230,.85)">① 검색 대상</b>의 "FMP API 키" 칸에 붙여넣으면 이 브라우저에 자동 저장됩니다.</p></div>
-              <div class="cs-why-row"><span class="cs-chip">06 · 확인</span><p>옆의 <b style="color:rgba(240,237,230,.85)">키 진단</b> 버튼으로 내 키가 정상 작동하는지 즉시 확인할 수 있습니다.</p></div>
+              <details class="cs-why cs-info" style="margin:14px 0 2px"><summary>FMP 무료 API 키 발급 방법 — 처음이라면 여기부터 (약 2분 · 완전 무료)</summary><div class="cs-why-list" style="grid-template-columns:1fr">
+              <div class="cs-why-intro">FMP(Financial Modeling Prep)는 전 세계 지수·주식·원자재 시세를 제공하는 무료 데이터 서비스예요. 아래 순서대로 2분이면 내 전용 키를 받을 수 있고, <b style="color:rgba(240,237,230,.85)">한 번 발급하면 RESEARCH·MACRO 탭에서 함께 사용</b>됩니다. 무료 플랜으로 하루 250회까지 조회할 수 있어요.</div>
+              <div class="cs-why-row"><span class="cs-chip">01 · 접속</span><p>아래 버튼으로 FMP 가입 페이지를 엽니다. <a href="https://site.financialmodelingprep.com/register" target="_blank" rel="noopener" class="cs-golink">FMP 회원가입 페이지 열기 ↗</a></p></div>
+              <div class="cs-why-row"><span class="cs-chip">02 · 가입</span><p><b style="color:rgba(240,237,230,.85)">Sign up with Google</b>(구글 계정으로 가입)이 가장 빠릅니다. 이메일로도 가능하며, 요금제는 <b style="color:rgba(240,237,230,.85)">Free(무료)</b>를 선택하면 됩니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">03 · 대시보드</span><p>가입·로그인이 끝나면 대시보드로 이동합니다. 바로 안 열리면 이 버튼을 누르세요. <a href="https://site.financialmodelingprep.com/developer/docs/dashboard" target="_blank" rel="noopener" class="cs-golink">내 대시보드 열기 ↗</a></p></div>
+              <div class="cs-why-row"><span class="cs-chip">04 · 키 복사</span><p>대시보드 화면의 <b style="color:rgba(240,237,230,.85)">API Key</b> 항목에 보이는 <b style="color:rgba(240,237,230,.85)">긴 영문·숫자 문자열</b>이 내 키입니다. 옆의 복사 아이콘을 눌러 복사하세요. <span style="color:rgba(255,150,120,.85)">(이 키는 비밀번호와 같으니 타인에게 공유하지 마세요.)</span></p></div>
+              <div class="cs-why-row"><span class="cs-chip">05 · 붙여넣기</span><p>아래 <b style="color:rgba(240,237,230,.85)">① 검색 대상</b>의 "FMP API 키" 칸에 붙여넣으면 <b style="color:rgba(240,237,230,.85)">이 브라우저에 자동 저장</b>되고, MACRO 탭에서도 곧바로 실시간 지수·원자재가 켜집니다.</p></div>
+              <div class="cs-why-row"><span class="cs-chip">06 · 확인</span><p>옆의 <b style="color:rgba(240,237,230,.85)">키 진단</b> 버튼으로 내 키가 정상 작동하는지 즉시 확인할 수 있습니다. 초록 체크가 뜨면 완료예요.</p></div>
             </div></details>
             </div>
 
@@ -4429,9 +4291,18 @@ function rankChgHtml(rk,pr){
 
 /* 💡 문법 오류가 일어났던 작은따옴표 영역을 깔끔하게 세척 완료 */
 function stockRow(m,usdVal,chg){
+  /* 기업 로고: 도메인 기반 무료 로고 서비스. 실패 시 티커 이니셜 배지로 폴백 */
+  var logo = m.dom
+    ? '<img class="stk-logo" src="https://logo.clearbit.com/'+m.dom+'" alt="" loading="lazy" '
+      + 'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\';">'
+      + '<span class="stk-logo-fb" style="display:none">'+m.s.charAt(0)+'</span>'
+    : '<span class="stk-logo-fb" style="display:flex">'+m.s.charAt(0)+'</span>';
   return '<div class="ticker-row stock-row"><div class="t-left">'+
     '<span class="rk-badge">'+m.rk+'</span>'+
-    '<div><div class="t-label">'+m.s+' <span class="t-name">'+m.n+'</span></div>'+
+    '<span class="stk-logo-wrap">'+logo+'</span>'+
+    '<div class="stk-info"><div class="stk-head"><span class="stk-ticker">'+m.s+'</span>'+
+    '<span class="stk-name">'+m.n+'</span>'+
+    (m.ctry?'<span class="stk-ctry">'+m.ctry+'</span>':'')+'</div>'+
     '<div class="t-sub">시총 '+m.rk+'위 '+rankChgHtml(m.rk,m.pr)+'</div></div>'+
     '</div><div class="t-right"><div class="t-val">$'+fmt(usdVal,2)+'</div>'+
     '<div class="t-krw">'+fmtKrw(usdVal)+'</div>'+chgHtml(chg)+'</div></div>';
@@ -4917,47 +4788,44 @@ function initHoldings(){
 }
 
 var MEGACAPS=[
-  {s:'NVDA',n:'엔비디아',p:222.82,rk:1,pr:1,mc:5230},
-  {s:'MSFT',n:'마이크로소프트',p:441.31,rk:2,pr:4,mc:3110},
-  {s:'GOOGL',n:'알파벳',p:361.85,rk:3,pr:3,mc:4630},
-  {s:'AAPL',n:'애플',p:315.03,rk:4,pr:2,mc:4540},
-  {s:'SPCX',n:'스페이스X',p:380.00,rk:5,pr:null,mc:2460},
-  {s:'AMZN',n:'아마존',p:256.60,rk:6,pr:5,mc:2870},
-  {s:'TSM',n:'TSMC',p:446.69,rk:7,pr:6,mc:2100},
-  {s:'AVGO',n:'브로드컴',p:481.65,rk:8,pr:7,mc:1600},
-  {s:'TSLA',n:'테슬라',p:423.74,rk:9,pr:8,mc:1400},
-  {s:'META',n:'메타',p:597.63,rk:10,pr:9,mc:1700},
-  {s:'MU',n:'마이크론',p:1064.10,rk:11,pr:10,mc:1180},
-  {s:'BRK.B',n:'버크셔',p:471.69,rk:12,pr:11,mc:1050},
-  {s:'LLY',n:'일라이릴리',p:1064.15,rk:13,pr:12,mc:1020},
-  {s:'WMT',n:'월마트',p:113.06,rk:14,pr:13,mc:1000},
-  {s:'AMD',n:'AMD',p:520.87,rk:15,pr:14,mc:870},
-  {s:'JPM',n:'JP모건',p:300.96,rk:16,pr:15,mc:840},
-  {s:'ORCL',n:'오라클',p:244.58,rk:17,pr:16,mc:800},
-  {s:'ASML',n:'ASML',p:1705.37,rk:18,pr:17,mc:760},
-  {s:'XOM',n:'엑손모빌',p:149.56,rk:19,pr:18,mc:620},
-  {s:'V',n:'비자',p:317.32,rk:20,pr:19,mc:600},
-  {s:'INTC',n:'인텔',p:107.93,rk:21,pr:20,mc:560},
-  {s:'JNJ',n:'존슨앤존슨',p:222.89,rk:22,pr:21,mc:540},
-  {s:'CSCO',n:'시스코',p:128.00,rk:23,pr:22,mc:520},
-  {s:'MA',n:'마스터카드',p:477.68,rk:24,pr:23,mc:500},
-  {s:'ARM',n:'ARM',p:402.71,rk:25,pr:24,mc:480},
-  {s:'COST',n:'코스트코',p:954.27,rk:26,pr:25,mc:460},
-  {s:'CAT',n:'캐터필러',p:909.81,rk:27,pr:26,mc:440},
-  {s:'LRCX',n:'램리서치',p:334.41,rk:28,pr:27,mc:420},
-  {s:'PLTR',n:'팔란티어',p:152.17,rk:29,pr:28,mc:400},
-  {s:'ABBV',n:'애브비',p:215.43,rk:30,pr:29,mc:380}
+  {s:'NVDA',n:'엔비디아',p:222.82,rk:1,pr:1,mc:5230,dom:'nvidia.com',ctry:'🇺🇸'},
+  {s:'MSFT',n:'마이크로소프트',p:441.31,rk:2,pr:4,mc:3110,dom:'microsoft.com',ctry:'🇺🇸'},
+  {s:'GOOGL',n:'알파벳',p:361.85,rk:3,pr:3,mc:4630,dom:'abc.xyz',ctry:'🇺🇸'},
+  {s:'AAPL',n:'애플',p:315.03,rk:4,pr:2,mc:4540,dom:'apple.com',ctry:'🇺🇸'},
+  {s:'SPCX',n:'스페이스X',p:145.30,rk:5,pr:5,mc:2100,dom:'spacex.com',ctry:'🇺🇸'},
+  {s:'AMZN',n:'아마존',p:256.60,rk:6,pr:5,mc:2870,dom:'amazon.com',ctry:'🇺🇸'},
+  {s:'TSM',n:'TSMC',p:446.69,rk:7,pr:6,mc:2100,dom:'tsmc.com',ctry:'🇹🇼'},
+  {s:'AVGO',n:'브로드컴',p:481.65,rk:8,pr:7,mc:1600,dom:'broadcom.com',ctry:'🇺🇸'},
+  {s:'TSLA',n:'테슬라',p:423.74,rk:9,pr:8,mc:1400,dom:'tesla.com',ctry:'🇺🇸'},
+  {s:'META',n:'메타',p:597.63,rk:10,pr:9,mc:1700,dom:'meta.com',ctry:'🇺🇸'},
+  {s:'MU',n:'마이크론',p:1064.10,rk:11,pr:10,mc:1180,dom:'micron.com',ctry:'🇺🇸'},
+  {s:'BRK.B',n:'버크셔',p:471.69,rk:12,pr:11,mc:1050,dom:'berkshirehathaway.com',ctry:'🇺🇸'},
+  {s:'LLY',n:'일라이릴리',p:1064.15,rk:13,pr:12,mc:1020,dom:'lilly.com',ctry:'🇺🇸'},
+  {s:'WMT',n:'월마트',p:113.06,rk:14,pr:13,mc:1000,dom:'walmart.com',ctry:'🇺🇸'},
+  {s:'AMD',n:'AMD',p:520.87,rk:15,pr:14,mc:870,dom:'amd.com',ctry:'🇺🇸'},
+  {s:'JPM',n:'JP모건',p:300.96,rk:16,pr:15,mc:840,dom:'jpmorganchase.com',ctry:'🇺🇸'},
+  {s:'ORCL',n:'오라클',p:244.58,rk:17,pr:16,mc:800,dom:'oracle.com',ctry:'🇺🇸'},
+  {s:'ASML',n:'ASML',p:1705.37,rk:18,pr:17,mc:760,dom:'asml.com',ctry:'🇳🇱'},
+  {s:'XOM',n:'엑손모빌',p:149.56,rk:19,pr:18,mc:620,dom:'exxonmobil.com',ctry:'🇺🇸'},
+  {s:'V',n:'비자',p:317.32,rk:20,pr:19,mc:600,dom:'visa.com',ctry:'🇺🇸'},
+  {s:'INTC',n:'인텔',p:107.93,rk:21,pr:20,mc:560,dom:'intel.com',ctry:'🇺🇸'},
+  {s:'JNJ',n:'존슨앤존슨',p:222.89,rk:22,pr:21,mc:540,dom:'jnj.com',ctry:'🇺🇸'},
+  {s:'CSCO',n:'시스코',p:128.00,rk:23,pr:22,mc:520,dom:'cisco.com',ctry:'🇺🇸'},
+  {s:'MA',n:'마스터카드',p:477.68,rk:24,pr:23,mc:500,dom:'mastercard.com',ctry:'🇺🇸'},
+  {s:'ARM',n:'ARM',p:402.71,rk:25,pr:24,mc:480,dom:'arm.com',ctry:'🇬🇧'},
+  {s:'COST',n:'코스트코',p:954.27,rk:26,pr:25,mc:460,dom:'costco.com',ctry:'🇺🇸'},
+  {s:'CAT',n:'캐터필러',p:909.81,rk:27,pr:26,mc:440,dom:'caterpillar.com',ctry:'🇺🇸'},
+  {s:'LRCX',n:'램리서치',p:334.41,rk:28,pr:27,mc:420,dom:'lamresearch.com',ctry:'🇺🇸'},
+  {s:'PLTR',n:'팔란티어',p:152.17,rk:29,pr:28,mc:400,dom:'palantir.com',ctry:'🇺🇸'},
+  {s:'ABBV',n:'애브비',p:215.43,rk:30,pr:29,mc:380,dom:'abbvie.com',ctry:'🇺🇸'}
 ];
 
 var INDICES=[
-  {k:'S&P 500',sub:'미국',v:7420},{k:'나스닥 종합',sub:'미국 기술주',v:24180},
-  {k:'다우존스',sub:'미국 우량주',v:47650},{k:'필라델피아 반도체',sub:'SOX',v:7240},
-  {k:'러셀2000',sub:'미국 중소형',v:2530},{k:'KOSPI',sub:'한국',v:8864},
-  {k:'KOSDAQ',sub:'한국 성장주',v:1015},{k:'니케이225',sub:'일본',v:52800},
-  {k:'상하이종합',sub:'중국',v:3920},{k:'항셍',sub:'홍콩',v:26400},
-  {k:'유로스톡스50',sub:'유럽',v:6300},{k:'DAX',sub:'독일',v:25900},
-  {k:'FTSE100',sub:'영국',v:9820},{k:'CAC40',sub:'프랑스',v:8420},
-  {k:'센섹스',sub:'인도',v:84200}
+  {k:'S&P 500',sub:'SPY ETF',v:660},{k:'나스닥 100',sub:'QQQ ETF',v:585},
+  {k:'다우존스',sub:'DIA ETF',v:475},{k:'러셀2000',sub:'IWM ETF',v:250},
+  {k:'반도체',sub:'SOXX ETF',v:265},{k:'한국 MSCI',sub:'EWY ETF',v:78},
+  {k:'일본 MSCI',sub:'EWJ ETF',v:82},{k:'중국 MSCI',sub:'MCHI ETF',v:62},
+  {k:'독일 MSCI',sub:'EWG ETF',v:42},{k:'영국 MSCI',sub:'EWU ETF',v:41}
 ];
 
 function renderIndices(){
@@ -5001,61 +4869,132 @@ function renderSummary(vix,fng,dxy){
 
 async function fetchStocks(){
   var tag=$id('stockTag');
-  var sess=usMarketSession();
+  var host=document.getElementById('stockRows');
+  var K=''; try{ K=(localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){}
 
-  // 실데이터 키가 없으면: 종가 고정 표시 (난수 변동 없음)
-  if(!finnhubKey){
-    if(tag){tag.textContent='종가 기준';tag.className='sim-tag';}
-    var html='';
-    for(var i=0;i<MEGACAPS.length;i++){
-      var m=MEGACAPS[i];
-      m.lastChg=null;
-      html+=stockRow(m,m.p,null);
-    }
-    document.getElementById('stockRows').innerHTML=html;
-    renderHeatmap();
-    return;
+  /* 항상 먼저 종가로 전체 목록을 그린다 (절대 빈 화면 없음) */
+  function paintClose(){
+    var h='';
+    for(var i=0;i<MEGACAPS.length;i++){ var m=MEGACAPS[i]; h+=stockRow(m,m.p,(m.lastChg!=null?m.lastChg:null)); }
+    if(host) host.innerHTML=h;
+    try{ renderHeatmap(); }catch(e){}
   }
+  paintClose();
 
-  // 장이 닫혀있으면: 마지막 받은 값 유지, 갱신 안 함
-  if(!sess.live){
-    if(tag){tag.textContent=sess.label;tag.className='sim-tag';}
-    // 아직 한 번도 안 그렸으면 종가로 초기 렌더
-    if(!document.getElementById('stockRows').innerHTML.trim()){
-      var h2='';
-      for(var j=0;j<MEGACAPS.length;j++){ h2+=stockRow(MEGACAPS[j],MEGACAPS[j].p,null); }
-      document.getElementById('stockRows').innerHTML=h2;
-    }
-    renderHeatmap();
-    return;
-  }
+  // FMP 키 없으면: 종가 고정 표시로 끝
+  if(!K){ if(tag){tag.textContent='참고값';tag.className='sim-tag';} return; }
 
-  // 장중(프리/정규/애프터): Finnhub 실시간, 분당 호출 제한 회피용 순차 throttle
-  if(window.__stockFetching) return;   // 이미 순차 호출 진행 중이면 중복 실행 방지
+  if(window.__stockFetching) return;
   window.__stockFetching=true;
-  if(tag){tag.textContent=sess.label+' 실시간';tag.className='live-tag';}
-  var rows=new Array(MEGACAPS.length).fill('');
-  // 초기엔 종가로 채워두고 하나씩 교체
-  for(var k=0;k<MEGACAPS.length;k++){ rows[k]=stockRow(MEGACAPS[k],MEGACAPS[k].p,null); }
-  function paint(){ document.getElementById('stockRows').innerHTML=rows.join(''); }
-  paint();
+  try{
+    var qm=await fmpQuote(MEGACAPS.map(function(m){ return m.s; }));
+    if(qm){
+      var rows='', liveN=0;
+      for(var k=0;k<MEGACAPS.length;k++){
+        var mm=MEGACAPS[k], o=qm[mm.s];
+        var valid = o && o.price>0;
+        if(valid){ mm.lastChg=(typeof o.chg==='number')?o.chg:0; mm.p=o.price; rows+=stockRow(mm,o.price,mm.lastChg); liveN++; }
+        else { rows+=stockRow(mm,mm.p,(mm.lastChg!=null?mm.lastChg:null)); }
+      }
+      if(host) host.innerHTML=rows;
+      try{ renderHeatmap(); }catch(e){}
+      if(tag){ tag.textContent = liveN>0 ? 'FMP 실시간' : '참고값'; tag.className = liveN>0 ? 'live-tag' : 'sim-tag'; }
+    } else { if(tag){tag.textContent='참고값';tag.className='sim-tag';} }
+  }catch(e){ if(tag){tag.textContent='참고값';tag.className='sim-tag';} }
+  finally{ window.__stockFetching=false; }
+}
 
-  // 무료 키 분당 60콜 제한 → 1초 간격 순차 호출 (30종목 = 약 30초)
-  var idx=0;
-  function step(){
-    if(idx>=MEGACAPS.length){ window.__stockFetching=false; return; }
-    // 호출 도중 장이 닫히면 중단
-    if(!usMarketSession().live){ window.__stockFetching=false; return; }
-    var m=MEGACAPS[idx];
-    fetch('https://finnhub.io/api/v1/quote?symbol='+m.s+'&token='+finnhubKey)
-      .then(function(r){return r.ok?r.json():null;})
-      .then(function(q){
-        if(q&&q.c){ m.lastChg=(typeof q.dp==='number')?q.dp:0; rows[idx]=stockRow(m,q.c,q.dp||0); m.p=q.c; paint(); renderHeatmap(); }
-      })
-      .catch(function(){})
-      .finally(function(){ idx++; setTimeout(step, 1100); });
+/* ══ FMP 실시간 데이터 (지수·원자재·주식) — RESEARCH 탭과 키 공유 ══ */
+function fmpKey(){ try{ return (localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){ return ''; } }
+
+/* FMP 지수 심볼 (^ 접두) */
+/* 지수 ETF (FMP 무료로 실제 값 조회 가능 — 지수 자체는 유료라 ETF로 대체) */
+var FMP_INDICES=[
+  {s:'SPY',k:'S&P 500',sub:'SPY ETF'},{s:'QQQ',k:'나스닥 100',sub:'QQQ ETF'},
+  {s:'DIA',k:'다우존스',sub:'DIA ETF'},{s:'IWM',k:'러셀2000',sub:'IWM ETF'},
+  {s:'SOXX',k:'반도체',sub:'SOXX ETF'},{s:'EWY',k:'한국 MSCI',sub:'EWY ETF'},
+  {s:'EWJ',k:'일본 MSCI',sub:'EWJ ETF'},{s:'MCHI',k:'중국 MSCI',sub:'MCHI ETF'},
+  {s:'EWG',k:'독일 MSCI',sub:'EWG ETF'},{s:'EWU',k:'영국 MSCI',sub:'EWU ETF'}
+];
+/* FMP 원자재 심볼 */
+/* 원자재 ETF (FMP 무료로 실제 값 조회 가능 — 원자재 직접 시세는 유료) */
+var FMP_COMM=[
+  {s:'GLD',k:'금 Gold',sub:'GLD ETF',dec:2},{s:'SLV',k:'은 Silver',sub:'SLV ETF',dec:2},
+  {s:'USO',k:'WTI 원유',sub:'USO ETF',dec:2},{s:'UNG',k:'천연가스',sub:'UNG ETF',dec:2},
+  {s:'CPER',k:'구리 Copper',sub:'CPER ETF',dec:2}
+];
+
+/* FMP 응답 정규화 (stable/legacy 필드 차이 흡수) */
+function fmpNorm(o){
+  if(!o) return null;
+  var price=(o.price!=null)?o.price:(o.close!=null?o.close:null);
+  var chg=(o.changePercentage!=null)?o.changePercentage:((o.changesPercentage!=null)?o.changesPercentage:0);
+  return { symbol:o.symbol, price:price, chg:(typeof chg==='number'?chg:parseFloat(chg)||0) };
+}
+/* FMP quote 조회 — Stable API 개별 병렬 호출 (무료 플랜 확실 동작) */
+async function fmpQuote(symbols){
+  var K=fmpKey(); if(!K) return null;
+  try{
+    var results=await Promise.all(symbols.map(function(s){
+      return fetch('https://financialmodelingprep.com/stable/quote?symbol='+encodeURIComponent(s)+'&apikey='+K)
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(d){ if(Array.isArray(d)&&d[0]) return fmpNorm(d[0]); if(d&&d.symbol) return fmpNorm(d); return null; })
+        .catch(function(){ return null; });
+    }));
+    var map={}, any=false;
+    results.forEach(function(n){ if(n&&n.symbol){ map[n.symbol]=n; any=true; } });
+    return any?map:null;
+  }catch(e){ return null; }
+}
+
+/* 지수 전용 조회 (stable/index-quote — 일반 quote와 엔드포인트 다름) */
+async function fmpIndexQuote(symbols){
+  var K=fmpKey(); if(!K) return null;
+  try{
+    var results=await Promise.all(symbols.map(function(s){
+      return fetch('https://financialmodelingprep.com/stable/index-quote?symbol='+encodeURIComponent(s)+'&apikey='+K)
+        .then(function(r){ return r.ok?r.json():null; })
+        .then(function(d){ if(Array.isArray(d)&&d[0]) return fmpNorm(d[0]); if(d&&d.symbol) return fmpNorm(d); return null; })
+        .catch(function(){ return null; });
+    }));
+    var map={}, any=false;
+    results.forEach(function(n){ if(n&&n.symbol){ map[n.symbol]=n; any=true; } });
+    return any?map:null;
+  }catch(e){ return null; }
+}
+/* 지수: FMP 실제 값 (항목별 유효성 검증 — 못 믿을 값은 참고값 표시) */
+async function renderIndicesFMP(){
+  var tag=$id('idxTag');
+  var map=await fmpQuote(FMP_INDICES.map(function(x){return x.s;}));
+  if(!map){ renderIndices(); if(tag){tag.textContent='참고용';tag.style.display='';} return; }
+  var html='', liveCount=0;
+  for(var i=0;i<FMP_INDICES.length;i++){
+    var ix=FMP_INDICES[i], o=map[ix.s], fb=INDICES[i];
+    /* 유효성: FMP가 값을 주면(0 초과) 신뢰 */
+    var valid = o && o.price>0;
+    if(valid){
+      html+=tRow(ix.k,ix.sub,0,(o.chg||0),{raw:fmt(o.price,2)});
+      liveCount++;
+    } else {
+      html+=tRow(ix.k,ix.sub+' · 참고값',0,null,{raw:fb?fmt(fb.v,2):'—'});
+    }
   }
-  step();
+  $id('indexRows').innerHTML=html;
+  if(tag){ tag.textContent = liveCount>0 ? ('FMP 실시간 · ETF 기준') : '참고용'; }
+}
+
+/* 원자재: FMP 실제 값 (항목별 유효성 검증) */
+async function renderCommoditiesFMP(){
+  var map=await fmpQuote(FMP_COMM.map(function(x){return x.s;}));
+  if(!map){ renderCommodities(); return; }
+  var html='', fallback={GLD:395,SLV:49,USO:72,UNG:15,CPER:38};
+  for(var i=0;i<FMP_COMM.length;i++){
+    var c=FMP_COMM[i], o=map[c.s], fb=fallback[c.s];
+    var valid = o && o.price>0 && (o.price > fb*0.4 && o.price < fb*1.6);
+    if(valid){ html+=tRow(c.k,c.sub,o.price,(o.chg||0),{dec:c.dec}); }
+    else { html+=tRow(c.k,c.sub+' · 참고값',fb,null,{dec:c.dec}); }
+  }
+  $id('commRows').innerHTML=html;
 }
 
 async function macroFetch(){
@@ -5115,7 +5054,7 @@ async function macroFetch(){
     }catch(e){}
   }
 
-  renderIndices(); renderCommodities(); renderRates(); renderSummary(vix,fng,dxy); fetchStocks();
+  renderIndicesFMP(); renderCommoditiesFMP(); renderRates(); renderSummary(vix,fng,dxy); fetchStocks();
 
   var now=new Date();
   var ts2=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
@@ -5126,31 +5065,55 @@ async function macroFetch(){
 
 function macroTick(){
   if(!macroLoaded) return;
-  // 지수·원자재·금리는 고정값이라 매번 다시 그릴 필요 없음 (초기 1회만 macroFetch에서 렌더)
-  // 주식: 키 없으면 종가 고정 / 키 있고 장중이면 실시간 갱신
-  if(finnhubKey){
-    if(usMarketSession().live) fetchStocks();
-  } else {
-    fetchStocks();
-  }
+  var K=''; try{ K=(localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){}
+  if(!K) return; /* 키 없으면 참고값 고정 — API 호출 안 함 */
+  /* FMP 배치 갱신: 지수·원자재·주식 (갱신당 3회 호출, 2분 주기 → 하루 여유롭게 250회 이내) */
+  renderIndicesFMP();
+  renderCommoditiesFMP();
+  fetchStocks();
 }
 
 
 
+function fmpToast(msg,kind){
+  try{ if(window.__cloudToast){ window.__cloudToast(msg,kind==='out'?'out':'ok'); return; } }catch(e){}
+  /* 폴백: 자체 토스트 */
+  var t=document.getElementById('fmpToastEl');
+  if(!t){ t=document.createElement('div'); t.id='fmpToastEl'; document.body.appendChild(t); }
+  t.className='fmp-toast'+(kind==='out'?' out':'');
+  t.innerHTML=msg;
+  requestAnimationFrame(function(){ t.classList.add('show'); });
+  clearTimeout(t.__tm); t.__tm=setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+function updateFmpBadge(){
+  var badge=$id('fmpKeyBadge'); if(!badge) return;
+  var k=''; try{ k=(localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){}
+  if(k){ badge.textContent='적용됨'; badge.className='fmp-key-badge ok'; }
+  else { badge.textContent='미입력'; badge.className='fmp-key-badge empty'; }
+}
 function bindMacroControls(){
-  var saveBtn=$id('saveKeyBtn'), input=$id('finnhubKey'), refresh=$id('macroRefresh');
-  if(input && finnhubKey) input.value=finnhubKey;
+  var saveBtn=$id('saveFmpBtn'), input=$id('fmpKeyMacro'), refresh=$id('macroRefresh');
+  var existing=''; try{ existing=(localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){}
+  if(input && existing) input.value=existing;
+  updateFmpBadge();
   if(saveBtn) saveBtn.addEventListener('click',function(){
-    finnhubKey=(input.value||'').trim();
-    try{ localStorage.setItem('nn_finnhub',finnhubKey); }catch(e){}
+    var k=(input.value||'').trim();
+    try{ localStorage.setItem('nn_fmp_key',k); }catch(e){}
+    updateFmpBadge();
     var hint=$id('keyHint');
-    if(hint) hint.innerHTML = finnhubKey ? '✓ 키 저장됨 — 주식·VIX 실시간 전환됩니다.' : '키가 삭제되었습니다. 주식은 종가 기준으로 표시됩니다.';
+    if(k){
+      if(hint) hint.innerHTML = '✓ <b style="color:#7ee0a8">FMP 키가 적용되었습니다</b> — 지수·원자재·주가가 실제 값으로 전환됩니다. (RESEARCH 탭과 공유) 잠시 후 데이터가 갱신됩니다.';
+      fmpToast('✅ FMP 키가 적용되었습니다 · 실시간 데이터 전환 중', 'ok');
+    } else {
+      if(hint) hint.innerHTML = 'FMP 키가 삭제되었습니다. 지수·원자재·주가는 참고값으로 표시됩니다.';
+      fmpToast('FMP 키가 삭제되었습니다 · 참고값 모드', 'out');
+    }
     macroFetch();
   });
-  if(refresh) refresh.addEventListener('click',macroFetch);
+  if(refresh) refresh.addEventListener('click',function(){ macroFetch(); fmpToast('🔄 새로고침했습니다', 'ok'); });
 }
 bindMacroControls();
-setInterval(macroTick,45000);
+setInterval(macroTick,120000);
 /* ── [교정 완료] 마퀴 전광판 자바스크립트 엔진 (컴마 및 함수 누락 완벽 복구) ── */
 function homeTickerCfg(symbols){
   return { symbols:symbols, showSymbolLogo:true, isTransparent:true, displayMode:'adaptive', colorTheme:'dark' };
@@ -5295,7 +5258,7 @@ var runParallax = function(){
         var norm = centerOffset / (vh/2 + rect.height/2);
         if(norm < -1) norm = -1; if(norm > 1) norm = 1;
         // scale(1.18)로 생긴 약 9% 여유 안에서만 세로 이동 → 가장자리 안 드러남
-        var shiftPct = norm * ratio * 7; // 카드 높이 대비 % (최대 약 ±7%)
+        var shiftPct = norm * ratio * 4; // 카드 높이 대비 % (최대 약 ±4% — scale 1.18 여유 9% 내 안전)
         var sp = shiftPct.toFixed(1);
         if(bg.__sp !== sp){ bg.__sp = sp; bg.style.transform = 'scale(1.18) translateY(' + sp + '%)'; }
       }
@@ -6974,7 +6937,8 @@ window.addEventListener('load', function(){
     assets:   ['nn_assets_v1'],
     holdings: ['nn_hold_v2','nn_hold_order'],
     watch:    ['nn_tb_watch'],
-    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub']
+    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub'],
+    hub:      ['nn_hub_v1','nn_refdesk_v1']
   };
   const KEY2DOC = {};
   Object.keys(SYNC).forEach(g => SYNC[g].forEach(k => KEY2DOC[k]=g));
@@ -7028,6 +6992,8 @@ window.addEventListener('load', function(){
           SYNC[g].forEach(k => { if (typeof d[k] === 'string') _set(k, d[k]); });
           applying = false;
           restored = true;
+          if(window.__hubRender) try{ window.__hubRender(); }catch(e){}
+          if(window.__rdRender) try{ window.__rdRender(); }catch(e){}
         } else {
           await pushGroup(g);   /* 첫 로그인: 이 기기의 데이터를 내 클라우드로 이관 */
         }
@@ -7235,7 +7201,7 @@ html{ overflow-y:scroll !important; scrollbar-gutter:stable; }
 .hold-del{position:absolute;top:4px;right:7px;font-size:10px;line-height:1;color:rgba(255,255,255,.25);cursor:pointer;opacity:0;transition:opacity .2s,color .2s;z-index:11;padding:2px;}
 .hold-item:hover .hold-del{opacity:1;}
 .hold-del:hover{color:#ff5b5b;}
-.hold-add-btn{width:100%;margin-top:.5rem;padding:.7rem;border-radius:8px;background:rgba(178,138,212,.06);border:1px dashed rgba(178,138,212,.4);color:rgba(178,138,212,.85);font-family:'Pretendard',sans-serif;font-weight:600;font-size:12.5px;letter-spacing:.04em;cursor:pointer;transition:.2s;}
+.hold-add-btn{width:100%;margin-top:.5rem;padding:.75rem;border-radius:8px;background:rgba(178,138,212,.14);border:1px solid rgba(178,138,212,.5);color:#d9c2f0;font-family:'Pretendard',sans-serif;font-weight:700;font-size:13px;letter-spacing:.04em;cursor:pointer;transition:.2s;}
 .hold-add-btn:hover{background:rgba(178,138,212,.13);border-color:#b28ad4;color:#d9c2f0;box-shadow:0 0 18px -5px #b28ad4;}
 .hold-add-modal{position:fixed;inset:0;z-index:1000001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.66);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .hold-add-modal.open{display:flex;}
@@ -7286,12 +7252,15 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 .as-wrap{display:flex;gap:0;align-items:flex-start;margin-top:3.4rem;}
 .as-side{width:236px;flex-shrink:0;position:sticky;top:100px;display:flex;flex-direction:column;padding-right:20px;border-right:1px solid rgba(255,255,255,.08);}
 .as-nav{display:flex;flex-direction:column;gap:4px;}
-.as-navbtn{display:flex;align-items:center;gap:10px;text-align:left;background:rgba(22,22,28,.7);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:11px 13px;color:#e8e5de;font-family:'Pretendard',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:.18s;}
-.as-navbtn .as-navi{font-size:13px;opacity:.7;width:16px;text-align:center;}
-.as-navbtn:hover{background:rgba(255,77,77,.16);border-color:rgba(255,77,77,.35);color:#fff;}
-.as-navbtn.active{background:linear-gradient(rgba(64,16,20,.92),rgba(42,12,16,.92));border-color:rgba(255,77,77,.65);color:#ff5f5f;text-shadow:0 0 6px rgba(255,77,77,.95),0 0 15px rgba(255,59,59,.7),0 0 30px rgba(255,59,59,.4);box-shadow:inset 0 0 0 1px rgba(255,77,77,.55),0 0 20px rgba(255,59,59,.4),0 0 40px rgba(255,59,59,.18);}
-.as-navbtn.active .as-navi{opacity:1;color:#ff6b6b;text-shadow:0 0 8px rgba(255,59,59,.9);}
-.as-navbtn.active .as-navi{opacity:1;}
+.as-navbtn{position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;text-align:left;background:rgba(30,20,22,.55);border:1px solid rgba(255,77,77,.3);border-radius:8px;padding:11px 15px;color:#f0ede6;font-family:'Pretendard',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:transform .18s, background .2s, border-color .2s, box-shadow .2s;--bc:#ff4d4d;}
+.as-navbtn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bc);opacity:0;transition:opacity .2s, box-shadow .2s}
+.as-navbtn .as-navi{font-size:13px;opacity:.75;width:16px;text-align:center;transition:opacity .2s;}
+.as-navbtn:hover{background:color-mix(in srgb, var(--bc) 13%, rgba(10,10,12,.5));border-color:color-mix(in srgb, var(--bc) 55%, transparent);box-shadow:0 0 22px -5px var(--bc);transform:translateX(3px);color:#fff;}
+.as-navbtn:hover::before{opacity:1;box-shadow:0 0 12px var(--bc)}
+.as-navbtn:hover .as-navi{opacity:1;}
+.as-navbtn.active{background:color-mix(in srgb, var(--bc) 17%, rgba(10,10,12,.5));border-color:var(--bc);color:#ff6b6b;text-shadow:0 0 10px rgba(255,77,77,.6);box-shadow:0 0 18px -3px var(--bc);}
+.as-navbtn.active::before{opacity:1;box-shadow:0 0 12px var(--bc)}
+.as-navbtn.active .as-navi{opacity:1;color:#ff6b6b;}
 .as-side-foot{margin-top:26px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:12px;}
 .as-fx label{display:block;font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.4);margin-bottom:5px;}
 .as-fx-input{width:100%;background:rgba(22,22,28,.7);border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:8px 10px;color:#f0ede6;font-size:13px;font-family:'Pretendard',sans-serif;box-sizing:border-box;}
@@ -7502,6 +7471,102 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 .nn-cloud-toast.ok{border-color:rgba(201,169,110,.4)}
 .nn-cloud-toast.out{border-color:rgba(174,177,180,.35)}
 .nn-cloud-toast.out b{color:#d5d8db}
+
+.cs-golink{display:inline-block;margin-top:6px;font-size:11px;font-weight:600;color:#9ed7ff;text-decoration:none;background:rgba(125,200,255,.08);border:1px solid rgba(125,200,255,.35);border-radius:7px;padding:5px 11px;transition:.18s}
+.cs-golink:hover{background:rgba(125,200,255,.16);border-color:rgba(125,200,255,.6);box-shadow:0 0 10px rgba(125,200,255,.3)}
+.cs-why-intro{font-size:11.5px;line-height:1.7;color:rgba(255,255,255,.6);font-weight:300;margin-bottom:12px;padding:11px 13px;background:rgba(204,255,0,.04);border-left:2px solid rgba(204,255,0,.4);border-radius:0 7px 7px 0}
+
+/* FMP 저장 폴백 토스트 */
+.fmp-toast{position:fixed;top:26px;left:50%;transform:translateX(-50%) translateY(-18px);background:rgba(20,16,14,.96);color:#f0ede6;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;padding:12px 22px;border-radius:12px;box-shadow:0 14px 44px -12px rgba(0,0,0,.75);border:1px solid rgba(255,110,64,.4);z-index:9999999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;max-width:88vw;text-align:center}
+.fmp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.fmp-toast.out{border-color:rgba(255,255,255,.25)}
+
+/* ══ HOLDINGS HUB 편집 UI ══ */
+.hub-edit-toggle{margin-left:14px;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.4);color:#c9a96e;font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:700;padding:5px 13px;border-radius:8px;cursor:pointer;transition:.18s;letter-spacing:.02em;vertical-align:middle}
+.hub-edit-toggle:hover{background:rgba(201,169,110,.2);box-shadow:0 0 12px rgba(201,169,110,.3)}
+.hub-edit-toggle.on{background:rgba(120,200,140,.16);border-color:rgba(120,200,140,.5);color:#8fe0a8}
+
+.comp-card.hub-editing{cursor:grab;position:relative}
+.comp-card.hub-editing:active{cursor:grabbing}
+.comp-card.hub-drag{opacity:.4;outline:2px dashed rgba(201,169,110,.6)}
+.hub-card-ctrl{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:6}
+.hub-card-ctrl button{width:28px;height:28px;border-radius:7px;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,12,.8);color:#f0ede6;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.hub-cc-edit:hover{background:rgba(201,169,110,.3);border-color:#c9a96e}
+.hub-cc-del:hover{background:rgba(220,80,80,.4);border-color:rgba(220,80,80,.8)}
+.hub-add-card{border:1.5px dashed rgba(201,169,110,.4)!important;background:rgba(201,169,110,.04)!important;display:flex!important;align-items:center;justify-content:center;cursor:pointer;min-height:200px}
+.hub-add-card:hover{background:rgba(201,169,110,.1)!important;border-color:rgba(201,169,110,.7)!important}
+.hub-add-inner{display:flex;flex-direction:column;align-items:center;gap:8px;color:#c9a96e}
+.hub-add-plus{font-size:34px;font-weight:200;line-height:1}
+.hub-add-txt{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em}
+/* 허브/데스크 편집 모달 */
+.hub-modal-ov{position:fixed;inset:0;background:rgba(6,6,8,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:3000000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;padding:20px}
+.hub-modal-ov.show{opacity:1}
+.hub-modal{width:400px;max-width:94vw;max-height:88vh;overflow-y:auto;background:linear-gradient(165deg,rgba(26,24,20,.99),rgba(16,15,13,.99));border:1px solid rgba(201,169,110,.3);border-radius:16px;padding:24px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9);transform:scale(.95) translateY(8px);transition:transform .24s cubic-bezier(.22,1,.36,1)}
+.hub-modal-ov.show .hub-modal{transform:scale(1) translateY(0)}
+.hm-title{font-family:'Pretendard',sans-serif;font-size:16px;font-weight:800;color:#f0ede6;margin-bottom:18px}
+.hm-lb{display:block;font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.6);margin:12px 0 5px}
+.hm-hint{color:rgba(255,255,255,.35);font-weight:400}
+.hm-in{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:9px;padding:10px 12px;font-family:'Pretendard',sans-serif;font-size:12.5px;color:#f0ede6;outline:none;transition:.16s}
+.hm-in:focus{border-color:rgba(201,169,110,.6);box-shadow:0 0 0 3px rgba(201,169,110,.1)}
+.hm-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.hm-btn{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;padding:10px 18px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:.16s}
+.hm-cancel{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.6)}
+.hm-cancel:hover{background:rgba(255,255,255,.1)}
+.hm-save{background:linear-gradient(135deg,#e0c389,#c9a96e);color:#1a140a}
+.hm-save:hover{box-shadow:0 4px 16px rgba(201,169,110,.4)}
+
+/* ══ REFERENCE DESK 편집 UI ══ */
+.rd-lane-ctrl{display:inline-flex;gap:5px;margin-left:10px;vertical-align:middle}
+.rd-lane-ctrl button{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,12,.7);color:#f0ede6;font-size:11px;cursor:pointer;transition:.15s;padding:0}
+.rd-lane-ctrl button:hover{background:rgba(201,169,110,.3);border-color:#c9a96e}
+.rd-chip-edit{position:relative;cursor:grab;user-select:none}
+.rd-chip-edit:active{cursor:grabbing}
+.rd-chip-ctrl{display:inline-flex;gap:4px;margin-left:8px}
+.rd-chip-ctrl button{width:20px;height:20px;border-radius:5px;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,12,.75);color:#f0ede6;font-size:10px;cursor:pointer;transition:.15s;padding:0}
+.rd-chip-ctrl button:hover{background:rgba(201,169,110,.35);border-color:#c9a96e}
+.rd-add-chip{border:1px dashed rgba(201,169,110,.45)!important;background:rgba(201,169,110,.05)!important;color:#c9a96e!important;cursor:pointer;font-family:'Pretendard',sans-serif;font-weight:700;font-size:11.5px}
+.rd-add-chip:hover{background:rgba(201,169,110,.13)!important;border-color:rgba(201,169,110,.7)!important}
+.rd-add-lane{display:block;margin:18px auto 0;background:rgba(201,169,110,.08);border:1.5px dashed rgba(201,169,110,.45);color:#c9a96e;font-family:'Pretendard',sans-serif;font-weight:700;font-size:12.5px;padding:11px 24px;border-radius:10px;cursor:pointer;transition:.18s;letter-spacing:.03em}
+.rd-add-lane:hover{background:rgba(201,169,110,.16);border-color:rgba(201,169,110,.7);box-shadow:0 0 14px rgba(201,169,110,.25)}
+.rd-chip-edit.hub-drag{opacity:.4;outline:2px dashed rgba(201,169,110,.6)}
+
+/* 편집 모달 색 선택 */
+.hm-color-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:2px}
+.hm-sw{width:26px;height:26px;border-radius:7px;border:2px solid rgba(255,255,255,.15);cursor:pointer;padding:0;transition:.15s}
+.hm-sw:hover{transform:scale(1.12)}
+.hm-sw.sel{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3),0 0 10px rgba(255,255,255,.3)}
+.hm-color-pick{width:34px;height:26px;border-radius:7px;border:2px solid rgba(255,255,255,.15);background:transparent;cursor:pointer;padding:0}
+
+/* ══ 공용 토스트 (실행취소) ══ */
+.nn-toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);display:flex;align-items:center;gap:14px;background:rgba(20,18,24,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#f0ede6;font-family:'Pretendard',sans-serif;font-size:13px;font-weight:500;padding:13px 18px 13px 20px;border-radius:13px;box-shadow:0 18px 50px -12px rgba(0,0,0,.8);border:1px solid rgba(201,169,110,.28);z-index:9999999;opacity:0;transition:opacity .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:90vw}
+.nn-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.nn-toast.del{border-color:rgba(220,120,110,.4)}
+.nn-toast-msg{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nn-toast-undo{flex-shrink:0;background:rgba(201,169,110,.16);border:1px solid rgba(201,169,110,.5);color:#e0c389;font-family:'Pretendard',sans-serif;font-size:12px;font-weight:700;padding:6px 13px;border-radius:8px;cursor:pointer;transition:.16s;letter-spacing:.02em}
+.nn-toast-undo:hover{background:rgba(201,169,110,.3);box-shadow:0 0 12px rgba(201,169,110,.3)}
+
+/* ══ 드래그 실시간 재배치 — 부드러운 자리 이동 ══ */
+.hub-drag-live .comp-card{transition:transform .001s}
+.comp-card[draggable="true"]{transition:box-shadow .2s, outline .15s}
+.comp-card.hub-drag{opacity:.35;outline:2px dashed var(--comp-hi,rgba(201,169,110,.7));transform:scale(.97)}
+.rd-chip-edit{transition:transform .18s cubic-bezier(.22,1,.36,1), opacity .15s}
+.rd-chip-edit.hub-drag{opacity:.35;outline:2px dashed rgba(201,169,110,.7)}
+.ref-lane-chips{min-height:20px}
+
+/* 편집 취소 버튼 */
+.hub-cancel-btn{margin-left:8px;background:rgba(220,120,110,.1)!important;border-color:rgba(220,120,110,.4)!important;color:#e89b90!important}
+.hub-cancel-btn:hover{background:rgba(220,120,110,.2)!important;box-shadow:0 0 12px rgba(220,120,110,.3)!important}
+/* 모달 도움말 버튼 + 팝업 */
+.hm-help-btn{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(201,169,110,.18);border:1px solid rgba(201,169,110,.45);color:#e0c389;font-size:10px;font-weight:700;cursor:pointer;margin-left:3px;vertical-align:middle;padding:0;line-height:1}
+.hm-help-btn:hover{background:rgba(201,169,110,.35)}
+.hub-help-pop{position:fixed;width:270px;background:linear-gradient(165deg,rgba(28,25,21,.99),rgba(18,16,14,.99));border:1px solid rgba(201,169,110,.35);border-radius:12px;padding:14px 16px;box-shadow:0 18px 50px -12px rgba(0,0,0,.85);z-index:3000005;opacity:0;transform:translateY(-6px);transition:opacity .18s,transform .18s;pointer-events:auto}
+.hub-help-pop.show{opacity:1;transform:translateY(0)}
+.hhp-title{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:800;color:#e0c389;margin-bottom:10px}
+.hhp-step{font-family:'Pretendard',sans-serif;font-size:11.5px;line-height:1.6;color:rgba(255,255,255,.72);font-weight:300;margin-top:7px}
+.hhp-step b{color:rgba(240,237,230,.92);font-weight:600}
+.hhp-step a{color:#e0c389;text-decoration:none;border-bottom:1px solid rgba(201,169,110,.4)}
+.hhp-step a:hover{color:#f0d9a8}
+.hhp-tip{margin-top:11px;padding:8px 11px;background:rgba(201,169,110,.06);border-radius:7px;font-family:'Pretendard',sans-serif;font-size:11px;line-height:1.5;color:rgba(255,255,255,.6);font-weight:300}
 </style>
 
 <div id="masterTooltip"></div>
@@ -8783,9 +8848,17 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
       +(b.author?'<div class="bq-a">'+esc(b.author)+'</div>':'')
       +'<div class="bq-q">'+esc(q)+'</div>'
       +'</div></div>';
-    el.classList.remove('show');
     el.__bookId = b.id;
-    setTimeout(function(){ el.innerHTML=inner; el.classList.add('show'); }, 350);
+    /* 최초 표시는 히어로 부제(fnSub)와 동시에 페이드인 — 지연 없이 즉시 .show */
+    if(!el.__shownOnce){
+      el.__shownOnce=true;
+      el.innerHTML=inner;
+      requestAnimationFrame(function(){ el.classList.add('show'); });
+    } else {
+      /* 이후 문구 교체 시에만 짧은 크로스페이드 */
+      el.classList.remove('show');
+      setTimeout(function(){ el.innerHTML=inner; el.classList.add('show'); }, 350);
+    }
   }
   var _tickRetry=0;
   function tick(){
@@ -9027,6 +9100,411 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
     show(v);
   });
 })();
+
+/* ══════════ HOLDINGS HUB — 편집 가능 (추가·수정·삭제·드래그, 클라우드 동기화) ══════════ */
+(function(){
+  var HUB_KEY='nn_hub_v1';
+  /* 공용 토스트 (실행취소 지원) — 전역 1회 정의 */
+  if(!window.__nnToast){
+    window.__nnToast=function(msg, opts){
+      opts=opts||{};
+      var t=document.getElementById('nnToastEl');
+      if(!t){ t=document.createElement('div'); t.id='nnToastEl'; t.className='nn-toast'; document.body.appendChild(t); }
+      var undoBtn = opts.undo ? '<button type="button" class="nn-toast-undo">실행취소</button>' : '';
+      t.innerHTML='<span class="nn-toast-msg">'+msg+'</span>'+undoBtn;
+      t.className='nn-toast'+(opts.kind==='del'?' del':'');
+      requestAnimationFrame(function(){ t.classList.add('show'); });
+      clearTimeout(t.__tm);
+      var dur = opts.undo ? 5000 : 2600;
+      t.__tm=setTimeout(function(){ t.classList.remove('show'); }, dur);
+      if(opts.undo){
+        var ub=t.querySelector('.nn-toast-undo');
+        if(ub) ub.onclick=function(){ clearTimeout(t.__tm); t.classList.remove('show'); try{ opts.undo(); }catch(e){} };
+      }
+    };
+  }
+  var SEED=[
+    {url:'https://www.tesla.com',dom:'tesla.com',tag:'Automotive & Energy',name:'TESLA',desc:'FSD & ESS & ROBOTICS & ROBOTAXI',bg:'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80',color:'#ff4444'},
+    {url:'https://www.nvidia.com',dom:'nvidia.com',tag:'AI Computing Platform',name:'NVIDIA',desc:'GPU를 필두로 하여 AI 내러티브를 지배하는 빅테크',bg:'https://images.unsplash.com/photo-1697577418970-95d99b5a55cf?auto=format&fit=crop&w=800&q=80',color:'#9cf500'},
+    {url:'https://www.iren.com',dom:'iren.com',tag:'Next-Gen Data Center',name:'IREN',desc:'AI 데이터센터 & 전력 인프라 기업',bg:'https://images.unsplash.com/photo-1695668548342-c0c1ad479aee?auto=format&fit=crop&w=800&q=80',color:'#33ffcc'},
+    {url:'https://www.rocketlabusa.com',dom:'rocketlabusa.com',tag:'Space Systems & Launch',name:'ROCKET LAB',desc:'항공우주 제조 & 발사 서비스 제공사',bg:'https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?auto=format&fit=crop&w=800&q=80',color:'#ffffff'},
+    {url:'https://www.roundhillinvestments.com',dom:'roundhillinvestments.com',tag:'Roundhill Investments',name:'DRAM ETF',desc:'메모리 반도체 산업 집중 ETF',bg:'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',color:'#66f0ff'},
+    {url:'https://www.google.com',dom:'google.com',tag:'Alphabet',name:'GOOGLE',desc:'세계 최대의 검색·AI·광고 플랫폼',bg:'https://images.unsplash.com/photo-1766371900950-929959f2bb67?auto=format&fit=crop&w=800&q=80',color:'#73a5ff'},
+    {url:'https://www.circle.com',dom:'circle.com',tag:'Stablecoin Issuer',name:'CIRCLE',desc:'USDC 스테이블코인 발행사 · 디지털 달러',bg:'https://images.unsplash.com/photo-1671469904766-a3728219d3b7?auto=format&fit=crop&w=800&q=80',color:'#be9eff'},
+    {url:'https://www.infleqtion.com',dom:'infleqtion.com',tag:'Quantum AI',name:'INFLEQTION',desc:'중성원자 양자컴퓨팅 기반 AI 스타트업',bg:'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=800&q=80',color:'#ff9e80'}
+  ];
+  var hubEdit=false, dragIdx=-1;
+  function load(){ try{ var s=localStorage.getItem(HUB_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)) return a; } }catch(e){} return SEED.slice(); }
+  function save(a){ try{ localStorage.setItem(HUB_KEY, JSON.stringify(a)); }catch(e){} }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function render(){
+    var grid=document.getElementById('hubGrid'); if(!grid) return;
+    var data=load();
+    var h='';
+    for(var i=0;i<data.length;i++){
+      var c=data[i];
+      var logo = c.dom ? '<img src="https://logo.clearbit.com/'+esc(c.dom)+'" alt="" onerror="this.style.display=\'none\'">' : '';
+      var bg = c.bg ? 'background-image:url(\''+esc(c.bg)+'\')' : '';
+      var cvar = c.color ? ' style="--comp-hi:'+esc(c.color)+'"' : '';
+      h+='<div class="comp-card is-visible'+(hubEdit?' hub-editing':'')+'" data-i="'+i+'"'+cvar+(hubEdit?' draggable="true"':'')+'>'
+        + '<div class="comp-bg" style="'+bg+'"></div>'
+        + '<div class="comp-logo">'+logo+'</div>'
+        + '<div class="comp-content">'
+        + '<div class="comp-tag">'+esc(c.tag)+'</div>'
+        + '<div class="comp-name">'+esc(c.name)+'</div>'
+        + '<div class="comp-desc">'+esc(c.desc)+'</div>'
+        + (hubEdit?'':'<a href="'+esc(c.url)+'" target="_blank" rel="noopener" class="comp-btn">홈페이지 <span class="cb-arrow">&#10142;</span></a>')
+        + '</div>'
+        + (hubEdit?'<div class="hub-card-ctrl"><button type="button" class="hub-cc-edit" onclick="window.hubEditCard('+i+')">✎</button><button type="button" class="hub-cc-del" onclick="window.hubDelCard('+i+')">✕</button></div>':'')
+        + '</div>';
+    }
+    if(hubEdit){
+      h+='<button type="button" class="comp-card is-visible hub-add-card" onclick="window.hubAddCard()"><div class="hub-add-inner"><span class="hub-add-plus">＋</span><span class="hub-add-txt">기업 추가</span></div></button>';
+    }
+    grid.innerHTML=h;
+    if(hubEdit) bindDrag(grid);
+  }
+
+  function bindDrag(grid){
+    var dragEl=null;
+    grid.classList.add('hub-drag-live');
+    var cards=grid.querySelectorAll('.comp-card[draggable="true"]');
+    cards.forEach(function(card){
+      card.addEventListener('dragstart',function(e){ dragEl=card; card.classList.add('hub-drag'); e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',''); }catch(_){} });
+      card.addEventListener('dragend',function(){ if(dragEl) dragEl.classList.remove('hub-drag'); dragEl=null; commitOrder(grid); });
+    });
+    /* 그리드 전역 dragover: 마우스 위치 기준으로 dragEl을 실시간 재배치 → 다른 카드가 비켜남 */
+    grid.addEventListener('dragover',function(e){
+      e.preventDefault();
+      if(!dragEl) return;
+      var after=getDragAfter(grid, e.clientX, e.clientY);
+      if(after==null){ var addBtn=grid.querySelector('.hub-add-card'); if(addBtn) grid.insertBefore(dragEl, addBtn); else grid.appendChild(dragEl); }
+      else grid.insertBefore(dragEl, after);
+    });
+  }
+  function getDragAfter(grid, x, y){
+    var els=[].slice.call(grid.querySelectorAll('.comp-card[draggable="true"]:not(.hub-drag)'));
+    var closest={dist:-Infinity, el:null};
+    for(var i=0;i<els.length;i++){
+      var b=els[i].getBoundingClientRect();
+      var oy=y-(b.top+b.height/2), ox=x-(b.left+b.width/2);
+      /* 같은 행 우선: y가 카드 범위 안이면 x로 판단 */
+      var offset = (y < b.bottom && y > b.top) ? ox : (oy<0? -1e9 : 1e9);
+      if(offset<0 && offset>closest.dist){ closest={dist:offset, el:els[i]}; }
+    }
+    return closest.el;
+  }
+  function commitOrder(grid){
+    var order=[].slice.call(grid.querySelectorAll('.comp-card[draggable="true"]')).map(function(el){ return parseInt(el.getAttribute('data-i')); });
+    var data=load(); var newData=order.map(function(i){ return data[i]; }).filter(Boolean);
+    if(newData.length===data.length){ save(newData); render(); }
+  }
+
+  var hubSnapshot=null;
+  window.hubToggleEdit=function(){
+    hubEdit=!hubEdit;
+    var b=document.getElementById('hubEditToggle'), cb=document.getElementById('hubCancelBtn');
+    if(hubEdit){ hubSnapshot=JSON.stringify(load()); }
+    if(b){ b.textContent=hubEdit?'✓ 완료':'✎ 편집'; b.classList.toggle('on',hubEdit); }
+    if(cb){ cb.style.display=hubEdit?'':'none'; }
+    if(!hubEdit && hubSnapshot){ window.__nnToast('✓ 변경사항이 저장되었습니다'); hubSnapshot=null; }
+    render();
+  };
+  window.hubCancelEdit=function(){
+    if(hubSnapshot!=null){ try{ localStorage.setItem(HUB_KEY, hubSnapshot); }catch(e){} }
+    hubSnapshot=null; hubEdit=false;
+    var b=document.getElementById('hubEditToggle'), cb=document.getElementById('hubCancelBtn');
+    if(b){ b.textContent='✎ 편집'; b.classList.remove('on'); }
+    if(cb){ cb.style.display='none'; }
+    window.__nnToast('↩ 편집을 취소했습니다');
+    render();
+  };
+  window.hubDelCard=function(i){ var data=load(); if(!data[i]) return; var removed=data[i], pos=i; data.splice(i,1); save(data); render(); window.__nnToast('🗑 "'+removed.name+'" 삭제됨', {kind:'del', undo:function(){ var d=load(); d.splice(pos,0,removed); save(d); render(); window.__nnToast('↩ 복원되었습니다'); }}); };
+  window.hubAddCard=function(){ hubOpenModal(-1); };
+  window.hubEditCard=function(i){ hubOpenModal(i); };
+
+  window.hubShowImgHelp=function(ev){ ev.stopPropagation();
+    hubHelpPop(ev.currentTarget, '🖼️ 배경 이미지 넣는 법',
+      '<div class="hhp-step"><b>1.</b> 원하는 이미지를 웹에서 찾습니다 (<a href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a>·<a href="https://www.google.com/search?tbm=isch" target="_blank" rel="noopener">구글 이미지</a> 등).</div>'
+     +'<div class="hhp-step"><b>2.</b> 이미지 위에서 <b>우클릭 → 이미지 주소 복사</b>를 누릅니다.</div>'
+     +'<div class="hhp-step"><b>3.</b> 복사한 주소(https://…jpg/png 등)를 이 칸에 붙여넣습니다.</div>'
+     +'<div class="hhp-tip">💡 비워두면 기본 배경이 적용됩니다.</div>');
+  };
+  window.hubShowLogoHelp=function(ev){ ev.stopPropagation();
+    hubHelpPop(ev.currentTarget, '🏢 로고 자동 표시',
+      '<div class="hhp-step">기업 <b>홈페이지 도메인</b>만 적으면 로고가 자동으로 표시됩니다.</div>'
+     +'<div class="hhp-step">예: <b>tesla.com</b>, <b>nvidia.com</b>, <b>apple.com</b></div>'
+     +'<div class="hhp-tip">💡 "https://"나 "www."는 빼고 도메인만 적어도 됩니다.</div>');
+  };
+  function hubClosePop(){
+    var p=document.getElementById('hubHelpPop');
+    if(p){ p.classList.remove('show'); setTimeout(function(){ if(p.parentNode) p.remove(); },170); }
+    hubHelpPop._owner=null;
+  }
+  function hubHelpPop(anchorEl, title, body){
+    var existing=document.getElementById('hubHelpPop');
+    /* 같은 버튼을 다시 누르면 토글(닫기) */
+    if(existing && hubHelpPop._owner===anchorEl){ hubClosePop(); return; }
+    if(existing) existing.remove();
+    var pop=document.createElement('div'); pop.id='hubHelpPop'; pop.className='hub-help-pop';
+    pop.innerHTML='<div class="hhp-title">'+title+'</div>'+body;
+    document.body.appendChild(pop);
+    hubHelpPop._owner=anchorEl;
+    var r=anchorEl.getBoundingClientRect();
+    var pw=270, ph=pop.offsetHeight;
+    var left=r.left, top=r.bottom+8;
+    if(left+pw>window.innerWidth-10) left=window.innerWidth-10-pw;
+    if(top+ph>window.innerHeight-10) top=r.top-ph-8;
+    pop.style.left=Math.max(10,left)+'px'; pop.style.top=Math.max(10,top)+'px';
+    requestAnimationFrame(function(){ pop.classList.add('show'); });
+    /* 마우스가 팝업에 들어왔다 나가면 페이드아웃 */
+    var entered=false;
+    pop.addEventListener('mouseenter', function(){ entered=true; });
+    pop.addEventListener('mouseleave', function(){ if(entered) hubClosePop(); });
+    /* 바깥 클릭 시 닫기 */
+    setTimeout(function(){
+      document.addEventListener('click', function close(e){ var pp=document.getElementById('hubHelpPop'); if(!pp){ document.removeEventListener('click',close); return; } if(!pp.contains(e.target) && e.target!==anchorEl){ hubClosePop(); document.removeEventListener('click',close); } });
+    },0);
+  }
+  function hubOpenModal(idx){
+    var data=load();
+    var c = idx>=0 ? data[idx] : {url:'',dom:'',tag:'',name:'',desc:'',bg:''};
+    var ov=document.getElementById('hubModal'); if(ov) ov.remove();
+    ov=document.createElement('div'); ov.id='hubModal'; ov.className='hub-modal-ov';
+    ov.innerHTML='<div class="hub-modal">'
+      +'<div class="hm-title">'+(idx>=0?'기업 카드 수정':'기업 카드 추가')+'</div>'
+      +'<label class="hm-lb">기업명 (영문)</label><input class="hm-in" id="hmName" value="'+esc(c.name)+'" placeholder="예: TESLA">'
+      +'<label class="hm-lb">태그 (분야)</label><input class="hm-in" id="hmTag" value="'+esc(c.tag)+'" placeholder="예: AI Computing Platform">'
+      +'<label class="hm-lb">설명 (한글)</label><input class="hm-in" id="hmDesc" value="'+esc(c.desc)+'" placeholder="예: AI 반도체 선두 기업">'
+      +'<label class="hm-lb">홈페이지 URL</label><input class="hm-in" id="hmUrl" value="'+esc(c.url)+'" placeholder="https://...">'
+      +'<label class="hm-lb">로고 도메인 <span class="hm-hint">(로고 자동 표시)</span> <button type="button" class="hm-help-btn" onclick="window.hubShowLogoHelp(event)">?</button></label><input class="hm-in" id="hmDom" value="'+esc(c.dom)+'" placeholder="예: tesla.com">' 
+      +'<label class="hm-lb">배경 이미지 URL <span class="hm-hint">(선택)</span> <button type="button" class="hm-help-btn" onclick="window.hubShowImgHelp(event)">?</button></label><input class="hm-in" id="hmBg" value="'+esc(c.bg)+'" placeholder="https://... (비우면 기본 배경)">' 
+      +'<label class="hm-lb">상징 색상 <span class="hm-hint">(마우스 올릴 때 기업명 색)</span></label>'
+      +'<div class="hm-color-row" id="hmColorRow">'
+      +   ['#ff4444','#9cf500','#33ffcc','#ffffff','#66f0ff','#73a5ff','#be9eff','#ff9e80','#ffd24a','#4ae0a8'].map(function(col){ return '<button type="button" class="hm-sw'+(c.color===col?' sel':'')+'" data-col="'+col+'" style="background:'+col+'"></button>'; }).join('')
+      +   '<input type="color" class="hm-color-pick" id="hmColorPick" value="'+(c.color&&/^#[0-9a-fA-F]{6}$/.test(c.color)?c.color:'#c9a96e')+'">'
+      +'</div>'
+      +'<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button><button type="button" class="hm-btn hm-save">저장</button></div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
+    ov.querySelector('.hm-cancel').onclick=close;
+    ov.onclick=function(e){ if(e.target===ov) close(); };
+    /* 색 선택 */
+    var selColor = c.color || '';
+    var swRow=ov.querySelector('#hmColorRow');
+    swRow.querySelectorAll('.hm-sw').forEach(function(sw){
+      sw.onclick=function(){ selColor=sw.getAttribute('data-col'); swRow.querySelectorAll('.hm-sw').forEach(function(x){x.classList.remove('sel');}); sw.classList.add('sel'); };
+    });
+    ov.querySelector('#hmColorPick').oninput=function(){ selColor=this.value; swRow.querySelectorAll('.hm-sw').forEach(function(x){x.classList.remove('sel');}); };
+    ov.querySelector('.hm-save').onclick=function(){
+      var nc={ name:ov.querySelector('#hmName').value.trim(), tag:ov.querySelector('#hmTag').value.trim(), desc:ov.querySelector('#hmDesc').value.trim(), url:ov.querySelector('#hmUrl').value.trim(), dom:ov.querySelector('#hmDom').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,''), bg:ov.querySelector('#hmBg').value.trim(), color:selColor };
+      if(!nc.name){ alert('기업명을 입력하세요.'); return; }
+      var d=load();
+      if(idx>=0) d[idx]=nc; else d.push(nc);
+      save(d); close(); render();
+    };
+    requestAnimationFrame(function(){ ov.classList.add('show'); ov.querySelector('#hmName').focus(); });
+  }
+
+  /* 초기 렌더 + 클라우드 복원 후 재렌더 대응 */
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',render); else render();
+  window.__hubRender=render;
+})();
+
+
+/* ══════════ REFERENCE DESK — 편집 가능 (레인·칩 추가·수정·삭제·드래그, 클라우드 동기화) ══════════ */
+(function(){
+  var RD_KEY='nn_refdesk_v1';
+  var RD_SEED=[
+    {label:'EQUITY',chips:[
+      {url:'https://www.google.com/finance/beta',name:'Google Finance',desc:'글로벌 시세 플랫폼'},
+      {url:'https://finance.yahoo.com/',name:'Yahoo Finance',desc:'글로벌 시세 플랫폼'},
+      {url:'https://seekingalpha.com/',name:'Seeking Alpha',desc:'글로벌 퀀트 · 어닝'},
+      {url:'https://finviz.com/',name:'Finviz',desc:'Heatmap'},
+      {url:'https://kr.tradingview.com/',name:'TradingView',desc:'차트 · 지표'},
+      {url:'https://stockanalysis.com/watchlist/',name:'StockAnalysis',desc:'PT 탐색'},
+      {url:'https://finbox.com/',name:'Finbox',desc:'적정 주가 모델링'},
+      {url:'https://fanding.kr/feeds',name:'팬딩',desc:'투자 커뮤니티'},
+      {url:'https://padorbubu.com/',name:'파돌부부',desc:'아이렌 분석'},
+      {url:'https://www.dataroma.com/',name:'Dataroma',desc:'고래 포트폴리오'},
+    ]},
+    {label:'ETF & FLOW',chips:[
+      {url:'https://www.etf.com/',name:'ETF.com',desc:'미국 ETF 상세 분석'},
+      {url:'https://kind.krx.co.kr/',name:'KIND 한국거래소',desc:'국내 자금 동향 · 공매도'},
+      {url:'https://timeetf.co.kr/m11_view.php?idx=6&cate=001',name:'TIMEFOLIO AI ETF',desc:'구성종목 참고'},
+    ]},
+    {label:'RESEARCH',chips:[
+      {url:'https://consensus.hankyung.com/analysis/list?skinType=industry',name:'한경 컨센서스',desc:'국내외 리포트 통합'},
+      {url:'https://www.hankyung.com/globalmarket/usa-stock-nasdaq100',name:'한경 글로벌마켓',desc:'S&P500·나스닥'},
+      {url:'https://securities.miraeasset.com/',name:'미래에셋 리서치',desc:'글로벌 투자 전략'},
+      {url:'https://www1.kiwoom.com/h/invest/research/VAnalCCView?dummyVal=0',name:'키움증권 리서치',desc:'해외기업 분석'},
+      {url:'https://www.hanaw.com/main/research/research/RC_080000_P.cmd?tabIdx=3',name:'하나증권 리서치',desc:'산업 및 매크로'},
+      {url:'https://www.myasset.com/myasset/research/rs_list/rs_list.cmd?cd006=&cd007=RE02&cd008=&searchKeyGubun=&keyword=&jongMok_keyword=&keyword_in=&startCalendar=&endCalendar=&pgCnt=&page=1#spot',name:'유안타증권 리서치',desc:'글로벌 인더스트리'},
+    ]},
+    {label:'REAL ESTATE',chips:[
+      {url:'https://land.naver.com/',name:'네이버 부동산',desc:'실거래가 · 시세'},
+      {url:'https://kbland.kr/',name:'KB부동산',desc:'매물 통계 · 시세'},
+      {url:'https://asil.kr/',name:'아실',desc:'아파트 빅데이터 분석'},
+    ]},
+    {label:'MACRO',chips:[
+      {url:'https://www.saveticker.com/login',name:'오선 Save',desc:'실시간 뉴스'},
+      {url:'https://kr.investing.com/',name:'Investing.com',desc:'실시간 속보 · 캘린더'},
+      {url:'https://polymarket.com/ko',name:'Polymarket',desc:'예측 시장'},
+      {url:'https://edition.cnn.com/markets/fear-and-greed',name:'Fear & Greed',desc:'CNN 공포탐욕지수'},
+      {url:'https://www.forbes.com/real-time-billionaires/',name:'Forbes 부자 순위',desc:'글로벌 부자 순위'},
+      {url:'https://companiesmarketcap.com/',name:'Market Cap Rank',desc:'시가총액 랭킹'},
+      {url:'https://x.com/home',name:'X',desc:'Raw data & Article'},
+      {url:'https://truthsocial.com/@realDonaldTrump',name:'Truth Social',desc:'트럼프 피드'},
+      {url:'https://fred.stlouisfed.org/',name:'FRED',desc:'연준 경제 통계 데이터'},
+      {url:'https://tradingeconomics.com/',name:'Trading Economics',desc:'글로벌 지표 캘린더'},
+      {url:'https://ecos.bok.or.kr/',name:'ECOS 한국은행',desc:'국내 거시경제 지표'},
+    ]},
+    {label:'CRYPTO',chips:[
+      {url:'https://cryptoquant.com/',name:'CryptoQuant',desc:'기관급 온체인 데이터'},
+      {url:'https://coinmarketcap.com/ko/',name:'CoinMarketCap',desc:'글로벌 시세 · 점유율'},
+      {url:'https://defillama.com/',name:'DefiLlama',desc:'디파이 TVL 자금 추적'},
+    ]},
+    {label:'INTELLIGENCE',chips:[
+      {url:'http://openinsider.com/',name:'Open Insider',desc:'내부자 거래 추적'},
+      {url:'https://shortvolume.com/index.php?t=GOOG',name:'Short Volume',desc:'공매도 데이터'},
+      {url:'https://www.sec.gov/edgar/search/',name:'SEC EDGAR',desc:'미국 기업 공시 원문'},
+      {url:'https://dart.fss.or.kr/',name:'DART 전자공시',desc:'국내 기업 공시 원문'},
+      {url:'https://www.visualcapitalist.com/',name:'Visual Capitalist',desc:'글로벌 인포그래픽'},
+    ]},
+  ];
+  var rdEdit=false, dragChip=null; /* {lane,idx} */
+  function load(){ try{ var s=localStorage.getItem(RD_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)) return a; } }catch(e){} return JSON.parse(JSON.stringify(RD_SEED)); }
+  function save(a){ try{ localStorage.setItem(RD_KEY, JSON.stringify(a)); }catch(e){} }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function render(){
+    var host=document.getElementById('rdLanes'); if(!host) return;
+    var data=load(); var h='';
+    for(var li=0;li<data.length;li++){
+      var lane=data[li];
+      h+='<div class="ref-lane is-visible" data-lane="'+li+'">';
+      h+='<div class="ref-lane-label">'+esc(lane.label)
+        + (rdEdit?'<span class="rd-lane-ctrl"><button type="button" onclick="window.rdEditLane('+li+')">✎</button><button type="button" onclick="window.rdDelLane('+li+')">✕</button></span>':'')
+        + '</div>';
+      h+='<div class="ref-lane-chips">';
+      for(var ci=0;ci<lane.chips.length;ci++){
+        var c=lane.chips[ci];
+        if(rdEdit){
+          h+='<div class="ref-chip rd-chip-edit" draggable="true" data-lane="'+li+'" data-idx="'+ci+'">'
+            +'<span class="rc-name">'+esc(c.name)+'</span><span class="rc-desc">'+esc(c.desc)+'</span>'
+            +'<span class="rd-chip-ctrl"><button type="button" onclick="window.rdEditChip('+li+','+ci+')">✎</button><button type="button" onclick="window.rdDelChip('+li+','+ci+')">✕</button></span>'
+            +'</div>';
+        } else {
+          h+='<a href="'+esc(c.url)+'" target="_blank" rel="noopener" class="ref-chip">'
+            +'<span class="rc-name">'+esc(c.name)+'</span><span class="rc-desc">'+esc(c.desc)+'</span></a>';
+        }
+      }
+      if(rdEdit){ h+='<button type="button" class="ref-chip rd-add-chip" onclick="window.rdAddChip('+li+')">＋ 링크 추가</button>'; }
+      h+='</div></div>';
+    }
+    if(rdEdit){ h+='<button type="button" class="rd-add-lane" onclick="window.rdAddLane()">＋ 카테고리 추가</button>'; }
+    host.innerHTML=h;
+    if(rdEdit) bindDrag(host);
+  }
+
+  function bindDrag(host){
+    var dragEl=null;
+    host.querySelectorAll('.rd-chip-edit').forEach(function(ch){
+      ch.addEventListener('dragstart',function(e){ dragEl=ch; ch.classList.add('hub-drag'); e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',''); }catch(_){} });
+      ch.addEventListener('dragend',function(){ if(dragEl) dragEl.classList.remove('hub-drag'); dragEl=null; commitChipOrder(host); });
+    });
+    /* 각 레인의 칩 영역에서 실시간 재배치 (레인 간 이동도 지원) */
+    host.querySelectorAll('.ref-lane-chips').forEach(function(zone){
+      zone.addEventListener('dragover',function(e){
+        e.preventDefault();
+        if(!dragEl) return;
+        var after=getChipAfter(zone, e.clientX, e.clientY);
+        if(after==null){ var addBtn=zone.querySelector('.rd-add-chip'); if(addBtn) zone.insertBefore(dragEl, addBtn); else zone.appendChild(dragEl); }
+        else zone.insertBefore(dragEl, after);
+      });
+    });
+  }
+  function getChipAfter(zone, x, y){
+    var els=[].slice.call(zone.querySelectorAll('.rd-chip-edit:not(.hub-drag)'));
+    var closest={dist:-Infinity, el:null};
+    for(var i=0;i<els.length;i++){
+      var b=els[i].getBoundingClientRect();
+      var offset = (y < b.bottom && y > b.top) ? (x-(b.left+b.width/2)) : ((y<(b.top+b.height/2))? -1e9 : 1e9);
+      if(offset<0 && offset>closest.dist){ closest={dist:offset, el:els[i]}; }
+    }
+    return closest.el;
+  }
+  function commitChipOrder(host){
+    var data=load();
+    var lanes=[].slice.call(host.querySelectorAll('.ref-lane'));
+    var newData=[];
+    lanes.forEach(function(laneEl){
+      var li=parseInt(laneEl.getAttribute('data-lane'));
+      var src=data[li]; if(!src) return;
+      var chips=[].slice.call(laneEl.querySelectorAll('.rd-chip-edit')).map(function(ch){
+        return data[parseInt(ch.getAttribute('data-lane'))].chips[parseInt(ch.getAttribute('data-idx'))];
+      }).filter(Boolean);
+      newData.push({label:src.label, chips:chips});
+    });
+    if(newData.length===data.length){ save(newData); render(); }
+  }
+
+  var rdSnapshot=null;
+  window.rdToggleEdit=function(){
+    rdEdit=!rdEdit;
+    var b=document.getElementById('rdEditToggle'), cb=document.getElementById('rdCancelBtn');
+    if(rdEdit){ rdSnapshot=JSON.stringify(load()); }
+    if(b){ b.textContent=rdEdit?'✓ 완료':'✎ 편집'; b.classList.toggle('on',rdEdit); }
+    if(cb){ cb.style.display=rdEdit?'':'none'; }
+    if(!rdEdit && rdSnapshot){ window.__nnToast('✓ 변경사항이 저장되었습니다'); rdSnapshot=null; }
+    render();
+  };
+  window.rdCancelEdit=function(){
+    if(rdSnapshot!=null){ try{ localStorage.setItem(RD_KEY, rdSnapshot); }catch(e){} }
+    rdSnapshot=null; rdEdit=false;
+    var b=document.getElementById('rdEditToggle'), cb=document.getElementById('rdCancelBtn');
+    if(b){ b.textContent='✎ 편집'; b.classList.remove('on'); }
+    if(cb){ cb.style.display='none'; }
+    window.__nnToast('↩ 편집을 취소했습니다');
+    render();
+  };
+  window.rdDelChip=function(l,i){ var d=load(); if(!d[l]||!d[l].chips[i]) return; var removed=d[l].chips[i], pl=l, pi=i; d[l].chips.splice(i,1); save(d); render(); window.__nnToast('🗑 "'+removed.name+'" 삭제됨', {kind:'del', undo:function(){ var dd=load(); if(dd[pl]){ dd[pl].chips.splice(pi,0,removed); save(dd); render(); window.__nnToast('↩ 복원되었습니다'); } }}); };
+  window.rdAddChip=function(l){ rdChipModal(l,-1); };
+  window.rdEditChip=function(l,i){ rdChipModal(l,i); };
+  window.rdDelLane=function(l){ var d=load(); if(!d[l]) return; var removed=d[l], pos=l; d.splice(l,1); save(d); render(); window.__nnToast('🗑 "'+removed.label+'" 카테고리 삭제됨', {kind:'del', undo:function(){ var dd=load(); dd.splice(pos,0,removed); save(dd); render(); window.__nnToast('↩ 복원되었습니다'); }}); };
+  window.rdAddLane=function(){ var name=prompt('새 카테고리 이름 (영문 권장):',''); if(name===null) return; name=name.trim(); if(!name) return; var d=load(); d.push({label:name,chips:[]}); save(d); render(); };
+  window.rdEditLane=function(l){ var d=load(); if(!d[l]) return; var name=prompt('카테고리 이름 수정:',d[l].label); if(name===null) return; name=name.trim(); if(!name) return; d[l].label=name; save(d); render(); };
+
+  function rdChipModal(lane,idx){
+    var d=load();
+    var c = idx>=0 ? d[lane].chips[idx] : {url:'',name:'',desc:''};
+    var ov=document.getElementById('rdModal'); if(ov) ov.remove();
+    ov=document.createElement('div'); ov.id='rdModal'; ov.className='hub-modal-ov';
+    ov.innerHTML='<div class="hub-modal">'
+      +'<div class="hm-title">'+(idx>=0?'링크 수정':'링크 추가')+'</div>'
+      +'<label class="hm-lb">이름</label><input class="hm-in" id="rcName" value="'+esc(c.name)+'" placeholder="예: Yahoo Finance">'
+      +'<label class="hm-lb">설명</label><input class="hm-in" id="rcDesc" value="'+esc(c.desc)+'" placeholder="예: 글로벌 시세 플랫폼">'
+      +'<label class="hm-lb">URL</label><input class="hm-in" id="rcUrl" value="'+esc(c.url)+'" placeholder="https://...">'
+      +'<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button><button type="button" class="hm-btn hm-save">저장</button></div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
+    ov.querySelector('.hm-cancel').onclick=close;
+    ov.onclick=function(e){ if(e.target===ov) close(); };
+    ov.querySelector('.hm-save').onclick=function(){
+      var nc={ name:ov.querySelector('#rcName').value.trim(), desc:ov.querySelector('#rcDesc').value.trim(), url:ov.querySelector('#rcUrl').value.trim() };
+      if(!nc.name){ alert('이름을 입력하세요.'); return; }
+      var dd=load(); if(idx>=0) dd[lane].chips[idx]=nc; else dd[lane].chips.push(nc); save(dd); close(); render();
+    };
+    requestAnimationFrame(function(){ ov.classList.add('show'); ov.querySelector('#rcName').focus(); });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',render); else render();
+  window.__rdRender=render;
+})();
+
 </script>
 </body>
 </html>
