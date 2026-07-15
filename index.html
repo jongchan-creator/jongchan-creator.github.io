@@ -21,6 +21,7 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+:root{--site-bg:url('https://i.postimg.cc/nzQf9kNm/pexels-tima-miroshnichenko-5912576.jpg')}
 html,body{background:#0a0a0e;color:#f0ede6;font-family:'Pretendard',-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;height:100%}
 
 /* ── 🌌 타임스퀘어 야경 100% 원본 밝기 출력 및 독자적 페이드인 엔진 ── */
@@ -28,7 +29,7 @@ body::before{
   content:'';
   position:fixed;
   top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(rgba(10,10,14,0.02), rgba(6,6,8,0.05)), url('https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg') no-repeat center center fixed;
+  background:linear-gradient(rgba(10,10,14,0.02), rgba(6,6,8,0.05)), var(--site-bg) no-repeat center center fixed;
   background-size:cover;
   z-index:-1;
   pointer-events:none;
@@ -558,7 +559,7 @@ body::before{
 }
 .home-tickers.show{ opacity:1; transform:translateY(0); filter:blur(0); }
 .bq-card{position:absolute;right:2vw;bottom:calc(100% + 18px);width:540px;max-width:52vw;cursor:pointer;
-  background:linear-gradient(160deg,rgba(14,13,11,.6),rgba(8,8,8,.46));
+  background:linear-gradient(160deg,rgba(14,13,11,.55),rgba(8,8,8,.55));
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
   border:1px solid rgba(201,169,110,.24);border-radius:15px;
   box-shadow:0 18px 48px -20px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.05);
@@ -669,7 +670,7 @@ body::before{
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  transform: scale(1.18);
+  transform: scale(1.22);
   backface-visibility: hidden;
 }
 .comp-card::after {
@@ -1564,7 +1565,7 @@ body::before{
 .bk-sort-menu .bsi.on::before{content:'✓ '}
 #bkGoalHost{position:absolute;right:0;bottom:0;z-index:5;width:calc((100% - 44px)/3)}
 #lexQuizHost{position:absolute;top:96px;right:2.5rem;z-index:5;width:calc((100% - 5rem - 44px)/3)}
-.bk-goal{width:100%;box-sizing:border-box;background:rgba(10,10,12,.62);border:1px solid rgba(201,169,110,.22);border-radius:13px;padding:13px 15px}
+.bk-goal{width:100%;box-sizing:border-box;background:rgba(10,10,12,.55);border:1px solid rgba(201,169,110,.22);border-radius:13px;padding:13px 15px}
 .bk-goal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:nowrap;white-space:nowrap}
 .bk-goal-top .t{display:flex;align-items:center;gap:5px}
 .bk-goal-top .t{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.18em;color:#f0d9a8;text-shadow:0 0 4px rgba(224,195,137,.9),0 0 9px rgba(201,169,110,.7),0 0 18px rgba(201,169,110,.45),0 0 30px rgba(201,169,110,.25);animation:neonGold 3.5s ease-in-out infinite}
@@ -2546,7 +2547,7 @@ body::before{
 }
 
 /* ══ SUPER INVESTORS (홈 하단) ══ */
-.masters-section{position:relative;z-index:1;background:#080808;padding:clamp(2.4rem,5vh,4rem) 0 clamp(3rem,7vh,5rem)}
+.masters-section{position:relative;z-index:1;background:rgba(8,8,8,.55);padding:clamp(2.4rem,5vh,4rem) 0 clamp(3rem,7vh,5rem)}
 .masters-section .ref-lane-wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 .masters-section .cove-line{margin:18px 0 30px}
 .masters-marquee{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
@@ -2627,7 +2628,7 @@ body::before{
 }
 /* ── 🌌 메인 배경화면 절대 지정 (타임스퀘어 야경 공식 반영본) ── */
 html, body {
-  background: linear-gradient(rgba(10, 10, 14, 0.65), rgba(6, 6, 8, 0.75)), url('https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg') no-repeat center center fixed !important;
+  background: linear-gradient(rgba(10, 10, 14, 0.65), rgba(6, 6, 8, 0.75)), var(--site-bg) no-repeat center center fixed !important;
   background-size: cover !important;
 }
 /* 💡 메인 홈 및 내부 패널 상자들이 배경을 불투명하게 덮지 못하도록 투명 속성을 주입합니다 */
@@ -2647,7 +2648,7 @@ body::before {
   top: 0 !important; left: 0 !important;
   width: 100% !important; height: 100% !important;
   /* 어두운 틴트(linear-gradient)를 완전히 도려내어 사진 원본의 쨍함만 남깁니다 */
-  background: url('https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg') no-repeat center center fixed !important;
+  background: var(--site-bg) no-repeat center center fixed !important;
   background-size: cover !important;
   z-index: -1 !important;
   pointer-events: none !important;
@@ -2882,7 +2883,7 @@ body #page-about > div > p:not(:first-of-type) {
 
 /* 1. 블러를 없애고 배경이 또렷하게 보이도록 아주 얇은 투명막만 씌움 */
 .company-section {
-  background: rgba(0, 0, 0, 0.7) !important; /* 글자만 간신히 보일 정도의 맑은 25% 투명도 */
+  background: rgba(0, 0, 0, 0.55) !important; /* 통일 반투명 0.55 */
   backdrop-filter: none !important; /* ❌ 흐릿하게 만드는 블러 효과 완전 삭제 */
   -webkit-backdrop-filter: none !important; /* ❌ 사파리 블러 효과도 삭제 */
   border: 1px solid rgba(255, 255, 255, 0.3) !important; /* 깔끔하고 얇은 흰색 테두리 */
@@ -3010,6 +3011,7 @@ body #page-about > div > p:not(:first-of-type) {
   </div>
 <div class="nav-links" id="fnCtas">
     <button class="nbtn active" id="nav-home" onclick="switchPage('home')">HOME<div class="sh"></div></button>
+    <button class="nbtn bg-nav-btn" id="bgSwitchBtn" type="button" title="배경화면 설정" aria-label="배경화면 설정"><span class="bgn-txt">BACKDROP</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>
     <div class="nav-group ng-knowledge">
       <button class="nbtn nav-trigger">KNOWLEDGE<span class="ng-caret">▾</span></button>
       <div class="nav-dropdown">
@@ -3167,6 +3169,17 @@ body #page-about > div > p:not(:first-of-type) {
           <div class="key-hint" id="keyHint">
             <b>FMP 무료 키 하나면</b> 전 세계 지수·원자재·시총 상위 주가가 실제 값으로 표시됩니다 (하루 250회까지 완전 무료). RESEARCH 탭에서 이미 키를 넣었다면 <b>여기서도 자동으로 함께 적용</b>됩니다.
           </div>
+          <div class="mp-key-head" style="margin-top:14px">
+            <span class="mp-key-title">🇰🇷 KR 실시간 · 뉴스 프록시</span>
+            <span class="fmp-key-badge" id="workerBadge">미입력</span>
+          </div>
+          <div class="mp-key-row">
+            <input id="workerUrlMacro" class="key-input" placeholder="Cloudflare Worker 주소 (https://….workers.dev)" />
+            <button class="mp-btn mp-btn-save" id="saveWorkerBtn">저장 후 적용</button>
+          </div>
+          <div class="key-hint">
+            <b>코스피·코스닥 실시간 지수</b>와 <b>경제 뉴스 헤드라인</b>은 무료 Cloudflare Worker 프록시로 가져옵니다. 함께 드린 worker.js 배포 후 주소를 붙여넣으세요. (비워두면 이 기능만 꺼집니다)
+          </div>
         </div>
         <details class="macro-keyguide"><summary><span class="mkg-sum-txt">🔑 FMP 무료 API 키 발급 방법 — 처음이라면 여기부터 (약 2분 · 완전 무료)</span><span class="mkg-sum-ind"><span class="mkg-ind-closed">클릭</span><span class="mkg-ind-arrow" aria-hidden="true">⟶</span></span></summary>
           <div class="mkg-guide-body">
@@ -3268,6 +3281,11 @@ body #page-about > div > p:not(:first-of-type) {
       <div class="macro-card">
         <div class="macro-card-title">금리 &middot; 정책 &nbsp; RATES <span class="sim-tag">참고 수치 · 수동 갱신</span></div>
         <div id="ratesRows"><div class="t-loading">불러오는 중...</div></div>
+      </div>
+      <!-- NEWS -->
+      <div class="macro-card span2">
+        <div class="macro-card-title">실시간 경제 뉴스 &nbsp; NEWS <span class="sim-tag" id="newsTag">프록시 필요</span></div>
+        <div id="newsRows"><div class="t-loading">대기 중...</div></div>
       </div>
       <!-- COMMODITIES -->
       <div class="macro-card">
@@ -3501,7 +3519,7 @@ body #page-about > div > p:not(:first-of-type) {
           .cs-bullets b{color:rgba(155,212,255,.85)}
           /* ── 세련화: 섹션 넘버 박스 · 카드 프레임 · 구조화 텍스트 ── */
           .rs-sec .n{font-size:17px;padding:3px 11px;border:1px solid rgba(204,255,0,.32);border-radius:8px;background:rgba(204,255,0,.05);box-shadow:inset 0 0 12px rgba(204,255,0,.06),0 0 10px rgba(204,255,0,.12)}
-          .rs-card{border:1px solid rgba(204,255,0,.11) !important;border-radius:18px;box-shadow:0 16px 44px -24px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
+          .rs-card{background:rgba(8,8,8,.55) !important;border:1px solid rgba(204,255,0,.11) !important;border-radius:18px;box-shadow:0 16px 44px -24px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.035)}
           .rs-card .macro-card-title{display:flex;align-items:center;gap:10px}
           .rs-card .macro-card-title::before{content:'';width:3px;height:15px;flex-shrink:0;background:linear-gradient(180deg,#ccff00,rgba(204,255,0,.15));border-radius:2px;box-shadow:0 0 9px rgba(204,255,0,.55)}
           .cs-pills{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0 2px}
@@ -4947,6 +4965,38 @@ async function fmpQuote(symbols){
   }catch(e){ return null; }
 }
 
+/* ── KR 실시간·뉴스 프록시 (Cloudflare Worker) ── */
+function workerUrl(){ try{ return (localStorage.getItem('nn_worker_url')||'').trim().replace(/\/+$/,''); }catch(e){ return ''; } }
+async function prependKR(){
+  var W=workerUrl(); if(!W) return;
+  try{
+    var r=await fetch(W+'/kr'); if(!r.ok) return;
+    var d=await r.json();
+    var rows='';
+    if(d.kospi && d.kospi.price) rows+=tRow('KOSPI','한국 · 실시간',0,(d.kospi.chg||0),{raw:fmt(d.kospi.price,2)});
+    if(d.kosdaq && d.kosdaq.price) rows+=tRow('KOSDAQ','한국 성장주 · 실시간',0,(d.kosdaq.chg||0),{raw:fmt(d.kosdaq.price,2)});
+    if(rows){ var host=$id('indexRows'); if(host) host.innerHTML=rows+host.innerHTML; }
+  }catch(e){}
+}
+async function renderNews(){
+  var host=$id('newsRows'), tag=$id('newsTag'); if(!host) return;
+  var W=workerUrl();
+  if(!W){ host.innerHTML='<div class="news-empty">위 통합 패널에 프록시 주소를 입력하면 실시간 경제 뉴스가 표시됩니다.</div>'; if(tag){tag.textContent='프록시 필요';tag.className='sim-tag';} return; }
+  try{
+    var r=await fetch(W+'/news'); if(!r.ok) throw 0;
+    var items=await r.json();
+    if(!Array.isArray(items)||!items.length) throw 0;
+    host.innerHTML=items.slice(0,10).map(function(n){
+      var t=''; try{ var dt=new Date(n.pub); if(!isNaN(dt)) t=('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); }catch(e){}
+      var ttl=String(n.title||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      return '<a class="news-row" href="'+String(n.link||'#').replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">'
+        +'<span class="news-src">'+String(n.src||'').replace(/</g,'&lt;')+'</span>'
+        +'<span class="news-title">'+ttl+'</span>'
+        +'<span class="news-time">'+t+'</span></a>';
+    }).join('');
+    if(tag){ tag.textContent='실시간'; tag.className='live-tag'; }
+  }catch(e){ host.innerHTML='<div class="news-empty">뉴스를 불러오지 못했습니다. 프록시 주소를 확인해 주세요.</div>'; if(tag){tag.textContent='연결 실패';tag.className='sim-tag';} }
+}
 /* 지수 전용 조회 (stable/index-quote — 일반 quote와 엔드포인트 다름) */
 async function fmpIndexQuote(symbols){
   var K=fmpKey(); if(!K) return null;
@@ -4966,7 +5016,7 @@ async function fmpIndexQuote(symbols){
 async function renderIndicesFMP(){
   var tag=$id('idxTag');
   var map=await fmpQuote(FMP_INDICES.map(function(x){return x.s;}));
-  if(!map){ renderIndices(); if(tag){tag.textContent='참고용';tag.style.display='';} return; }
+  if(!map){ renderIndices(); if(tag){tag.textContent='참고용';tag.style.display='';} prependKR(); return; }
   var html='', liveCount=0;
   for(var i=0;i<FMP_INDICES.length;i++){
     var ix=FMP_INDICES[i], o=map[ix.s], fb=INDICES[i];
@@ -4981,6 +5031,7 @@ async function renderIndicesFMP(){
   }
   $id('indexRows').innerHTML=html;
   if(tag){ tag.textContent = liveCount>0 ? ('FMP 실시간 · ETF 기준') : '참고용'; }
+  prependKR();
 }
 
 /* 원자재: FMP 실제 값 (항목별 유효성 검증) */
@@ -5054,7 +5105,7 @@ async function macroFetch(){
     }catch(e){}
   }
 
-  renderIndicesFMP(); renderCommoditiesFMP(); renderRates(); renderSummary(vix,fng,dxy); fetchStocks();
+  renderIndicesFMP(); renderCommoditiesFMP(); renderRates(); renderSummary(vix,fng,dxy); fetchStocks(); renderNews();
 
   var now=new Date();
   var ts2=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0')+':'+now.getSeconds().toString().padStart(2,'0');
@@ -5065,9 +5116,9 @@ async function macroFetch(){
 
 function macroTick(){
   if(!macroLoaded) return;
+  renderNews(); /* 뉴스는 FMP 키와 무관하게 갱신 */
   var K=''; try{ K=(localStorage.getItem('nn_fmp_key')||'').trim(); }catch(e){}
-  if(!K) return; /* 키 없으면 참고값 고정 — API 호출 안 함 */
-  /* FMP 배치 갱신: 지수·원자재·주식 (갱신당 3회 호출, 2분 주기 → 하루 여유롭게 250회 이내) */
+  if(!K){ renderIndicesFMP(); return; } /* FMP 키 없어도 KR 실시간(prependKR)은 갱신 */
   renderIndicesFMP();
   renderCommoditiesFMP();
   fetchStocks();
@@ -5111,6 +5162,19 @@ function bindMacroControls(){
     macroFetch();
   });
   if(refresh) refresh.addEventListener('click',function(){ macroFetch(); fmpToast('🔄 새로고침했습니다', 'ok'); });
+  /* KR 프록시 주소 */
+  var wIn=$id('workerUrlMacro'), wBtn=$id('saveWorkerBtn'), wBadge=$id('workerBadge');
+  function updWBadge(){ if(!wBadge) return; var w=workerUrl(); if(w){ wBadge.textContent='적용됨'; wBadge.className='fmp-key-badge ok'; } else { wBadge.textContent='미입력'; wBadge.className='fmp-key-badge empty'; } }
+  if(wIn){ var ex=workerUrl(); if(ex) wIn.value=ex; }
+  updWBadge();
+  if(wBtn) wBtn.addEventListener('click',function(){
+    var w=(wIn.value||'').trim();
+    try{ localStorage.setItem('nn_worker_url',w); }catch(e){}
+    updWBadge();
+    if(w){ fmpToast('✅ 프록시가 적용되었습니다 · KR 실시간·뉴스 전환 중','ok'); }
+    else { fmpToast('프록시가 삭제되었습니다','out'); }
+    macroFetch();
+  });
 }
 bindMacroControls();
 setInterval(macroTick,120000);
@@ -5258,9 +5322,9 @@ var runParallax = function(){
         var norm = centerOffset / (vh/2 + rect.height/2);
         if(norm < -1) norm = -1; if(norm > 1) norm = 1;
         // scale(1.18)로 생긴 약 9% 여유 안에서만 세로 이동 → 가장자리 안 드러남
-        var shiftPct = norm * ratio * 4; // 카드 높이 대비 % (최대 약 ±4% — scale 1.18 여유 9% 내 안전)
+        var shiftPct = norm * ratio * 3; // 카드 높이 대비 % (최대 약 ±3% — scale 1.22 여유 11% 내 안전)
         var sp = shiftPct.toFixed(1);
-        if(bg.__sp !== sp){ bg.__sp = sp; bg.style.transform = 'scale(1.18) translateY(' + sp + '%)'; }
+        if(bg.__sp !== sp){ bg.__sp = sp; bg.style.transform = 'scale(1.22) translateY(' + sp + '%)'; }
       }
       var floatY = velocity * 1.4 * ratio;
       // 과한 튐 방지: 최대 ±42px로 제한
@@ -7283,7 +7347,7 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 .as-sec-sub{font-size:12.5px;color:rgba(255,255,255,.78);margin-bottom:20px;font-family:'Pretendard',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.85);}
 
 .as-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;}
-.as-card{background:rgba(16,16,20,.72);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;box-shadow:0 12px 34px rgba(0,0,0,.4);}
+.as-card{background:rgba(16,16,20,.55);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 22px;box-shadow:0 12px 34px rgba(0,0,0,.4);}
 .as-card.span4{grid-column:span 4;}.as-card.span5{grid-column:span 5;}.as-card.span6{grid-column:span 6;}
 .as-card.span7{grid-column:span 7;}.as-card.span8{grid-column:span 8;}.as-card.span12{grid-column:span 12;}
 @media(max-width:1000px){.as-card[class*="span"]{grid-column:span 12;}}
@@ -7567,6 +7631,54 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 .hhp-step a{color:#e0c389;text-decoration:none;border-bottom:1px solid rgba(201,169,110,.4)}
 .hhp-step a:hover{color:#f0d9a8}
 .hhp-tip{margin-top:11px;padding:8px 11px;background:rgba(201,169,110,.06);border-radius:7px;font-family:'Pretendard',sans-serif;font-size:11px;line-height:1.5;color:rgba(255,255,255,.6);font-weight:300}
+
+/* ══ 배경화면 전환 UI ══ */
+.bg-nav-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:.42rem .7rem !important;color:rgba(224,195,137,.85)}
+.bg-nav-btn:hover{color:#f0d9a8;text-shadow:0 0 10px rgba(201,169,110,.5)}
+.bg-nav-btn svg{display:block;flex-shrink:0}
+.bgn-txt{font-family:inherit;font-size:inherit;letter-spacing:inherit;font-weight:inherit;color:inherit;line-height:1;position:relative;animation:bgnShine 180s linear infinite}
+@keyframes bgnShine{
+  0%,2%   {color:rgba(224,195,137,.85);text-shadow:none}
+  0.4%    {color:#fff6e0;text-shadow:0 0 14px rgba(255,220,150,.95),0 0 26px rgba(255,200,120,.7)}
+  1%      {color:#ffe9b8;text-shadow:0 0 10px rgba(255,215,140,.7)}
+  100%    {color:rgba(224,195,137,.85);text-shadow:none}
+}
+.bg-nav-btn:hover .bgn-txt{animation:none}
+.bg-switch-menu{position:fixed;width:264px;max-height:70vh;overflow-y:auto;background:linear-gradient(165deg,rgba(26,24,20,.98),rgba(16,15,13,.98));border:1px solid rgba(201,169,110,.32);border-radius:14px;padding:12px;box-shadow:0 20px 60px -14px rgba(0,0,0,.85);z-index:99991;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .22s,transform .22s}
+.bg-switch-menu.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.bgm-title{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:800;color:rgba(224,195,137,.9);letter-spacing:.08em;margin:2px 4px 10px}
+.bgm-item{display:flex;align-items:center;gap:10px;width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;cursor:pointer;transition:.16s;margin-top:6px}
+.bgm-item:hover{background:rgba(201,169,110,.1);border-color:rgba(201,169,110,.35)}
+.bgm-item.sel{background:rgba(201,169,110,.13);border-color:rgba(201,169,110,.55)}
+.bgm-thumb{flex-shrink:0;width:52px;height:34px;border-radius:6px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,.12)}
+.bgm-name{flex:1;text-align:left;font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;color:#f0ede6}
+.bgm-check{color:#8fe0a8;font-size:13px;font-weight:700}
+.bgm-item{position:relative;cursor:pointer}
+.bgm-ctrl{display:none;gap:4px;flex-shrink:0}
+.bgm-item:hover .bgm-ctrl{display:inline-flex}
+.bgm-item:hover .bgm-check{display:none}
+.bgm-ctrl button{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.18);background:rgba(10,10,12,.75);color:#f0ede6;font-size:10px;cursor:pointer;transition:.14s;padding:0}
+.bgm-edit:hover{background:rgba(201,169,110,.35);border-color:#c9a96e}
+.bgm-del:hover{background:rgba(220,80,80,.4);border-color:rgba(220,80,80,.8)}
+.bgm-add{display:block;width:100%;margin-top:8px;background:rgba(201,169,110,.06);border:1px dashed rgba(201,169,110,.4);color:#c9a96e;font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:700;padding:9px;border-radius:9px;cursor:pointer;transition:.16s}
+.bgm-add:hover{background:rgba(201,169,110,.13);border-color:rgba(201,169,110,.65)}
+.bgm-divider{height:1px;background:rgba(201,169,110,.16);margin:11px 2px 9px}
+.bgm-auto-row{display:flex;flex-direction:column;gap:7px;padding:0 2px 2px}
+.bgm-auto-label{font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:700;color:rgba(224,195,137,.85);letter-spacing:.05em}
+.bgm-auto-opts{display:flex;gap:5px}
+.bgm-auto-opt{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 0;font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.6);cursor:pointer;transition:.15s}
+.bgm-auto-opt:hover{background:rgba(201,169,110,.1);color:#e0c389}
+.bgm-auto-opt.sel{background:rgba(201,169,110,.18);border-color:rgba(201,169,110,.55);color:#e0c389;font-weight:700}
+
+/* ══ 실시간 뉴스 헤드라인 ══ */
+.news-row{display:flex;align-items:baseline;gap:12px;padding:9px 4px;border-bottom:1px solid rgba(255,110,64,.08);text-decoration:none;transition:background .15s,padding-left .15s}
+.news-row:last-child{border-bottom:none}
+.news-row:hover{background:rgba(255,110,64,.05);padding-left:10px}
+.news-src{flex-shrink:0;font-family:'Pretendard',sans-serif;font-size:10px;font-weight:700;color:rgba(255,150,110,.85);letter-spacing:.02em;min-width:52px}
+.news-title{flex:1;font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:400;color:rgba(240,237,230,.88);line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.news-row:hover .news-title{color:#ffd4b8}
+.news-time{flex-shrink:0;font-family:'Pretendard',sans-serif;font-size:10.5px;color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}
+.news-empty{font-family:'Pretendard',sans-serif;font-size:11.5px;color:rgba(255,255,255,.45);padding:18px 4px;line-height:1.6;font-weight:300}
 </style>
 
 <div id="masterTooltip"></div>
@@ -9505,6 +9617,132 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
   window.__rdRender=render;
 })();
 
+
+/* ══════════ 배경화면 관리 (목록·이름편집·추가삭제·자동전환) ══════════ */
+(function(){
+  var LIST_KEY='nn_bg_list_v1', CUR_KEY='nn_site_bg_v1', AUTO_KEY='nn_bg_auto_v1';
+  var DEFAULT_BGS=[
+    {id:'times',   name:'타임스퀘어 야경', url:'https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg'},
+    {id:'trading', name:'트레이딩 룸',     url:'https://i.postimg.cc/nzQf9kNm/pexels-tima-miroshnichenko-5912576.jpg'},
+    {id:'bg3',     name:'시티 뷰 1',       url:'https://i.postimg.cc/kgnRXDDf/pexels-thales13-38412413.jpg'},
+    {id:'bg4',     name:'시티 뷰 2',       url:'https://i.postimg.cc/hGYXrrsC/pexels-henry-acevedo-382866382-37581230.jpg'},
+    {id:'bg5',     name:'시티 뷰 3',       url:'https://i.postimg.cc/905r3QvP/pexels-doruqpasha-38023373.jpg'},
+    {id:'bg6',     name:'별이 빛나는 밤',  url:'https://i.postimg.cc/5NJ6njBm/pexels-pixabay-358382.jpg'}
+  ];
+  function loadList(){
+    try{ var s=localStorage.getItem(LIST_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)&&a.length) return a; } }catch(e){}
+    return JSON.parse(JSON.stringify(DEFAULT_BGS));
+  }
+  function saveList(a){ try{ localStorage.setItem(LIST_KEY, JSON.stringify(a)); }catch(e){} }
+  function current(){ try{ return localStorage.getItem(CUR_KEY)||'trading'; }catch(e){ return 'trading'; } }
+  function autoMode(){ try{ return localStorage.getItem(AUTO_KEY)||'off'; }catch(e){ return 'off'; } }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function apply(id){
+    var list=loadList();
+    var bg=list.find(function(b){return b.id===id;})||list[0];
+    if(!bg) return;
+    document.documentElement.style.setProperty('--site-bg',"url('"+bg.url+"')");
+    var img=new Image(); img.src=bg.url;
+  }
+  function setBg(id){ try{ localStorage.setItem(CUR_KEY,id); }catch(e){} apply(id); renderMenu(); }
+
+  /* 자동 전환 타이머 */
+  var autoTimer=null;
+  function setupAuto(){
+    if(autoTimer){ clearInterval(autoTimer); autoTimer=null; }
+    var mode=autoMode();
+    if(mode==='off') return;
+    var mins=parseInt(mode)||10;
+    autoTimer=setInterval(function(){
+      var list=loadList(); if(list.length<2) return;
+      var cur=current(); var idx=list.findIndex(function(b){return b.id===cur;});
+      var next=list[(idx+1)%list.length];
+      setBg(next.id);
+    }, mins*60000);
+  }
+  function setAuto(mode){ try{ localStorage.setItem(AUTO_KEY,mode); }catch(e){} setupAuto(); renderMenu(); }
+
+  function build(){
+    var menu=document.createElement('div');
+    menu.id='bgSwitchMenu'; menu.className='bg-switch-menu';
+    document.body.appendChild(menu);
+    renderMenu();
+    var btn=document.getElementById('bgSwitchBtn');
+    if(btn) btn.onclick=function(e){ e.stopPropagation(); var m=document.getElementById('bgSwitchMenu');
+      if(m){ if(!m.classList.contains('show')){ var r=btn.getBoundingClientRect(); m.style.left=Math.max(10,Math.min(r.left, window.innerWidth-280))+'px'; m.style.top=(r.bottom+10)+'px'; } m.classList.toggle('show'); } };
+    document.addEventListener('click',function(e){ var m=document.getElementById('bgSwitchMenu'); if(m && m.classList.contains('show') && !m.contains(e.target) && e.target.id!=='bgSwitchBtn' && !e.target.closest('#bgSwitchBtn')){ m.classList.remove('show'); } });
+  }
+
+  function renderMenu(){
+    var menu=document.getElementById('bgSwitchMenu'); if(!menu) return;
+    var list=loadList(), cur=current(), mode=autoMode();
+    var h='<div class="bgm-title">배경화면</div>';
+    h+=list.map(function(b,i){
+      return '<div class="bgm-item'+(b.id===cur?' sel':'')+'" data-id="'+b.id+'">'
+        +'<span class="bgm-thumb" style="background-image:url(\''+esc(b.url)+'\')"></span>'
+        +'<span class="bgm-name">'+esc(b.name)+'</span>'
+        +(b.id===cur?'<span class="bgm-check">✓</span>':'')
+        +'<span class="bgm-ctrl"><button type="button" class="bgm-edit" data-i="'+i+'" title="이름 편집">✎</button><button type="button" class="bgm-del" data-i="'+i+'" title="삭제">✕</button></span>'
+        +'</div>';
+    }).join('');
+    h+='<button type="button" class="bgm-add" id="bgmAdd">＋ 배경 추가</button>';
+    h+='<div class="bgm-divider"></div>';
+    h+='<div class="bgm-auto-row"><span class="bgm-auto-label">자동 전환</span><div class="bgm-auto-opts">'
+      +[['off','끄기'],['3','3분'],['5','5분'],['10','10분'],['30','30분']].map(function(o){
+        return '<button type="button" class="bgm-auto-opt'+(mode===o[0]?' sel':'')+'" data-mode="'+o[0]+'">'+o[1]+'</button>';
+      }).join('')+'</div></div>';
+    menu.innerHTML=h;
+    /* 배경 선택 (컨트롤 버튼 제외 영역 클릭) */
+    menu.querySelectorAll('.bgm-item').forEach(function(it){
+      it.addEventListener('click',function(e){
+        if(e.target.closest('.bgm-ctrl')) return;
+        setBg(it.getAttribute('data-id'));
+        if(window.__nnToast) window.__nnToast('🌆 배경화면이 변경되었습니다');
+      });
+    });
+    /* 이름 편집 */
+    menu.querySelectorAll('.bgm-edit').forEach(function(b){
+      b.onclick=function(e){ e.stopPropagation();
+        var i=parseInt(b.getAttribute('data-i')); var l=loadList();
+        var name=prompt('배경화면 이름:', l[i].name);
+        if(name===null) return; name=name.trim(); if(!name) return;
+        l[i].name=name; saveList(l); renderMenu();
+      };
+    });
+    /* 삭제 (토스트 실행취소) */
+    menu.querySelectorAll('.bgm-del').forEach(function(b){
+      b.onclick=function(e){ e.stopPropagation();
+        var i=parseInt(b.getAttribute('data-i')); var l=loadList();
+        if(l.length<=1){ if(window.__nnToast) window.__nnToast('마지막 배경은 삭제할 수 없습니다'); return; }
+        var removed=l[i], pos=i;
+        l.splice(i,1); saveList(l);
+        if(removed.id===current()) setBg(l[0].id); else renderMenu();
+        if(window.__nnToast) window.__nnToast('🗑 "'+removed.name+'" 삭제됨',{kind:'del',undo:function(){ var ll=loadList(); ll.splice(pos,0,removed); saveList(ll); renderMenu(); if(window.__nnToast) window.__nnToast('↩ 복원되었습니다'); }});
+      };
+    });
+    /* 추가 */
+    var add=menu.querySelector('#bgmAdd');
+    if(add) add.onclick=function(e){ e.stopPropagation();
+      var url=prompt('배경 이미지 URL을 붙여넣으세요 (https://…jpg/png):','');
+      if(url===null) return; url=url.trim(); if(!url) return;
+      var name=prompt('이 배경의 이름:','내 배경');
+      if(name===null) return; name=(name.trim()||'내 배경');
+      var l=loadList();
+      l.push({id:'user_'+Date.now(), name:name, url:url});
+      saveList(l); renderMenu();
+      if(window.__nnToast) window.__nnToast('✓ 배경이 추가되었습니다');
+    };
+    /* 자동 전환 옵션 */
+    menu.querySelectorAll('.bgm-auto-opt').forEach(function(b){
+      b.onclick=function(e){ e.stopPropagation(); setAuto(b.getAttribute('data-mode'));
+        if(window.__nnToast) window.__nnToast(b.getAttribute('data-mode')==='off'?'자동 전환을 껐습니다':'🔄 '+b.textContent+'마다 자동 전환됩니다'); };
+    });
+  }
+
+  apply(current());
+  setupAuto();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',build); else build();
+})();
 </script>
 </body>
 </html>
