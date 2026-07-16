@@ -625,7 +625,7 @@ body::before{
 .stk-info{min-width:0}
 .stk-head{display:flex;align-items:baseline;gap:7px;line-height:1.1;flex-wrap:wrap}
 .stk-ticker{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#f0ede6;letter-spacing:.02em}
-.stk-ctry{font-size:12px;line-height:1;filter:saturate(1.1)}
+.stk-ctry{font-family:'Pretendard',sans-serif;font-size:8.5px;font-weight:800;letter-spacing:.06em;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:1.5px 4.5px;line-height:1;background:rgba(255,255,255,.05)}
 .stk-name{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:700;color:#d9b878;text-shadow:0 0 8px rgba(201,169,110,.25);letter-spacing:-.01em}
 .stock-row .t-sub{margin-top:2px}
 .t-name{color:rgba(255,255,255,.35);font-weight:400;font-size:10px;font-family:'Pretendard',sans-serif}
@@ -3284,7 +3284,7 @@ body #page-about > div > p:not(:first-of-type) {
       <!-- ════════ 데이터 (하단) ════════ -->
       <!-- GLOBAL INDICES -->
       <div class="macro-card span2">
-        <div class="macro-card-title">주요 지수 ETF &nbsp; INDEX ETFs <span class="sim-tag" id="idxTag">참고용</span></div>
+        <div class="macro-card-title">전세계 주요 지수 &nbsp; GLOBAL INDICES <span class="sim-tag" id="idxTag">참고용</span></div>
         <div class="idx-grid" id="indexRows"><div class="t-loading">불러오는 중...</div></div>
       </div>
 
@@ -3306,7 +3306,7 @@ body #page-about > div > p:not(:first-of-type) {
       </div>
       <!-- COMMODITIES -->
       <div class="macro-card">
-        <div class="macro-card-title">원자재 &nbsp; COMMODITIES <span class="sim-tag">참고용</span></div>
+        <div class="macro-card-title">원자재 &nbsp; COMMODITIES <span class="sim-tag" id="commTag">불러오는 중</span></div>
         <div id="commRows"><div class="t-loading">불러오는 중...</div></div>
       </div>
 
@@ -4336,7 +4336,7 @@ function rankChgHtml(rk,pr){
 function stockRow(m,usdVal,chg){
   /* 기업 로고: 도메인 기반 무료 로고 서비스. 실패 시 티커 이니셜 배지로 폴백 */
   var logo = m.dom
-    ? '<img class="stk-logo" src="https://logo.clearbit.com/'+m.dom+'" alt="" loading="lazy" '
+    ? '<img class="stk-logo" src="https://www.google.com/s2/favicons?domain='+m.dom+'&sz=64" alt="" loading="lazy" '
       + 'onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\';">'
       + '<span class="stk-logo-fb" style="display:none">'+m.s.charAt(0)+'</span>'
     : '<span class="stk-logo-fb" style="display:flex">'+m.s.charAt(0)+'</span>';
@@ -4458,13 +4458,25 @@ function tvBuildIframe(rootSel, widgetName, settings){
   root.__tvLoaded=true;
   var src='https://www.tradingview-widget.com/embed-widget/'+widgetName+'/?locale=kr#'
           + encodeURIComponent(JSON.stringify(settings));
-  var f=document.createElement('iframe');
-  f.src=src;
-  f.title=widgetName+' TradingView widget';
-  f.setAttribute('frameborder','0');
-  f.setAttribute('scrolling','no');
-  f.setAttribute('allowtransparency','true');
-  mount.appendChild(f);
+  function build(){
+    var f=document.createElement('iframe');
+    f.src=src;
+    f.title=widgetName+' TradingView widget';
+    f.setAttribute('frameborder','0');
+    f.setAttribute('scrolling','no');
+    f.setAttribute('allowtransparency','true');
+    f.addEventListener('load',function(){ f.__ok=true; });
+    mount.appendChild(f);
+    /* 감시: 8초 내 로드 실패 시 1회 재시도 (느린 망 대비) */
+    setTimeout(function(){
+      if(!f.__ok && !root.__tvRetried){
+        root.__tvRetried=true;
+        try{ mount.removeChild(f); }catch(e){}
+        build();
+      }
+    }, 8000);
+  }
+  build();
 }
 
 /* ① 시총 히트맵 */
@@ -4605,6 +4617,11 @@ function initTVMacroWidgets(){
   tvLazy('#tvEconCalendar',   initTVEconCalendar);
   tvLazy('#tvTopStories',     initTVTopStories, {eager:true, delay:700});
 }
+/* 마켓 뉴스는 페이지 로드 직후 백그라운드에서 미리 로딩 (매크로 진입 시 즉시 표시) */
+(function(){
+  function pre(){ setTimeout(function(){ try{ initTVTopStories(); }catch(e){} }, 2200); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',pre); else pre();
+})();
 
 /* ════════ HOLDINGS 탭 (보유 종목 심층 분석) ════════ */
 var HOLDINGS=[
@@ -4834,36 +4851,36 @@ function initHoldings(){
 }
 
 var MEGACAPS=[
-  {s:'NVDA',n:'엔비디아',p:222.82,rk:1,pr:1,mc:5230,dom:'nvidia.com',ctry:'🇺🇸'},
-  {s:'MSFT',n:'마이크로소프트',p:441.31,rk:2,pr:4,mc:3110,dom:'microsoft.com',ctry:'🇺🇸'},
-  {s:'GOOGL',n:'알파벳',p:361.85,rk:3,pr:3,mc:4630,dom:'abc.xyz',ctry:'🇺🇸'},
-  {s:'AAPL',n:'애플',p:315.03,rk:4,pr:2,mc:4540,dom:'apple.com',ctry:'🇺🇸'},
-  {s:'SPCX',n:'스페이스X',p:145.30,rk:5,pr:5,mc:2100,dom:'spacex.com',ctry:'🇺🇸'},
-  {s:'AMZN',n:'아마존',p:256.60,rk:6,pr:5,mc:2870,dom:'amazon.com',ctry:'🇺🇸'},
-  {s:'TSM',n:'TSMC',p:446.69,rk:7,pr:6,mc:2100,dom:'tsmc.com',ctry:'🇹🇼'},
-  {s:'AVGO',n:'브로드컴',p:481.65,rk:8,pr:7,mc:1600,dom:'broadcom.com',ctry:'🇺🇸'},
-  {s:'TSLA',n:'테슬라',p:423.74,rk:9,pr:8,mc:1400,dom:'tesla.com',ctry:'🇺🇸'},
-  {s:'META',n:'메타',p:597.63,rk:10,pr:9,mc:1700,dom:'meta.com',ctry:'🇺🇸'},
-  {s:'MU',n:'마이크론',p:1064.10,rk:11,pr:10,mc:1180,dom:'micron.com',ctry:'🇺🇸'},
-  {s:'BRK.B',n:'버크셔',p:471.69,rk:12,pr:11,mc:1050,dom:'berkshirehathaway.com',ctry:'🇺🇸'},
-  {s:'LLY',n:'일라이릴리',p:1064.15,rk:13,pr:12,mc:1020,dom:'lilly.com',ctry:'🇺🇸'},
-  {s:'WMT',n:'월마트',p:113.06,rk:14,pr:13,mc:1000,dom:'walmart.com',ctry:'🇺🇸'},
-  {s:'AMD',n:'AMD',p:520.87,rk:15,pr:14,mc:870,dom:'amd.com',ctry:'🇺🇸'},
-  {s:'JPM',n:'JP모건',p:300.96,rk:16,pr:15,mc:840,dom:'jpmorganchase.com',ctry:'🇺🇸'},
-  {s:'ORCL',n:'오라클',p:244.58,rk:17,pr:16,mc:800,dom:'oracle.com',ctry:'🇺🇸'},
-  {s:'ASML',n:'ASML',p:1705.37,rk:18,pr:17,mc:760,dom:'asml.com',ctry:'🇳🇱'},
-  {s:'XOM',n:'엑손모빌',p:149.56,rk:19,pr:18,mc:620,dom:'exxonmobil.com',ctry:'🇺🇸'},
-  {s:'V',n:'비자',p:317.32,rk:20,pr:19,mc:600,dom:'visa.com',ctry:'🇺🇸'},
-  {s:'INTC',n:'인텔',p:107.93,rk:21,pr:20,mc:560,dom:'intel.com',ctry:'🇺🇸'},
-  {s:'JNJ',n:'존슨앤존슨',p:222.89,rk:22,pr:21,mc:540,dom:'jnj.com',ctry:'🇺🇸'},
-  {s:'CSCO',n:'시스코',p:128.00,rk:23,pr:22,mc:520,dom:'cisco.com',ctry:'🇺🇸'},
-  {s:'MA',n:'마스터카드',p:477.68,rk:24,pr:23,mc:500,dom:'mastercard.com',ctry:'🇺🇸'},
-  {s:'ARM',n:'ARM',p:402.71,rk:25,pr:24,mc:480,dom:'arm.com',ctry:'🇬🇧'},
-  {s:'COST',n:'코스트코',p:954.27,rk:26,pr:25,mc:460,dom:'costco.com',ctry:'🇺🇸'},
-  {s:'CAT',n:'캐터필러',p:909.81,rk:27,pr:26,mc:440,dom:'caterpillar.com',ctry:'🇺🇸'},
-  {s:'LRCX',n:'램리서치',p:334.41,rk:28,pr:27,mc:420,dom:'lamresearch.com',ctry:'🇺🇸'},
-  {s:'PLTR',n:'팔란티어',p:152.17,rk:29,pr:28,mc:400,dom:'palantir.com',ctry:'🇺🇸'},
-  {s:'ABBV',n:'애브비',p:215.43,rk:30,pr:29,mc:380,dom:'abbvie.com',ctry:'🇺🇸'}
+  {s:'NVDA',n:'엔비디아',p:222.82,rk:1,pr:1,mc:5230,dom:'nvidia.com',ctry:'US'},
+  {s:'MSFT',n:'마이크로소프트',p:441.31,rk:2,pr:4,mc:3110,dom:'microsoft.com',ctry:'US'},
+  {s:'GOOGL',n:'알파벳',p:361.85,rk:3,pr:3,mc:4630,dom:'abc.xyz',ctry:'US'},
+  {s:'AAPL',n:'애플',p:315.03,rk:4,pr:2,mc:4540,dom:'apple.com',ctry:'US'},
+  {s:'SPCX',n:'스페이스X',p:145.30,rk:5,pr:5,mc:2100,dom:'spacex.com',ctry:'US'},
+  {s:'AMZN',n:'아마존',p:256.60,rk:6,pr:5,mc:2870,dom:'amazon.com',ctry:'US'},
+  {s:'TSM',n:'TSMC',p:446.69,rk:7,pr:6,mc:2100,dom:'tsmc.com',ctry:'TW'},
+  {s:'AVGO',n:'브로드컴',p:481.65,rk:8,pr:7,mc:1600,dom:'broadcom.com',ctry:'US'},
+  {s:'TSLA',n:'테슬라',p:423.74,rk:9,pr:8,mc:1400,dom:'tesla.com',ctry:'US'},
+  {s:'META',n:'메타',p:597.63,rk:10,pr:9,mc:1700,dom:'meta.com',ctry:'US'},
+  {s:'MU',n:'마이크론',p:1064.10,rk:11,pr:10,mc:1180,dom:'micron.com',ctry:'US'},
+  {s:'BRK.B',n:'버크셔',p:471.69,rk:12,pr:11,mc:1050,dom:'berkshirehathaway.com',ctry:'US'},
+  {s:'LLY',n:'일라이릴리',p:1064.15,rk:13,pr:12,mc:1020,dom:'lilly.com',ctry:'US'},
+  {s:'WMT',n:'월마트',p:113.06,rk:14,pr:13,mc:1000,dom:'walmart.com',ctry:'US'},
+  {s:'AMD',n:'AMD',p:520.87,rk:15,pr:14,mc:870,dom:'amd.com',ctry:'US'},
+  {s:'JPM',n:'JP모건',p:300.96,rk:16,pr:15,mc:840,dom:'jpmorganchase.com',ctry:'US'},
+  {s:'ORCL',n:'오라클',p:244.58,rk:17,pr:16,mc:800,dom:'oracle.com',ctry:'US'},
+  {s:'ASML',n:'ASML',p:1705.37,rk:18,pr:17,mc:760,dom:'asml.com',ctry:'NL'},
+  {s:'XOM',n:'엑손모빌',p:149.56,rk:19,pr:18,mc:620,dom:'exxonmobil.com',ctry:'US'},
+  {s:'V',n:'비자',p:317.32,rk:20,pr:19,mc:600,dom:'visa.com',ctry:'US'},
+  {s:'INTC',n:'인텔',p:107.93,rk:21,pr:20,mc:560,dom:'intel.com',ctry:'US'},
+  {s:'JNJ',n:'존슨앤존슨',p:222.89,rk:22,pr:21,mc:540,dom:'jnj.com',ctry:'US'},
+  {s:'CSCO',n:'시스코',p:128.00,rk:23,pr:22,mc:520,dom:'cisco.com',ctry:'US'},
+  {s:'MA',n:'마스터카드',p:477.68,rk:24,pr:23,mc:500,dom:'mastercard.com',ctry:'US'},
+  {s:'ARM',n:'ARM',p:402.71,rk:25,pr:24,mc:480,dom:'arm.com',ctry:'GB'},
+  {s:'COST',n:'코스트코',p:954.27,rk:26,pr:25,mc:460,dom:'costco.com',ctry:'US'},
+  {s:'CAT',n:'캐터필러',p:909.81,rk:27,pr:26,mc:440,dom:'caterpillar.com',ctry:'US'},
+  {s:'LRCX',n:'램리서치',p:334.41,rk:28,pr:27,mc:420,dom:'lamresearch.com',ctry:'US'},
+  {s:'PLTR',n:'팔란티어',p:152.17,rk:29,pr:28,mc:400,dom:'palantir.com',ctry:'US'},
+  {s:'ABBV',n:'애브비',p:215.43,rk:30,pr:29,mc:380,dom:'abbvie.com',ctry:'US'}
 ];
 
 var INDICES=[
@@ -4982,6 +4999,36 @@ var FMP_INDICES=[
   {s:'EWJ',k:'일본 MSCI',sub:'EWJ ETF'},{s:'MCHI',k:'중국 MSCI',sub:'MCHI ETF'},
   {s:'EWG',k:'독일 MSCI',sub:'EWG ETF'},{s:'EWU',k:'영국 MSCI',sub:'EWU ETF'}
 ];
+/* Worker 프록시용 실제 지수 심볼 (Yahoo v8 — ETF 근사가 아닌 진짜 지수) */
+var WK_INDICES=[
+  {s:'^GSPC',k:'S&P 500',sub:'미국 대형주'},
+  {s:'^IXIC',k:'나스닥 종합',sub:'미국 기술주'},
+  {s:'^DJI',k:'다우존스',sub:'미국 우량주 30'},
+  {s:'^RUT',k:'러셀 2000',sub:'미국 중소형주'},
+  {s:'^SOX',k:'필라델피아 반도체',sub:'반도체 지수'},
+  {s:'^N225',k:'닛케이 225',sub:'일본'},
+  {s:'^HSI',k:'항셍',sub:'홍콩'},
+  {s:'^GDAXI',k:'DAX 40',sub:'독일'},
+  {s:'^FTSE',k:'FTSE 100',sub:'영국'}
+];
+async function renderIndicesWorker(){
+  var W=(typeof workerUrl==='function')?workerUrl():''; if(!W) return false;
+  try{
+    var r=await fetch(W+'/quote?us='+encodeURIComponent(WK_INDICES.map(function(x){return x.s;}).join(',')));
+    if(!r.ok) return false;
+    var d=await r.json(); var us=(d&&d.us)||{};
+    var h='', n=0;
+    for(var i=0;i<WK_INDICES.length;i++){
+      var ix=WK_INDICES[i], o=us[ix.s];
+      if(o && o.price>0){ h+=tRow(ix.k, ix.sub+' · 실시간', 0, (o.chg==null?null:o.chg), {raw:fmt(o.price,2)}); n++; }
+    }
+    if(!n) return false;
+    $id('indexRows').innerHTML=h;
+    var tag=$id('idxTag'); if(tag){ tag.textContent='실시간 · 실제 지수'; tag.className='live-tag'; }
+    prependKR();
+    return true;
+  }catch(e){ return false; }
+}
 /* FMP 원자재 심볼 */
 /* 원자재 ETF (FMP 무료로 실제 값 조회 가능 — 원자재 직접 시세는 유료) */
 var FMP_COMM=[
@@ -5062,6 +5109,7 @@ async function fmpIndexQuote(symbols){
 }
 /* 지수: FMP 실제 값 (항목별 유효성 검증 — 못 믿을 값은 참고값 표시) */
 async function renderIndicesFMP(){
+  if(await renderIndicesWorker()) return; /* Worker 실제 지수 우선 (FMP 한도 절약) */
   var tag=$id('idxTag');
   var map=await fmpQuote(FMP_INDICES.map(function(x){return x.s;}));
   if(!map){ renderIndices(); if(tag){tag.textContent='참고용';tag.style.display='';} prependKR(); return; }
@@ -5099,7 +5147,7 @@ async function renderCommoditiesFMP(){
             var key=defs[i][0], o=d[key];
             if(o && o.price>0){ h+=tRow(defs[i][1],defs[i][2]+' · 실시간',o.price,(o.chg||0),{dec:defs[i][3]}); }
           }
-          if(h){ $id('commRows').innerHTML=h; return; }
+          if(h){ $id('commRows').innerHTML=h; var ct=$id('commTag'); if(ct){ct.textContent='실시간 · 선물';ct.className='live-tag';} return; }
         }
       }
     }catch(e){}
@@ -5115,6 +5163,7 @@ async function renderCommoditiesFMP(){
     else { html+=tRow(c.k,c.sub+' · 참고값',fb,null,{dec:c.dec}); }
   }
   $id('commRows').innerHTML=html;
+  var ct=$id('commTag'); if(ct){ct.textContent='ETF 기준';ct.className='sim-tag';}
 }
 
 async function macroFetch(){
@@ -9380,7 +9429,7 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
     var h='';
     for(var i=0;i<data.length;i++){
       var c=data[i];
-      var logo = c.dom ? '<img src="https://logo.clearbit.com/'+esc(c.dom)+'" alt="" onerror="this.style.display=\'none\'">' : '';
+      var logo = c.dom ? '<img src="https://www.google.com/s2/favicons?domain='+esc(c.dom)+'&sz=128" alt="" onerror="this.style.display=\'none\'">' : '';
       var bg = c.bg ? 'background-image:url(\''+esc(c.bg)+'\')' : '';
       var cvar = c.color ? ' style="--comp-hi:'+esc(c.color)+'"' : '';
       h+='<div class="comp-card is-visible'+(hubEdit?' hub-editing':'')+'" data-i="'+i+'"'+cvar+(hubEdit?' draggable="true"':'')+'>'
@@ -9943,7 +9992,7 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
       var o=(res[it.market]||{})[it.sym]||null;
       var name=o&&o.name?o.name:it.sym;
       var cur=o&&o.cur?o.cur:(it.market==='kr'?'KRW':'USD');
-      var mktLabel=it.market==='us'?'🇺🇸 US':it.market==='kr'?'🇰🇷 KR':'🪙 CRYPTO';
+      var mktLabel=it.market==='us'?'US':it.market==='kr'?'KR':'CRYPTO';
       var mktCls=it.market;
       var p52=o?pct52(o.price,o.lo52,o.hi52):null;
       h+='<div class="wl-card" data-i="'+i+'">'
@@ -9981,9 +10030,9 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
       +'<div class="hm-title">관심종목 추가</div>'
       +'<label class="hm-lb">시장 선택</label>'
       +'<div class="wl-mkt-pick" id="wlMktPick">'
-      +  '<button type="button" class="wl-mkt-opt sel" data-m="us">🇺🇸 미국 주식</button>'
-      +  '<button type="button" class="wl-mkt-opt" data-m="kr">🇰🇷 한국 주식</button>'
-      +  '<button type="button" class="wl-mkt-opt" data-m="crypto">🪙 암호화폐</button>'
+      +  '<button type="button" class="wl-mkt-opt sel" data-m="us">미국 주식</button>'
+      +  '<button type="button" class="wl-mkt-opt" data-m="kr">한국 주식</button>'
+      +  '<button type="button" class="wl-mkt-opt" data-m="crypto">암호화폐</button>'
       +'</div>'
       +'<label class="hm-lb" id="wlSymLb">티커 <span class="hm-hint">(예: AAPL, NVDA, TSLA)</span></label>'
       +'<input class="hm-in" id="wlSymIn" placeholder="AAPL" autocomplete="off">'
