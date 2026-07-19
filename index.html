@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Cormorant+Garamond:wght@600;700&family=Fredoka+One&family=Jua&family=Michroma&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500;600&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Gothic+A1:wght@700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Chakra+Petch:wght@500;600;700&family=Share+Tech+Mono&family=Cormorant+Garamond:wght@600;700&family=Fredoka+One&family=Jua&family=Michroma&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500;600&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Gothic+A1:wght@700;900&display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -908,7 +908,7 @@ body::before{
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: background .25s, border-color .25s, transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s;
+  transition: background .34s cubic-bezier(.22,1,.36,1), border-color .34s cubic-bezier(.22,1,.36,1), transform .42s cubic-bezier(.22,1,.36,1), box-shadow .42s cubic-bezier(.22,1,.36,1);
 }
 .ref-chip:hover { will-change: transform; }
 .ref-chip::before {
@@ -930,11 +930,12 @@ body::before{
   pointer-events: none;
 }
 .ref-chip:hover {
-  background: rgba(201,169,110,.07);
-  border-color: rgba(201,169,110,.45);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.45), 0 0 0 0.5px rgba(201,169,110,.2), 0 0 18px rgba(201,169,110,.12);
+  background: rgba(201,169,110,.09);
+  border-color: rgba(201,169,110,.55);
+  transform: translateY(-5px) scale(1.022);
+  box-shadow: 0 14px 32px -8px rgba(0,0,0,.6), 0 0 0 0.5px rgba(201,169,110,.28), 0 0 26px -4px rgba(201,169,110,.3);
 }
+.ref-chip:active{ transform: translateY(-2px) scale(.998); transition-duration:.09s }
 .ref-chip:hover::before {
   animation: chip-shimmer .55s ease forwards;
 }
@@ -2679,7 +2680,7 @@ body::before {
 }
 
 /* 4. ARCHIVE 글자 및 실시간 시계 */
-.nn-deco-text, #liveClock, .clk-sec, .clk-d {
+.nn-deco-text, #liveClock {
   color: #ffeba1 !important; /* 칙칙한 금색에서 아주 밝은 샴페인 골드로 변경 */
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 19px rgba(201, 169, 110, 0.9), 0 0 30px rgba(201, 169, 110, 0.8) !important;
   font-weight: 650 !important;
@@ -3081,7 +3082,7 @@ body #page-about > div > p:not(:first-of-type) {
     <div class="final" id="final">
       <p class="fn-sub" id="fnSub">읽고, 보고, 배우고, 기록하다.<br/>거시 경제 데이터 관찰과<br/>투자·미디어 리서치 자료 보관을 위한 공간.</p>
       <div class="nn-deco" id="nnDeco">
-        <div class="nn-deco-text">ARCHIVE &nbsp;&#9670;&nbsp; <span id="liveClock"></span></div>
+        <div class="nn-deco-text nn-clock-wrap"><span id="liveClock"></span></div>
       </div>
     </div>
 
@@ -3179,6 +3180,7 @@ body #page-about > div > p:not(:first-of-type) {
             <b>코스피·코스닥 실시간 지수</b>와 <b>경제 뉴스 헤드라인</b>은 무료 Cloudflare Worker 프록시로 가져옵니다. 함께 드린 worker.js 배포 후 주소를 붙여넣으세요. (비워두면 이 기능만 꺼집니다)
           </div>
         </div>
+        <div class="nn-storage-bar" style="margin-top:14px"></div>
         <details class="macro-keyguide"><summary><span class="mkg-sum-txt">☁️ Cloudflare Worker 프록시 만드는 법 — 처음이라면 여기부터 (약 10분 · 완전 무료)</span><span class="mkg-sum-ind"><span class="mkg-ind-closed">클릭</span><span class="mkg-ind-arrow" aria-hidden="true">⟶</span></span></summary>
           <div class="mkg-guide-body">
           <div class="mkg-intro">Cloudflare Worker는 코스피·뉴스 데이터를 중계하는 <b>무료 서버</b>예요. 하루 10만 요청까지 무료라 개인 대시보드로는 평생 무료입니다. 카드 등록도 필요 없어요.</div>
@@ -5309,14 +5311,14 @@ function initHomeTicker1(){
     {proName:'FOREXCOM:NSXUSD', title:'NASDAQ 100'},
     {proName:'SSE:000001',      title:'상하이종합'},
      {proName:'INDEX:NKY',       title:'NIKKEI 225'},
-    {proName:'NASDAQ:SOX',       title:'필라델피아 반도체'},
+    {proName:'NASDAQ:SOXX',     title:'반도체 SOXX'},
     {proName:'CAPITALCOM:VIX',         title:'VIX 공포지수'},
-    {proName:'TVC:MOVE',        title:'MOVE 채권변동성'},
+    {proName:'NASDAQ:TLT',      title:'미국 장기채 TLT'},
     {proName:'CAPITALCOM:DXY',         title:'DXY'},
     {proName:'FX_IDC:USDKRW',   title:'USD/KRW'},
     {proName:'TVC:GOLD',        title:'GOLD'},
     {proName:'TVC:USOIL',       title:'WTI'},
-    {proName:'TVC:US10Y',       title:'US 10Y'},
+    {proName:'FRED:DGS10',      title:'미국 10년물 금리'},
     {proName:'BINANCE:BTCUSDT',  title:'비트코인'},
     {proName:'BINANCE:ETHUSDT',  title:'이더리움'},
     {proName:'BINANCE:SOLUSDT',  title:'솔라나'}
@@ -5373,21 +5375,174 @@ window.addEventListener('resize', function(){
 
 /* ══ 4K 단일 이미지 복원형 관성 패럴랙스 및 타임 가림막 통합 엔진 ══ */
 var prevSec='';
+/* ── 한국 공휴일 판정 (달력·시계 공용) ── */
+var KR_FIXED=['01-01','03-01','05-05','06-06','08-15','10-03','10-09','12-25'];
+var KR_EXTRA={
+  '2026':['02-16','02-17','02-18','03-02','05-24','05-25','06-03','07-17','08-17','09-24','09-25','09-26','10-05']
+};
+function isKrHoliday(y,m,d){
+  var mm=String(m).padStart(2,'0'), dd=String(d).padStart(2,'0'), key=mm+'-'+dd;
+  return KR_FIXED.indexOf(key)>=0 || ((KR_EXTRA[String(y)]||[]).indexOf(key)>=0);
+}
+
+/* ══════════ 미니 실시간 캘린더 (날짜 클릭·호버 시 펼침) ══════════ */
+var __calRef=null, __calPinned=false, __calHideT=null;
+function initMiniCalendar(){
+  var dateEl=document.getElementById('clkDate'); if(!dateEl || dateEl.__calBound) return;
+  dateEl.__calBound=true;
+  var wrap=document.querySelector('.nn-clock-wrap'); if(!wrap) return;
+  var pop=document.getElementById('miniCal');
+  if(!pop){
+    pop=document.createElement('div');
+    pop.id='miniCal'; pop.className='mini-cal';
+    document.body.appendChild(pop);   /* 히어로 overflow:hidden 에 잘리지 않도록 body 직속 */
+  }
+  function place(){
+    var r=dateEl.getBoundingClientRect();
+    var w=pop.offsetWidth||236;
+    var center=r.left + r.width/2;                       /* 날짜 텍스트 중심 */
+    pop.style.left=Math.max(10, Math.min(center - w/2, window.innerWidth - w - 10))+'px';
+    pop.style.top=(r.bottom+12)+'px';
+  }
+  var now=new Date();
+  __calRef={y:now.getFullYear(), m:now.getMonth()};
+  function show(){ clearTimeout(__calHideT); renderMiniCalendar(); place(); pop.classList.add('on'); }
+  function hide(force){
+    if(__calPinned && !force) return;
+    clearTimeout(__calHideT);
+    __calHideT=setTimeout(function(){ pop.classList.remove('on'); }, 220);
+  }
+  dateEl.addEventListener('mouseenter',show);
+  dateEl.addEventListener('mouseleave',function(){ hide(false); });
+  pop.addEventListener('mouseenter',function(){ clearTimeout(__calHideT); });
+  pop.addEventListener('mouseleave',function(){ hide(false); });
+  dateEl.addEventListener('click',function(e){
+    e.stopPropagation();
+    __calPinned=!__calPinned;
+    if(__calPinned){ show(); pop.classList.add('pinned'); }
+    else { pop.classList.remove('pinned'); hide(true); }
+  });
+  window.addEventListener('scroll',function(){ if(pop.classList.contains('on')) place(); },{passive:true});
+  window.addEventListener('resize',function(){ if(pop.classList.contains('on')) place(); });
+  document.addEventListener('click',function(e){
+    if(!pop.contains(e.target) && e.target!==dateEl){
+      __calPinned=false; pop.classList.remove('pinned'); hide(true);
+    }
+  });
+}
+
+function renderMiniCalendar(){
+  var pop=document.getElementById('miniCal'); if(!pop || !__calRef) return;
+  var Y=__calRef.y, Mo=__calRef.m;                 /* Mo: 0-11 */
+  var today=new Date();
+  var first=new Date(Y,Mo,1), last=new Date(Y,Mo+1,0);
+  var startDow=first.getDay(), total=last.getDate();
+  var MN=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  var head='<div class="mc-head">'
+    + '<button type="button" class="mc-nav" data-mv="-1">&#8249;</button>'
+    + '<div class="mc-title"><span class="mc-mon">'+MN[Mo]+'</span><span class="mc-year">'+Y+'</span></div>'
+    + '<button type="button" class="mc-nav" data-mv="1">&#8250;</button>'
+    + '</div>';
+  var dowNames=['S','M','T','W','T','F','S'];
+  var grid='<div class="mc-grid">';
+  for(var i=0;i<7;i++){
+    var wc = i===0?' mc-sun':(i===6?' mc-sat':'');
+    grid+='<span class="mc-dow'+wc+'">'+dowNames[i]+'</span>';
+  }
+  for(var b=0;b<startDow;b++) grid+='<span class="mc-cell mc-empty"></span>';
+  for(var day=1;day<=total;day++){
+    var dw=(startDow+day-1)%7;
+    var cls='mc-cell';
+    if(dw===0 || isKrHoliday(Y,Mo+1,day)) cls+=' mc-sun';
+    else if(dw===6) cls+=' mc-sat';
+    if(Y===today.getFullYear() && Mo===today.getMonth() && day===today.getDate()) cls+=' mc-today';
+    grid+='<span class="'+cls+'">'+day+'</span>';
+  }
+  grid+='</div>';
+  var hh=String(today.getHours()).padStart(2,'0'), mm=String(today.getMinutes()).padStart(2,'0');
+  var foot='<div class="mc-foot"><span class="mc-live"><i></i>TODAY</span>'
+    + '<span class="mc-now">'+today.getFullYear()+'.'+String(today.getMonth()+1).padStart(2,'0')+'.'+String(today.getDate()).padStart(2,'0')+' '+hh+':'+mm+'</span></div>';
+  pop.innerHTML=head+grid+foot;
+  pop.querySelectorAll('.mc-nav').forEach(function(b){
+    b.onclick=function(e){
+      e.stopPropagation();
+      var mv=parseInt(b.getAttribute('data-mv'),10);
+      var nm=__calRef.m+mv, ny=__calRef.y;
+      if(nm<0){ nm=11; ny--; } else if(nm>11){ nm=0; ny++; }
+      __calRef={y:ny,m:nm};
+      renderMiniCalendar();
+    };
+  });
+}
+
 window.updateClock = function(){
   var el=document.getElementById('liveClock'); if(!el) return;
   var now=new Date();
-  var y=now.getFullYear(); var mo=String(now.getMonth()+1).padStart(2,'0'); var d=String(now.getDate()).padStart(2,'0');
-  var h=String(now.getHours()).padStart(2,'0'); var mi=String(now.getMinutes()).padStart(2,'0'); var s=String(now.getSeconds()).padStart(2,'0');
-  
-  var days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  var dayStr = days[now.getDay()];
+  var y=now.getFullYear(), M=now.getMonth()+1, D=now.getDate();
+  var mo=String(M).padStart(2,'0'), d=String(D).padStart(2,'0');
+  var h=String(now.getHours()).padStart(2,'0'), mi=String(now.getMinutes()).padStart(2,'0'), s=String(now.getSeconds()).padStart(2,'0');
+  var days=['SUN','MON','TUE','WED','THU','FRI','SAT'], dow=now.getDay(), dayStr=days[dow];
 
-  var d0=s.charAt(0), d1=s.charAt(1); var p0=prevSec.charAt(0), p1=prevSec.charAt(1);
-  var dig0='<span class="clk-d'+(prevSec&&d0!==p0?' glitch':'')+'" data-d="'+d0+'">'+d0+'</span>';
-  var dig1='<span class="clk-d'+(prevSec===''||d1!==p1?' glitch':'')+'" data-d="'+d1+'">'+d1+'</span>';
-  
-  /* 💡 날짜와 시간 사이에 괄호를 완전히 제거하고 모던한 더블 스페이스 공백 격리 구조로 교정 */
-  el.innerHTML=y+'.'+mo+'.'+d+'\u00a0\u00a0'+dayStr+'\u00a0\u00a0'+h+':'+mi+':<span class="clk-sec">'+dig0+dig1+'</span>';
+  /* 골격은 최초 1회만 생성 — 매초 재생성하지 않아 시·분 발광이 끊기지 않음 */
+  if(!el.__built){
+    el.innerHTML=
+        '<span class="clk-cap">'
+      +   '<span class="clk-brand"><i class="clk-dot"></i>ARCHIVE</span>'
+      +   '<span class="clk-div"></span>'
+      +   '<span class="clk-date" id="clkDate" title="클릭하면 달력이 열립니다"></span>'
+      +   '<span class="clk-day" id="clkDay"></span>'
+      +   '<span class="clk-div"></span>'
+      +   '<span class="clk-time"><span class="clk-hm" id="clkHM" data-t=""><i class="hm-h"></i><i class="clk-colon">:</i><i class="hm-m"></i></span>'
+      +     '<i class="clk-scolon">:</i><span class="clk-sec" id="clkSec" data-t=""></span></span>'
+      + '</span>';
+    el.__built=true;
+    el.__prev={};
+    try{ initMiniCalendar(); }catch(e){}
+    setTimeout(function(){ try{ initMiniCalendar(); }catch(e){} }, 300);
+  }
+  var P=el.__prev, q=function(id){ return document.getElementById(id); };
+
+  /* 날짜 (바뀔 때만 갱신) */
+  var dateKey=y+'-'+mo+'-'+d;
+  if(P.date!==dateKey){
+    P.date=dateKey;
+    var dt=q('clkDate'); if(dt) dt.innerHTML=y+'<i class="clk-sep">.</i>'+mo+'<i class="clk-sep">.</i>'+d;
+    var dy=q('clkDay');
+    if(dy){
+      dy.textContent=dayStr;
+      dy.className='clk-day'+((dow===0||isKrHoliday(y,M,D))?' clk-day-sun':(dow===6?' clk-day-sat':''));
+    }
+    if(typeof renderMiniCalendar==='function') renderMiniCalendar();
+  }
+
+  /* 시·분 (바뀔 때만 갱신 — 발광 애니메이션 유지) */
+  var hm=h+':'+mi;
+  if(P.hm!==hm){
+    P.hm=hm;
+    var hmEl=q('clkHM');
+    if(hmEl){
+      hmEl.setAttribute('data-t',hm);
+      var hh=hmEl.querySelector('.hm-h'), mm2=hmEl.querySelector('.hm-m');
+      if(hh) hh.textContent=h;
+      if(mm2) mm2.textContent=mi;
+    }
+  }
+
+  /* 초 (매초 롤 전환) */
+  if(P.sec!==s){
+    var secEl=q('clkSec');
+    if(secEl){
+      secEl.setAttribute('data-t',s);
+      var d0=s.charAt(0), d1=s.charAt(1);
+      var p0=(P.sec||'').charAt(0), p1=(P.sec||'').charAt(1);
+      function mkDigit(nw, ol, changed){
+        if(!changed || ol==='') return '<span class="clk-d">'+nw+'</span>';
+        return '<span class="clk-d rolling"><i class="d-new">'+nw+'</i><i class="d-old">'+ol+'</i></span>';
+      }
+      secEl.innerHTML=mkDigit(d0,p0,!!P.sec&&d0!==p0)+mkDigit(d1,p1,!!P.sec&&d1!==p1);
+    }
+    P.sec=s;
+  }
   prevSec=s;
 };
 
@@ -5809,14 +5964,14 @@ window.KnowledgeNotes = {
     document.body.appendChild(ov);
     var input=ov.querySelector('#cmInput'), prev=ov.querySelector('#cmPrev');
     function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
-    function apply(v){ note.cover=(v||'').trim(); self.save(); self.renderSidebar(type); close(); }
+    function apply(v){ var t=(v||'').trim(); if(t && window.__nnCheckImgUrl){ var c=window.__nnCheckImgUrl(t); if(!c.ok) return; t=c.url; } note.cover=t; self.save(); self.renderSidebar(type); close(); }
     input.oninput=function(){ var v=this.value.trim(); if(v){ prev.innerHTML='<img src="'+v.replace(/"/g,'&quot;')+'" alt="" onerror="this.parentNode.innerHTML=\'<span class=&quot;cm-prev-err&quot;>이미지를 불러올 수 없어요</span>\'">'; } else { prev.innerHTML='<span class="cm-prev-ph">미리보기</span>'; } };
     input.onkeydown=function(e){ if(e.key==='Enter'){ apply(input.value); } if(e.key==='Escape'){ close(); } };
     ov.querySelector('.cm-cancel').onclick=close;
     ov.querySelector('.cm-save').onclick=function(){ apply(input.value); };
     var clr=ov.querySelector('.cm-clear'); if(clr) clr.onclick=function(){ apply(''); };
     ov.onclick=function(e){ if(e.target===ov) close(); };
-    requestAnimationFrame(function(){ ov.classList.add('show'); input.focus(); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); input.focus(); });
   },
 
   showEmojiPicker: function(anchor, onPick){
@@ -5843,7 +5998,7 @@ window.KnowledgeNotes = {
   },
 
   execCmd: function(cmd, val) { try { return document.execCommand(cmd, false, val || null); } catch(e) { return false; } },
-  insertImgUrl: function() { var url = prompt("삽입할 이미지 URL를 입력하세요:"); if (url) this.execCmd('insertImage', url); },
+  insertImgUrl: function() { var url = prompt("삽입할 이미지 URL를 입력하세요:"); if (!url) return; var chk = window.__nnCheckImgUrl ? window.__nnCheckImgUrl(url) : {ok:true,url:url}; if (!chk.ok) return; this.execCmd('insertImage', chk.url); },
   insertChecklist: function() { var html = '<div class="nn-check" contenteditable="false"><input type="checkbox" onchange="this.parentNode.classList.toggle(\'done\',this.checked)"><span contenteditable="true">할 일</span></div><p><br></p>'; this.execCmd('insertHTML', html); },
   insertCallout: function() { var html = '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">💡</span><div class="nn-callout-body">여기에 강조할 내용을 입력하세요</div></div><p><br></p>'; this.execCmd('insertHTML', html); },
   insertLink: function() {
@@ -5919,7 +6074,7 @@ window.KnowledgeNotes = {
   },
 
   insertGallery: function() {
-    var raw = prompt("사진 URL들을 입력하세요:"); if(!raw) return; var urls = raw.split(/[\n,]+/).map(function(u){ return u.trim(); }).filter(Boolean); if(urls.length === 0) return;
+    var raw = prompt("사진 URL들을 입력하세요:"); if(!raw) return; var urls = raw.split(/[\n,]+/).map(function(u){ return u.trim(); }).filter(Boolean); if(window.__nnCheckImgUrl){ urls = urls.filter(function(u){ return window.__nnCheckImgUrl(u).ok; }); } if(urls.length === 0) return;
     var layout = urls.length === 1 ? 'single' : (prompt("사진 배치 선택:\n1=그리드, 2=가로, 3=세로, 4=콜라주", "1") === '4' ? 'collage' : 'grid');
     var imgs = urls.map(function(u){ return '<img src="'+u+'">'; }).join(''); var html = '<div class="nn-gallery nn-gallery-' + layout + '" contenteditable="false">' + imgs + '</div><p><br></p>'; this.execCmd('insertHTML', html);
   },
@@ -5938,7 +6093,7 @@ window.KnowledgeNotes = {
       }, 200);
     };
     card.appendChild(ov);
-    requestAnimationFrame(function(){ ov.classList.add('show'); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); });
   },
 
   _scrollTarget: function(){
@@ -6075,7 +6230,7 @@ window.KnowledgeNotes = {
       setTimeout(function(){ self.data.media=self.data.media.filter(function(n){ return n.id!==id; }); self.save(); self.renderSidebar('media'); }, 200);
     };
     card.appendChild(ov);
-    requestAnimationFrame(function(){ ov.classList.add('show'); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); });
   },
 
   _buildLexCard: function(note){
@@ -6368,6 +6523,8 @@ window.KnowledgeNotes = {
     var ungrouped = document.createElement('div'); ungrouped.className = 'note-ungrouped' + (type==='media'?' media-loose':''); self._attachDrop(ungrouped, type, null);
     loosePages.forEach(function(note){ ungrouped.appendChild(self._buildPageItem(type, note, activeId)); });
     container.appendChild(ungrouped);
+    var sb=document.createElement('div'); sb.className='nn-storage-bar nnsb-side'; container.appendChild(sb);
+    if(window.__nnRenderStorage) window.__nnRenderStorage();
   },
 
   renderEditor: function(type) {
@@ -6431,6 +6588,89 @@ window.KnowledgeNotes = {
     }; input.click();
   }
 };
+
+/* ══════════ 저장 공간 사용량 · 이미지 URL 안전장치 (공용) ══════════ */
+(function(){
+  var LIMIT=5*1024*1024; /* 브라우저 localStorage 통상 한도 5MB */
+
+  /* 사용량(바이트) 계산 — nn_ 키 전체 */
+  function usedBytes(){
+    var t=0;
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i); if(!k) continue;
+        var v=localStorage.getItem(k)||'';
+        t+=(k.length+v.length)*2; /* UTF-16 근사 */
+      }
+    }catch(e){}
+    return t;
+  }
+  function fmtKB(b){ return b>=1048576 ? (b/1048576).toFixed(2)+'MB' : Math.round(b/1024)+'KB'; }
+  window.__nnStorageInfo=function(){
+    var u=usedBytes(), p=Math.min(100, u/LIMIT*100);
+    return {used:u, limit:LIMIT, pct:p, text:fmtKB(u)+' / 5MB', level:(p>=90?'danger':p>=70?'warn':'ok')};
+  };
+
+  /* 사용량 바 렌더 (모든 .nn-storage-bar 요소) */
+  window.__nnRenderStorage=function(){
+    var info=window.__nnStorageInfo();
+    document.querySelectorAll('.nn-storage-bar').forEach(function(el){
+      el.innerHTML='<div class="nnsb-head"><span class="nnsb-lb">저장 공간</span>'
+        +'<span class="nnsb-val nnsb-'+info.level+'">'+info.text+' ('+info.pct.toFixed(0)+'%)</span></div>'
+        +'<div class="nnsb-track"><div class="nnsb-fill nnsb-'+info.level+'" style="width:'+info.pct.toFixed(1)+'%"></div></div>'
+        +(info.level==='danger'?'<div class="nnsb-msg">⚠ 공간이 거의 찼습니다. 불필요한 항목을 정리하세요.</div>'
+          :info.level==='warn'?'<div class="nnsb-msg">공간이 70%를 넘었습니다.</div>':'');
+    });
+  };
+
+  /* 이미지 URL 안전장치: base64 등 위험 입력 차단 */
+  window.__nnCheckImgUrl=function(url,opt){
+    opt=opt||{};
+    var u=String(url||'').trim();
+    if(!u) return {ok:true, url:''};
+    if(/^data:/i.test(u)){
+      var kb=Math.round(u.length/1024);
+      if(window.__nnToast) window.__nnToast('⚠ 이미지를 직접 붙여넣으면 저장 공간('+kb+'KB)을 크게 차지해 데이터가 손실될 수 있어요. postimg.cc 등에 올린 뒤 "직접 링크"를 붙여넣어 주세요.',{kind:'del'});
+      else alert('이미지 데이터(base64)는 저장 공간을 크게 차지해 사용할 수 없습니다.\npostimg.cc 등에 올린 뒤 직접 링크를 붙여넣어 주세요.');
+      return {ok:false, url:''};
+    }
+    if(!/^https?:\/\//i.test(u) && !/^\//.test(u)){
+      if(window.__nnToast) window.__nnToast('이미지 주소는 https:// 로 시작해야 합니다.',{kind:'del'});
+      return {ok:false, url:u};
+    }
+    /* 남은 공간 경고 */
+    var info=window.__nnStorageInfo();
+    if(info.level==='danger' && window.__nnToast) window.__nnToast('⚠ 저장 공간이 '+info.pct.toFixed(0)+'% 찼습니다. 정리를 권장합니다.');
+    return {ok:true, url:u};
+  };
+
+  /* 붙여넣기 감시: 모든 텍스트 입력칸에 base64 유입 차단 */
+  document.addEventListener('paste', function(e){
+    var t=e.target;
+    if(!t || !(t.tagName==='INPUT' || t.tagName==='TEXTAREA')) return;
+    var txt=''; try{ txt=(e.clipboardData||window.clipboardData).getData('text')||''; }catch(x){ return; }
+    if(/^data:image\//i.test(txt.trim())){
+      e.preventDefault();
+      if(window.__nnToast) window.__nnToast('⚠ 이미지 데이터는 붙여넣을 수 없어요. postimg.cc 등에 올린 뒤 "직접 링크"를 붙여넣어 주세요.',{kind:'del'});
+    }
+  }, true);
+
+  /* 저장 실패(한도 초과) 감지 — 조용한 데이터 손실 방지 */
+  var _si=localStorage.setItem.bind(localStorage);
+  try{
+    localStorage.setItem=function(k,v){
+      try{ return _si(k,v); }
+      catch(err){
+        if(window.__nnToast) window.__nnToast('⚠ 저장 실패 — 저장 공간이 가득 찼습니다. 항목을 정리한 뒤 다시 시도하세요.',{kind:'del'});
+        throw err;
+      }
+    };
+  }catch(e){}
+
+  /* 주기적 갱신 */
+  function boot(){ window.__nnRenderStorage(); setInterval(window.__nnRenderStorage, 20000); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+})();
 
 /* ══ BOOT LAUNCHER ══ */
 window.addEventListener('load', function(){
@@ -7958,6 +8198,436 @@ body:has(#page-portfolio.active){ overflow-x: clip !important; }
 html.bg-js body::before{ background:transparent !important; }
 /* 배경 레이어: 이중스크롤 진압 패치(body>div{height:auto!important})로부터 치수 보호 */
 .nn-bg-layer{ height:100vh !important; max-height:100vh !important; width:100vw !important; overflow:hidden !important; }
+
+/* ══ 저장 공간 사용량 바 ══ */
+.nn-storage-bar{font-family:'Pretendard',sans-serif;user-select:none}
+.nnsb-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.nnsb-lb{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.42)}
+.nnsb-val{font-size:10px;font-weight:700;font-variant-numeric:tabular-nums}
+.nnsb-val.nnsb-ok{color:rgba(255,255,255,.55)}
+.nnsb-val.nnsb-warn{color:#ffc46b}
+.nnsb-val.nnsb-danger{color:#ff7a7a}
+.nnsb-track{height:4px;background:rgba(255,255,255,.09);border-radius:3px;overflow:hidden}
+.nnsb-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.nnsb-fill.nnsb-ok{background:linear-gradient(90deg,rgba(95,216,138,.65),rgba(120,200,255,.6))}
+.nnsb-fill.nnsb-warn{background:linear-gradient(90deg,rgba(255,196,107,.75),rgba(255,150,80,.7))}
+.nnsb-fill.nnsb-danger{background:linear-gradient(90deg,rgba(255,122,122,.85),rgba(255,80,80,.8))}
+.nnsb-msg{margin-top:5px;font-size:9.5px;color:rgba(255,190,120,.85);line-height:1.45}
+/* 작성 패널 사이드바용 (밝은 배경) */
+.nnsb-side{margin:14px 10px 12px;padding-top:11px;border-top:1px solid rgba(0,0,0,.09)}
+.nnsb-side .nnsb-lb{color:rgba(0,0,0,.4)}
+.nnsb-side .nnsb-val.nnsb-ok{color:rgba(0,0,0,.5)}
+.nnsb-side .nnsb-track{background:rgba(0,0,0,.08)}
+
+/* ══ 배경 추가 모달 ══ */
+.bga-ov{position:fixed;inset:0;background:rgba(6,6,8,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:3000000;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;padding:20px}
+.bga-ov.show{opacity:1}
+.bga-card{width:380px;max-width:92vw;background:linear-gradient(165deg,rgba(26,24,20,.98),rgba(16,15,13,.98));border:1px solid rgba(201,169,110,.32);border-radius:18px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);transform:scale(.94) translateY(8px);transition:transform .24s cubic-bezier(.22,1,.36,1)}
+.bga-ov.show .bga-card{transform:scale(1) translateY(0)}
+.bga-head{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.bga-ic{font-size:22px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(201,169,110,.12);border:1px solid rgba(201,169,110,.3);border-radius:12px;flex-shrink:0}
+.bga-title{font-family:'Pretendard',sans-serif;font-size:15px;font-weight:800;color:#f0ede6;letter-spacing:-.01em}
+.bga-sub{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:300;color:rgba(255,255,255,.45);margin-top:2px}
+.bga-prev{width:100%;height:142px;border-radius:12px;background:rgba(255,255,255,.03);border:1px dashed rgba(201,169,110,.3);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:14px}
+.bga-prev img{width:100%;height:100%;object-fit:cover}
+.bga-prev-ph{font-family:'Pretendard',sans-serif;font-size:12px;color:rgba(255,255,255,.3);font-weight:300}
+.bga-prev-err{font-family:'Pretendard',sans-serif;font-size:11px;color:rgba(230,130,110,.85);text-align:center;padding:10px}
+.bga-lb{display:block;font-family:'Pretendard',sans-serif;font-size:11px;font-weight:700;color:rgba(224,201,140,.9);margin-bottom:5px;letter-spacing:.02em}
+.bga-in{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.25);border-radius:10px;padding:10px 13px;font-family:'Pretendard',sans-serif;font-size:12.5px;color:#f0ede6;outline:none;transition:.18s}
+.bga-in:focus{border-color:rgba(201,169,110,.6);background:rgba(201,169,110,.06);box-shadow:0 0 0 3px rgba(201,169,110,.1)}
+.bga-in::placeholder{color:rgba(255,255,255,.28)}
+.bga-hint{font-family:'Pretendard',sans-serif;font-size:10.5px;line-height:1.6;color:rgba(255,255,255,.45);font-weight:300;margin:11px 2px 16px}
+.bga-hint b{color:rgba(224,201,140,.9);font-weight:600}
+.bga-btns{display:flex;gap:8px;justify-content:flex-end}
+.bga-btn{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;padding:9px 18px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:.16s}
+.bga-cancel{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.6)}
+.bga-cancel:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85)}
+.bga-save{background:linear-gradient(135deg,#e0c389,#c9a96e);border-color:rgba(201,169,110,.5);color:#1a140a;font-weight:700}
+.bga-save:hover{background:linear-gradient(135deg,#f0d9a8,#d4b57e);box-shadow:0 4px 16px rgba(201,169,110,.4)}
+
+
+
+/* ══════════ HOLDINGS HUB — 스테이지 (Anthropic 스타일 검은 캔버스) ══════════ */
+.hub-section{
+  position:relative;overflow:visible;isolation:isolate;
+  left:50% !important;transform:translateX(-50%) !important;
+  margin-left:0 !important;margin-right:0 !important;
+  background:rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  box-shadow:0 30px 90px -40px rgba(0,0,0,.9) !important;
+  padding-top:30px !important;padding-bottom:34px !important;
+  transition:width .85s cubic-bezier(.22,1,.36,1),
+             border-radius .85s cubic-bezier(.22,1,.36,1),
+             padding .85s cubic-bezier(.22,1,.36,1),
+             background .4s ease;
+}
+/* 2단계에서는 화면 가득 — 테두리 좌우 제거 */
+.hub-section.hub-step-2{border-left:none !important;border-right:none !important}
+/* 편집 모드에서는 기존 그리드 레이아웃 그대로 */
+.hub-section.hub-editing-mode{padding-top:34px !important;padding-bottom:44px !important}
+.hub-section .port-header,.hub-section .cove-line{position:relative;z-index:6;max-width:1100px;margin-left:auto;margin-right:auto}
+.hub-section.hub-editing-mode .port-header{padding-top:0}
+
+/* ── 스테이지 캔버스 ── */
+.hub-stage{position:relative;width:100%;height:clamp(620px,82vh,860px);margin:18px 0 6px;overflow:hidden}
+.hub-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.hub-lines line{stroke:rgba(206,176,120,.36);stroke-width:1;vector-effect:non-scaling-stroke;
+  stroke-dasharray:1 0;opacity:calc(.08 + .92 * var(--hubP,0));transition:opacity .8s ease;
+  filter:drop-shadow(0 0 2px rgba(201,169,110,.22));
+  animation:hlPulse 7s ease-in-out infinite;animation-delay:calc(var(--i,0) * -.6s)}
+.hub-lines line.hl-core{stroke:rgba(226,196,140,.42);stroke-width:1.1}
+@keyframes hlPulse{0%,100%{opacity:.42}50%{opacity:.82}}
+
+/* ── 중앙 카피 ── */
+.hub-center{position:absolute;left:50%;top:50%;z-index:4;text-align:center;
+  width:min(640px,76%);pointer-events:none;
+  /* 위치는 고정, 패널 확장 단계에 맞춰 크기만 부드럽게 커짐 */
+  transform:translate(-50%,-50%) scale(calc(1 + .11 * var(--hubP,0)));
+  transform-origin:center center;
+  transition:transform .85s cubic-bezier(.22,1,.36,1)}
+.hub-eyebrow{
+  position:relative;display:inline-block;
+  font-family:'Orbitron',sans-serif;font-size:17px;font-weight:900;letter-spacing:.34em;
+  margin-bottom:20px;padding:0 2px 10px;
+  color:#fffaf0;
+  /* 네온관: 흰 코어 → 골드 → 앰버 → 딥오렌지로 번지는 6겹 발광 */
+  text-shadow:
+    0 0 2px  #fffdf6,
+    0 0 5px  #fff3d4,
+    0 0 11px #ffdf9e,
+    0 0 22px #ffc35e,
+    0 0 40px #ff9e28,
+    0 0 70px rgba(255,140,20,.75),
+    0 0 110px rgba(230,110,10,.5);
+  animation:neonHum 4.2s ease-in-out infinite;
+}
+/* 네온 튜브 밑줄 */
+.hub-eyebrow::after{
+  content:'';position:absolute;left:6%;right:6%;bottom:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#fff3d4 18%,#ffc35e 50%,#fff3d4 82%,transparent);
+  box-shadow:0 0 6px #ffdf9e,0 0 16px #ffb44a,0 0 30px rgba(255,150,30,.7);
+  animation:neonHum 4.2s ease-in-out infinite}
+/* 튜브 뒤로 번지는 후광 */
+.hub-eyebrow::before{
+  content:'';position:absolute;left:-14%;right:-14%;top:-40%;bottom:-30%;z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(255,170,50,.22),rgba(255,140,20,.08) 45%,transparent 72%);
+  filter:blur(6px);pointer-events:none;
+  animation:neonHum 4.2s ease-in-out infinite}
+@keyframes neonHum{
+  0%,100%{opacity:1;filter:brightness(1)}
+  50%    {opacity:.94;filter:brightness(1.14)}
+}
+.hub-headline{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(2.95rem,5.6vw,5.1rem);
+  line-height:1.12;color:#f5f2ec;letter-spacing:-.005em;margin:0 0 18px;text-shadow:0 4px 26px rgba(0,0,0,.85)}
+.hub-lede{font-family:'Pretendard',sans-serif;font-size:17.5px;font-weight:300;line-height:1.8;
+  color:rgba(255,255,255,.78);margin:0 auto 10px;max-width:500px}
+.hub-lede-kr{font-family:'Pretendard',sans-serif;font-size:14px;font-weight:300;
+  color:rgba(255,255,255,.46);margin:0}
+
+/* ── 노드(축소 카드) ── */
+.hub-node{position:absolute;transform:translate(-50%,-50%);z-index:3;
+  opacity:0;visibility:hidden;
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),visibility .7s;
+  transition-delay:calc(var(--d,0s) * .5);
+  animation:hnDrift var(--dur,16s) ease-in-out infinite;animation-delay:var(--d,0s);will-change:transform}
+/* 1단계 확장부터 카드 등장 */
+.hub-step-1 .hub-node,.hub-step-2 .hub-node{opacity:1;visibility:visible}
+/* 더 활발한 움직임: 상하 + 좌우 + 미세 회전 */
+@keyframes hnDrift{
+  0%,100%{transform:translate(-50%,-50%) translate(0,0)}
+  25%    {transform:translate(-50%,-50%) translate(9px,-19px)}
+  50%    {transform:translate(-50%,-50%) translate(-6px,-28px)}
+  75%    {transform:translate(-50%,-50%) translate(-11px,-12px)}
+}
+/* 회전은 타일에만 (팝업 카드는 항상 수평 유지) */
+@keyframes hnTilt{0%,100%{transform:rotate(0deg)}33%{transform:rotate(2.4deg)}66%{transform:rotate(-2deg)}}
+.hn-tile{width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;cursor:pointer;
+  animation:hnTilt var(--dur,12s) ease-in-out infinite;animation-delay:var(--d,0s);
+  border:1px solid rgba(255,255,255,.14);background:#15151a;
+  box-shadow:0 10px 28px -12px rgba(0,0,0,.9);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),border-color .3s,box-shadow .3s}
+.hn-img{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(.8) brightness(.78);transition:filter .3s}
+.hn-img-plain{background:linear-gradient(150deg,rgba(255,255,255,.09),rgba(255,255,255,.02))}
+.hn-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;object-fit:contain;
+  border-radius:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8))}
+.hn-name{margin-top:8px;text-align:center;font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.02em;color:rgba(255,255,255,.5);white-space:nowrap;transition:color .3s}
+.hub-node:hover{z-index:20;animation-play-state:paused}
+.hub-node:hover .hn-tile{will-change:transform}
+.hub-node:hover .hn-tile{animation-play-state:paused;transform:rotate(0deg) scale(1.14);border-color:var(--comp-hi,rgba(201,169,110,.75));
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.95),0 0 22px -4px var(--comp-hi,rgba(201,169,110,.5))}
+.hub-node:hover .hn-img{filter:saturate(1) brightness(1)}
+.hub-node:hover .hn-name{color:#fff}
+
+/* ── 호버 확장 카드 ── */
+.hn-pop{position:absolute;width:310px;box-sizing:content-box;opacity:0;visibility:hidden;transform:scale(.9);transform-origin:center;
+  transition:opacity .16s ease,transform .2s cubic-bezier(.22,1,.36,1),visibility .16s;
+  z-index:30;pointer-events:none}
+/* 마우스를 올린 동안엔 즉시 등장, 뗄 때만 0.38초 여유 → 카드로 이동할 시간 확보 */
+.hub-node:hover .hn-pop{opacity:1;visibility:visible;transform:scale(1);pointer-events:auto}
+/* 방향별 위치 — 타일과 카드 사이 간격을 '투명 브릿지'(padding)로 채워 마우스가 끊기지 않게 */
+.hn-r .hn-pop{left:100%;padding-left:20px;top:50%;margin-top:-210px;transform-origin:left center}
+.hn-l .hn-pop{right:100%;padding-right:20px;top:50%;margin-top:-210px;transform-origin:right center}
+.hn-vt .hn-pop{top:-18px;margin-top:0}
+.hn-vb .hn-pop{top:auto;bottom:-18px;margin-top:0}
+.hn-vm .hn-pop{top:50%;margin-top:-210px}
+/* 카드에 마우스를 올려도 유지 */
+.hn-pop:hover{opacity:1 !important;visibility:visible !important;transform:scale(1) !important;pointer-events:auto !important;transition-delay:0s !important}
+.hn-pop .comp-card{height:420px;border-radius:16px;animation:none !important;cursor:default}
+.hn-pop .comp-card .comp-logo{top:1.2rem;left:1.2rem;height:32px}
+.hn-pop .comp-card .comp-content{padding:1.5rem 1.4rem}
+.hn-pop .comp-card .comp-name{font-size:1.35rem;margin-bottom:9px}
+.hn-pop .comp-card .comp-desc{font-size:12.5px;margin-bottom:15px;opacity:1;transform:none}
+.hn-pop .comp-card .comp-btn{opacity:1;transform:none;padding:9px 18px;font-size:11.5px}
+.hn-pop .comp-card .comp-bg{transform:scale(1.1)}
+
+@media (prefers-reduced-motion: reduce){ .hub-node,.hub-lines line{animation:none !important} }
+@media (max-width:1100px){
+  .hub-stage{height:auto;padding:26px 0 10px;overflow:visible}
+  .hub-lines{display:none}
+  .hub-center{position:static;transform:none;width:100%;margin-bottom:26px}
+  .hub-node{position:static;transform:none;animation:none;display:inline-block;margin:0 10px 18px}
+  .hub-stage{text-align:center}
+  .hn-pop{display:none}
+  .hn-tile{width:64px;height:64px}
+}
+
+/* 허브 카드 모달 — 스테이지 위치 입력 */
+.hm-pos-row{display:flex;align-items:center;gap:8px;margin-top:2px}
+.hm-pos-lb{font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.5);flex-shrink:0}
+.hm-in.hm-pos{width:80px;flex:0 0 auto}
+.hm-pos-hint{font-family:'Pretendard',sans-serif;font-size:10.5px;color:rgba(255,255,255,.38);margin:6px 2px 0;line-height:1.5}
+
+/* ══ REFERENCE DESK — 칩 등장 (같은 줄은 동시에 · 플로팅 페이드인) ══ */
+/* 등장 전 상태는 아직 나타나지 않은 레인에만 적용 (등장 후엔 hover와 충돌 없음) */
+.ref-lane:not(.rl-in) .ref-chip{opacity:0;transform:translateY(18px) scale(.965)}
+.ref-lane.rl-in .ref-chip{animation:rcFloatIn .72s cubic-bezier(.22,1,.36,1) both}
+@keyframes rcFloatIn{
+  0%  {opacity:0;transform:translateY(18px) scale(.965);filter:blur(2px)}
+  62% {opacity:1;transform:translateY(-3px) scale(1.004);filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+/* 등장이 끝난 칩은 애니메이션을 완전히 떼고 transition만으로 hover 처리 (뗄 때 재생 방지) */
+.ref-chip.rc-done{animation:none !important;opacity:1;transform:none;filter:none}
+.ref-chip.rc-done:hover{transform:translateY(-5px) scale(1.022)}
+.ref-chip.rc-done:active{transform:translateY(-2px) scale(.998);transition-duration:.09s}
+/* 레인 라벨도 함께 부드럽게 */
+.ref-lane .ref-lane-label{opacity:0;transform:translateX(-8px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1)}
+.ref-lane.rl-in .ref-lane-label{opacity:1;transform:translateX(0)}
+@media (prefers-reduced-motion: reduce){
+  .ref-lane .ref-chip{opacity:1 !important;transform:none !important;animation:none !important}
+  .ref-lane .ref-lane-label{opacity:1 !important;transform:none !important}
+}
+
+/* ══════════ HERO LIVE CLOCK — 골드 메탈릭 · 글리치 (배경 없음) ══════════ */
+.nn-clock-wrap{letter-spacing:normal !important;font-size:inherit}
+#liveClock{text-shadow:none !important;color:inherit !important;font-weight:400 !important}
+.clk-cap{
+  display:inline-flex;align-items:center;gap:14px;
+  background:none !important;border:none !important;box-shadow:none !important;
+  -webkit-backdrop-filter:none;backdrop-filter:none;padding:0;border-radius:0;
+}
+
+/* 브랜드 라벨 + 라이브 도트 (느린 호흡) */
+.clk-brand{display:inline-flex;align-items:center;gap:8px;
+  font-family:'Orbitron',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.26em;
+  color:rgba(230,208,150,.95) !important;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,1),
+    0 2px 0 rgba(0,0,0,1),
+    0 3px 0 rgba(0,0,0,.92),
+    0 4px 1px rgba(0,0,0,.85),
+    0 6px 12px rgba(0,0,0,1),
+    0 10px 26px rgba(0,0,0,.95),
+    0 14px 40px rgba(0,0,0,.75),
+    0 0 24px rgba(201,169,110,.45) !important;white-space:nowrap}
+.clk-dot{width:5px;height:5px;border-radius:50%;background:#e8cb92;flex-shrink:0;
+  box-shadow:0 0 7px rgba(232,203,146,.9),0 0 16px rgba(201,169,110,.5);
+  animation:clkDot 5.4s ease-in-out infinite}
+@keyframes clkDot{0%,100%{opacity:.95;transform:scale(1)}50%{opacity:.4;transform:scale(.82)}}
+
+/* 구분선 */
+.clk-div{width:1px;height:15px;flex-shrink:0;
+  background:linear-gradient(180deg,transparent,rgba(201,169,110,.4),transparent)}
+
+/* 날짜 */
+.clk-date{font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:500;letter-spacing:.05em;
+  color:rgba(250,244,230,.94) !important;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,1),
+    0 2px 0 rgba(0,0,0,1),
+    0 3px 0 rgba(0,0,0,.95),
+    0 4px 1px rgba(0,0,0,.88),
+    0 7px 14px rgba(0,0,0,1),
+    0 12px 30px rgba(0,0,0,.95),
+    0 18px 46px rgba(0,0,0,.75) !important;
+  font-variant-numeric:tabular-nums;font-feature-settings:'tnum'}
+.clk-sep{font-style:normal;color:rgba(201,169,110,.6);margin:0 1px}
+
+/* 요일 배지 */
+.clk-day{font-family:'Orbitron',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.14em;
+  color:rgba(236,210,155,.98) !important;
+  text-shadow:0 1px 0 rgba(0,0,0,1),0 2px 5px rgba(0,0,0,.92) !important;
+  border:1px solid rgba(201,169,110,.42);border-radius:5px;
+  padding:2.5px 6px 2px;line-height:1;background:rgba(20,16,10,.62);
+  box-shadow:0 2px 0 rgba(0,0,0,.9),0 3px 0 rgba(0,0,0,.7),
+             0 6px 14px -2px rgba(0,0,0,.95),0 12px 28px -6px rgba(0,0,0,.8),
+             inset 0 1px 0 rgba(255,255,255,.1)}
+
+/* ── 시각: 시·분·초 통일된 골드 메탈릭 ── */
+.clk-time{display:inline-flex;align-items:baseline;gap:0;
+  font-family:'Orbitron',sans-serif;font-weight:700;
+  font-variant-numeric:tabular-nums;font-feature-settings:'tnum';
+  position:relative;top:-1.5px}  /* Orbitron 메트릭 보정 — 날짜와 시각선 일치 */
+.clk-hm,.clk-time .clk-sec{
+  position:relative;font-family:'Share Tech Mono','Chakra Petch',monospace;
+  font-size:16px;line-height:1;font-weight:400;letter-spacing:.18em;
+  color:#ffdf9c !important;-webkit-text-fill-color:#ffdf9c;
+  -webkit-text-stroke:.35px rgba(150,96,20,.55);   /* 윤곽선 — 금테 두른 듯한 입체감 */
+  text-shadow:
+    0 0 1px  rgba(255,250,230,1),
+    0 0 4px  rgba(255,235,175,.95),
+    0 0 9px  rgba(255,208,110,.9),
+    0 0 18px rgba(255,178,62,.7),
+    0 0 34px rgba(242,150,40,.5),
+    0 0 60px rgba(214,120,26,.32),
+    0 1px 0 rgba(0,0,0,1),
+    0 2px 0 rgba(0,0,0,1),
+    0 3px 0 rgba(0,0,0,.95),
+    0 4px 1px rgba(0,0,0,.9),
+    0 7px 14px rgba(0,0,0,1),
+    0 13px 32px rgba(0,0,0,.95),
+    0 20px 50px rgba(0,0,0,.7) !important;
+  animation:clkBreath 5.6s ease-in-out infinite;
+}
+/* 초 숫자도 시·분과 완전히 동일한 네온 (구형 규칙 상속 차단) */
+.clk-time .clk-d,
+.clk-time .clk-d .d-new,
+.clk-time .clk-d .d-old{
+  color:inherit !important;-webkit-text-fill-color:inherit;
+  text-shadow:inherit !important;font-weight:inherit !important}
+
+/* 숨쉬는 발광 */
+@keyframes clkBreath{
+  0%,100%{filter:brightness(1) saturate(1)}
+  50%    {filter:brightness(1.07) saturate(1.04)}
+}
+/* 꺼진 세그먼트 잔상 — 전광판 특유의 8888 배경 */
+.clk-hm::before{content:'88:88'}
+.clk-time .clk-sec::before{content:'88'}
+.clk-hm::before,.clk-time .clk-sec::before{
+  position:absolute;left:0;top:0;font:inherit;letter-spacing:inherit;white-space:pre;
+  color:rgba(255,168,60,.13) !important;-webkit-text-fill-color:rgba(255,168,60,.13);
+  -webkit-text-stroke:0;text-shadow:none !important;pointer-events:none;z-index:-1}
+/* 유리 위 반사 — 아래로 비치는 잔상 */
+.clk-hm::after{content:attr(data-t)}
+.clk-time .clk-sec::after{content:attr(data-t)}
+.clk-hm::after,.clk-time .clk-sec::after{
+  position:absolute;left:0;top:100%;font:inherit;letter-spacing:inherit;white-space:pre;
+  color:rgba(255,206,126,.34) !important;-webkit-text-fill-color:rgba(255,206,126,.34);
+  -webkit-text-stroke:0;text-shadow:0 0 8px rgba(255,190,90,.35) !important;
+  transform:scaleY(-1) translateY(2px);transform-origin:top center;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 62%);
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 62%)}
+
+.clk-colon,.clk-scolon{font-style:normal;font-family:'Share Tech Mono',monospace;
+  color:#ffdf9c !important;-webkit-text-fill-color:#ffdf9c;
+  text-shadow:0 0 1px rgba(255,250,230,1),0 0 5px rgba(255,225,155,.9),
+              0 0 12px rgba(255,190,85,.7),0 0 24px rgba(240,155,45,.45),
+              0 1px 0 rgba(0,0,0,1),0 2px 0 rgba(0,0,0,1),0 3px 0 rgba(0,0,0,.92),
+              0 6px 13px rgba(0,0,0,1),0 12px 30px rgba(0,0,0,.85) !important}
+.clk-colon{margin:0}
+.clk-scolon{font-size:16px;margin:0 3px 0 4px;line-height:1}
+
+/* 초 글리치 잔상 — 더 부드러운 페이드아웃 */
+/* 초 전환 — 옛 숫자는 위로 흩어지고 새 숫자는 아래에서 올라옴 */
+.clk-time .clk-d{position:relative;display:inline-block;text-align:center}
+.clk-time .clk-d.rolling{overflow:visible}
+.clk-time .clk-d .d-new{position:relative;display:inline-block;font-style:normal;
+  animation:secIn .62s cubic-bezier(.2,.85,.3,1) both}
+.clk-time .clk-d .d-old{position:absolute;left:0;right:0;text-align:center;font-style:normal;
+  pointer-events:none;animation:secOut .62s cubic-bezier(.3,.1,.5,1) both}
+@keyframes secIn{
+  0%  {opacity:0;  transform:translateY(.5em);  filter:blur(2.6px)}
+  40% {opacity:.85;transform:translateY(.14em); filter:blur(.9px)}
+  70% {opacity:1;  transform:translateY(0);     filter:blur(0)}
+  100%{opacity:1;  transform:translateY(0);     filter:blur(0)}
+}
+@keyframes secOut{
+  0%  {opacity:.9; transform:translateY(0);      filter:blur(0)}
+  35% {opacity:.45;transform:translateY(-.22em); filter:blur(1.4px)}
+  70% {opacity:.14;transform:translateY(-.44em); filter:blur(2.8px)}
+  100%{opacity:0;  transform:translateY(-.6em);  filter:blur(4px)}
+}
+
+/* 요일 — 토요일 파랑 · 일요일/공휴일 빨강 */
+.clk-day-sat{color:#8ab4ff !important;border-color:rgba(120,160,255,.45) !important;
+  background:rgba(120,160,255,.12) !important;text-shadow:0 1px 4px rgba(0,0,0,.85),0 0 10px rgba(120,160,255,.35) !important}
+.clk-day-sun{color:#ff8b8b !important;border-color:rgba(255,110,110,.45) !important;
+  background:rgba(255,110,110,.12) !important;text-shadow:0 1px 4px rgba(0,0,0,.85),0 0 10px rgba(255,110,110,.35) !important}
+
+@media (max-width:600px){
+  .clk-cap{gap:10px}
+  .clk-hm,.clk-time .clk-sec,.clk-scolon{font-size:13px}
+  .clk-date{font-size:11.5px}
+  .clk-brand{font-size:8.5px;letter-spacing:.2em}
+}
+@media (prefers-reduced-motion: reduce){
+  .clk-dot,.clk-colon,.clk-time .clk-d.glitch{animation:none !important}
+}
+
+/* ══ 미니 실시간 캘린더 ══ */
+/* 시계 안의 모든 i 태그 기울임 해제 */
+#liveClock i{font-style:normal !important}
+.clk-hm .hm-h,.clk-hm .hm-m{font-style:normal !important;display:inline-block}
+/* 달력 위치 기준점 (필수) */
+.nn-clock-wrap{position:relative !important;display:inline-block;pointer-events:auto}
+.clk-date{cursor:pointer;pointer-events:auto;position:relative;z-index:2;transition:color .2s,text-shadow .2s}
+.clk-date:hover{color:#ffe9b8 !important;text-shadow:0 0 10px rgba(255,206,120,.6),0 1px 4px rgba(0,0,0,.9) !important}
+.mini-cal{
+  position:fixed;left:0;top:0;z-index:2000000;width:236px;
+  background:linear-gradient(165deg,rgba(20,17,14,.58),rgba(10,9,8,.52));
+  -webkit-backdrop-filter:blur(20px) saturate(1.2);backdrop-filter:blur(20px) saturate(1.2);
+  border:1px solid rgba(201,169,110,.32);border-radius:14px;padding:13px 14px 11px;
+  box-shadow:0 24px 60px -18px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06);
+  opacity:0;visibility:hidden;transform:translateY(-6px) scale(.97);transform-origin:top left;
+  transition:opacity .22s ease,transform .26s cubic-bezier(.22,1,.36,1),visibility .22s;
+  pointer-events:none}
+.mini-cal.on{opacity:1;visibility:visible;transform:translateY(0) scale(1);pointer-events:auto}
+.mini-cal.pinned{border-color:rgba(201,169,110,.55);box-shadow:0 24px 60px -18px rgba(0,0,0,.95),0 0 22px -6px rgba(201,169,110,.45),inset 0 1px 0 rgba(255,255,255,.08)}
+.mc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:9px;
+  border-bottom:1px solid rgba(201,169,110,.2)}
+.mc-title{display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.mc-mon{font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;color:#f0d9a8}
+.mc-year{font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:500;color:rgba(255,255,255,.42);letter-spacing:.08em}
+.mc-nav{width:22px;height:22px;border-radius:6px;border:1px solid rgba(201,169,110,.26);
+  background:rgba(201,169,110,.08);color:rgba(232,203,146,.9);cursor:pointer;font-size:13px;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:.16s;padding:0}
+.mc-nav:hover{background:rgba(201,169,110,.2);border-color:rgba(201,169,110,.55);color:#fff1cf}
+.mc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.mc-dow{font-family:'Orbitron',sans-serif;font-size:8px;font-weight:700;letter-spacing:.04em;
+  color:rgba(255,255,255,.34);text-align:center;padding:2px 0 5px}
+.mc-dow.mc-sat{color:rgba(138,180,255,.65)}
+.mc-dow.mc-sun{color:rgba(255,139,139,.65)}
+.mc-cell{font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:500;text-align:center;
+  color:rgba(255,255,255,.72);padding:4.5px 0;border-radius:6px;font-variant-numeric:tabular-nums;
+  transition:background .15s,color .15s}
+.mc-cell:not(.mc-empty):hover{background:rgba(255,255,255,.07);color:#fff}
+.mc-cell.mc-sat{color:#8ab4ff}
+.mc-cell.mc-sun{color:#ff8b8b}
+.mc-cell.mc-empty{visibility:hidden}
+.mc-cell.mc-today{background:linear-gradient(145deg,rgba(201,169,110,.34),rgba(201,169,110,.16));
+  color:#fff6df !important;font-weight:700;
+  box-shadow:inset 0 0 0 1px rgba(232,203,146,.55),0 0 12px -3px rgba(201,169,110,.6)}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:9px;
+  border-top:1px solid rgba(201,169,110,.2)}
+.mc-live{display:inline-flex;align-items:center;gap:5px;font-family:'Orbitron',sans-serif;
+  font-size:8px;font-weight:700;letter-spacing:.16em;color:rgba(232,203,146,.85)}
+.mc-live i{width:4px;height:4px;border-radius:50%;background:#3ddc84;
+  box-shadow:0 0 6px rgba(61,220,132,.9);animation:liveFxBlink 1.6s ease-in-out infinite}
+.mc-now{font-family:'Pretendard',sans-serif;font-size:9.5px;color:rgba(255,255,255,.5);
+  font-variant-numeric:tabular-nums;letter-spacing:.03em}
+@media (max-width:600px){ .mini-cal{width:214px;padding:11px 12px 9px} }
 </style>
 
 <div id="masterTooltip"></div>
@@ -9529,9 +10199,133 @@ html.bg-js body::before{ background:transparent !important; }
   function save(a){ try{ localStorage.setItem(HUB_KEY, JSON.stringify(a)); }catch(e){} }
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  /* ══════════ HOLDINGS HUB — 스테이지 (검은 캔버스 · 성좌 배치 · 호버 확장) ══════════ */
+  /* 중앙 텍스트 영역(x 30~70 / y 33~67)을 피해 배치 */
+  var HUB_POS=[
+    [11,17],[21,29],[7,44],[16,57],[25,70],[13,84],
+    [75,16],[87,28],[79,43],[91,57],[73,71],[86,83],
+    [40,9],[59,7],[34,89],[57,91]
+  ];
+  var HUB_ANCH=[[16,45],[84,45],[50,10],[50,90]];
+  function hubClusterOf(p){
+    if(p[1]<14) return 2;
+    if(p[1]>86) return 3;
+    return p[0]<50 ? 0 : 1;
+  }
+  function removeStage(sec){ if(!sec) return; var st=sec.querySelector('.hub-stage'); if(st) st.remove(); }
+
+  function buildStage(sec, data){
+    if(!sec) return;
+    removeStage(sec);
+    var stage=document.createElement('div');
+    stage.className='hub-stage';
+
+    /* 연결선 */
+    /* 카드별 위치: 사용자가 지정했으면 그 값, 없으면 기본 슬롯 순환 */
+    function posOf(c,i){
+      if(c && c.px!=null && c.py!=null) return [c.px, c.py];
+      return HUB_POS[i % HUB_POS.length];
+    }
+    var lines='';
+    for(var i=0;i<data.length;i++){
+      var p=posOf(data[i],i), a=HUB_ANCH[hubClusterOf(p)];
+      lines+='<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+a[0]+'" y2="'+a[1]+'" style="--i:'+i+'"/>';
+    }
+    /* 좌·우 앵커만 중앙 카피 쪽으로 연결 (글씨 앞에서 멈춤) · 상·하는 세로선이 글씨를 관통해 제외 */
+    lines+='<line class="hl-core" x1="'+HUB_ANCH[0][0]+'" y1="'+HUB_ANCH[0][1]+'" x2="29" y2="49" style="--i:9"/>';
+    lines+='<line class="hl-core" x1="'+HUB_ANCH[1][0]+'" y1="'+HUB_ANCH[1][1]+'" x2="71" y2="49" style="--i:11"/>';
+
+    /* 중앙 카피 */
+    var center=''
+      + '<div class="hub-center">'
+      +   '<div class="hub-eyebrow">HOLDINGS HUB</div>'
+      +   '<h2 class="hub-headline">The companies<br/>I actually own.</h2>'
+      +   '<p class="hub-lede">Every position in my portfolio — their official sites, filings, and stories, one hover away.</p>'
+      +   '<p class="hub-lede-kr">카드에 마우스를 올리면 펼쳐지고, 클릭하면 공식 홈페이지로 이동합니다.</p>'
+      + '</div>';
+
+    /* 노드(축소 카드) */
+    var nodes='';
+    for(var n=0;n<data.length;n++){
+      var c=data[n], pos=posOf(c,n);
+      var side = pos[0]<50 ? 'r' : 'l';                 /* 팝업은 항상 좌/우로 (브릿지 정렬) */
+      var vert = pos[1]<34 ? 'vt' : (pos[1]>66 ? 'vb' : 'vm');  /* 세로는 정렬만 */
+      var thumb = c.bg
+        ? '<span class="hn-img" style="background-image:url(\'' + esc(c.bg) + '\')"></span>'
+        : '<span class="hn-img hn-img-plain"></span>';
+      var mini = c.dom
+        ? '<img class="hn-logo" src="https://www.google.com/s2/favicons?domain='+esc(c.dom)+'&sz=64" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+        : '';
+      var logoBig = c.dom ? '<img src="https://unavatar.io/'+esc(c.dom)+'?fallback=false" alt="" onerror="if(!this.__f){this.__f=1;this.src=\'https://www.google.com/s2/favicons?domain='+esc(c.dom)+'&sz=128\';}else{this.style.display=\'none\';}">' : '';
+      var bgs = c.bg ? 'background-image:url(\'' + esc(c.bg) + '\')' : '';
+      var cvar = c.color ? '--comp-hi:'+esc(c.color)+';' : '';
+      nodes+='<div class="hub-node hn-'+side+' hn-'+vert+'" style="left:'+pos[0]+'%;top:'+pos[1]+'%;'+cvar+'--d:'+(n*0.42).toFixed(2)+'s;--dur:'+(8+(n%6)*1.4).toFixed(1)+'s" data-i="'+n+'">'
+        + '<div class="hn-tile">'+thumb+mini+'</div>'
+        + '<div class="hn-name">'+esc(c.name)+'</div>'
+        + '<div class="hn-pop">'
+        +   '<div class="comp-card is-visible">'
+        +     '<div class="comp-bg" style="'+bgs+'"></div>'
+        +     '<div class="comp-logo">'+logoBig+'</div>'
+        +     '<div class="comp-content">'
+        +       '<div class="comp-tag">'+esc(c.tag)+'</div>'
+        +       '<div class="comp-name">'+esc(c.name)+'</div>'
+        +       '<div class="comp-desc">'+esc(c.desc)+'</div>'
+        +       '<a href="'+esc(c.url)+'" target="_blank" rel="noopener" class="comp-btn">홈페이지 <span class="cb-arrow">&#10142;</span></a>'
+        +     '</div>'
+        +   '</div>'
+        + '</div>'
+        + '</div>';
+    }
+
+    stage.innerHTML='<svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">'+lines+'</svg>'+center+nodes;
+    var gridEl=sec.querySelector('.company-grid');
+    if(gridEl) sec.insertBefore(stage, gridEl); else sec.appendChild(stage);
+    initHubExpand(sec);
+  }
+
+  /* ── 스크롤 단계 확장: 안쪽 라운드 박스 → 화면 가득 (Anthropic 방식) ── */
+  function initHubExpand(sec){
+    if(sec.__expandBound) return;
+    sec.__expandBound=true;
+    var raf=null;
+    var curStep=-1;
+    function apply(){
+      raf=null;
+      var r=sec.getBoundingClientRect(), vh=window.innerHeight||800, vw=window.innerWidth||1200;
+      var p=1-(r.top-vh*0.02)/(vh*0.78);
+      p=Math.max(0,Math.min(1,p));
+      /* 딱 2번에 걸쳐 확장: 0단계(기본) → 1단계 → 2단계(가득) · 히스테리시스로 떨림 방지 */
+      var step=curStep<0?0:curStep;
+      if(p>0.30) step=Math.max(step,1);
+      if(p<0.22) step=Math.min(step,0);
+      if(p>0.62) step=2;
+      if(p<0.52) step=Math.min(step,1);
+      if(step===curStep) return;
+      curStep=step;
+      var W=[Math.min(1080,vw-72), Math.min(1240,vw-40), vw];
+      var R=[30,18,0], PX=[24,44,64];
+      sec.style.setProperty('width',W[step].toFixed(0)+'px','important');
+      sec.style.setProperty('max-width','none','important');
+      sec.style.setProperty('border-radius',R[step]+'px','important');
+      sec.style.setProperty('padding-left',PX[step]+'px','important');
+      sec.style.setProperty('padding-right',PX[step]+'px','important');
+      sec.style.setProperty('--hubP', step===0?'0':(step===1?'0.6':'1'));
+      sec.classList.remove('hub-step-0','hub-step-1','hub-step-2');
+      sec.classList.add('hub-step-'+step);
+    }
+    function onScroll(){ if(!raf) raf=requestAnimationFrame(apply); }
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll);
+    apply();
+  }
+
   function render(){
     var grid=document.getElementById('hubGrid'); if(!grid) return;
     var data=load();
+    var sec=grid.closest('.company-section');
+    if(sec){ sec.classList.add('hub-section'); sec.classList.toggle('hub-editing-mode', !!hubEdit); }
+    if(!hubEdit){ grid.innerHTML=''; buildStage(sec, data); return; }
+    removeStage(sec);
     var h='';
     for(var i=0;i<data.length;i++){
       var c=data[i];
@@ -9676,6 +10470,13 @@ html.bg-js body::before{ background:transparent !important; }
       +   ['#ff4444','#9cf500','#33ffcc','#ffffff','#66f0ff','#73a5ff','#be9eff','#ff9e80','#ffd24a','#4ae0a8'].map(function(col){ return '<button type="button" class="hm-sw'+(c.color===col?' sel':'')+'" data-col="'+col+'" style="background:'+col+'"></button>'; }).join('')
       +   '<input type="color" class="hm-color-pick" id="hmColorPick" value="'+(c.color&&/^#[0-9a-fA-F]{6}$/.test(c.color)?c.color:'#c9a96e')+'">'
       +'</div>'
+      +'<label class="hm-lb">스테이지 위치 <span class="hm-hint">(비우면 자동 배치 · 0~100 %)</span></label>'
+      +'<div class="hm-pos-row">'
+      +   '<span class="hm-pos-lb">가로 X</span><input class="hm-in hm-pos" id="hmPx" type="number" min="0" max="100" value="'+(c.px!=null?c.px:'')+'" placeholder="자동">'
+      +   '<span class="hm-pos-lb">세로 Y</span><input class="hm-in hm-pos" id="hmPy" type="number" min="0" max="100" value="'+(c.py!=null?c.py:'')+'" placeholder="자동">'
+      +'</div>'
+      +'<div class="hm-pos-hint">가운데 글씨 영역(가로 30~70 · 세로 33~67)은 피해서 지정하세요.</div>'
+      +'<div class="nn-storage-bar" style="margin-top:10px"></div>'
       +'<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button><button type="button" class="hm-btn hm-save">저장</button></div>'
       +'</div>';
     document.body.appendChild(ov);
@@ -9690,13 +10491,17 @@ html.bg-js body::before{ background:transparent !important; }
     });
     ov.querySelector('#hmColorPick').oninput=function(){ selColor=this.value; swRow.querySelectorAll('.hm-sw').forEach(function(x){x.classList.remove('sel');}); };
     ov.querySelector('.hm-save').onclick=function(){
-      var nc={ name:ov.querySelector('#hmName').value.trim(), tag:ov.querySelector('#hmTag').value.trim(), desc:ov.querySelector('#hmDesc').value.trim(), url:ov.querySelector('#hmUrl').value.trim(), dom:ov.querySelector('#hmDom').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,''), bg:ov.querySelector('#hmBg').value.trim(), color:selColor };
+      var __bg=(ov.querySelector('#hmBg').value||'').trim();
+      if(__bg && window.__nnCheckImgUrl){ var __c=window.__nnCheckImgUrl(__bg); if(!__c.ok) return; __bg=__c.url; }
+      function __num(el){ var v=(el&&el.value||'').trim(); if(v==='') return null; var n=parseFloat(v); return isNaN(n)?null:Math.max(0,Math.min(100,n)); }
+      var nc={ name:ov.querySelector('#hmName').value.trim(), tag:ov.querySelector('#hmTag').value.trim(), desc:ov.querySelector('#hmDesc').value.trim(), url:ov.querySelector('#hmUrl').value.trim(), dom:ov.querySelector('#hmDom').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,''), bg:__bg, color:selColor,
+        px:__num(ov.querySelector('#hmPx')), py:__num(ov.querySelector('#hmPy')) };
       if(!nc.name){ alert('기업명을 입력하세요.'); return; }
       var d=load();
       if(idx>=0) d[idx]=nc; else d.push(nc);
       save(d); close(); render();
     };
-    requestAnimationFrame(function(){ ov.classList.add('show'); ov.querySelector('#hmName').focus(); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); ov.querySelector('#hmName').focus(); });
   }
 
   /* 초기 렌더 + 클라우드 복원 후 재렌더 대응 */
@@ -9708,6 +10513,27 @@ html.bg-js body::before{ background:transparent !important; }
 /* ══════════ REFERENCE DESK — 편집 가능 (레인·칩 추가·수정·삭제·드래그, 클라우드 동기화) ══════════ */
 (function(){
   var RD_KEY='nn_refdesk_v1';
+  /* 1회 마이그레이션: REAL ESTATE 레인에 재산세 계산기 추가 */
+  (function(){
+    try{
+      if(localStorage.getItem('nn_rd_mig_tax')==='1') return;
+      var raw=localStorage.getItem(RD_KEY);
+      if(raw){
+        var l=JSON.parse(raw);
+        if(Array.isArray(l)){
+          var lane=l.find(function(x){ return String(x.label||'').toUpperCase().indexOf('REAL')>=0; });
+          if(lane && Array.isArray(lane.chips)){
+            var exists=lane.chips.some(function(c){ return String(c.url||'').indexOf('xn--989a00a691bdfa717h')>=0; });
+            if(!exists){
+              lane.chips.push({url:'https://xn--989a00a691bdfa717h.com/%EC%9E%AC%EC%82%B0%EC%84%B8%EA%B3%84%EC%82%B0%EA%B8%B0',name:'재산세 계산기',desc:'주택 · 토지 · 상가 세액'});
+              localStorage.setItem(RD_KEY, JSON.stringify(l));
+            }
+          }
+        }
+      }
+      localStorage.setItem('nn_rd_mig_tax','1');
+    }catch(e){}
+  })();
   var RD_SEED=[
     {label:'EQUITY',chips:[
       {url:'https://www.google.com/finance/beta',name:'Google Finance',desc:'글로벌 시세 플랫폼'},
@@ -9738,6 +10564,7 @@ html.bg-js body::before{ background:transparent !important; }
       {url:'https://land.naver.com/',name:'네이버 부동산',desc:'실거래가 · 시세'},
       {url:'https://kbland.kr/',name:'KB부동산',desc:'매물 통계 · 시세'},
       {url:'https://asil.kr/',name:'아실',desc:'아파트 빅데이터 분석'},
+      {url:'https://xn--989a00a691bdfa717h.com/%EC%9E%AC%EC%82%B0%EC%84%B8%EA%B3%84%EC%82%B0%EA%B8%B0',name:'재산세 계산기',desc:'주택 · 토지 · 상가 세액'},
     ]},
     {label:'MACRO',chips:[
       {url:'https://www.saveticker.com/login',name:'오선 Save',desc:'실시간 뉴스'},
@@ -9798,6 +10625,22 @@ html.bg-js body::before{ background:transparent !important; }
     if(rdEdit){ h+='<button type="button" class="rd-add-lane" onclick="window.rdAddLane()">＋ 카테고리 추가</button>'; }
     host.innerHTML=h;
     if(rdEdit) bindDrag(host);
+    observeLanes(host);
+  }
+
+  /* 레인이 화면에 들어오면 칩들이 순차적으로 떠오르며 등장 */
+  function observeLanes(host){
+    var lanes=host.querySelectorAll('.ref-lane');
+    if(!('IntersectionObserver' in window)){ lanes.forEach(function(l){ l.classList.add('rl-in'); l.querySelectorAll('.ref-chip').forEach(function(ch){ ch.classList.add('rc-done'); }); }); return; }
+    function markDone(lane){
+      setTimeout(function(){
+        lane.querySelectorAll('.ref-chip').forEach(function(ch){ ch.classList.add('rc-done'); });
+      }, 780);
+    }
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('rl-in'); markDone(e.target); io.unobserve(e.target); } });
+    },{root:null,rootMargin:'0px 0px -8% 0px',threshold:0.15});
+    lanes.forEach(function(l){ io.observe(l); });
   }
 
   function bindDrag(host){
@@ -9878,6 +10721,7 @@ html.bg-js body::before{ background:transparent !important; }
       +'<label class="hm-lb">이름</label><input class="hm-in" id="rcName" value="'+esc(c.name)+'" placeholder="예: Yahoo Finance">'
       +'<label class="hm-lb">설명</label><input class="hm-in" id="rcDesc" value="'+esc(c.desc)+'" placeholder="예: 글로벌 시세 플랫폼">'
       +'<label class="hm-lb">URL</label><input class="hm-in" id="rcUrl" value="'+esc(c.url)+'" placeholder="https://...">'
+      +'<div class="nn-storage-bar" style="margin-top:10px"></div>'
       +'<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button><button type="button" class="hm-btn hm-save">저장</button></div>'
       +'</div>';
     document.body.appendChild(ov);
@@ -9889,7 +10733,7 @@ html.bg-js body::before{ background:transparent !important; }
       if(!nc.name){ alert('이름을 입력하세요.'); return; }
       var dd=load(); if(idx>=0) dd[lane].chips[idx]=nc; else dd[lane].chips.push(nc); save(dd); close(); render();
     };
-    requestAnimationFrame(function(){ ov.classList.add('show'); ov.querySelector('#rcName').focus(); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); ov.querySelector('#rcName').focus(); });
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',render); else render();
@@ -9905,8 +10749,7 @@ html.bg-js body::before{ background:transparent !important; }
     {id:'bg5',     name:'Ocean View',             url:'https://i.postimg.cc/905r3QvP/pexels-doruqpasha-38023373.jpg'},
     {id:'bg3',     name:'Trading Room',           url:'https://i.postimg.cc/kgnRXDDf/pexels-thales13-38412413.jpg'},
     {id:'bg4',     name:'Seoul',                  url:'https://i.postimg.cc/hGYXrrsC/pexels-henry-acevedo-382866382-37581230.jpg'},
-    {id:'times',   name:'Times Square Night',     url:'https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg'},
-    {id:'bg6',     name:'New York Night Skyline', url:'https://i.postimg.cc/5NJ6njBm/pexels-pixabay-358382.jpg'}
+    {id:'times',   name:'Times Square Night',     url:'https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg'}
   ];
   function loadList(){
     try{ var s=localStorage.getItem(LIST_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)&&a.length) return a; } }catch(e){}
@@ -10009,6 +10852,47 @@ html.bg-js body::before{ background:transparent !important; }
   }
   function setAuto(mode){ try{ localStorage.setItem(AUTO_KEY,mode); }catch(e){} setupAuto(); renderMenu(); }
 
+  /* ── 배경 추가 모달 (구식 prompt 대체) ── */
+  function openAddBgModal(){
+    var prev=document.getElementById('bgAddModal'); if(prev) prev.remove();
+    var ov=document.createElement('div'); ov.id='bgAddModal'; ov.className='bga-ov';
+    ov.innerHTML='<div class="bga-card">'
+      +'<div class="bga-head"><span class="bga-ic">🖼</span><div><div class="bga-title">배경화면 추가</div>'
+      +'<div class="bga-sub">이미지 주소를 붙여넣으면 미리보기가 표시됩니다</div></div></div>'
+      +'<div class="bga-prev" id="bgaPrev"><span class="bga-prev-ph">미리보기</span></div>'
+      +'<label class="bga-lb">이미지 주소 (URL)</label>'
+      +'<input class="bga-in" id="bgaUrl" placeholder="https://i.postimg.cc/…jpg" autocomplete="off">'
+      +'<label class="bga-lb" style="margin-top:11px">이름</label>'
+      +'<input class="bga-in" id="bgaName" placeholder="내 배경" autocomplete="off">'
+      +'<div class="bga-hint">캡처 이미지는 <b>postimg.cc</b> 등에 올린 뒤 <b>직접 링크</b>를 붙여넣으세요.</div>'
+      +'<div class="bga-btns"><button type="button" class="bga-btn bga-cancel">취소</button>'
+      +'<button type="button" class="bga-btn bga-save">추가</button></div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    var uIn=ov.querySelector('#bgaUrl'), nIn=ov.querySelector('#bgaName'), pv=ov.querySelector('#bgaPrev');
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
+    uIn.oninput=function(){
+      var v=this.value.trim();
+      if(v){ pv.innerHTML='<img src="'+v.replace(/"/g,'&quot;')+'" alt="" onerror="this.parentNode.innerHTML=\'<span class=&quot;bga-prev-err&quot;>이미지를 불러올 수 없어요</span>\'">'; }
+      else { pv.innerHTML='<span class="bga-prev-ph">미리보기</span>'; }
+    };
+    function submit(){
+      var url=(uIn.value||'').trim();
+      if(!url){ if(window.__nnToast) window.__nnToast('이미지 주소를 입력해 주세요',{kind:'del'}); uIn.focus(); return; }
+      if(window.__nnCheckImgUrl){ var c=window.__nnCheckImgUrl(url); if(!c.ok) return; url=c.url; }
+      var name=(nIn.value||'').trim()||'내 배경';
+      var l=loadList();
+      l.push({id:'user_'+Date.now(), name:name, url:url});
+      saveList(l); renderMenu(); close();
+      if(window.__nnToast) window.__nnToast('✓ "'+name+'" 배경이 추가되었습니다');
+    }
+    ov.querySelector('.bga-cancel').onclick=close;
+    ov.querySelector('.bga-save').onclick=submit;
+    ov.onclick=function(e){ if(e.target===ov) close(); };
+    ov.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); submit(); } if(e.key==='Escape') close(); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); uIn.focus(); });
+  }
+
   function build(){
     initBg(); /* DOM 준비 후 최초 배경 페이드인 */
     var menu=document.createElement('div');
@@ -10017,7 +10901,15 @@ html.bg-js body::before{ background:transparent !important; }
     renderMenu();
     var btn=document.getElementById('bgSwitchBtn');
     if(btn) btn.onclick=function(e){ e.stopPropagation(); var m=document.getElementById('bgSwitchMenu');
-      if(m){ if(!m.classList.contains('show')){ var r=btn.getBoundingClientRect(); m.style.left=Math.max(10,Math.min(r.left, window.innerWidth-280))+'px'; m.style.top=(r.bottom+10)+'px'; } m.classList.toggle('show'); } };
+      if(m){ if(!m.classList.contains('show')){
+        var r=btn.getBoundingClientRect();
+        var txt=btn.querySelector('.bgn-txt');
+        var tr=(txt && txt.offsetWidth) ? txt.getBoundingClientRect() : r;   /* BACKDROP 글씨 기준 */
+        var anchor=tr.left + tr.width/2;                                      /* 글씨 중심 */
+        var mw=m.offsetWidth||264;
+        m.style.left=Math.max(10, Math.min(anchor - mw/2, window.innerWidth - mw - 10))+'px';
+        m.style.top=(r.bottom+10)+'px';
+      } m.classList.toggle('show'); } };
     document.addEventListener('click',function(e){ var m=document.getElementById('bgSwitchMenu'); if(m && m.classList.contains('show') && !m.contains(e.target) && e.target.id!=='bgSwitchBtn' && !e.target.closest('#bgSwitchBtn')){ m.classList.remove('show'); } });
   }
 
@@ -10070,16 +10962,7 @@ html.bg-js body::before{ background:transparent !important; }
     });
     /* 추가 */
     var add=menu.querySelector('#bgmAdd');
-    if(add) add.onclick=function(e){ e.stopPropagation();
-      var url=prompt('배경 이미지 URL을 붙여넣으세요 (https://…jpg/png):','');
-      if(url===null) return; url=url.trim(); if(!url) return;
-      var name=prompt('이 배경의 이름:','내 배경');
-      if(name===null) return; name=(name.trim()||'내 배경');
-      var l=loadList();
-      l.push({id:'user_'+Date.now(), name:name, url:url});
-      saveList(l); renderMenu();
-      if(window.__nnToast) window.__nnToast('✓ 배경이 추가되었습니다');
-    };
+    if(add) add.onclick=function(e){ e.stopPropagation(); openAddBgModal(); };
     /* 자동 전환 옵션 */
     menu.querySelectorAll('.bgm-auto-opt').forEach(function(b){
       b.onclick=function(e){ e.stopPropagation(); setAuto(b.getAttribute('data-mode'));
@@ -10104,6 +10987,21 @@ html.bg-js body::before{ background:transparent !important; }
         }
       }
       localStorage.setItem('nn_bg_mig_v2','1');
+    }catch(e){}
+    /* v3: 기본 배경 'New York Night Skyline' 제거 */
+    try{
+      if(localStorage.getItem('nn_bg_mig_v3')!=='1'){
+        var raw3=localStorage.getItem(LIST_KEY);
+        if(raw3){
+          var l3=JSON.parse(raw3);
+          if(Array.isArray(l3)){
+            var f3=l3.filter(function(b){ return b.id!=='bg6' && String(b.name||'').replace(/\s+/g,'')!=='NewYorkNightSkyline'; });
+            if(f3.length) localStorage.setItem(LIST_KEY, JSON.stringify(f3));
+            if(localStorage.getItem(CUR_KEY)==='bg6' && f3.length) localStorage.setItem(CUR_KEY, f3[0].id);
+          }
+        }
+        localStorage.setItem('nn_bg_mig_v3','1');
+      }
     }catch(e){}
   })();
   initBg();
@@ -10301,7 +11199,7 @@ html.bg-js body::before{ background:transparent !important; }
       d.push({market:market, sym:sym}); save(d); close(); render();
       if(window.__nnToast) window.__nnToast('✓ "'+sym.toUpperCase()+'" 추가됨');
     };
-    requestAnimationFrame(function(){ ov.classList.add('show'); sIn.focus(); });
+    requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); sIn.focus(); });
     inp.addEventListener('keydown',function(e){ if(e.key==='Enter') ov.querySelector('.hm-save').click(); });
   };
 
