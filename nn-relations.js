@@ -163,7 +163,7 @@
     return n;
   }
 
-  /* ── 연결 가능한 대상 목록 (선택 UI용) ──────────────── */
+  /* ── 이을 수 있는 대상 목록 (선택 UI용) ──────────────── */
   function candidates(excludeRef){
     var out = [];
     var k = window.KnowledgeNotes;
@@ -234,7 +234,7 @@
 })();
 
 /* ══════════════════════════════════════════════════════════════════════
-   연결 UI — 편집 화면의 "연결" 패널 + 대상 고르기 창
+   맥락 UI — 편집 화면의 "맥락" 패널 + 대상 고르기 창
    ══════════════════════════════════════════════════════════════════════ */
 (function(){
   'use strict';
@@ -244,7 +244,7 @@
   function esc(x){ return String(x==null?'':x)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-  /* ── 편집 화면에 붙는 연결 패널 ── */
+  /* ── 편집 화면에 붙는 맥락 패널 ── */
   function buildPanel(ref){
     var wrap = document.createElement('div');
     wrap.className = 'rl-panel';
@@ -256,9 +256,9 @@
   function paint(wrap, ref){
     var list = R.of(ref);
     var h = '<div class="rl-head">'
-          + '<span class="rl-title">연결</span>'
+          + '<span class="rl-eyebrow">THREAD</span><span class="rl-title">맥락</span>'
           + (list.length ? '<span class="rl-n">' + list.length + '</span>' : '')
-          + '<button type="button" class="rl-add">＋ 연결 추가</button>'
+          + '<button type="button" class="rl-add">＋ 맥락 잇기</button>'
           + '</div>';
 
     if(!list.length){
@@ -267,22 +267,31 @@
       if(!seen){
         /* 처음 보는 사람을 위한 설명 — 한 번 닫으면 다시 안 뜬다 */
         h += '<div class="rl-intro">'
-          +   '<div class="rl-i-t">연결이란?</div>'
-          +   '<div class="rl-i-d">읽은 책이 어떤 생각으로, 그 생각이 어떤 종목으로 이어졌는지 '
-          +     '<b>직접 이어 두는 기능</b>입니다. 자동으로 판단하지 않고, 지정한 것만 기록됩니다.</div>'
-          +   '<div class="rl-i-ex">'
-          +     '<span class="rl-i-step"><i style="background:#c9a96e"></i>BOOKS<em>돈의 심리학</em></span>'
-          +     '<span class="rl-i-ar">→</span>'
-          +     '<span class="rl-i-step"><i style="background:#e0709c"></i>생각의 기록<em>장기 복리 원칙</em></span>'
-          +     '<span class="rl-i-ar">→</span>'
-          +     '<span class="rl-i-step"><i style="background:#b28ad4"></i>보유<em>VOO</em></span>'
+          +   '<div class="rl-i-t">맥락이란?</div>'
+          +   '<div class="rl-i-d">한 권의 책이 어떤 생각을 남겼고, 그 생각이 어떤 판단으로 이어져 '
+          +     '결국 어떤 자산이 되었는지 — <b>그 갈래를 직접 이어 두는 기능</b>입니다.<br>'
+          +     '시스템이 추측하지 않습니다. 이어 둔 것만 남습니다.</div>'
+          +   '<div class="rl-i-flow">'
+          +     '<div class="rl-i-node"><i style="background:#c9a96e"></i>'
+          +       '<span class="rl-i-k">읽는다</span><span class="rl-i-v">돈의 심리학</span></div>'
+          +     '<div class="rl-i-line"></div>'
+          +     '<div class="rl-i-node"><i style="background:#e0709c"></i>'
+          +       '<span class="rl-i-k">생각한다</span><span class="rl-i-v">시간이 가장 큰 변수다</span></div>'
+          +     '<div class="rl-i-line"></div>'
+          +     '<div class="rl-i-node"><i style="background:#8fb98f"></i>'
+          +       '<span class="rl-i-k">확인한다</span><span class="rl-i-v">72의 법칙</span></div>'
+          +     '<div class="rl-i-line"></div>'
+          +     '<div class="rl-i-node"><i style="background:#b28ad4"></i>'
+          +       '<span class="rl-i-k">보유한다</span><span class="rl-i-v">장기 인덱스</span></div>'
           +   '</div>'
-          +   '<div class="rl-i-f">이렇게 이어 두면 몇 년 뒤에도 '
-          +     '<b>“나는 왜 이걸 샀지?”</b>에 답할 수 있습니다.'
-          +     '<button type="button" class="rl-i-x">알겠습니다</button></div>'
+          +   '<div class="rl-i-f">'
+          +     '<span class="rl-i-q">3년 뒤 “나는 왜 이걸 샀지?”라고 물었을 때, '
+          +     '이 갈래를 거슬러 올라가면 답이 나옵니다.</span>'
+          +     '<button type="button" class="rl-i-x">알겠습니다</button>'
+          +   '</div>'
           + '</div>';
       } else {
-        h += '<div class="rl-empty">이 기록과 이어지는 책·생각·종목을 연결해 두면, '
+        h += '<div class="rl-empty">이 기록에서 뻗어 나가는 갈래를 이어 두면, '
            + '나중에 <b>“나는 왜 이렇게 판단했는가”</b>를 되짚을 수 있습니다.</div>';
       }
     } else {
@@ -292,14 +301,32 @@
              + '<span class="rl-lb" style="color:' + esc(x.target.color) + '">' + esc(x.target.label) + '</span>'
              + '<span class="rl-t">' + esc(x.target.title) + '</span>'
              + (x.memo ? '<span class="rl-memo' + (/^예시/.test(x.memo) ? ' ex' : '') + '">' + esc(x.memo) + '</span>' : '')
-             + '<button type="button" class="rl-x" title="연결 끊기">✕</button>'
+             + '<button type="button" class="rl-x" title="맥락 끊기">✕</button>'
              + '</div>';
       }).join('') + '</div>';
+      if(list.some(function(x){ return /^예시/.test(x.memo||''); })){
+        h += '<button type="button" class="rl-clear">예시 갈래·페이지 정리하기</button>';
+      }
     }
     wrap.innerHTML = h;
 
     var addBtn = wrap.querySelector('.rl-add');
     if(addBtn) addBtn.onclick = function(){ openPicker(ref, function(){ paint(wrap, ref); }); };
+
+    var clearB = wrap.querySelector('.rl-clear');
+    if(clearB) clearB.onclick = function(){
+      var run = function(){
+        var n = window.__nnRelClearExamples ? window.__nnRelClearExamples() : 0;
+        paint(wrap, ref);
+        if(window.__nnToast) window.__nnToast('예시를 정리했습니다 · ' + n + '개 항목');
+      };
+      if(window.__nnConfirm) window.__nnConfirm({
+        title:'예시를 지울까요?',
+        msg:'[예시] 표기가 붙은 페이지와 갈래를 함께 지웁니다. 직접 만드신 기록은 그대로 남습니다.',
+        ok:'정리', onOk:run
+      });
+      else run();
+    };
 
     var introX = wrap.querySelector('.rl-i-x');
     if(introX) introX.onclick = function(){
@@ -321,7 +348,7 @@
         var id = el.getAttribute('data-id');
         var gone = R.remove(id);
         paint(wrap, ref);
-        if(gone && window.__nnToast) window.__nnToast('연결을 끊었습니다', {kind:'del', undo:function(){
+        if(gone && window.__nnToast) window.__nnToast('맥락을 끊었습니다', {kind:'del', undo:function(){
           R.add(gone.from, gone.to, gone.memo); paint(wrap, ref);
         }});
       };
@@ -336,14 +363,14 @@
     var ov = document.createElement('div');
     ov.id = 'rlOv'; ov.className = 'hub-modal-ov';
     ov.innerHTML = '<div class="hub-modal rl-modal">'
-      + '<div class="hm-title">무엇과 연결할까요?</div>'
-      + '<div class="rl-hint">이 기록과 이어지는 대상을 고르세요. 연결은 직접 지정한 것만 저장됩니다.</div>'
+      + '<div class="hm-title">무엇과 이을까요?</div>'
+      + '<div class="rl-hint">이 기록에서 뻗어 나가는 갈래를 고르세요. 직접 이은 것만 기록됩니다.</div>'
       + '<input class="hm-in rl-search" id="rlSearch" placeholder="제목 · 종목으로 찾기" autocomplete="off">'
       + '<div class="rl-cands" id="rlCands"></div>'
-      + '<label class="hm-lb" style="margin-top:12px">메모 <span class="hm-hint">(선택 · 왜 연결했는지)</span></label>'
+      + '<label class="hm-lb" style="margin-top:12px">메모 <span class="hm-hint">(선택 · 왜 이었는지)</span></label>'
       + '<input class="hm-in" id="rlMemo" placeholder="예: 이 책의 복리 개념에서 출발" maxlength="60" autocomplete="off">'
       + '<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button>'
-      + '<button type="button" class="hm-btn hm-save" id="rlOk" disabled>연결</button></div></div>';
+      + '<button type="button" class="hm-btn hm-save" id="rlOk" disabled>잇기</button></div></div>';
     document.body.appendChild(ov);
 
     var picked = null;
@@ -360,7 +387,7 @@
       q = (q||'').trim().toLowerCase();
       var list = q ? all.filter(function(x){ return x.search.indexOf(q) >= 0; }) : all;
       if(!list.length){
-        box.innerHTML = '<div class="rl-none">' + (q ? '찾는 대상이 없습니다.' : '연결할 수 있는 기록이 아직 없습니다.') + '</div>';
+        box.innerHTML = '<div class="rl-none">' + (q ? '찾는 대상이 없습니다.' : '이을 수 있는 기록이 아직 없습니다.') + '</div>';
         return;
       }
       box.innerHTML = list.slice(0, 60).map(function(x){
@@ -371,7 +398,7 @@
              + '<span class="rl-dot" style="background:' + esc(x.color) + '"></span>'
              + '<span class="rl-c-lb" style="color:' + esc(x.color) + '">' + esc(x.label) + '</span>'
              + '<span class="rl-c-t">' + esc(x.title) + '</span>'
-             + (already ? '<span class="rl-c-done">연결됨</span>' : '')
+             + (already ? '<span class="rl-c-done">이어짐</span>' : '')
              + '</button>';
       }).join('');
       box.querySelectorAll('.rl-cand').forEach(function(b){
@@ -391,7 +418,7 @@
       var memo = (ov.querySelector('#rlMemo').value || '').trim();
       var res = R.add(ref, picked, memo);
       if(res === 'duplicate'){
-        if(window.__nnToast) window.__nnToast('이미 연결되어 있습니다', {kind:'del'});
+        if(window.__nnToast) window.__nnToast('이미 이어져 있습니다', {kind:'del'});
         return;
       }
       if(!res){
@@ -400,47 +427,142 @@
       }
       close();
       if(after) after();
-      if(window.__nnToast) window.__nnToast('✓ 연결했습니다');
+      if(window.__nnToast) window.__nnToast('✓ 맥락을 이었습니다');
     };
     requestAnimationFrame(function(){ ov.classList.add('show'); setTimeout(function(){ try{ search.focus(); }catch(e){} }, 120); });
   }
 
-  /* ── 첫 실행 시 예시 연결 하나 만들어 두기 ──
-     실제로 만져보고 지울 수 있어야 개념이 와닿는다.
-     기존 기록이 둘 이상 있을 때만, 딱 한 번 만든다. */
+  /* ══════════════════════════════════════════════════════════
+     첫 실행 시 예시 갈래 한 줄 만들어 두기
+
+     설명만 읽어서는 감이 오지 않는다. 실제로 이어져 있는 기록을
+     타고 다녀 봐야 이해된다. 그래서 읽기 → 생각 → 확인 → 보유
+     네 칸이 실제로 이어진 표본을 만들어 둔다.
+     모두 [예시] 표기가 붙어 있고 언제든 지울 수 있다.
+     ══════════════════════════════════════════════════════════ */
+  var SEED_FLAG = 'nn_rel_seed_v2';
+
+  function noteHTML(parts){ return parts.join('\n'); }
+
+  var SAMPLE = {
+    book: {
+      type:'books', id:'rlx_book',
+      title:'[예시] 돈의 심리학',
+      content: noteHTML([
+        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시</b> — 이 기록은 기능을 보여드리는 표본입니다. 아래 <b>맥락</b> 칸을 보시면 다음 단계로 이어져 있습니다. 필요 없으면 목록에서 지우세요.</div>',
+        '<div style="font-weight:700;margin-top:12px">기억에 남은 것</div>',
+        '<ul>',
+        '<li>부자가 되는 것과 부를 유지하는 것은 전혀 다른 기술이다.</li>',
+        '<li>수익률보다 <b>버틴 시간</b>이 결과를 더 크게 좌우한다.</li>',
+        '<li>합리적인 선택보다 <b>내가 계속할 수 있는 선택</b>이 낫다.</li>',
+        '</ul>',
+        '<div style="font-weight:700;margin-top:14px">그래서 나는</div>',
+        '<div>수익률을 높이려 애쓰기보다, 오래 버틸 수 있는 구조를 먼저 만들기로 했다.</div>'
+      ])
+    },
+    think: {
+      type:'thesis', id:'rlx_think',
+      title:'[예시] 시간이 가장 큰 변수다',
+      content: noteHTML([
+        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시</b> — 앞의 책에서 출발해 정리한 생각입니다.</div>',
+        '<div>연 7%와 연 9%의 차이보다, 10년과 25년의 차이가 훨씬 크다.</div>',
+        '<div style="font-weight:700;margin-top:14px">근거</div>',
+        '<ul>',
+        '<li>복리는 후반부에 가속된다. 초반 몇 년의 수익률 차이는 시간 앞에서 희석된다.</li>',
+        '<li>높은 수익률을 좇다 중간에 그만두면, 남는 건 세금과 수수료뿐이다.</li>',
+        '</ul>',
+        '<div style="font-weight:700;margin-top:14px">스스로에게 묻는 것</div>',
+        '<ul>',
+        '<li>이 방식을 <b>20년 동안</b> 계속할 수 있는가?</li>',
+        '<li>시장이 40% 빠져도 팔지 않을 자신이 있는가?</li>',
+        '</ul>'
+      ])
+    }
+  };
+
+  function findNote(type, id){
+    var k = window.KnowledgeNotes;
+    var arr = (k && k.data && k.data[type]) ? k.data[type] : null;
+    if(!arr) return null;
+    for(var i=0;i<arr.length;i++) if(arr[i].id === id) return arr[i];
+    return null;
+  }
+
+  function ensureNote(spec){
+    var k = window.KnowledgeNotes;
+    if(!k || !k.data) return null;
+    if(!k.data[spec.type]) k.data[spec.type] = [];
+    var found = findNote(spec.type, spec.id);
+    if(found) return spec.id;
+
+    var now = (k._nowStr ? k._nowStr() : new Date().toISOString().slice(0,10));
+    var rec = { id:spec.id, title:spec.title, content:spec.content, date:now, mtime:Date.now() };
+
+    /* 그룹이 있는 탭이면 첫 그룹에 넣는다 */
+    try{
+      var g = (k.groups && k.groups[spec.type]) ? k.groups[spec.type] : [];
+      if(g && g.length) rec.groupId = g[0].id;
+    }catch(e){}
+    if(spec.type === 'thesis'){ rec.tags = []; rec.sources = []; }
+
+    k.data[spec.type].push(rec);
+    return spec.id;
+  }
+
   function seedExample(){
     try{
-      if(localStorage.getItem('nn_rel_seed_v1') === '1') return;
-      if(R.all().length > 0){ localStorage.setItem('nn_rel_seed_v1','1'); return; }
+      if(localStorage.getItem(SEED_FLAG) === '1') return;
       var k = window.KnowledgeNotes;
       if(!k || !k.data) return;
 
-      /* 책 하나 + 이어붙일 대상 하나를 찾는다 */
-      var book = (k.data.books || [])[0];
-      if(!book) return;
-      var bookRef = R.makeRef('note','books', book.id);
+      /* 이미 직접 이어 둔 게 있으면 건드리지 않는다 */
+      if(R.all().length > 0){ localStorage.setItem(SEED_FLAG,'1'); return; }
 
-      var partner = null;
-      var th = (k.data.thesis || [])[0];
-      if(th) partner = R.makeRef('note','thesis', th.id);
-      if(!partner){
-        try{
-          var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
-          if(H && H.length) partner = 'asset:' + String(H[0].tk).toUpperCase();
-        }catch(e){}
-      }
-      if(!partner){
-        var ec = (k.data.economics || [])[0];
-        if(ec) partner = R.makeRef('note','economics', ec.id);
-      }
-      if(!partner) return;
+      var bookId  = ensureNote(SAMPLE.book);
+      var thinkId = ensureNote(SAMPLE.think);
+      if(!bookId || !thinkId) return;
 
-      R.add(bookRef, partner, '예시 — 지워도 됩니다');
-      localStorage.setItem('nn_rel_seed_v1','1');
+      var bookRef  = R.makeRef('note','books',  bookId);
+      var thinkRef = R.makeRef('note','thesis', thinkId);
+      R.add(bookRef, thinkRef, '예시 — 여기서 출발한 생각');
+
+      /* 3) 확인 — 기존 ECONOMICS 시드(72의 법칙)가 있으면 이어 붙인다 */
+      var econ = (k.data.economics || [])[0];
+      if(econ) R.add(thinkRef, R.makeRef('note','economics', econ.id), '예시 — 숫자로 확인');
+
+      /* 4) 보유 — 보유 종목이 있으면 마지막 칸을 잇는다 */
+      try{
+        var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
+        if(H && H.length) R.add(thinkRef, 'asset:' + String(H[0].tk).toUpperCase(), '예시 — 이 판단이 닿은 곳');
+      }catch(e){}
+
+      try{ k.save(); k.renderSidebar('books'); }catch(e){}
+      localStorage.setItem(SEED_FLAG,'1');
     }catch(e){}
   }
+
+  /* 예시 일괄 정리 */
+  function clearExamples(){
+    var k = window.KnowledgeNotes;
+    var removed = 0;
+    try{
+      [SAMPLE.book, SAMPLE.think].forEach(function(sp){
+        var ref = R.makeRef('note', sp.type, sp.id);
+        removed += R.removeAllOf(ref);
+        var arr = k && k.data ? k.data[sp.type] : null;
+        if(arr) for(var i=arr.length-1;i>=0;i--) if(arr[i].id === sp.id) arr.splice(i,1);
+      });
+      /* 메모가 '예시'로 시작하는 나머지 갈래도 정리 */
+      R.all().slice().forEach(function(x){ if(/^예시/.test(x.memo||'')){ R.remove(x.id); removed++; } });
+      if(k && k.save) k.save();
+      if(k && k.renderSidebar){ k.renderSidebar('books'); k.renderSidebar('thesis'); }
+    }catch(e){}
+    return removed;
+  }
+  window.__nnRelClearExamples = clearExamples;
+
   (function ready(){
-    if(window.KnowledgeNotes && window.KnowledgeNotes.data){ setTimeout(seedExample, 1200); return; }
+    if(window.KnowledgeNotes && window.KnowledgeNotes.data){ setTimeout(seedExample, 1500); return; }
     setTimeout(ready, 300);
   })();
 
