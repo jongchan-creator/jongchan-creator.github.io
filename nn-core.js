@@ -3165,6 +3165,10 @@ window.KnowledgeNotes = {
     editableBody.onclick = (function(prevHandler){ return function(e){ if(prevHandler) prevHandler.call(this, e); var td = e.target.closest ? e.target.closest('td') : null; if(td && td.closest('table.nn-table')){ self.showTablePopup(td, type, note.id, editableBody); } else if(!e.target.closest || !e.target.closest('.nn-table-popup')) { self.hideTablePopup(); } }; })(editableBody.onclick);
     mainContainer.appendChild(toolbar); var scrollArea = document.createElement('div'); scrollArea.className = 'editor-scroll-area'; scrollArea.appendChild(titleInp);
     if(type === 'books'){ var bkBar = self._buildBookBar(note, titleInp); if(bkBar) scrollArea.appendChild(bkBar); }
+    /* 연결 패널 — 이 기록과 이어지는 책·생각·종목 */
+    if(note && window.__nnRelPanel && window.__nnRel){
+      try{ scrollArea.appendChild(window.__nnRelPanel(window.__nnRel.makeRef('note', type, note.id))); }catch(e){}
+    }
     scrollArea.appendChild(editableBody); mainContainer.appendChild(scrollArea);
   },
 
@@ -5557,6 +5561,15 @@ window.ThesisApp = (function(){
     if(wrap) wrap.style.display='none';
     if(layout) layout.classList.add('editing');
     renderEditorSide(n);
+    setTimeout(function(){
+      try{
+        var main=document.getElementById('thesis-editor-main');
+        if(!main || !window.__nnRelPanel || !window.__nnRel) return;
+        var old=main.querySelector('.rl-panel'); if(old) old.remove();
+        var area=main.querySelector('.editor-scroll-area') || main;
+        area.appendChild(window.__nnRelPanel(window.__nnRel.makeRef('note','thesis', n.id)));
+      }catch(e){}
+    }, 80);
     var main=document.getElementById('thesis-editor-main');
     if(main){
       var back=main.querySelector('.editor-back-btn');

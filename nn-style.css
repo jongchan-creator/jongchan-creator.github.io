@@ -6499,3 +6499,60 @@ select.rc-in{font-family:'Pretendard',sans-serif;font-size:12.5px;cursor:pointer
 .wd-memo:focus{border-color:rgba(255,110,64,.55);box-shadow:0 0 0 3px rgba(255,110,64,.1)}
 .wd-memo::placeholder{color:rgba(255,255,255,.28)}
 @media (max-width:600px){ .wd-panel{width:100vw;padding:22px 18px 34px} .wd-links{grid-template-columns:1fr} }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   [1단계] 관계 모델 — 연결 패널 · 대상 고르기 창
+   편집 화면(흰 배경) 안에 놓이므로 밝은 테마로 맞춘다.
+   ══════════════════════════════════════════════════════════════════ */
+.rl-panel{
+  background:#fbf9f7;border:1px solid rgba(0,0,0,.08);border-radius:12px;
+  padding:14px 16px;margin:4px 0 18px;font-family:'Pretendard',sans-serif;
+}
+.rl-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.rl-title{font-size:11.5px;font-weight:700;letter-spacing:.06em;color:#8a8578}
+.rl-n{font-family:'Orbitron',sans-serif;font-size:11px;color:#a8843c;font-weight:600}
+.rl-add{margin-left:auto;background:rgba(201,169,110,.12);border:1px solid rgba(201,169,110,.42);
+  border-radius:8px;color:#8a6a24;font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:600;
+  padding:6px 12px;cursor:pointer;transition:.16s;white-space:nowrap}
+.rl-add:hover{background:rgba(201,169,110,.24);border-color:rgba(201,169,110,.7)}
+.rl-empty{font-size:11.5px;color:#9b9689;line-height:1.75}
+.rl-empty b{color:#5a5449;font-weight:600}
+.rl-list{display:flex;flex-direction:column;gap:5px}
+.rl-item{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(0,0,0,.07);
+  border-radius:9px;padding:9px 11px;cursor:pointer;transition:.15s}
+.rl-item:hover{border-color:rgba(201,169,110,.45);box-shadow:0 2px 8px -3px rgba(0,0,0,.16)}
+.rl-dot{width:7px;height:7px;border-radius:50%;flex:none}
+.rl-lb{font-size:10px;font-weight:700;letter-spacing:.04em;flex:none}
+.rl-t{flex:1;min-width:0;font-size:12.5px;color:#2b2823;font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-memo{font-size:10.5px;color:#9b9689;flex:none;max-width:32%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-x{flex:none;background:none;border:none;color:#c4c0b6;font-size:11px;cursor:pointer;
+  padding:3px 5px;border-radius:5px;transition:.15s;font-family:'Pretendard',sans-serif}
+.rl-x:hover{color:#e05252;background:rgba(224,82,82,.1)}
+/* 대상 고르기 창 */
+.rl-modal{width:460px;max-height:82vh;display:flex;flex-direction:column}
+.rl-hint{font-family:'Pretendard',sans-serif;font-size:11px;color:rgba(255,255,255,.38);
+  line-height:1.65;margin:-2px 0 12px}
+.rl-search{margin-bottom:10px}
+.rl-cands{flex:1;min-height:120px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;
+  scrollbar-width:thin;scrollbar-color:rgba(201,169,110,.45) transparent;padding-right:4px;margin-right:-4px}
+.rl-cands::-webkit-scrollbar{width:8px}
+.rl-cands::-webkit-scrollbar-track{background:transparent;margin:4px 0}
+.rl-cands::-webkit-scrollbar-thumb{background:rgba(201,169,110,.32);border-radius:99px;
+  border:2px solid transparent;background-clip:content-box}
+.rl-cands::-webkit-scrollbar-thumb:hover{background:rgba(201,169,110,.6);background-clip:content-box}
+.rl-cand{display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;
+  padding:9px 11px;cursor:pointer;transition:.14s;font-family:'Pretendard',sans-serif}
+.rl-cand:hover:not(:disabled){background:rgba(201,169,110,.12);border-color:rgba(201,169,110,.4)}
+.rl-cand.sel{background:rgba(201,169,110,.22);border-color:rgba(201,169,110,.7)}
+.rl-cand.done,.rl-cand:disabled{opacity:.45;cursor:not-allowed}
+.rl-c-lb{font-size:10px;font-weight:700;letter-spacing:.04em;flex:none}
+.rl-c-t{flex:1;min-width:0;font-size:12.5px;color:#f0ede6;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rl-c-done{font-size:9.5px;color:rgba(255,255,255,.4);flex:none}
+.rl-none{font-family:'Pretendard',sans-serif;font-size:11.5px;color:rgba(255,255,255,.32);
+  padding:24px 6px;text-align:center}
+@media(max-width:560px){ .rl-modal{width:calc(100vw - 32px)} }
