@@ -262,15 +262,36 @@
           + '</div>';
 
     if(!list.length){
-      h += '<div class="rl-empty">이 기록과 이어지는 책·생각·종목을 연결해 두면, '
-         + '나중에 <b>“나는 왜 이렇게 판단했는가”</b>를 되짚을 수 있습니다.</div>';
+      var seen = false;
+      try{ seen = localStorage.getItem('nn_rel_intro_v1') === '1'; }catch(e){}
+      if(!seen){
+        /* 처음 보는 사람을 위한 설명 — 한 번 닫으면 다시 안 뜬다 */
+        h += '<div class="rl-intro">'
+          +   '<div class="rl-i-t">연결이란?</div>'
+          +   '<div class="rl-i-d">읽은 책이 어떤 생각으로, 그 생각이 어떤 종목으로 이어졌는지 '
+          +     '<b>직접 이어 두는 기능</b>입니다. 자동으로 판단하지 않고, 지정한 것만 기록됩니다.</div>'
+          +   '<div class="rl-i-ex">'
+          +     '<span class="rl-i-step"><i style="background:#c9a96e"></i>BOOKS<em>돈의 심리학</em></span>'
+          +     '<span class="rl-i-ar">→</span>'
+          +     '<span class="rl-i-step"><i style="background:#e0709c"></i>생각의 기록<em>장기 복리 원칙</em></span>'
+          +     '<span class="rl-i-ar">→</span>'
+          +     '<span class="rl-i-step"><i style="background:#b28ad4"></i>보유<em>VOO</em></span>'
+          +   '</div>'
+          +   '<div class="rl-i-f">이렇게 이어 두면 몇 년 뒤에도 '
+          +     '<b>“나는 왜 이걸 샀지?”</b>에 답할 수 있습니다.'
+          +     '<button type="button" class="rl-i-x">알겠습니다</button></div>'
+          + '</div>';
+      } else {
+        h += '<div class="rl-empty">이 기록과 이어지는 책·생각·종목을 연결해 두면, '
+           + '나중에 <b>“나는 왜 이렇게 판단했는가”</b>를 되짚을 수 있습니다.</div>';
+      }
     } else {
       h += '<div class="rl-list">' + list.map(function(x){
         return '<div class="rl-item" data-id="' + x.id + '" data-ref="' + esc(x.ref) + '">'
              + '<span class="rl-dot" style="background:' + esc(x.target.color) + '"></span>'
              + '<span class="rl-lb" style="color:' + esc(x.target.color) + '">' + esc(x.target.label) + '</span>'
              + '<span class="rl-t">' + esc(x.target.title) + '</span>'
-             + (x.memo ? '<span class="rl-memo">' + esc(x.memo) + '</span>' : '')
+             + (x.memo ? '<span class="rl-memo' + (/^예시/.test(x.memo) ? ' ex' : '') + '">' + esc(x.memo) + '</span>' : '')
              + '<button type="button" class="rl-x" title="연결 끊기">✕</button>'
              + '</div>';
       }).join('') + '</div>';
@@ -279,6 +300,12 @@
 
     var addBtn = wrap.querySelector('.rl-add');
     if(addBtn) addBtn.onclick = function(){ openPicker(ref, function(){ paint(wrap, ref); }); };
+
+    var introX = wrap.querySelector('.rl-i-x');
+    if(introX) introX.onclick = function(){
+      try{ localStorage.setItem('nn_rel_intro_v1','1'); }catch(e){}
+      paint(wrap, ref);
+    };
 
     wrap.querySelectorAll('.rl-item').forEach(function(el){
       el.onclick = function(e){
@@ -377,6 +404,45 @@
     };
     requestAnimationFrame(function(){ ov.classList.add('show'); setTimeout(function(){ try{ search.focus(); }catch(e){} }, 120); });
   }
+
+  /* ── 첫 실행 시 예시 연결 하나 만들어 두기 ──
+     실제로 만져보고 지울 수 있어야 개념이 와닿는다.
+     기존 기록이 둘 이상 있을 때만, 딱 한 번 만든다. */
+  function seedExample(){
+    try{
+      if(localStorage.getItem('nn_rel_seed_v1') === '1') return;
+      if(R.all().length > 0){ localStorage.setItem('nn_rel_seed_v1','1'); return; }
+      var k = window.KnowledgeNotes;
+      if(!k || !k.data) return;
+
+      /* 책 하나 + 이어붙일 대상 하나를 찾는다 */
+      var book = (k.data.books || [])[0];
+      if(!book) return;
+      var bookRef = R.makeRef('note','books', book.id);
+
+      var partner = null;
+      var th = (k.data.thesis || [])[0];
+      if(th) partner = R.makeRef('note','thesis', th.id);
+      if(!partner){
+        try{
+          var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
+          if(H && H.length) partner = 'asset:' + String(H[0].tk).toUpperCase();
+        }catch(e){}
+      }
+      if(!partner){
+        var ec = (k.data.economics || [])[0];
+        if(ec) partner = R.makeRef('note','economics', ec.id);
+      }
+      if(!partner) return;
+
+      R.add(bookRef, partner, '예시 — 지워도 됩니다');
+      localStorage.setItem('nn_rel_seed_v1','1');
+    }catch(e){}
+  }
+  (function ready(){
+    if(window.KnowledgeNotes && window.KnowledgeNotes.data){ setTimeout(seedExample, 1200); return; }
+    setTimeout(ready, 300);
+  })();
 
   window.__nnRelPanel = buildPanel;
   window.__nnRelPicker = openPicker;

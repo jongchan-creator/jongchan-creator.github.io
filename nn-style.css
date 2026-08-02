@@ -6556,3 +6556,29 @@ select.rc-in{font-family:'Pretendard',sans-serif;font-size:12.5px;cursor:pointer
 .rl-none{font-family:'Pretendard',sans-serif;font-size:11.5px;color:rgba(255,255,255,.32);
   padding:24px 6px;text-align:center}
 @media(max-width:560px){ .rl-modal{width:calc(100vw - 32px)} }
+
+/* 연결 — 처음 쓰는 사람을 위한 설명 카드 (한 번 닫으면 안 보임) */
+.rl-intro{background:linear-gradient(180deg,#fdfbf8,#f7f3ec);border:1px solid rgba(201,169,110,.32);
+  border-radius:10px;padding:14px 16px 12px}
+.rl-i-t{font-size:12.5px;font-weight:700;color:#8a6a24;margin-bottom:7px}
+.rl-i-d{font-size:11.5px;color:#6b6659;line-height:1.75;margin-bottom:12px}
+.rl-i-d b{color:#3d3a33;font-weight:600}
+.rl-i-ex{display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:10px 12px;margin-bottom:11px}
+.rl-i-step{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
+  letter-spacing:.03em;color:#8a8578;white-space:nowrap}
+.rl-i-step i{width:6px;height:6px;border-radius:50%;display:inline-block;flex:none}
+.rl-i-step em{font-style:normal;font-size:11.5px;font-weight:500;color:#2b2823;margin-left:3px}
+.rl-i-ar{color:#c9bfae;font-size:12px;flex:none}
+.rl-i-f{font-size:11px;color:#8a8578;line-height:1.7;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rl-i-f b{color:#5a5449;font-weight:600}
+.rl-i-x{margin-left:auto;background:rgba(201,169,110,.16);border:1px solid rgba(201,169,110,.45);
+  border-radius:7px;color:#8a6a24;font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;
+  padding:5px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.rl-i-x:hover{background:rgba(201,169,110,.3)}
+/* 예시 연결은 옅게 표시 */
+.rl-memo.ex{color:#b8a06a;font-style:italic}
+@media(max-width:700px){
+  .rl-i-ex{flex-direction:column;align-items:flex-start;gap:5px}
+  .rl-i-ar{transform:rotate(90deg);margin-left:2px}
+}
