@@ -258,6 +258,7 @@
     var h = '<div class="rl-head">'
           + '<span class="rl-eyebrow">THREAD</span><span class="rl-title">맥락</span>'
           + (list.length ? '<span class="rl-n">' + list.length + '</span>' : '')
+          + '<button type="button" class="rl-help" title="맥락이란?">?</button>'
           + '<button type="button" class="rl-add">＋ 맥락 잇기</button>'
           + '</div>';
 
@@ -265,29 +266,14 @@
       var seen = false;
       try{ seen = localStorage.getItem('nn_rel_intro_v1') === '1'; }catch(e){}
       if(!seen){
-        /* 처음 보는 사람을 위한 설명 — 한 번 닫으면 다시 안 뜬다 */
         h += '<div class="rl-intro">'
-          +   '<div class="rl-i-t">맥락이란?</div>'
-          +   '<div class="rl-i-d">한 권의 책이 어떤 생각을 남겼고, 그 생각이 어떤 판단으로 이어져 '
-          +     '결국 어떤 자산이 되었는지 — <b>그 갈래를 직접 이어 두는 기능</b>입니다.<br>'
-          +     '시스템이 추측하지 않습니다. 이어 둔 것만 남습니다.</div>'
-          +   '<div class="rl-i-flow">'
-          +     '<div class="rl-i-node"><i style="background:#c9a96e"></i>'
-          +       '<span class="rl-i-k">읽는다</span><span class="rl-i-v">돈의 심리학</span></div>'
-          +     '<div class="rl-i-line"></div>'
-          +     '<div class="rl-i-node"><i style="background:#e0709c"></i>'
-          +       '<span class="rl-i-k">생각한다</span><span class="rl-i-v">시간이 가장 큰 변수다</span></div>'
-          +     '<div class="rl-i-line"></div>'
-          +     '<div class="rl-i-node"><i style="background:#8fb98f"></i>'
-          +       '<span class="rl-i-k">확인한다</span><span class="rl-i-v">72의 법칙</span></div>'
-          +     '<div class="rl-i-line"></div>'
-          +     '<div class="rl-i-node"><i style="background:#b28ad4"></i>'
-          +       '<span class="rl-i-k">보유한다</span><span class="rl-i-v">장기 인덱스</span></div>'
-          +   '</div>'
+          +   '<div class="rl-i-t">이 기록에서 무엇이 뻗어 나갔나요?</div>'
+          +   '<div class="rl-i-d">읽은 것 → 든 생각 → 내린 판단 → 보유한 자산.<br>'
+          +     '그 갈래를 이어 두면, 몇 년 뒤 <b>“나는 왜 이걸 샀지?”</b>에 '
+          +     '기억이 아니라 <b>기록으로</b> 답할 수 있습니다.</div>'
           +   '<div class="rl-i-f">'
-          +     '<span class="rl-i-q">3년 뒤 “나는 왜 이걸 샀지?”라고 물었을 때, '
-          +     '이 갈래를 거슬러 올라가면 답이 나옵니다.</span>'
-          +     '<button type="button" class="rl-i-x">알겠습니다</button>'
+          +     '<button type="button" class="rl-i-more">맥락이 무엇인지 자세히 보기 →</button>'
+          +     '<button type="button" class="rl-i-x">닫기</button>'
           +   '</div>'
           + '</div>';
       } else {
@@ -310,6 +296,9 @@
     }
     wrap.innerHTML = h;
 
+    var helpB = wrap.querySelector('.rl-help');
+    if(helpB) helpB.onclick = function(){ if(window.__nnRelGuide) window.__nnRelGuide(); };
+
     var addBtn = wrap.querySelector('.rl-add');
     if(addBtn) addBtn.onclick = function(){ openPicker(ref, function(){ paint(wrap, ref); }); };
 
@@ -327,6 +316,9 @@
       });
       else run();
     };
+
+    var moreB = wrap.querySelector('.rl-i-more');
+    if(moreB) moreB.onclick = function(){ if(window.__nnRelGuide) window.__nnRelGuide(); };
 
     var introX = wrap.querySelector('.rl-i-x');
     if(introX) introX.onclick = function(){
@@ -440,7 +432,7 @@
      네 칸이 실제로 이어진 표본을 만들어 둔다.
      모두 [예시] 표기가 붙어 있고 언제든 지울 수 있다.
      ══════════════════════════════════════════════════════════ */
-  var SEED_FLAG = 'nn_rel_seed_v2';
+  var SEED_FLAG = 'nn_rel_seed_v3';
 
   function noteHTML(parts){ return parts.join('\n'); }
 
@@ -449,33 +441,40 @@
       type:'books', id:'rlx_book',
       title:'[예시] 돈의 심리학',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시</b> — 이 기록은 기능을 보여드리는 표본입니다. 아래 <b>맥락</b> 칸을 보시면 다음 단계로 이어져 있습니다. 필요 없으면 목록에서 지우세요.</div>',
-        '<div style="font-weight:700;margin-top:12px">기억에 남은 것</div>',
+        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계 — 읽는다</b><br>기능을 보여드리는 표본입니다. 아래 <b>맥락</b> 칸을 보시면 이 책에서 무엇이 뻗어 나갔는지 이어져 있습니다. 필요 없으면 맥락 칸의 “예시 정리하기”로 한 번에 지울 수 있습니다.</div>',
+        '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
+        '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
+        '<div style="font-weight:700;margin-top:14px">기억에 남은 것</div>',
         '<ul>',
-        '<li>부자가 되는 것과 부를 유지하는 것은 전혀 다른 기술이다.</li>',
-        '<li>수익률보다 <b>버틴 시간</b>이 결과를 더 크게 좌우한다.</li>',
-        '<li>합리적인 선택보다 <b>내가 계속할 수 있는 선택</b>이 낫다.</li>',
+        '<li>같은 수익률이라도 <b>얼마나 오래 유지했는가</b>가 결과를 가른다.</li>',
+        '<li>워런 버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력보다 <b>시간</b>이 컸다.</li>',
+        '<li>합리적으로 최적인 선택보다, <b>내가 끝까지 지킬 수 있는 선택</b>이 실제로는 낫다.</li>',
         '</ul>',
-        '<div style="font-weight:700;margin-top:14px">그래서 나는</div>',
-        '<div>수익률을 높이려 애쓰기보다, 오래 버틸 수 있는 구조를 먼저 만들기로 했다.</div>'
+        '<div style="font-weight:700;margin-top:14px">덮으면서 든 생각</div>',
+        '<div>나는 그동안 “무엇을 살까”만 고민했다. “얼마나 오래 들고 갈까”는 한 번도 정해본 적이 없다.<br>이 생각을 따로 정리해 두자. → <b>맥락으로 이어 둠</b></div>'
       ])
     },
     think: {
       type:'thesis', id:'rlx_think',
       title:'[예시] 시간이 가장 큰 변수다',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시</b> — 앞의 책에서 출발해 정리한 생각입니다.</div>',
-        '<div>연 7%와 연 9%의 차이보다, 10년과 25년의 차이가 훨씬 크다.</div>',
-        '<div style="font-weight:700;margin-top:14px">근거</div>',
+        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시 · 2단계 — 생각한다</b><br>앞의 책에서 출발해 정리한 생각입니다. 아래 <b>맥락</b>을 보시면 이 생각이 어디서 왔고 어디로 이어졌는지 보입니다.</div>',
+        '<div style="font-weight:700;margin-top:6px">내가 믿는 것</div>',
+        '<div>수익률 2%p를 더 얻으려 애쓰는 것보다, <b>같은 방식을 15년 더 유지하는 쪽</b>이 결과가 크다.</div>',
+        '<div style="font-weight:700;margin-top:14px">왜 그렇게 생각하는가</div>',
         '<ul>',
-        '<li>복리는 후반부에 가속된다. 초반 몇 년의 수익률 차이는 시간 앞에서 희석된다.</li>',
-        '<li>높은 수익률을 좇다 중간에 그만두면, 남는 건 세금과 수수료뿐이다.</li>',
+        '<li>복리는 후반부에 가속된다. 초반 수익률 차이는 시간이 지날수록 희석된다.</li>',
+        '<li>높은 수익률을 좇으면 회전율이 올라가고, 세금과 수수료가 복리를 갉아먹는다.</li>',
+        '<li>중간에 그만두는 가장 큰 이유는 수익률이 아니라 <b>심리적 피로</b>다.</li>',
         '</ul>',
-        '<div style="font-weight:700;margin-top:14px">스스로에게 묻는 것</div>',
+        '<div style="font-weight:700;margin-top:14px">이 판단이 틀렸다면 어디서일까</div>',
         '<ul>',
-        '<li>이 방식을 <b>20년 동안</b> 계속할 수 있는가?</li>',
-        '<li>시장이 40% 빠져도 팔지 않을 자신이 있는가?</li>',
-        '</ul>'
+        '<li>장기 우상향이라는 전제가 깨지는 시장이라면 (예: 20년 횡보)</li>',
+        '<li>내가 20년을 버틸 수 있다고 과신했다면</li>',
+        '</ul>',
+        '<div class="np-note" contenteditable="false">🔎 이 두 가지가 흔들리면, 아래 맥락으로 이어진 <b>보유 종목</b>도 함께 다시 봐야 합니다. — 이것이 맥락을 이어 두는 이유입니다.</div>',
+        '<div style="font-weight:700;margin-top:14px">확인해 본 것</div>',
+        '<div>72의 법칙으로 계산해 보니, 연 7%는 약 10년, 연 9%는 약 8년이면 원금이 두 배가 된다.<br>2%p 차이는 2년, 기간을 10년 늘리면 자산은 한 번 더 두 배가 된다. <b>기간의 힘이 훨씬 크다.</b> → 맥락으로 이어 둠</div>'
       ])
     }
   };
@@ -524,16 +523,16 @@
 
       var bookRef  = R.makeRef('note','books',  bookId);
       var thinkRef = R.makeRef('note','thesis', thinkId);
-      R.add(bookRef, thinkRef, '예시 — 여기서 출발한 생각');
+      R.add(bookRef, thinkRef, '예시 · 읽는다 → 생각한다');
 
       /* 3) 확인 — 기존 ECONOMICS 시드(72의 법칙)가 있으면 이어 붙인다 */
       var econ = (k.data.economics || [])[0];
-      if(econ) R.add(thinkRef, R.makeRef('note','economics', econ.id), '예시 — 숫자로 확인');
+      if(econ) R.add(thinkRef, R.makeRef('note','economics', econ.id), '예시 · 생각한다 → 확인한다');
 
       /* 4) 보유 — 보유 종목이 있으면 마지막 칸을 잇는다 */
       try{
         var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
-        if(H && H.length) R.add(thinkRef, 'asset:' + String(H[0].tk).toUpperCase(), '예시 — 이 판단이 닿은 곳');
+        if(H && H.length) R.add(thinkRef, 'asset:' + String(H[0].tk).toUpperCase(), '예시 · 생각한다 → 보유한다');
       }catch(e){}
 
       try{ k.save(); k.renderSidebar('books'); }catch(e){}
@@ -565,6 +564,130 @@
     if(window.KnowledgeNotes && window.KnowledgeNotes.data){ setTimeout(seedExample, 1500); return; }
     setTimeout(ready, 300);
   })();
+
+
+  /* ══════════════════════════════════════════════════════════
+     맥락 안내 — 왜 필요한지 · 무엇을 얻는지 · 언제 이으면 되는지
+     패널에 욱여넣지 않고 별도 창으로 제대로 설명한다.
+     ══════════════════════════════════════════════════════════ */
+  function openGuide(){
+    var prev = document.getElementById('rlGuide'); if(prev) prev.remove();
+    var ov = document.createElement('div');
+    ov.id = 'rlGuide'; ov.className = 'hub-modal-ov';
+
+    ov.innerHTML = '<div class="hub-modal rlg-modal">'
+      + '<div class="rlg-head">'
+      +   '<span class="rlg-eyebrow">THREAD</span>'
+      +   '<h2 class="rlg-title">맥락</h2>'
+      +   '<p class="rlg-lead">읽은 것이 어떤 생각이 되고, 그 생각이 어떤 판단으로 이어져,<br>'
+      +     '결국 어떤 자산이 되었는지 — 그 갈래를 이어 두는 기능입니다.</p>'
+      + '</div>'
+      + '<div class="rlg-body">'
+
+      /* ① 왜 필요한가 */
+      + '<section class="rlg-sec">'
+      +   '<div class="rlg-s-n">01</div>'
+      +   '<h3 class="rlg-s-t">왜 필요한가</h3>'
+      +   '<div class="rlg-ask">'
+      +     '<p>2년 전에 산 종목이 있습니다. 지금 30% 빠졌습니다.<br>'
+      +     '<b>더 사야 할까요, 팔아야 할까요?</b></p>'
+      +     '<p class="rlg-ask-2">답하려면 두 가지를 알아야 합니다.<br>'
+      +     '“그때 <b>무엇을 보고</b> 샀는가”, 그리고 “그 근거가 <b>지금도 유효한가</b>”.</p>'
+      +   '</div>'
+      +   '<p class="rlg-p">대부분은 기억하지 못합니다. 차트만 보고 다시 판단하게 되고, '
+      +     '그러면 처음의 논리와 지금의 감정이 뒤섞입니다.<br>'
+      +     '<b>맥락은 그 기억을 대신합니다.</b></p>'
+      + '</section>'
+
+      /* ② 어떻게 쌓이나 */
+      + '<section class="rlg-sec">'
+      +   '<div class="rlg-s-n">02</div>'
+      +   '<h3 class="rlg-s-t">어떻게 쌓이나</h3>'
+      +   '<p class="rlg-p">한 번에 만드는 게 아닙니다. 기록할 때마다 한 칸씩 이어 붙입니다.</p>'
+      +   '<div class="rlg-flow">'
+      +     step('#c9a96e','읽는다','BOOKS','돈의 심리학','“수익률보다 버틴 시간이 결과를 좌우한다”')
+      +     arrow('여기서 든 생각을 적는다')
+      +     step('#e0709c','생각한다','생각의 기록','시간이 가장 큰 변수다','연 7%와 9%의 차이보다 10년과 25년의 차이가 크다')
+      +     arrow('숫자로 확인한다')
+      +     step('#8fb98f','확인한다','ECONOMICS','72의 법칙','72 ÷ 7 = 10년,  72 ÷ 9 = 8년 — 생각보다 차이가 작다')
+      +     arrow('그래서 이렇게 굴린다')
+      +     step('#b28ad4','보유한다','HOLDINGS','장기 인덱스','높은 수익률보다 20년 버틸 구조를 택함')
+      +   '</div>'
+      + '</section>'
+
+      /* ③ 무엇을 얻나 */
+      + '<section class="rlg-sec">'
+      +   '<div class="rlg-s-n">03</div>'
+      +   '<h3 class="rlg-s-t">그래서 무엇을 얻나</h3>'
+      +   '<div class="rlg-gains">'
+      +     gain('거슬러 오르기',
+      +          '보유 종목 하나를 열면, 그걸 사게 만든 책·생각·자료가 한눈에 보입니다. '
+      +        + '“나는 왜 이걸 갖고 있는가”에 <b>기억이 아니라 기록으로</b> 답합니다.')
+      +      gain('전제가 깨졌을 때',
+      +            '“AI 투자가 계속 늘 것이다” 같은 전제가 흔들렸다고 합시다. '
+      +          + '그 전제를 담은 기록을 열면, <b>그것에 기대고 있던 판단과 종목이 전부</b> 드러납니다. '
+      +          + '무엇을 다시 봐야 하는지 즉시 알 수 있습니다.')
+      +      gain('시간이 쌓이면',
+      +            '3년치가 모이면 내 생각이 어떻게 변해 왔는지, '
+      +          + '어떤 가정을 <b>반복해서 틀렸는지</b> 드러납니다. '
+      +          + '이건 다른 어떤 서비스도 대신해 줄 수 없는, 나만의 기록입니다.')
+      +   '</div>'
+      + '</section>'
+
+      /* ④ 언제 이으면 되나 */
+      + '<section class="rlg-sec">'
+      +   '<div class="rlg-s-n">04</div>'
+      +   '<h3 class="rlg-s-t">언제 이으면 되나</h3>'
+      +   '<div class="rlg-when">'
+      +     when('책을 덮으며', '“이건 투자에 쓸 수 있겠다” 싶은 대목이 있었다면, 그 책과 떠오른 생각을 잇습니다.')
+      +      when('종목을 사기로 했을 때', '결정의 근거가 된 기록과 그 종목을 잇습니다. 이 한 번이 나중에 가장 큰 값을 합니다.')
+      +      when('뉴스가 생각을 흔들 때', '기존 판단을 강화하거나 약화시킨 자료를 그 판단에 잇습니다.')
+      +      when('되짚어 볼 때', '분기에 한 번, 이어 둔 갈래를 따라가며 아직 유효한 논리인지 점검합니다.')
+      +   '</div>'
+      +   '<p class="rlg-note">완벽하게 이을 필요는 없습니다. '
+      +     '<b>중요한 판단 하나에 근거 하나</b>만 이어 두어도, 1년 뒤에는 큰 차이가 납니다.</p>'
+      + '</section>'
+      + '</div>'
+      + '<div class="hm-btns"><button type="button" class="hm-btn hm-save" id="rlgOk">알겠습니다</button></div>'
+      + '</div>';
+
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 200); }
+    ov.querySelector('#rlgOk').onclick = function(){
+      try{ localStorage.setItem('nn_rel_intro_v1','1'); }catch(e){}
+      close();
+      document.querySelectorAll('.rl-panel').forEach(function(w){
+        var r = w.getAttribute('data-ref'); if(r) paint(w, r);
+      });
+    };
+    ov.onclick = function(e){ if(e.target === ov) close(); };
+    ov.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ e.preventDefault(); close(); } });
+    requestAnimationFrame(function(){ ov.classList.add('show'); });
+  }
+
+  function step(color, verb, tab, title, quote){
+    return '<div class="rlg-step">'
+      + '<span class="rlg-st-dot" style="background:' + color + '"></span>'
+      + '<div class="rlg-st-body">'
+      +   '<div class="rlg-st-head"><span class="rlg-st-verb">' + verb + '</span>'
+      +     '<span class="rlg-st-tab" style="color:' + color + '">' + tab + '</span></div>'
+      +   '<div class="rlg-st-title">' + title + '</div>'
+      +   '<div class="rlg-st-quote">' + quote + '</div>'
+      + '</div></div>';
+  }
+  function arrow(label){
+    return '<div class="rlg-arrow"><span class="rlg-ar-line"></span>'
+         + '<span class="rlg-ar-lb">' + label + '</span></div>';
+  }
+  function gain(t, d){
+    return '<div class="rlg-gain"><div class="rlg-g-t">' + t + '</div>'
+         + '<div class="rlg-g-d">' + d + '</div></div>';
+  }
+  function when(t, d){
+    return '<div class="rlg-w"><span class="rlg-w-t">' + t + '</span>'
+         + '<span class="rlg-w-d">' + d + '</span></div>';
+  }
+  window.__nnRelGuide = openGuide;
 
   window.__nnRelPanel = buildPanel;
   window.__nnRelPicker = openPicker;
