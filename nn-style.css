@@ -6682,3 +6682,34 @@ select.rc-in{font-family:'Pretendard',sans-serif;font-size:12.5px;cursor:pointer
   .rlg-w{flex-direction:column;gap:3px}
   .rlg-w-t{width:auto}
 }
+
+/* ══ 편집 툴바 — 제목 아래에 두고, 글 쓰는 동안 따라오게 ══
+   기존에는 화면 맨 위에 있어 스크롤하면 사라졌다.
+   제목 아래로 내려 위계를 맞추고, sticky로 항상 손 닿는 곳에 둔다. */
+.editor-toolbar.tb-sticky{
+  position:sticky;
+  top:58px;                     /* 상단 고정 네비 아래 */
+  z-index:30;
+  margin:0 0 18px!important;    /* scrollArea 안이라 좌우 여백은 부모가 담당 */
+  background:rgba(250,249,246,.94);
+  -webkit-backdrop-filter:saturate(1.4) blur(8px);
+  backdrop-filter:saturate(1.4) blur(8px);
+  border-color:rgba(0,0,0,.09);
+  box-shadow:0 1px 0 rgba(0,0,0,.04);
+  transition:box-shadow .2s ease, background .2s ease;
+}
+/* 붙어 있는 동안엔 살짝 떠 보이게 */
+.editor-toolbar.tb-sticky.is-stuck{
+  box-shadow:0 6px 18px -8px rgba(20,18,15,.28), 0 1px 0 rgba(0,0,0,.06);
+  background:rgba(250,249,246,.985);
+}
+@media(max-width:760px){
+  .editor-toolbar.tb-sticky{top:52px}
+}
+/* THREAD 눈썹 — 존재감 키우기 */
+.rl-eyebrow{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:13px;letter-spacing:.22em;
+  color:#b8975a;flex:none;line-height:1;
+}
+.rl-head .rl-title{font-size:14px;font-weight:700;letter-spacing:-.01em;color:#3d3a33}

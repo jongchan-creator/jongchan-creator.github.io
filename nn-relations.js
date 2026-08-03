@@ -432,7 +432,7 @@
      네 칸이 실제로 이어진 표본을 만들어 둔다.
      모두 [예시] 표기가 붙어 있고 언제든 지울 수 있다.
      ══════════════════════════════════════════════════════════ */
-  var SEED_FLAG = 'nn_rel_seed_v3';
+  var SEED_FLAG = 'nn_rel_seed_v4';
 
   function noteHTML(parts){ return parts.join('\n'); }
 
@@ -440,6 +440,7 @@
     book: {
       type:'books', id:'rlx_book',
       title:'[예시] 돈의 심리학',
+      cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
       content: noteHTML([
         '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계 — 읽는다</b><br>기능을 보여드리는 표본입니다. 아래 <b>맥락</b> 칸을 보시면 이 책에서 무엇이 뻗어 나갔는지 이어져 있습니다. 필요 없으면 맥락 칸의 “예시 정리하기”로 한 번에 지울 수 있습니다.</div>',
         '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
@@ -496,6 +497,7 @@
 
     var now = (k._nowStr ? k._nowStr() : new Date().toISOString().slice(0,10));
     var rec = { id:spec.id, title:spec.title, content:spec.content, date:now, mtime:Date.now() };
+    if(spec.cover) rec.cover = spec.cover;
 
     /* 그룹이 있는 탭이면 첫 그룹에 넣는다 */
     try{

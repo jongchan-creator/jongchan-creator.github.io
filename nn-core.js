@@ -3163,7 +3163,7 @@ window.KnowledgeNotes = {
     }
     editableBody.onclick = function(e) { if (e.target.tagName === 'IMG') { var body=this; if(window.__nnLightbox){ window.__nnLightbox(e.target, function(){ self.update(type, note.id, 'content', body.innerHTML); }); } } };
     editableBody.onclick = (function(prevHandler){ return function(e){ if(prevHandler) prevHandler.call(this, e); var td = e.target.closest ? e.target.closest('td') : null; if(td && td.closest('table.nn-table')){ self.showTablePopup(td, type, note.id, editableBody); } else if(!e.target.closest || !e.target.closest('.nn-table-popup')) { self.hideTablePopup(); } }; })(editableBody.onclick);
-    mainContainer.appendChild(toolbar); var scrollArea = document.createElement('div'); scrollArea.className = 'editor-scroll-area'; scrollArea.appendChild(titleInp);
+    var scrollArea = document.createElement('div'); scrollArea.className = 'editor-scroll-area'; scrollArea.appendChild(titleInp); /* 툴바는 제목 아래에 두고, 스크롤해도 따라오도록 고정한다 */ toolbar.classList.add('tb-sticky'); scrollArea.appendChild(toolbar);
     if(type === 'books'){ var bkBar = self._buildBookBar(note, titleInp); if(bkBar) scrollArea.appendChild(bkBar); }
     /* 연결 패널 — 이 기록과 이어지는 책·생각·종목 */
     if(note && window.__nnRelPanel && window.__nnRel){
@@ -5697,6 +5697,29 @@ window.ThesisApp = (function(){
     if(document.body){ boot(); return; }
     setTimeout(ready, 40);
   })();
+})();
+
+/* ══════════ 편집 툴바 고정 상태 감지 ══════════
+   sticky로 위에 붙는 순간에만 그림자를 준다.
+   붙지 않았을 때도 그림자가 있으면 공중에 뜬 것처럼 보여 어색하다. */
+(function(){
+  var raf = 0;
+  function check(){
+    raf = 0;
+    document.querySelectorAll('.editor-toolbar.tb-sticky').forEach(function(tb){
+      try{
+        var cs = window.getComputedStyle(tb);
+        var top = parseFloat(cs.top);
+        if(!isFinite(top)) top = (window.innerWidth <= 760 ? 52 : 58);
+        var stuck = tb.getBoundingClientRect().top <= top + 1;
+        tb.classList.toggle('is-stuck', stuck);
+      }catch(e){}
+    });
+  }
+  function onScroll(){ if(!raf) raf = requestAnimationFrame(check); }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  setInterval(check, 900);   /* 편집 화면이 새로 그려질 때도 반영 */
 })();
 
 /* ══════════ 저장 공간 안전장치 ══════════
