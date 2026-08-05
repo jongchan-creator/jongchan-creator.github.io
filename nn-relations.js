@@ -432,50 +432,100 @@
      네 칸이 실제로 이어진 표본을 만들어 둔다.
      모두 [예시] 표기가 붙어 있고 언제든 지울 수 있다.
      ══════════════════════════════════════════════════════════ */
-  var SEED_FLAG = 'nn_rel_seed_v4';
+  var SEED_FLAG = 'nn_rel_seed_v5';
 
   function noteHTML(parts){ return parts.join('\n'); }
 
+  /* 4단계 표본 — 책에서 읽은 아이디어가 지표 확인과 판단을 거쳐 실제 보유까지 가는 흐름 */
+  var STAGES = [
+    { key:'read',    n:1, verb:'읽는다',   color:'#c9a96e' },
+    { key:'check',   n:2, verb:'확인한다', color:'#8fb98f' },
+    { key:'judge',   n:3, verb:'판단한다', color:'#e0709c' },
+    { key:'hold',    n:4, verb:'보유한다', color:'#b28ad4' }
+  ];
+
+  function stageBar(cur){
+    return '<div class="rl-stage" contenteditable="false">'
+      + '<span class="rl-sg-lb">맥락 단계</span>'
+      + STAGES.map(function(s){
+          var on = (s.key === cur);
+          return '<span class="rl-sg' + (on ? ' on' : '') + '"'
+            + (on ? ' style="border-color:' + s.color + ';color:' + s.color + '"' : '')
+            + '><i>' + s.n + '</i>' + s.verb + '</span>';
+        }).join('<span class="rl-sg-ar">›</span>')
+      + '<span class="rl-sg-hint">아래 <b>맥락</b>에서 앞뒤 단계로 이동할 수 있습니다</span>'
+      + '</div>';
+  }
+
   var SAMPLE = {
     book: {
-      type:'books', id:'rlx_book',
+      type:'books', id:'rlx_book', stage:'read',
       title:'[예시] 돈의 심리학',
       cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계 — 읽는다</b><br>기능을 보여드리는 표본입니다. 아래 <b>맥락</b> 칸을 보시면 이 책에서 무엇이 뻗어 나갔는지 이어져 있습니다. 필요 없으면 맥락 칸의 “예시 정리하기”로 한 번에 지울 수 있습니다.</div>',
+        stageBar('read'),
+        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계</b> — 한 권의 책에서 <b>하나의 아이디어</b>를 건져 올리는 단계입니다. 아래 <b>맥락</b>을 보시면 이 아이디어가 어디로 이어졌는지 따라갈 수 있습니다.</div>',
         '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
-        '<div style="font-weight:700;margin-top:14px">기억에 남은 것</div>',
+        '<div style="font-weight:700;margin-top:14px">건져 올린 아이디어</div>',
+        '<div class="np-note" contenteditable="false">💡 <b>수익률보다 “버틴 기간”이 최종 결과를 더 크게 좌우한다.</b><br>버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력이 아니라 시간이 만든 몫이 크다.</div>',
+        '<div style="font-weight:700;margin-top:14px">그래서 확인해 볼 것</div>',
         '<ul>',
-        '<li>같은 수익률이라도 <b>얼마나 오래 유지했는가</b>가 결과를 가른다.</li>',
-        '<li>워런 버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력보다 <b>시간</b>이 컸다.</li>',
-        '<li>합리적으로 최적인 선택보다, <b>내가 끝까지 지킬 수 있는 선택</b>이 실제로는 낫다.</li>',
+        '<li>정말 그런가? <b>숫자로</b> 확인해 보자 → 72의 법칙</li>',
+        '<li>수익률 2%p를 더 얻는 것과, 기간을 10년 늘리는 것 중 무엇이 큰가?</li>',
         '</ul>',
-        '<div style="font-weight:700;margin-top:14px">덮으면서 든 생각</div>',
-        '<div>나는 그동안 “무엇을 살까”만 고민했다. “얼마나 오래 들고 갈까”는 한 번도 정해본 적이 없다.<br>이 생각을 따로 정리해 두자. → <b>맥락으로 이어 둠</b></div>'
+        '<div class="np-note" contenteditable="false">➡️ 다음 단계: <b>ECONOMICS · 72의 법칙</b>에서 숫자로 확인합니다. (아래 맥락에서 이동)</div>'
       ])
     },
-    think: {
-      type:'thesis', id:'rlx_think',
-      title:'[예시] 시간이 가장 큰 변수다',
+
+    check: {
+      type:'economics', id:'rlx_check', stage:'check',
+      title:'[예시] 72의 법칙으로 확인한 것',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시 · 2단계 — 생각한다</b><br>앞의 책에서 출발해 정리한 생각입니다. 아래 <b>맥락</b>을 보시면 이 생각이 어디서 왔고 어디로 이어졌는지 보입니다.</div>',
-        '<div style="font-weight:700;margin-top:6px">내가 믿는 것</div>',
-        '<div>수익률 2%p를 더 얻으려 애쓰는 것보다, <b>같은 방식을 15년 더 유지하는 쪽</b>이 결과가 크다.</div>',
-        '<div style="font-weight:700;margin-top:14px">왜 그렇게 생각하는가</div>',
+        stageBar('check'),
+        '<div class="np-note" contenteditable="false">📗 <b>맥락 예시 · 2단계</b> — 책에서 얻은 아이디어를 <b>숫자로 검증</b>하는 단계입니다.</div>',
+        '<div style="font-weight:700;margin-top:6px">검증할 명제</div>',
+        '<div>“수익률을 높이는 것보다 기간을 늘리는 것이 결과에 더 크다.”</div>',
+        '<div style="font-weight:700;margin-top:14px">계산</div>',
+        '<div>72의 법칙 — <b>72 ÷ 연이율(%) ≈ 원금이 두 배가 되는 햇수</b></div>',
         '<ul>',
-        '<li>복리는 후반부에 가속된다. 초반 수익률 차이는 시간이 지날수록 희석된다.</li>',
-        '<li>높은 수익률을 좇으면 회전율이 올라가고, 세금과 수수료가 복리를 갉아먹는다.</li>',
-        '<li>중간에 그만두는 가장 큰 이유는 수익률이 아니라 <b>심리적 피로</b>다.</li>',
+        '<li>연 7% → 72 ÷ 7 ≈ <b>10.3년</b></li>',
+        '<li>연 9% → 72 ÷ 9 = <b>8.0년</b></li>',
+        '<li>수익률을 2%p 올려서 얻는 것: 약 <b>2.3년 단축</b></li>',
         '</ul>',
-        '<div style="font-weight:700;margin-top:14px">이 판단이 틀렸다면 어디서일까</div>',
+        '<div style="font-weight:700;margin-top:14px">그런데 기간을 늘리면</div>',
         '<ul>',
-        '<li>장기 우상향이라는 전제가 깨지는 시장이라면 (예: 20년 횡보)</li>',
-        '<li>내가 20년을 버틸 수 있다고 과신했다면</li>',
+        '<li>연 7%로 <b>10년</b> → 2배</li>',
+        '<li>연 7%로 <b>20년</b> → 4배</li>',
+        '<li>연 7%로 <b>30년</b> → 8배</li>',
         '</ul>',
-        '<div class="np-note" contenteditable="false">🔎 이 두 가지가 흔들리면, 아래 맥락으로 이어진 <b>보유 종목</b>도 함께 다시 봐야 합니다. — 이것이 맥락을 이어 두는 이유입니다.</div>',
-        '<div style="font-weight:700;margin-top:14px">확인해 본 것</div>',
-        '<div>72의 법칙으로 계산해 보니, 연 7%는 약 10년, 연 9%는 약 8년이면 원금이 두 배가 된다.<br>2%p 차이는 2년, 기간을 10년 늘리면 자산은 한 번 더 두 배가 된다. <b>기간의 힘이 훨씬 크다.</b> → 맥락으로 이어 둠</div>'
+        '<div class="np-note" contenteditable="false">✅ <b>확인됨.</b> 2%p 차이는 2년 남짓을 벌지만, 기간 10년은 자산을 한 번 더 두 배로 만든다. <b>기간의 힘이 압도적으로 크다.</b></div>',
+        '<div class="np-note" contenteditable="false">➡️ 다음 단계: 그렇다면 <b>어떻게 굴려야 20년을 버틸 수 있는가</b> — 생각의 기록에서 판단합니다.</div>'
+      ])
+    },
+
+    judge: {
+      type:'thesis', id:'rlx_judge', stage:'judge',
+      title:'[예시] 20년을 버틸 수 있는 방식만 고른다',
+      content: noteHTML([
+        stageBar('judge'),
+        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시 · 3단계</b> — 확인한 사실을 바탕으로 <b>내 투자 원칙과 종목</b>을 정하는 단계입니다.</div>',
+        '<div style="font-weight:700;margin-top:6px">내가 내린 판단</div>',
+        '<div>수익률을 좇기보다 <b>20년 동안 손대지 않을 수 있는 구조</b>를 만든다.<br>그래서 개별 종목 비중을 줄이고, 핵심 자산은 광범위 인덱스로 간다.</div>',
+        '<div style="font-weight:700;margin-top:14px">이 판단에 이르기까지</div>',
+        '<ul>',
+        '<li><b>1단계</b> 돈의 심리학 — “버틴 기간이 결과를 좌우한다”</li>',
+        '<li><b>2단계</b> 72의 법칙 — 기간 10년이 수익률 2%p보다 크다는 것을 숫자로 확인</li>',
+        '</ul>',
+        '<div style="font-weight:700;margin-top:14px">그래서 고른 종목</div>',
+        '<ul>',
+        '<li><b>선정 기준</b> — 개별 기업 리스크가 없을 것 / 수수료가 낮을 것 / 20년 뒤에도 존재할 것</li>',
+        '<li><b>제외한 것</b> — 테마 ETF(존속 불확실), 개별 성장주(내가 매일 확인하게 됨)</li>',
+        '<li><b>결정</b> — 광범위 인덱스를 핵심으로, 매달 같은 금액을 자동 매수</li>',
+        '</ul>',
+        '<div style="font-weight:700;margin-top:14px">이 판단이 깨지는 조건</div>',
+        '<div class="np-note" contenteditable="false">⚠️ 다음 중 하나라도 사실이 되면 <b>이 판단과 아래 보유 종목을 함께 다시 봐야 합니다.</b><br>① 20년 이상 실질 수익이 없는 장기 횡보장 진입<br>② 인덱스 수수료가 유의미하게 오름<br>③ 내가 20년을 버틸 수 있다고 과신했음이 드러남</div>',
+        '<div class="np-note" contenteditable="false">➡️ 다음 단계: 실제 <b>보유</b>로 이어집니다.</div>'
       ])
     }
   };
@@ -515,29 +565,34 @@
       if(localStorage.getItem(SEED_FLAG) === '1') return;
       var k = window.KnowledgeNotes;
       if(!k || !k.data) return;
-
-      /* 이미 직접 이어 둔 게 있으면 건드리지 않는다 */
       if(R.all().length > 0){ localStorage.setItem(SEED_FLAG,'1'); return; }
 
       var bookId  = ensureNote(SAMPLE.book);
-      var thinkId = ensureNote(SAMPLE.think);
-      if(!bookId || !thinkId) return;
+      var checkId = ensureNote(SAMPLE.check);
+      var judgeId = ensureNote(SAMPLE.judge);
+      if(!bookId || !checkId || !judgeId) return;
 
-      var bookRef  = R.makeRef('note','books',  bookId);
-      var thinkRef = R.makeRef('note','thesis', thinkId);
-      R.add(bookRef, thinkRef, '예시 · 읽는다 → 생각한다');
+      var bookRef  = R.makeRef('note','books',     bookId);
+      var checkRef = R.makeRef('note','economics', checkId);
+      var judgeRef = R.makeRef('note','thesis',    judgeId);
 
-      /* 3) 확인 — 기존 ECONOMICS 시드(72의 법칙)가 있으면 이어 붙인다 */
-      var econ = (k.data.economics || [])[0];
-      if(econ) R.add(thinkRef, R.makeRef('note','economics', econ.id), '예시 · 생각한다 → 확인한다');
+      /* 1 → 2 → 3 → 4 순서대로 잇는다 */
+      R.add(bookRef,  checkRef, '① 읽는다 → ② 확인한다');
+      R.add(checkRef, judgeRef, '② 확인한다 → ③ 판단한다');
 
-      /* 4) 보유 — 보유 종목이 있으면 마지막 칸을 잇는다 */
+      /* ④ 실제 보유 — 보유 종목이 있으면 판단에 이어 붙인다 */
+      var held = null;
       try{
         var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
-        if(H && H.length) R.add(thinkRef, 'asset:' + String(H[0].tk).toUpperCase(), '예시 · 생각한다 → 보유한다');
+        if(H && H.length) held = 'asset:' + String(H[0].tk).toUpperCase();
       }catch(e){}
+      if(held) R.add(judgeRef, held, '③ 판단한다 → ④ 보유한다');
 
-      try{ k.save(); k.renderSidebar('books'); }catch(e){}
+      try{
+        k.save();
+        k.renderSidebar('books');
+        k.renderSidebar('economics');
+      }catch(e){}
       localStorage.setItem(SEED_FLAG,'1');
     }catch(e){}
   }
@@ -547,7 +602,7 @@
     var k = window.KnowledgeNotes;
     var removed = 0;
     try{
-      [SAMPLE.book, SAMPLE.think].forEach(function(sp){
+      [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
         var ref = R.makeRef('note', sp.type, sp.id);
         removed += R.removeAllOf(ref);
         var arr = k && k.data ? k.data[sp.type] : null;
@@ -556,7 +611,7 @@
       /* 메모가 '예시'로 시작하는 나머지 갈래도 정리 */
       R.all().slice().forEach(function(x){ if(/^예시/.test(x.memo||'')){ R.remove(x.id); removed++; } });
       if(k && k.save) k.save();
-      if(k && k.renderSidebar){ k.renderSidebar('books'); k.renderSidebar('thesis'); }
+      if(k && k.renderSidebar){ ['books','economics','thesis'].forEach(function(t){ try{ k.renderSidebar(t); }catch(e){} }); }
     }catch(e){}
     return removed;
   }
@@ -572,6 +627,22 @@
      맥락 안내 — 왜 필요한지 · 무엇을 얻는지 · 언제 이으면 되는지
      패널에 욱여넣지 않고 별도 창으로 제대로 설명한다.
      ══════════════════════════════════════════════════════════ */
+  /* 설명 문구는 배열로 둔다 — 여러 줄 문자열 이어붙이기에서 NaN이 나온 적이 있다 */
+  var GAINS = [
+    ['거슬러 오르기',
+     '보유 종목 하나를 열면, 그걸 사게 만든 책·생각·자료가 한눈에 보입니다. “나는 왜 이걸 갖고 있는가”에 <b>기억이 아니라 기록으로</b> 답합니다.'],
+    ['전제가 깨졌을 때',
+     '“AI 투자가 계속 늘 것이다” 같은 전제가 흔들렸다고 합시다. 그 전제를 담은 기록을 열면 <b>그것에 기대고 있던 판단과 종목이 전부</b> 드러납니다. 무엇을 다시 봐야 하는지 즉시 알 수 있습니다.'],
+    ['시간이 쌓이면',
+     '3년치가 모이면 내 생각이 어떻게 변해 왔는지, 어떤 가정을 <b>반복해서 틀렸는지</b> 드러납니다. 다른 어떤 서비스도 대신해 줄 수 없는, 나만의 기록입니다.']
+  ];
+  var WHENS = [
+    ['책을 덮으며', '“이건 투자에 쓸 수 있겠다” 싶은 대목이 있었다면, 그 책과 떠오른 생각을 잇습니다.'],
+    ['종목을 사기로 했을 때', '결정의 근거가 된 기록과 그 종목을 잇습니다. 이 한 번이 나중에 가장 큰 값을 합니다.'],
+    ['뉴스가 생각을 흔들 때', '기존 판단을 강화하거나 약화시킨 자료를 그 판단에 잇습니다.'],
+    ['되짚어 볼 때', '분기에 한 번, 이어 둔 갈래를 따라가며 아직 유효한 논리인지 점검합니다.']
+  ];
+
   function openGuide(){
     var prev = document.getElementById('rlGuide'); if(prev) prev.remove();
     var ov = document.createElement('div');
@@ -621,33 +692,15 @@
       + '<section class="rlg-sec">'
       +   '<div class="rlg-s-n">03</div>'
       +   '<h3 class="rlg-s-t">그래서 무엇을 얻나</h3>'
-      +   '<div class="rlg-gains">'
-      +     gain('거슬러 오르기',
-      +          '보유 종목 하나를 열면, 그걸 사게 만든 책·생각·자료가 한눈에 보입니다. '
-      +        + '“나는 왜 이걸 갖고 있는가”에 <b>기억이 아니라 기록으로</b> 답합니다.')
-      +      gain('전제가 깨졌을 때',
-      +            '“AI 투자가 계속 늘 것이다” 같은 전제가 흔들렸다고 합시다. '
-      +          + '그 전제를 담은 기록을 열면, <b>그것에 기대고 있던 판단과 종목이 전부</b> 드러납니다. '
-      +          + '무엇을 다시 봐야 하는지 즉시 알 수 있습니다.')
-      +      gain('시간이 쌓이면',
-      +            '3년치가 모이면 내 생각이 어떻게 변해 왔는지, '
-      +          + '어떤 가정을 <b>반복해서 틀렸는지</b> 드러납니다. '
-      +          + '이건 다른 어떤 서비스도 대신해 줄 수 없는, 나만의 기록입니다.')
-      +   '</div>'
+      +   '<div class="rlg-gains">' + GAINS.map(function(g){ return gain(g[0], g[1]); }).join('') + '</div>'
       + '</section>'
 
       /* ④ 언제 이으면 되나 */
       + '<section class="rlg-sec">'
       +   '<div class="rlg-s-n">04</div>'
       +   '<h3 class="rlg-s-t">언제 이으면 되나</h3>'
-      +   '<div class="rlg-when">'
-      +     when('책을 덮으며', '“이건 투자에 쓸 수 있겠다” 싶은 대목이 있었다면, 그 책과 떠오른 생각을 잇습니다.')
-      +      when('종목을 사기로 했을 때', '결정의 근거가 된 기록과 그 종목을 잇습니다. 이 한 번이 나중에 가장 큰 값을 합니다.')
-      +      when('뉴스가 생각을 흔들 때', '기존 판단을 강화하거나 약화시킨 자료를 그 판단에 잇습니다.')
-      +      when('되짚어 볼 때', '분기에 한 번, 이어 둔 갈래를 따라가며 아직 유효한 논리인지 점검합니다.')
-      +   '</div>'
-      +   '<p class="rlg-note">완벽하게 이을 필요는 없습니다. '
-      +     '<b>중요한 판단 하나에 근거 하나</b>만 이어 두어도, 1년 뒤에는 큰 차이가 납니다.</p>'
+      +   '<div class="rlg-when">' + WHENS.map(function(w){ return when(w[0], w[1]); }).join('') + '</div>'
+      +   '<p class="rlg-note">완벽하게 이을 필요는 없습니다. <b>중요한 판단 하나에 근거 하나</b>만 이어 두어도, 1년 뒤에는 큰 차이가 납니다.</p>'
       + '</section>'
       + '</div>'
       + '<div class="hm-btns"><button type="button" class="hm-btn hm-save" id="rlgOk">알겠습니다</button></div>'
