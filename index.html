@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=6" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=6"/>
+<link rel="preload" href="nn-style.css?v=8" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=8"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -80,7 +80,7 @@
     <div class="nav-group ng-portfolio">
       <button class="nbtn nav-trigger">PORTFOLIO<span class="ng-caret">▾</span></button>
       <div class="nav-dropdown">
-        <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button>
+        <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button><button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">THESIS<div class="sh"></div></button>
         <button class="nbtn portfolio-btn" id="nav-portfolio" onclick="switchPage('portfolio')">HOLDINGS<div class="sh"></div></button>
       </div>
     </div>
@@ -1120,7 +1120,18 @@
   </div>
   
 </div>
-<div class="page" id="page-about">
+<div class="page" id="page-conviction">
+      <div style="padding:30px 2.5rem 4rem;max-width:1100px;margin:0 auto;position:relative">
+        <div class="cv-eyebrow">CONVICTION</div>
+        <h1 class="cv-title">투자 논거</h1>
+        <p class="cv-sub">Why I Hold What I Hold</p>
+        <div class="cove-line" style="max-width:520px;margin-top:18px;margin-bottom:8px;background:linear-gradient(90deg,#e0a94a,transparent)"></div>
+        <p class="hold-desc">종목 하나마다 “나는 왜 이걸 사는가”를 적어 둡니다.<br/>생각이 변할 때마다 기록해 두면, 몇 년 뒤 내 판단을 되짚을 수 있습니다.</p>
+        <div id="cv-body" class="cv-body"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-about">
     <div style="padding:1.5rem 2.5rem 4rem;">
     <div style="font-size:9px;letter-spacing:.26em;color:rgba(255,255,255,.88);margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;font-weight:700;text-shadow:0 0 10px rgba(255,255,255,.6),0 0 22px rgba(255,255,255,.25)">ABOUT</div>
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(255,255,255,.28)">NEWNORMAL</h1>
@@ -1191,7 +1202,7 @@
 
 
   </div></div> </div>
-<script src="nn-core.js?v=4"></script>
+<script src="nn-core.js?v=6"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -1736,7 +1747,7 @@
     assets:   ['nn_assets_v1'],
     holdings: ['nn_hold_v2','nn_hold_order'],
     watch:    ['nn_tb_watch'],
-    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1'],
+    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1'],
     hub:      ['nn_hub_v1','nn_refdesk_v1','nn_masters_v1']
   };
   const KEY2DOC = {};
@@ -2983,6 +2994,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=6"></script><script src="nn-modules.js?v=1"></script>
+<script src="nn-relations.js?v=7"></script><script src="nn-conviction.js?v=1"></script><script src="nn-modules.js?v=1"></script>
 </body>
 </html>

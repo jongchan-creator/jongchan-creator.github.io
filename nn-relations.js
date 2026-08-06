@@ -565,7 +565,27 @@
       if(localStorage.getItem(SEED_FLAG) === '1') return;
       var k = window.KnowledgeNotes;
       if(!k || !k.data) return;
-      if(R.all().length > 0){ localStorage.setItem(SEED_FLAG,'1'); return; }
+      /* 구버전 예시가 남아 있으면 먼저 걷어낸다 (v1~v4 → v5 교체) */
+      var hadOld = false;
+      try{
+        ['nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4'].forEach(function(old){
+          if(localStorage.getItem(old) === '1') hadOld = true;
+        });
+      }catch(e){}
+      if(hadOld){
+        try{ clearExamples(); }catch(e){}
+        try{
+          ['nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4'].forEach(function(old){
+            localStorage.setItem(old, '0');
+          });
+        }catch(e){}
+      }
+
+      /* 사용자가 직접 이어 둔 갈래가 있으면 예시를 만들지 않는다 */
+      var mine = R.all().filter(function(x){ return !/^(예시|①|②|③)/.test(x.memo || ''); });
+      if(mine.length > 0){ localStorage.setItem(SEED_FLAG,'1'); return; }
+      /* 남아 있는 예시 갈래는 정리 */
+      R.all().slice().forEach(function(x){ if(/^(예시|①|②|③)/.test(x.memo||'')) R.remove(x.id); });
 
       var bookId  = ensureNote(SAMPLE.book);
       var checkId = ensureNote(SAMPLE.check);
@@ -602,6 +622,15 @@
     var k = window.KnowledgeNotes;
     var removed = 0;
     try{
+      /* 구버전 예시 노트 id 도 함께 정리 */
+      var OLD_IDS = [{type:'books',id:'rlx_book'},{type:'thesis',id:'rlx_think'},
+                     {type:'economics',id:'rlx_check'},{type:'thesis',id:'rlx_judge'}];
+      OLD_IDS.forEach(function(sp){
+        var ref = R.makeRef('note', sp.type, sp.id);
+        removed += R.removeAllOf(ref);
+        var arr0 = k && k.data ? k.data[sp.type] : null;
+        if(arr0) for(var z=arr0.length-1;z>=0;z--) if(arr0[z].id === sp.id) arr0.splice(z,1);
+      });
       [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
         var ref = R.makeRef('note', sp.type, sp.id);
         removed += R.removeAllOf(ref);
