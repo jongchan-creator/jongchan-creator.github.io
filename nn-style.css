@@ -6976,3 +6976,81 @@ html{overflow-y:auto!important;overflow-x:clip!important}
 .ref-lane.rd-over{box-shadow:0 -2px 0 0 rgba(201,169,110,.85);transform:translateY(2px)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .ref-lane.rd-drag-on::before{color:rgba(138,106,36,.55)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .ref-lane.rd-over{box-shadow:0 -2px 0 0 #8A6A24}
+
+/* ══ [수정] 툴바 묶음 이름이 윗줄과 겹치던 문제 ══
+   툴바가 여러 줄로 접히면 -15px 위 라벨이 윗줄 입력칸을 덮었다.
+   줄 간격을 늘리고 라벨을 버튼 바로 위로 붙인다. */
+.editor-toolbar{row-gap:20px!important;padding-top:20px!important}
+.tb-grp::before{top:-13px!important;font-size:8px!important}
+
+/* ══ 맥락 — 시작점 → 지금 → 뻗어 나간 것 (한 줄 배치) ══ */
+.rl-pos{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:11px;
+  padding:14px 16px;margin-bottom:11px}
+.rl-chain{display:flex;align-items:stretch;gap:10px}
+.rl-ch-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.rl-ch-k{font-size:9px;font-weight:700;letter-spacing:.05em;color:#b0aba0;margin-bottom:2px}
+.rl-ch-me .rl-ch-k{color:#a8935f}
+.rl-ch-ar{align-self:center;color:#d5cec1;font-size:13px;flex:none;padding-top:14px}
+.rl-ch-none{font-size:10.5px;color:#c4bfb4;line-height:1.6;padding-top:5px}
+.rl-nd{display:flex;flex-direction:column;gap:1px;align-items:flex-start;text-align:left;
+  width:100%;background:#faf8f5;border:1px solid rgba(0,0,0,.09);border-radius:8px;
+  padding:7px 10px;cursor:pointer;transition:.14s;font-family:'Pretendard',sans-serif;position:relative}
+.rl-nd i{position:absolute;left:10px;top:11px;width:5px;height:5px;border-radius:50%}
+.rl-nd-l{font-size:8.5px;font-weight:700;letter-spacing:.04em;color:#a09a8e;padding-left:9px}
+.rl-nd-t{font-size:12px;color:#2b2823;font-weight:500;line-height:1.35;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.rl-nd[data-ref]:hover{border-color:rgba(201,169,110,.6);background:rgba(201,169,110,.1)}
+.rl-nd[data-ref]:hover .rl-nd-t{color:#8a6a24}
+.rl-nd-cur{background:rgba(201,169,110,.12);border-color:rgba(201,169,110,.5);cursor:default}
+.rl-nd-cur i{background:#c9a96e;box-shadow:0 0 0 3px rgba(201,169,110,.22)}
+.rl-nd-cur .rl-nd-t{font-weight:700;padding-left:9px}
+/* 진행도 */
+.rl-track{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:11px;
+  border-top:1px solid rgba(0,0,0,.06)}
+.rl-tr-k{font-size:9px;font-weight:700;letter-spacing:.05em;color:#b0aba0;flex:none}
+.rl-tr-bar{flex:1;display:flex;align-items:center;gap:0}
+.rl-tr-s{flex:1;display:flex;align-items:center;justify-content:center;position:relative;height:14px}
+.rl-tr-s i{position:absolute;left:0;right:0;height:3px;border-radius:2px;background:rgba(0,0,0,.09)}
+.rl-tr-s.done i{background:rgba(201,169,110,.42)}
+.rl-tr-s.on i{background:#c9a96e;height:5px}
+.rl-tr-s b{position:relative;font-family:'Orbitron',sans-serif;font-size:9px;color:#fff;
+  background:#c9a96e;border-radius:20px;padding:1px 6px;line-height:1.5;z-index:1}
+.rl-tr-n{font-family:'Orbitron',sans-serif;font-size:10.5px;color:#8a6a24;flex:none;font-weight:600}
+@media(max-width:760px){
+  .rl-chain{flex-direction:column;gap:6px}
+  .rl-ch-ar{transform:rotate(90deg);padding-top:0;align-self:flex-start;margin-left:6px}
+}
+
+/* ══ CONVICTION — 쨍한 파랑 (MEDIA #7fa8d4 와 확실히 구분) ══ */
+#page-conviction{ --cvc:#1f6fff; --cvc-lt:#4d8bff; --cvc-dk:#0a4fd0; }
+.cove-line.cv-navy{background:linear-gradient(90deg,#1f6fff,transparent)!important}
+/* 헤더 — ASSETS의 붉은 후광을 파랑으로 덮어씀 */
+#page-conviction .as-h1{text-shadow:0 0 22px rgba(31,111,255,.34)!important}
+#page-conviction .as-eyebrow{color:#6da4ff!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(31,111,255,.5)!important}
+#page-conviction .as-hsub{color:rgba(109,164,255,.55)!important}
+/* 네비 버튼 — 평소엔 다른 탭과 같은 기본색, 올렸을 때만 파랑 */
+#nav-conviction{color:#f8f8fa!important}
+#nav-conviction:hover,#nav-conviction.active{color:#6da4ff!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(31,111,255,.85)}
+#nav-conviction .sh{background:linear-gradient(90deg,transparent,#1f6fff,transparent)!important}
+/* 본문 강조 */
+#page-conviction .cv-new{background:rgba(31,111,255,.16);border-color:rgba(77,139,255,.55);color:#9dc0ff}
+#page-conviction .cv-new:hover{background:rgba(31,111,255,.3);border-color:rgba(77,139,255,.85)}
+#page-conviction .cv-card:hover{border-color:rgba(77,139,255,.55);
+  box-shadow:0 14px 30px -18px rgba(10,40,110,.9)}
+#page-conviction .cv-c-tk{color:#6da4ff}
+#page-conviction .cv-blk-t{color:rgba(109,164,255,.85)}
+#page-conviction .cv-back:hover{border-color:rgba(77,139,255,.65);color:#9dc0ff}
+#page-conviction .cv-act:hover{border-color:rgba(77,139,255,.65);color:#9dc0ff;
+  background:rgba(31,111,255,.15)}
+#page-conviction .cv-rev{color:#6da4ff}
+#page-conviction .cv-e-d b{color:#6da4ff}
+#page-conviction .cv-empty{border-color:rgba(77,139,255,.26)}
+#page-conviction .cv-c-cv{color:#4d8bff}
+.cv-modal .cv-star.on,.cv-st-modal .cv-star.on{color:#4d8bff}
+.cv-modal .cv-hint b,.cv-st-modal .cv-hint b{color:#6da4ff}
+.cv-st-opt:hover{background:rgba(31,111,255,.15);border-color:rgba(77,139,255,.5)}
+.cv-st-opt.sel{background:rgba(31,111,255,.28);border-color:rgba(77,139,255,.8)}
+.cv-form::-webkit-scrollbar-thumb{background:rgba(77,139,255,.36)}
+.cv-form::-webkit-scrollbar-thumb:hover{background:rgba(77,139,255,.62)}

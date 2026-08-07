@@ -315,36 +315,47 @@
     if(list.length){
       var ch = R.chainOf(ref);
       var me = R.resolve(ref);
+
+      function node(i, cls){
+        return '<button type="button" class="rl-nd ' + cls + '" data-ref="' + esc(i.ref) + '">'
+          + '<i style="background:' + esc(i.color) + '"></i>'
+          + '<span class="rl-nd-l">' + esc(i.label) + '</span>'
+          + '<span class="rl-nd-t">' + esc(i.title) + '</span></button>';
+      }
+
       h += '<div class="rl-pos">'
-        + '<div class="rl-pos-top">'
-        +   '<span class="rl-pos-n">' + ch.pos + '<i>/</i>' + ch.total + '</span>'
-        +   '<span class="rl-pos-lb">이 갈래에서 <b>' + ch.pos + '번째</b> 자리</span>'
-        +   '<span class="rl-pos-dots">'
-        +     Array.apply(null, Array(Math.min(ch.total, 8))).map(function(_, i){
-                return '<i class="' + (i === ch.pos - 1 ? 'on' : '') + '"></i>';
+        /* 한 줄에 시작점 → 지금 → 뻗어나간 것 */
+        + '<div class="rl-chain">'
+        +   '<div class="rl-ch-col">'
+        +     '<div class="rl-ch-k">' + (ch.before.length ? '여기로 흘러든 것' : '시작점') + '</div>'
+        +     (ch.before.length
+                ? ch.before.map(function(i){ return node(i,'rl-nd-b'); }).join('')
+                : '<div class="rl-ch-none">여기서 갈래가<br>시작됩니다</div>')
+        +   '</div>'
+        +   '<div class="rl-ch-ar">→</div>'
+        +   '<div class="rl-ch-col rl-ch-me">'
+        +     '<div class="rl-ch-k">지금 보는 기록</div>'
+        +     '<div class="rl-nd rl-nd-cur"><i></i><span class="rl-nd-t">' + esc(me.title) + '</span></div>'
+        +   '</div>'
+        +   '<div class="rl-ch-ar">→</div>'
+        +   '<div class="rl-ch-col">'
+        +     '<div class="rl-ch-k">' + (ch.after.length ? '여기서 뻗어 나간 것' : '끝') + '</div>'
+        +     (ch.after.length
+                ? ch.after.map(function(i){ return node(i,'rl-nd-a'); }).join('')
+                : '<div class="rl-ch-none">아직 다음<br>갈래가 없습니다</div>')
+        +   '</div>'
+        + '</div>'
+        /* 아래: 갈래 전체를 한 줄로 — 몇 번째인지 한눈에 */
+        + '<div class="rl-track">'
+        +   '<span class="rl-tr-k">진행</span>'
+        +   '<span class="rl-tr-bar">'
+        +     Array.apply(null, Array(Math.min(ch.total, 10))).map(function(_, i){
+                var n = i + 1;
+                return '<span class="rl-tr-s' + (n === ch.pos ? ' on' : (n < ch.pos ? ' done' : '')) + '">'
+                     + '<i></i>' + (n === ch.pos ? '<b>' + n + '</b>' : '') + '</span>';
               }).join('')
         +   '</span>'
-        + '</div>'
-        + '<div class="rl-flow">'
-        +   (ch.before.length
-              ? '<div class="rl-fl-row rl-fl-b"><span class="rl-fl-k">여기로 흘러든 것</span>'
-                + '<span class="rl-fl-v">' + ch.before.map(function(i){
-                    return '<button type="button" class="rl-fl-go" data-ref="' + esc(i.ref) + '">'
-                      + '<i style="background:' + esc(i.color) + '"></i>' + esc(i.title) + '</button>';
-                  }).join('') + '</span></div>'
-              : '<div class="rl-fl-row rl-fl-root"><span class="rl-fl-k">시작점</span>'
-                + '<span class="rl-fl-v rl-fl-none">여기서 갈래가 시작됩니다</span></div>')
-        +   '<div class="rl-fl-me"><span class="rl-fl-dot"></span>'
-        +     '<span class="rl-fl-mt">' + esc(me.title) + '</span>'
-        +     '<span class="rl-fl-mb">지금 보는 기록</span></div>'
-        +   (ch.after.length
-              ? '<div class="rl-fl-row rl-fl-a"><span class="rl-fl-k">여기서 뻗어 나간 것</span>'
-                + '<span class="rl-fl-v">' + ch.after.map(function(i){
-                    return '<button type="button" class="rl-fl-go" data-ref="' + esc(i.ref) + '">'
-                      + '<i style="background:' + esc(i.color) + '"></i>' + esc(i.title) + '</button>';
-                  }).join('') + '</span></div>'
-              : '<div class="rl-fl-row rl-fl-end"><span class="rl-fl-k">끝</span>'
-                + '<span class="rl-fl-v rl-fl-none">아직 다음 갈래가 없습니다</span></div>')
+        +   '<span class="rl-tr-n">' + ch.pos + ' / ' + ch.total + '</span>'
         + '</div></div>';
     }
 
@@ -403,7 +414,7 @@
       else run();
     };
 
-    wrap.querySelectorAll('.rl-fl-go').forEach(function(b){
+    wrap.querySelectorAll('.rl-nd[data-ref]').forEach(function(b){
       b.onclick = function(){
         var info = R.resolve(b.getAttribute('data-ref'));
         if(info && info.open) info.open();
@@ -743,8 +754,38 @@
   }
   window.__nnRelClearExamples = clearExamples;
 
+  /* 이미 만들어진 예시 노트를 최신 내용으로 맞춘다.
+     seedExample 은 한 번 돌면 플래그 때문에 다시 실행되지 않으므로,
+     표지·본문이 바뀌었을 때를 위해 별도로 한 번 더 확인한다. */
+  function refreshExamples(){
+    try{
+      var k = window.KnowledgeNotes;
+      if(!k || !k.data) return;
+      var touched = 0;
+      [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
+        var n = findNote(sp.type, sp.id);
+        if(!n) return;
+        var changed = (n.title !== sp.title) || (n.content !== sp.content)
+                   || (sp.cover && n.cover !== sp.cover);
+        if(!changed) return;
+        n.title = sp.title;
+        n.content = sp.content;
+        if(sp.cover) n.cover = sp.cover;
+        touched++;
+      });
+      if(touched){
+        k.save();
+        ['books','economics','thesis'].forEach(function(t){ try{ k.renderSidebar(t); }catch(e){} });
+      }
+    }catch(e){}
+  }
+
   (function ready(){
-    if(window.KnowledgeNotes && window.KnowledgeNotes.data){ setTimeout(seedExample, 1500); return; }
+    if(window.KnowledgeNotes && window.KnowledgeNotes.data){
+      setTimeout(seedExample, 1500);
+      setTimeout(refreshExamples, 1800);
+      return;
+    }
     setTimeout(ready, 300);
   })();
 
