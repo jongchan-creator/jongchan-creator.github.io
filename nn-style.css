@@ -6932,3 +6932,47 @@ html{overflow-y:auto!important;overflow-x:clip!important}
   .rl-fl-k{width:auto;padding-top:0}
   .rl-fl-me{margin-left:0}
 }
+
+/* ══ CONVICTION — 상징색: 진한 파랑 ══ */
+#page-conviction{ --cvc:#3d6fb5; --cvc-lt:#5b8fd4; --cvc-dk:#2a4f85; }
+.cove-line.cv-navy{background:linear-gradient(90deg,#3d6fb5,transparent)!important}
+#page-conviction .as-eyebrow{color:#5b8fd4}
+#page-conviction .as-hsub{color:rgba(120,160,214,.55)}
+/* 네비 탭 버튼 */
+#nav-conviction{color:#8fb4e0!important}
+#nav-conviction:hover,#nav-conviction.active{color:#b8d4f5!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6)}
+#nav-conviction .sh{background:linear-gradient(90deg,transparent,#5b8fd4,transparent)!important}
+/* 목록·상세의 강조색 */
+#page-conviction .cv-new{background:rgba(61,111,181,.16);border-color:rgba(91,143,212,.5);color:#a8cbf0}
+#page-conviction .cv-new:hover{background:rgba(61,111,181,.3);border-color:rgba(91,143,212,.8)}
+#page-conviction .cv-card:hover{border-color:rgba(91,143,212,.5);
+  box-shadow:0 14px 30px -18px rgba(20,40,80,.9)}
+#page-conviction .cv-c-tk{color:#8fb4e0}
+#page-conviction .cv-blk-t{color:rgba(139,178,224,.8)}
+#page-conviction .cv-back:hover{border-color:rgba(91,143,212,.6);color:#a8cbf0}
+#page-conviction .cv-act:hover{border-color:rgba(91,143,212,.6);color:#a8cbf0;
+  background:rgba(61,111,181,.14)}
+#page-conviction .cv-rev{color:#8fb4e0}
+#page-conviction .cv-e-d b{color:#8fb4e0}
+#page-conviction .cv-empty{border-color:rgba(91,143,212,.22)}
+/* 확신 별은 파랑 계열로 */
+#page-conviction .cv-c-cv{color:#6f9ed4}
+.cv-modal .cv-star.on,.cv-st-modal .cv-star.on{color:#5b8fd4}
+.cv-modal .cv-hint b,.cv-st-modal .cv-hint b{color:#8fb4e0}
+.cv-modal .cv-star-lb{color:rgba(255,255,255,.45)}
+.cv-st-opt:hover{background:rgba(61,111,181,.14);border-color:rgba(91,143,212,.45)}
+.cv-st-opt.sel{background:rgba(61,111,181,.26);border-color:rgba(91,143,212,.75)}
+.cv-form::-webkit-scrollbar-thumb{background:rgba(91,143,212,.34)}
+.cv-form::-webkit-scrollbar-thumb:hover{background:rgba(91,143,212,.6)}
+
+/* ══ 레퍼런스 데스크 — 카테고리 순서 바꾸기 ══ */
+.ref-lane.rd-drag-on{cursor:grab;position:relative;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),opacity .15s,box-shadow .18s}
+.ref-lane.rd-drag-on:active{cursor:grabbing}
+.ref-lane.rd-drag-on::before{content:'⠿';position:absolute;left:-16px;top:9px;
+  font-size:12px;color:rgba(201,169,110,.5);letter-spacing:-2px}
+.ref-lane.rd-dragging{opacity:.4;transform:scale(.985)}
+.ref-lane.rd-over{box-shadow:0 -2px 0 0 rgba(201,169,110,.85);transform:translateY(2px)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ref-lane.rd-drag-on::before{color:rgba(138,106,36,.55)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ref-lane.rd-over{box-shadow:0 -2px 0 0 #8A6A24}

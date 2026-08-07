@@ -776,6 +776,7 @@
     if(rdEdit){ h+='<button type="button" class="rd-add-lane" onclick="window.rdAddLane()">＋ 카테고리 추가</button>'; }
     host.innerHTML=h;
     if(rdEdit) bindDrag(host);
+    try{ if(window.__rdBindLaneDrag) window.__rdBindLaneDrag(); }catch(e){}
     observeLanes(host);
     renderShowcase();
     applyView();
@@ -1025,8 +1026,67 @@
   window.rdAddChip=function(l){ rdChipModal(l,-1); };
   window.rdEditChip=function(l,i){ rdChipModal(l,i); };
   window.rdDelLane=function(l){ var d=load(); if(!d[l]) return; var removed=d[l], pos=l; d.splice(l,1); save(d); render(); window.__nnToast('🗑 "'+removed.label+'" 카테고리 삭제됨', {kind:'del', undo:function(){ var dd=load(); dd.splice(pos,0,removed); save(dd); render(); window.__nnToast('↩ 복원되었습니다'); }}); };
-  window.rdAddLane=function(){ var name=prompt('새 카테고리 이름 (영문 권장):',''); if(name===null) return; name=name.trim(); if(!name) return; var d=load(); d.push({label:name,chips:[]}); save(d); render(); };
-  window.rdEditLane=function(l){ var d=load(); if(!d[l]) return; var name=prompt('카테고리 이름 수정:',d[l].label); if(name===null) return; name=name.trim(); if(!name) return; d[l].label=name; save(d); render(); };
+  window.rdAddLane=function(){
+    var run=function(name){
+      name=String(name||'').trim(); if(!name) return;
+      var d=load(); d.push({label:name,chips:[]}); save(d); render();
+      if(window.__nnToast) window.__nnToast('\u2713 "'+name+'" 카테고리를 추가했습니다');
+    };
+    if(window.__nnPrompt) window.__nnPrompt({
+      title:'새 카테고리', label:'이름', value:'',
+      placeholder:'예: EQUITY · MACRO · 리서치', required:true, onOk:run
+    });
+    else { var n=prompt('새 카테고리 이름:',''); if(n!==null) run(n); }
+  };
+  window.rdEditLane=function(l){
+    var d=load(); if(!d[l]) return;
+    var run=function(name){
+      name=String(name||'').trim(); if(!name) return;
+      var dd=load(); if(!dd[l]) return;
+      dd[l].label=name; save(dd); render();
+    };
+    if(window.__nnPrompt) window.__nnPrompt({
+      title:'카테고리 이름', label:'이름', value:d[l].label, required:true, onOk:run
+    });
+    else { var n=prompt('카테고리 이름 수정:',d[l].label); if(n!==null) run(n); }
+  };
+
+  /* ── 카테고리 순서 바꾸기 (끌어다 놓기) ── */
+  window.rdMoveLane=function(from,to){
+    var d=load();
+    if(from===to || from<0 || to<0 || from>=d.length || to>=d.length) return;
+    var it=d.splice(from,1)[0];
+    d.splice(to,0,it);
+    save(d); render();
+  };
+  function bindLaneDrag(){
+    var host=document.getElementById('refDeskFull') || document;
+    var lanes=host.querySelectorAll('.ref-lane');
+    var dragIdx=null;
+    lanes.forEach(function(el,i){
+      if(!window.rdEdit){ el.removeAttribute('draggable'); el.classList.remove('rd-drag-on'); return; }
+      el.setAttribute('draggable','true');
+      el.classList.add('rd-drag-on');
+      el.ondragstart=function(e){
+        dragIdx=i; el.classList.add('rd-dragging');
+        try{ e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain', String(i)); }catch(x){}
+      };
+      el.ondragend=function(){
+        dragIdx=null; el.classList.remove('rd-dragging');
+        lanes.forEach(function(o){ o.classList.remove('rd-over'); });
+      };
+      el.ondragover=function(e){ e.preventDefault(); el.classList.add('rd-over'); };
+      el.ondragleave=function(){ el.classList.remove('rd-over'); };
+      el.ondrop=function(e){
+        e.preventDefault(); el.classList.remove('rd-over');
+        var from=dragIdx;
+        if(from===null){ try{ from=parseInt(e.dataTransfer.getData('text/plain'),10); }catch(x){} }
+        if(from===null || isNaN(from)) return;
+        window.rdMoveLane(from, i);
+      };
+    });
+  }
+  window.__rdBindLaneDrag=bindLaneDrag;
 
   function rdChipModal(lane,idx){
     var d=load();
@@ -1343,9 +1403,13 @@
     menu.querySelectorAll('.bgm-edit').forEach(function(b){
       b.onclick=function(e){ e.stopPropagation();
         var i=parseInt(b.getAttribute('data-i')); var l=loadList();
-        var name=prompt('배경화면 이름:', l[i].name);
-        if(name===null) return; name=name.trim(); if(!name) return;
-        l[i].name=name; saveList(l); renderMenu();
+        var run=function(nm){
+          nm=String(nm||'').trim(); if(!nm) return;
+          var ll=loadList(); if(!ll[i]) return;
+          ll[i].name=nm; saveList(ll); renderMenu();
+        };
+        if(window.__nnPrompt) window.__nnPrompt({title:'배경화면 이름', label:'이름', value:(l[i]||{}).name||'', required:true, onOk:run});
+        else { var nm0=prompt('배경화면 이름:', (l[i]||{}).name||''); if(nm0!==null) run(nm0); }
       };
     });
     /* 삭제 (토스트 실행취소) */

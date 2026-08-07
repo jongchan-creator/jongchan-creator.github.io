@@ -5618,7 +5618,13 @@ window.ThesisApp = (function(){
         if(!main || !window.__nnRelPanel || !window.__nnRel) return;
         var old=main.querySelector('.rl-panel'); if(old) old.remove();
         var area=main.querySelector('.editor-scroll-area') || main;
-        area.appendChild(window.__nnRelPanel(window.__nnRel.makeRef('note','thesis', n.id)));
+        var panel=window.__nnRelPanel(window.__nnRel.makeRef('note','thesis', n.id));
+        /* 다른 탭과 같이 본문 위쪽에 둔다 (제목·메타 다음) */
+        var after=area.querySelector('.th-srcbox') || area.querySelector('.th-tagbox')
+               || area.querySelector('.editor-toolbar') || null;
+        if(after && after.nextSibling) area.insertBefore(panel, after.nextSibling);
+        else if(after) area.appendChild(panel);
+        else area.insertBefore(panel, area.firstChild);
       }catch(e){}
     }, 80);
     var main=document.getElementById('thesis-editor-main');
