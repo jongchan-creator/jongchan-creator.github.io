@@ -7054,3 +7054,79 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ref-lane.rd-over{box-shadow:0 -2px 
 .cv-st-opt.sel{background:rgba(31,111,255,.28);border-color:rgba(77,139,255,.8)}
 .cv-form::-webkit-scrollbar-thumb{background:rgba(77,139,255,.36)}
 .cv-form::-webkit-scrollbar-thumb:hover{background:rgba(77,139,255,.62)}
+
+/* ══ D-DAY 삭제 버튼 — 붉은 원 안 X 가 안 보이던 문제 ══
+   밝은 배경 규칙이 색을 회색(--lp-ink3)으로 덮고 있었다. */
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ddi-del,
+html.nn-bgmode-hero:not(.nn-bgscroll-dark) .ddi-del{
+  color:#fff!important;font-weight:800!important;
+  background:rgba(196,58,58,.96)!important;
+  box-shadow:0 2px 8px rgba(120,20,20,.35),0 0 0 1.5px rgba(255,255,255,.9)!important;
+}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ddi-del:hover,
+html.nn-bgmode-hero:not(.nn-bgscroll-dark) .ddi-del:hover{
+  color:#fff!important;background:#e04b4b!important;transform:scale(1.14);
+  box-shadow:0 3px 12px rgba(196,58,58,.55),0 0 0 1.5px #fff!important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   코브 조명 — 모든 탭 통일 · 밝은 황금빛 + 은은한 발광
+   탭마다 초록·파랑·보라·주황으로 흩어져 있던 것을 하나로 모은다.
+   ══════════════════════════════════════════════════════════════════ */
+.cove-line,
+.cove-line.cv-green,.cove-line.cv-blue,.cove-line.cv-white,
+.cove-line.cv-rose,.cove-line.cv-purple,.cove-line.cv-orange,
+.cove-line.cv-gray,.cove-line.cv-red,.cove-line.cv-navy,.cove-line.cv-gold{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,175,105,.18) 7%,
+    rgba(246,214,145,.92) 50%,
+    rgba(212,175,105,.18) 93%,
+    transparent 100%)!important;
+  box-shadow:0 0 12px rgba(232,196,126,.28), 0 0 30px rgba(212,175,105,.14)!important;
+}
+/* 위로 번지는 은은한 빛 */
+.cove-line::before,
+.cove-line.cv-green::before,.cove-line.cv-blue::before,.cove-line.cv-white::before,
+.cove-line.cv-rose::before,.cove-line.cv-purple::before,.cove-line.cv-orange::before,
+.cove-line.cv-gray::before,.cove-line.cv-red::before,.cove-line.cv-navy::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(212,175,105,.14) 16%,
+    rgba(232,196,126,.34) 50%,
+    rgba(212,175,105,.14) 84%,
+    transparent 100%)!important;
+  filter:blur(5px);
+}
+/* 심지 — 가장 밝은 중심선 */
+.cove-line::after,
+.cove-line.cv-green::after,.cove-line.cv-blue::after,.cove-line.cv-white::after,
+.cove-line.cv-rose::after,.cove-line.cv-purple::after,.cove-line.cv-orange::after,
+.cove-line.cv-gray::after,.cove-line.cv-red::after,.cove-line.cv-navy::after{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,240,205,.5) 28%,
+    rgba(255,247,225,.85) 50%,
+    rgba(255,240,205,.5) 72%,
+    transparent 100%)!important;
+}
+/* 밝은 배경에서는 발광을 줄이고 선만 남긴다 */
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line[class*="cv-"]{
+  background:linear-gradient(90deg,
+    transparent 0%, rgba(138,106,36,.2) 8%,
+    rgba(160,124,44,.75) 50%,
+    rgba(138,106,36,.2) 92%, transparent 100%)!important;
+  box-shadow:0 0 10px rgba(160,124,44,.16)!important;
+}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line::before,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line[class*="cv-"]::before{
+  background:linear-gradient(90deg,transparent,rgba(160,124,44,.18) 50%,transparent)!important;
+}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line::after,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .cove-line[class*="cv-"]::after{
+  background:linear-gradient(90deg,transparent,rgba(196,160,80,.5) 50%,transparent)!important;
+}
+@media (prefers-reduced-motion: reduce){
+  .cove-line::after{animation:none!important}
+}

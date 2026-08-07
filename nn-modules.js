@@ -1052,6 +1052,9 @@
   };
 
   /* ── 카테고리 순서 바꾸기 (끌어다 놓기) ── */
+  /* 편집 모드 상태를 밖에서도 읽을 수 있게 (드래그 바인딩이 참조) */
+  window.__rdIsEdit=function(){ return !!rdEdit; };
+
   window.rdMoveLane=function(from,to){
     var d=load();
     if(from===to || from<0 || to<0 || from>=d.length || to>=d.length) return;
@@ -1064,7 +1067,8 @@
     var lanes=host.querySelectorAll('.ref-lane');
     var dragIdx=null;
     lanes.forEach(function(el,i){
-      if(!window.rdEdit){ el.removeAttribute('draggable'); el.classList.remove('rd-drag-on'); return; }
+      var editing = window.__rdIsEdit ? window.__rdIsEdit() : false;
+      if(!editing){ el.removeAttribute('draggable'); el.classList.remove('rd-drag-on'); return; }
       el.setAttribute('draggable','true');
       el.classList.add('rd-drag-on');
       el.ondragstart=function(e){
@@ -1130,6 +1134,29 @@
     {id:'bg9',     name:'Seoul Nightscape',       url:'https://i.postimg.cc/cLnPcKH3/pexels-ethan-brooke-1123775-5038998.jpg'},
     {id:'times',   name:'Times Square Night',     url:'https://images.pexels.com/photos/12729169/pexels-photo-12729169.jpeg'}
   ];
+  /* 예전에 한글로 저장된 기본 배경 이름을 영문으로 되돌린다 */
+  (function migrateBgNames(){
+    try{
+      if(localStorage.getItem('nn_bg_name_en_v1') === '1') return;
+      var raw = localStorage.getItem(LIST_KEY);
+      if(raw){
+        var l = JSON.parse(raw);
+        if(Array.isArray(l)){
+          var MAP = {};
+          DEFAULT_BGS.forEach(function(d){ MAP[d.id] = d.name; });
+          var changed = false;
+          l.forEach(function(it){
+            if(it && MAP[it.id] && /[\uAC00-\uD7A3]/.test(String(it.name||''))){
+              it.name = MAP[it.id]; changed = true;
+            }
+          });
+          if(changed) localStorage.setItem(LIST_KEY, JSON.stringify(l));
+        }
+      }
+      localStorage.setItem('nn_bg_name_en_v1','1');
+    }catch(e){}
+  })();
+
   function loadList(){
     try{ var s=localStorage.getItem(LIST_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)&&a.length) return a; } }catch(e){}
     return JSON.parse(JSON.stringify(DEFAULT_BGS));
