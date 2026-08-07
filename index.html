@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=8" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=8"/>
+<link rel="preload" href="nn-style.css?v=9" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=9"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -80,7 +80,7 @@
     <div class="nav-group ng-portfolio">
       <button class="nbtn nav-trigger">PORTFOLIO<span class="ng-caret">▾</span></button>
       <div class="nav-dropdown">
-        <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button><button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">THESIS<div class="sh"></div></button>
+        <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button><button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">CONVICTION<div class="sh"></div></button>
         <button class="nbtn portfolio-btn" id="nav-portfolio" onclick="switchPage('portfolio')">HOLDINGS<div class="sh"></div></button>
       </div>
     </div>
@@ -1121,12 +1121,14 @@
   
 </div>
 <div class="page" id="page-conviction">
-      <div style="padding:30px 2.5rem 4rem;max-width:1100px;margin:0 auto;position:relative">
-        <div class="cv-eyebrow">CONVICTION</div>
-        <h1 class="cv-title">투자 논거</h1>
-        <p class="cv-sub">Why I Hold What I Hold</p>
-        <div class="cove-line" style="max-width:520px;margin-top:18px;margin-bottom:8px;background:linear-gradient(90deg,#e0a94a,transparent)"></div>
-        <p class="hold-desc">종목 하나마다 “나는 왜 이걸 사는가”를 적어 둡니다.<br/>생각이 변할 때마다 기록해 두면, 몇 년 뒤 내 판단을 되짚을 수 있습니다.</p>
+      <div class="as-page-wrap">
+        <div class="as-header">
+          <div class="as-eyebrow">CONVICTION</div>
+          <h1 class="as-h1">투자 논거</h1>
+          <p class="as-hsub">Why I Hold · Thesis · Review</p>
+          <div class="cove-line cv-gold" style="max-width:520px;margin-top:18px;margin-bottom:6px;"></div>
+          <p class="as-hdesc">종목 하나마다 “나는 왜 이걸 사는가”를 적어 둡니다.<br/>생각이 변할 때마다 기록해 두면, 몇 년 뒤 자신의 판단을 그대로 되짚을 수 있습니다.</p>
+        </div>
         <div id="cv-body" class="cv-body"></div>
       </div>
     </div>
@@ -2994,6 +2996,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=7"></script><script src="nn-conviction.js?v=1"></script><script src="nn-modules.js?v=1"></script>
+<script src="nn-relations.js?v=8"></script><script src="nn-conviction.js?v=1"></script><script src="nn-modules.js?v=1"></script>
 </body>
 </html>

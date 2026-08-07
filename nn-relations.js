@@ -211,6 +211,55 @@
     return out;
   }
 
+  /* ── 이 기록이 갈래의 어디쯤인지 계산 ───────────────────
+     방향을 저장해 두었으므로 앞/뒤를 나눌 수 있다.
+       before : 이 기록으로 흘러 들어온 것 (X → 나)
+       after  : 이 기록에서 뻗어 나간 것   (나 → Y)
+       depth  : 뿌리에서 몇 번째인지
+       total  : 이 갈래 전체 길이
+     ───────────────────────────────────────────────────── */
+  function chainOf(ref){
+    var all = load();
+    function inbound(r){
+      return all.filter(function(x){ return x.to === r; }).map(function(x){ return x.from; });
+    }
+    function outbound(r){
+      return all.filter(function(x){ return x.from === r; }).map(function(x){ return x.to; });
+    }
+    /* 뿌리까지 거슬러 올라간 깊이 */
+    function depthOf(r, seen){
+      seen = seen || {};
+      if(seen[r]) return 0;           /* 순환 방지 */
+      seen[r] = 1;
+      var ins = inbound(r);
+      if(!ins.length) return 0;
+      var best = 0;
+      ins.forEach(function(p){
+        var d = depthOf(p, seen) + 1;
+        if(d > best) best = d;
+      });
+      return best;
+    }
+    /* 끝까지 내려간 길이 */
+    function heightOf(r, seen){
+      seen = seen || {};
+      if(seen[r]) return 0;
+      seen[r] = 1;
+      var outs = outbound(r);
+      if(!outs.length) return 0;
+      var best = 0;
+      outs.forEach(function(c){
+        var d = heightOf(c, seen) + 1;
+        if(d > best) best = d;
+      });
+      return best;
+    }
+    var before = inbound(ref).map(resolve).filter(function(i){ return i.exists; });
+    var after  = outbound(ref).map(resolve).filter(function(i){ return i.exists; });
+    var d = depthOf(ref), hgt = heightOf(ref);
+    return { before:before, after:after, depth:d, total:d + hgt + 1, pos:d + 1 };
+  }
+
   /* ── 통계 (4단계 Flow 시각화에서 사용) ─────────────── */
   function stats(){
     var a = load();
@@ -228,7 +277,7 @@
     add:add, remove:remove, removeAllOf:removeAllOf,
     of:of, countOf:countOf, exists:exists,
     resolve:resolve, makeRef:makeRef, parseRef:parseRef,
-    candidates:candidates, stats:stats,
+    candidates:candidates, stats:stats, chainOf:chainOf,
     all:load
   };
 })();
@@ -261,6 +310,43 @@
           + '<button type="button" class="rl-help" title="맥락이란?">?</button>'
           + '<button type="button" class="rl-add">＋ 맥락 잇기</button>'
           + '</div>';
+
+    /* ── 이 기록이 갈래의 어디쯤인지 (자동 계산) ── */
+    if(list.length){
+      var ch = R.chainOf(ref);
+      var me = R.resolve(ref);
+      h += '<div class="rl-pos">'
+        + '<div class="rl-pos-top">'
+        +   '<span class="rl-pos-n">' + ch.pos + '<i>/</i>' + ch.total + '</span>'
+        +   '<span class="rl-pos-lb">이 갈래에서 <b>' + ch.pos + '번째</b> 자리</span>'
+        +   '<span class="rl-pos-dots">'
+        +     Array.apply(null, Array(Math.min(ch.total, 8))).map(function(_, i){
+                return '<i class="' + (i === ch.pos - 1 ? 'on' : '') + '"></i>';
+              }).join('')
+        +   '</span>'
+        + '</div>'
+        + '<div class="rl-flow">'
+        +   (ch.before.length
+              ? '<div class="rl-fl-row rl-fl-b"><span class="rl-fl-k">여기로 흘러든 것</span>'
+                + '<span class="rl-fl-v">' + ch.before.map(function(i){
+                    return '<button type="button" class="rl-fl-go" data-ref="' + esc(i.ref) + '">'
+                      + '<i style="background:' + esc(i.color) + '"></i>' + esc(i.title) + '</button>';
+                  }).join('') + '</span></div>'
+              : '<div class="rl-fl-row rl-fl-root"><span class="rl-fl-k">시작점</span>'
+                + '<span class="rl-fl-v rl-fl-none">여기서 갈래가 시작됩니다</span></div>')
+        +   '<div class="rl-fl-me"><span class="rl-fl-dot"></span>'
+        +     '<span class="rl-fl-mt">' + esc(me.title) + '</span>'
+        +     '<span class="rl-fl-mb">지금 보는 기록</span></div>'
+        +   (ch.after.length
+              ? '<div class="rl-fl-row rl-fl-a"><span class="rl-fl-k">여기서 뻗어 나간 것</span>'
+                + '<span class="rl-fl-v">' + ch.after.map(function(i){
+                    return '<button type="button" class="rl-fl-go" data-ref="' + esc(i.ref) + '">'
+                      + '<i style="background:' + esc(i.color) + '"></i>' + esc(i.title) + '</button>';
+                  }).join('') + '</span></div>'
+              : '<div class="rl-fl-row rl-fl-end"><span class="rl-fl-k">끝</span>'
+                + '<span class="rl-fl-v rl-fl-none">아직 다음 갈래가 없습니다</span></div>')
+        + '</div></div>';
+    }
 
     if(!list.length){
       var seen = false;
@@ -316,6 +402,13 @@
       });
       else run();
     };
+
+    wrap.querySelectorAll('.rl-fl-go').forEach(function(b){
+      b.onclick = function(){
+        var info = R.resolve(b.getAttribute('data-ref'));
+        if(info && info.open) info.open();
+      };
+    });
 
     var moreB = wrap.querySelector('.rl-i-more');
     if(moreB) moreB.onclick = function(){ if(window.__nnRelGuide) window.__nnRelGuide(); };
@@ -463,7 +556,6 @@
       title:'[예시] 돈의 심리학',
       cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
       content: noteHTML([
-        stageBar('read'),
         '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계</b> — 한 권의 책에서 <b>하나의 아이디어</b>를 건져 올리는 단계입니다. 아래 <b>맥락</b>을 보시면 이 아이디어가 어디로 이어졌는지 따라갈 수 있습니다.</div>',
         '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
@@ -482,7 +574,6 @@
       type:'economics', id:'rlx_check', stage:'check',
       title:'[예시] 72의 법칙으로 확인한 것',
       content: noteHTML([
-        stageBar('check'),
         '<div class="np-note" contenteditable="false">📗 <b>맥락 예시 · 2단계</b> — 책에서 얻은 아이디어를 <b>숫자로 검증</b>하는 단계입니다.</div>',
         '<div style="font-weight:700;margin-top:6px">검증할 명제</div>',
         '<div>“수익률을 높이는 것보다 기간을 늘리는 것이 결과에 더 크다.”</div>',
@@ -508,7 +599,6 @@
       type:'thesis', id:'rlx_judge', stage:'judge',
       title:'[예시] 20년을 버틸 수 있는 방식만 고른다',
       content: noteHTML([
-        stageBar('judge'),
         '<div class="np-note" contenteditable="false">💭 <b>맥락 예시 · 3단계</b> — 확인한 사실을 바탕으로 <b>내 투자 원칙과 종목</b>을 정하는 단계입니다.</div>',
         '<div style="font-weight:700;margin-top:6px">내가 내린 판단</div>',
         '<div>수익률을 좇기보다 <b>20년 동안 손대지 않을 수 있는 구조</b>를 만든다.<br>그래서 개별 종목 비중을 줄이고, 핵심 자산은 광범위 인덱스로 간다.</div>',
@@ -543,7 +633,14 @@
     if(!k || !k.data) return null;
     if(!k.data[spec.type]) k.data[spec.type] = [];
     var found = findNote(spec.type, spec.id);
-    if(found) return spec.id;
+    if(found){
+      /* 이미 있는 예시는 최신 내용으로 갱신한다 (표지·본문·단계 표시가 바뀌었을 수 있다) */
+      found.title = spec.title;
+      found.content = spec.content;
+      if(spec.cover) found.cover = spec.cover;
+      found.mtime = Date.now();
+      return spec.id;
+    }
 
     var now = (k._nowStr ? k._nowStr() : new Date().toISOString().slice(0,10));
     var rec = { id:spec.id, title:spec.title, content:spec.content, date:now, mtime:Date.now() };
