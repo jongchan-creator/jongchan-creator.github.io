@@ -211,6 +211,40 @@
     return out;
   }
 
+  /* ── 갈래 이름·설명 ────────────────────────────────────
+     갈래 전체에 하나의 제목을 붙인다. 어느 칸에서 열어도 같은 값이
+     보이도록 '뿌리 ref' 를 열쇠로 삼는다. ── */
+  var META_KEY = 'nn_thread_meta_v1';
+  function loadMeta(){
+    try{ var o = JSON.parse(localStorage.getItem(META_KEY)); return (o && typeof o === 'object') ? o : {}; }
+    catch(e){ return {}; }
+  }
+  function saveMeta(o){
+    try{ localStorage.setItem(META_KEY, JSON.stringify(o)); return true; }catch(e){ return false; }
+  }
+  /* 이 갈래의 뿌리를 찾는다 (들어오는 것이 없을 때까지 거슬러 오름) */
+  function rootOf(ref, seen){
+    seen = seen || {};
+    if(seen[ref]) return ref;
+    seen[ref] = 1;
+    var all = load();
+    var ins = all.filter(function(x){ return x.to === ref; }).map(function(x){ return x.from; });
+    if(!ins.length) return ref;
+    return rootOf(ins[0], seen);
+  }
+  function metaOf(ref){
+    var r = rootOf(ref);
+    var m = loadMeta()[r] || {};
+    return { root:r, title:m.title || '', desc:m.desc || '' };
+  }
+  function setMeta(ref, title, desc){
+    var r = rootOf(ref);
+    var o = loadMeta();
+    o[r] = { title:String(title||'').slice(0,60), desc:String(desc||'').slice(0,200) };
+    if(!o[r].title && !o[r].desc) delete o[r];
+    return saveMeta(o);
+  }
+
   /* ── 이 기록이 갈래의 어디쯤인지 계산 ───────────────────
      방향을 저장해 두었으므로 앞/뒤를 나눌 수 있다.
        before : 이 기록으로 흘러 들어온 것 (X → 나)
@@ -277,7 +311,7 @@
     add:add, remove:remove, removeAllOf:removeAllOf,
     of:of, countOf:countOf, exists:exists,
     resolve:resolve, makeRef:makeRef, parseRef:parseRef,
-    candidates:candidates, stats:stats, chainOf:chainOf,
+    candidates:candidates, stats:stats, chainOf:chainOf, metaOf:metaOf, setMeta:setMeta, rootOf:rootOf,
     all:load
   };
 })();
@@ -315,6 +349,7 @@
     if(list.length){
       var ch = R.chainOf(ref);
       var me = R.resolve(ref);
+      var meta = R.metaOf(ref);
 
       function node(i, cls){
         return '<button type="button" class="rl-nd ' + cls + '" data-ref="' + esc(i.ref) + '">'
@@ -345,18 +380,27 @@
                 : '<div class="rl-ch-none">아직 다음<br>갈래가 없습니다</div>')
         +   '</div>'
         + '</div>'
-        /* 아래: 갈래 전체를 한 줄로 — 몇 번째인지 한눈에 */
-        + '<div class="rl-track">'
-        +   '<span class="rl-tr-k">진행</span>'
-        +   '<span class="rl-tr-bar">'
-        +     Array.apply(null, Array(Math.min(ch.total, 10))).map(function(_, i){
-                var n = i + 1;
-                return '<span class="rl-tr-s' + (n === ch.pos ? ' on' : (n < ch.pos ? ' done' : '')) + '">'
-                     + '<i></i>' + (n === ch.pos ? '<b>' + n + '</b>' : '') + '</span>';
-              }).join('')
-        +   '</span>'
-        +   '<span class="rl-tr-n">' + ch.pos + ' / ' + ch.total + '</span>'
-        + '</div></div>';
+        /* 아래: 이 갈래 전체에 붙이는 이름과 설명 */
+        + '<div class="rl-meta">'
+        +   '<div class="rl-mt-head">'
+        +     '<span class="rl-mt-k">이 갈래</span>'
+        +     '<span class="rl-mt-n">' + ch.pos + ' / ' + ch.total + '</span>'
+        +     '<span class="rl-tr-bar">'
+        +       Array.apply(null, Array(Math.min(ch.total, 10))).map(function(_, i){
+                  var n = i + 1;
+                  return '<span class="rl-tr-s' + (n === ch.pos ? ' on' : (n < ch.pos ? ' done' : '')) + '"><i></i></span>';
+                }).join('')
+        +     '</span>'
+        +     '<button type="button" class="rl-mt-edit">' + (meta.title ? '고치기' : '이름 붙이기') + '</button>'
+        +   '</div>'
+        +   (meta.title || meta.desc
+              ? '<div class="rl-mt-body">'
+                + (meta.title ? '<div class="rl-mt-t">' + esc(meta.title) + '</div>' : '')
+                + (meta.desc  ? '<div class="rl-mt-d">' + esc(meta.desc)  + '</div>' : '')
+                + '</div>'
+              : '<div class="rl-mt-empty">이 갈래 전체에 이름을 붙여 두면, 흩어진 기록이 <b>하나의 이야기</b>로 묶입니다.<br>'
+                + '예: “복리와 시간 — 장기 인덱스로 가기까지”</div>')
+        + '</div>'        + '</div></div>';
     }
 
     if(!list.length){
@@ -414,6 +458,9 @@
       else run();
     };
 
+    var mtE = wrap.querySelector('.rl-mt-edit');
+    if(mtE) mtE.onclick = function(){ openMetaEditor(ref, function(){ paint(wrap, ref); }); };
+
     wrap.querySelectorAll('.rl-nd[data-ref]').forEach(function(b){
       b.onclick = function(){
         var info = R.resolve(b.getAttribute('data-ref'));
@@ -449,6 +496,44 @@
         }});
       };
     });
+  }
+
+  /* ── 갈래 이름·설명 편집 ── */
+  function openMetaEditor(ref, after){
+    var m = R.metaOf(ref);
+    var ch = R.chainOf(ref);
+    var prev = document.getElementById('rlMt'); if(prev) prev.remove();
+    var ov = document.createElement('div');
+    ov.id = 'rlMt'; ov.className = 'hub-modal-ov';
+    ov.innerHTML = '<div class="hub-modal rl-mt-modal">'
+      + '<div class="hm-title">이 갈래에 이름 붙이기</div>'
+      + '<div class="rl-hint">' + ch.total + '칸으로 이어진 이 갈래 전체를 하나로 부르는 이름입니다. '
+      +   '어느 칸에서 열어도 같은 이름이 보입니다.</div>'
+      + '<label class="hm-lb">이름</label>'
+      + '<input class="hm-in" id="rlMtT" maxlength="60" placeholder="예: 복리와 시간 — 장기 인덱스로 가기까지" value="' + esc(m.title) + '">'
+      + '<label class="hm-lb" style="margin-top:12px">짧은 설명 <span class="hm-hint">(선택)</span></label>'
+      + '<textarea class="hm-in rl-mt-ta" id="rlMtD" rows="3" maxlength="200" '
+      +   'placeholder="이 갈래가 무엇에서 시작해 어디로 갔는지 한두 줄로">' + esc(m.desc) + '</textarea>'
+      + '<div class="hm-btns"><button type="button" class="hm-btn hm-cancel">취소</button>'
+      + '<button type="button" class="hm-btn hm-save" id="rlMtOk">저장</button></div></div>';
+    document.body.appendChild(ov);
+    function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 200); }
+    ov.querySelector('.hm-cancel').onclick = close;
+    ov.onclick = function(e){ if(e.target === ov) close(); };
+    ov.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ e.preventDefault(); close(); } });
+    ov.querySelector('#rlMtOk').onclick = function(){
+      var t = (ov.querySelector('#rlMtT').value || '').trim();
+      var d = (ov.querySelector('#rlMtD').value || '').trim();
+      if(!R.setMeta(ref, t, d)){
+        if(window.__nnToast) window.__nnToast('저장하지 못했습니다 · 저장 공간을 확인해 주세요', {kind:'del'});
+        return;
+      }
+      close();
+      if(after) after();
+      if(window.__nnToast) window.__nnToast(t ? '\u2713 "' + t + '" 로 이름 붙였습니다' : '\u2713 저장했습니다');
+    };
+    requestAnimationFrame(function(){ ov.classList.add('show');
+      setTimeout(function(){ try{ ov.querySelector('#rlMtT').focus(); }catch(e){} }, 120); });
   }
 
   /* ── 대상 고르기 창 ── */

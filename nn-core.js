@@ -5563,6 +5563,7 @@ window.ThesisApp = (function(){
     var tags=(cur.tags||[]);
 
     var h='<div class="thes-side">';
+    h+='<button type="button" class="thes-new" id="thesNew">＋ 새 글 쓰기</button>';
     h+='<div class="thes-s-sec">'
       +'<div class="thes-s-t">이 글</div>'
       +'<div class="thes-stat"><span>글자 수</span><b>'+chars.toLocaleString()+'</b></div>'
@@ -5590,7 +5591,6 @@ window.ThesisApp = (function(){
     }
     h+='</div>';
 
-    h+='<button type="button" class="thes-new" id="thesNew">＋ 새 글 쓰기</button>';
     h+='</div>';
     host.innerHTML=h;
 
