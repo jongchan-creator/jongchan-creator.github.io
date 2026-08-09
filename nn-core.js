@@ -5756,6 +5756,23 @@ window.ThesisApp = (function(){
   })();
 })();
 
+/* ══════════ 홈 → 매크로 관심종목 바로가기 ══════════ */
+window.__nnGoWatchlist = function(){
+  try{
+    if(typeof switchPage === 'function') switchPage('macro');
+    setTimeout(function(){
+      var el = document.querySelector('.wl-sec, #watchlistSec, .watchlist-sec, [id*="watchlist" i], [class*="watchlist" i]');
+      if(!el){
+        /* 관심종목 이름표를 가진 요소를 거슬러 찾아본다 */
+        var nm = document.querySelector('.wl-name, .wl-sr-name');
+        if(nm) el = nm.closest('section, .macro-card, .rs-sec') || nm;
+      }
+      if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'start'});
+      else window.scrollTo({top: 600, behavior:'smooth'});
+    }, 420);
+  }catch(e){}
+};
+
 /* ══════════ 편집 툴바 고정 상태 감지 ══════════
    sticky로 위에 붙는 순간에만 그림자를 준다.
    붙지 않았을 때도 그림자가 있으면 공중에 뜬 것처럼 보여 어색하다. */

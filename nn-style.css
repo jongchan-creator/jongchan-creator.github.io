@@ -7274,3 +7274,40 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .research-cove-line{
    아랫변(bottom:0)은 그대로 두고 위쪽 여백을 줄인다. */
 .bq-meta{padding:7px 18px 13px 15px!important}
 .bq-card .bq-cover,.bq-card img{align-self:stretch}
+
+/* ══ [수정] 색 묶음 간격 — 실제 구조는 .tb-color-group 두 덩이 ══
+   앞선 시도는 .tb-swatch + .tb-label 인접 선택자를 썼는데,
+   두 묶음이 각각 div 로 감싸여 있어 인접이 성립하지 않았다. */
+.tb-grp[data-g="색"] .tb-label{margin-left:0!important;margin-right:5px!important;
+  padding-left:0!important;border-left:none!important}
+.tb-color-group{display:inline-flex;align-items:center;gap:4px}
+/* 두 번째 묶음(배경)만 앞을 크게 띄우고 구분선을 세운다 */
+.tb-color-group + .tb-color-group{
+  margin-left:22px;padding-left:16px;
+  border-left:1px solid rgba(0,0,0,.12);
+}
+
+/* ══ TODAY'S BRIEFING — 관심 종목 바로가기 ══ */
+.dd-jump{margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.07)}
+.dd-jump-btn{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);border-radius:11px;
+  padding:11px 14px;cursor:pointer;transition:.18s;font-family:'Pretendard',sans-serif}
+.dd-jump-btn:hover{background:rgba(201,169,110,.12);border-color:rgba(201,169,110,.45);
+  transform:translateY(-1px)}
+.ddj-ic{font-size:15px;flex:none;line-height:1}
+.ddj-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ddj-t{font-size:13px;font-weight:600;color:#f0ede6}
+.ddj-s{font-size:10.5px;color:rgba(255,255,255,.38)}
+.dd-jump-btn:hover .ddj-t{color:#e8c47e}
+.ddj-ar{flex:none;color:rgba(201,169,110,.7);font-size:13px;transition:transform .22s cubic-bezier(.22,1,.36,1)}
+.dd-jump-btn:hover .ddj-ar{transform:translateX(4px)}
+/* 밝은 배경 */
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-jump{border-top-color:var(--lp-rule)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-jump-btn{
+  background:#fff;border-color:rgba(20,18,15,.1)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-jump-btn:hover{
+  background:rgba(138,106,36,.07);border-color:rgba(138,106,36,.4)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-t{color:var(--lp-ink)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-s{color:var(--lp-ink3)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-jump-btn:hover .ddj-t{color:var(--lp-brass)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-ar{color:var(--lp-brass)}
