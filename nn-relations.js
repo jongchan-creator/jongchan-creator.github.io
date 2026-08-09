@@ -294,6 +294,28 @@
     return { before:before, after:after, depth:d, total:d + hgt + 1, pos:d + 1 };
   }
 
+  /* ── 이 갈래를 뿌리부터 끝까지 한 줄로 펼친다 ── */
+  function lineOf(ref){
+    var all = load();
+    function outs(r){ return all.filter(function(x){ return x.from === r; }).map(function(x){ return x.to; }); }
+    var root = rootOf(ref);
+    var seq = [], seen = {};
+    var cur = root;
+    while(cur && !seen[cur]){
+      seen[cur] = 1;
+      var info = resolve(cur);
+      if(info.exists || info.kind === 'asset') seq.push(info);
+      var nx = outs(cur);
+      if(!nx.length) break;
+      /* 여러 갈래로 나뉘면 지금 보고 있는 쪽을 우선 따라간다 */
+      cur = nx.indexOf(ref) >= 0 ? ref : nx[0];
+      if(seq.length > 12) break;
+    }
+    /* 현재 기록이 빠졌다면 (곁가지) 끝에 붙인다 */
+    if(!seq.some(function(x){ return x.ref === ref; })) seq.push(resolve(ref));
+    return seq;
+  }
+
   /* ── 통계 (4단계 Flow 시각화에서 사용) ─────────────── */
   function stats(){
     var a = load();
@@ -311,7 +333,7 @@
     add:add, remove:remove, removeAllOf:removeAllOf,
     of:of, countOf:countOf, exists:exists,
     resolve:resolve, makeRef:makeRef, parseRef:parseRef,
-    candidates:candidates, stats:stats, chainOf:chainOf, metaOf:metaOf, setMeta:setMeta, rootOf:rootOf,
+    candidates:candidates, stats:stats, chainOf:chainOf, lineOf:lineOf, metaOf:metaOf, setMeta:setMeta, rootOf:rootOf,
     all:load
   };
 })();
@@ -350,12 +372,22 @@
       var ch = R.chainOf(ref);
       var me = R.resolve(ref);
       var meta = R.metaOf(ref);
+      var full = R.lineOf(ref);
 
+      function relIdOf(otherRef){
+        var f = list.filter(function(x){ return x.ref === otherRef; })[0];
+        return f ? f.id : '';
+      }
       function node(i, cls){
-        return '<button type="button" class="rl-nd ' + cls + '" data-ref="' + esc(i.ref) + '">'
-          + '<i style="background:' + esc(i.color) + '"></i>'
-          + '<span class="rl-nd-l">' + esc(i.label) + '</span>'
-          + '<span class="rl-nd-t">' + esc(i.title) + '</span></button>';
+        var rid = relIdOf(i.ref);
+        return '<span class="rl-nd-wrap">'
+          + '<button type="button" class="rl-nd ' + cls + '" data-ref="' + esc(i.ref) + '">'
+          +   '<i style="background:' + esc(i.color) + '"></i>'
+          +   '<span class="rl-nd-l">' + esc(i.label) + '</span>'
+          +   '<span class="rl-nd-t">' + esc(i.title) + '</span>'
+          + '</button>'
+          + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
+          + '</span>';
       }
 
       h += '<div class="rl-pos">'
@@ -380,27 +412,31 @@
                 : '<div class="rl-ch-none">아직 다음<br>갈래가 없습니다</div>')
         +   '</div>'
         + '</div>'
-        /* 아래: 이 갈래 전체에 붙이는 이름과 설명 */
+        /* 아래: 갈래 전체 지도 — 이름 · 위치 · 각 칸 */
         + '<div class="rl-meta">'
         +   '<div class="rl-mt-head">'
         +     '<span class="rl-mt-k">이 갈래</span>'
-        +     '<span class="rl-mt-n">' + ch.pos + ' / ' + ch.total + '</span>'
-        +     '<span class="rl-tr-bar">'
-        +       Array.apply(null, Array(Math.min(ch.total, 10))).map(function(_, i){
-                  var n = i + 1;
-                  return '<span class="rl-tr-s' + (n === ch.pos ? ' on' : (n < ch.pos ? ' done' : '')) + '"><i></i></span>';
-                }).join('')
-        +     '</span>'
+        +     (meta.title
+                ? '<span class="rl-mt-t">' + esc(meta.title) + '</span>'
+                : '<span class="rl-mt-t rl-mt-un">이름 없는 갈래</span>')
+        +     '<span class="rl-mt-n">' + ch.pos + '<i>/</i>' + ch.total + '</span>'
         +     '<button type="button" class="rl-mt-edit">' + (meta.title ? '고치기' : '이름 붙이기') + '</button>'
         +   '</div>'
-        +   (meta.title || meta.desc
-              ? '<div class="rl-mt-body">'
-                + (meta.title ? '<div class="rl-mt-t">' + esc(meta.title) + '</div>' : '')
-                + (meta.desc  ? '<div class="rl-mt-d">' + esc(meta.desc)  + '</div>' : '')
-                + '</div>'
-              : '<div class="rl-mt-empty">이 갈래 전체에 이름을 붙여 두면, 흩어진 기록이 <b>하나의 이야기</b>로 묶입니다.<br>'
-                + '예: “복리와 시간 — 장기 인덱스로 가기까지”</div>')
-        + '</div>'        + '</div></div>';
+        +   (meta.desc ? '<div class="rl-mt-d">' + esc(meta.desc) + '</div>' : '')
+        +   '<div class="rl-map">' + full.map(function(n, i){
+                var on = (n.ref === ref);
+                var passed = i < ch.pos - 1;
+                return '<button type="button" class="rl-mp' + (on ? ' on' : (passed ? ' done' : ''))
+                  + '"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
+                  + '<span class="rl-mp-bar"' + ((on || passed) ? ' style="background:' + esc(n.color) + '"' : '') + '></span>'
+                  + '<span class="rl-mp-h"><span class="rl-mp-n">' + (i + 1) + '</span>'
+                  +   '<span class="rl-mp-l">' + esc(n.label) + '</span></span>'
+                  + '<span class="rl-mp-t">' + esc(n.title) + '</span>'
+                  + '</button>';
+              }).join('') + '</div>'
+        +   (meta.title || meta.desc ? ''
+              : '<div class="rl-mt-empty">이 갈래에 이름을 붙여 두면, 흩어진 기록이 <b>하나의 이야기</b>로 묶입니다.</div>')
+        + '</div></div>';
     }
 
     if(!list.length){
@@ -422,16 +458,9 @@
            + '나중에 <b>“나는 왜 이렇게 판단했는가”</b>를 되짚을 수 있습니다.</div>';
       }
     } else {
-      h += '<div class="rl-list">' + list.map(function(x){
-        return '<div class="rl-item" data-id="' + x.id + '" data-ref="' + esc(x.ref) + '">'
-             + '<span class="rl-dot" style="background:' + esc(x.target.color) + '"></span>'
-             + '<span class="rl-lb" style="color:' + esc(x.target.color) + '">' + esc(x.target.label) + '</span>'
-             + '<span class="rl-t">' + esc(x.target.title) + '</span>'
-             + (x.memo ? '<span class="rl-memo' + (/^예시/.test(x.memo) ? ' ex' : '') + '">' + esc(x.memo) + '</span>' : '')
-             + '<button type="button" class="rl-x" title="맥락 끊기">✕</button>'
-             + '</div>';
-      }).join('') + '</div>';
-      if(list.some(function(x){ return /^예시/.test(x.memo||''); })){
+      /* 목록은 없앴다 — 위쪽 흐름 카드가 같은 내용을 더 잘 보여준다.
+         예시가 섞여 있을 때만 정리 버튼을 남긴다. */
+      if(list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); })){
         h += '<button type="button" class="rl-clear">예시 갈래·페이지 정리하기</button>';
       }
     }
@@ -484,6 +513,17 @@
         if(info && info.open) info.open();
       };
     });
+    wrap.querySelectorAll('.rl-nd-x').forEach(function(b){
+      b.onclick = function(e){
+        e.stopPropagation();
+        var gone = R.remove(b.getAttribute('data-id'));
+        paint(wrap, ref);
+        if(gone && window.__nnToast) window.__nnToast('맥락을 끊었습니다', {kind:'del', undo:function(){
+          R.add(gone.from, gone.to, gone.memo); paint(wrap, ref);
+        }});
+      };
+    });
+
     wrap.querySelectorAll('.rl-x').forEach(function(b){
       b.onclick = function(e){
         e.stopPropagation();
