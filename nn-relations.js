@@ -363,6 +363,8 @@
     var h = '<div class="rl-head">'
           + '<span class="rl-eyebrow">THREAD</span><span class="rl-title">맥락</span>'
           + (list.length ? '<span class="rl-n">' + list.length + '</span>' : '')
+          + (list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); })
+              ? '<span class="rl-ex-badge">예시</span>' : '')
           + '<button type="button" class="rl-help" title="맥락이란?">?</button>'
           + '<button type="button" class="rl-add">＋ 맥락 잇기</button>'
           + '</div>';
@@ -373,45 +375,14 @@
       var me = R.resolve(ref);
       var meta = R.metaOf(ref);
       var full = R.lineOf(ref);
-
       function relIdOf(otherRef){
         var f = list.filter(function(x){ return x.ref === otherRef; })[0];
         return f ? f.id : '';
       }
-      function node(i, cls){
-        var rid = relIdOf(i.ref);
-        return '<span class="rl-nd-wrap">'
-          + '<button type="button" class="rl-nd ' + cls + '" data-ref="' + esc(i.ref) + '">'
-          +   '<i style="background:' + esc(i.color) + '"></i>'
-          +   '<span class="rl-nd-l">' + esc(i.label) + '</span>'
-          +   '<span class="rl-nd-t">' + esc(i.title) + '</span>'
-          + '</button>'
-          + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
-          + '</span>';
-      }
+
+
 
       h += '<div class="rl-pos">'
-        /* 한 줄에 시작점 → 지금 → 뻗어나간 것 */
-        + '<div class="rl-chain">'
-        +   '<div class="rl-ch-col">'
-        +     '<div class="rl-ch-k">' + (ch.before.length ? '여기로 흘러든 것' : '시작점') + '</div>'
-        +     (ch.before.length
-                ? ch.before.map(function(i){ return node(i,'rl-nd-b'); }).join('')
-                : '<div class="rl-ch-none">여기서 갈래가<br>시작됩니다</div>')
-        +   '</div>'
-        +   '<div class="rl-ch-ar">→</div>'
-        +   '<div class="rl-ch-col rl-ch-me">'
-        +     '<div class="rl-ch-k">지금 보는 기록</div>'
-        +     '<div class="rl-nd rl-nd-cur"><i></i><span class="rl-nd-t">' + esc(me.title) + '</span></div>'
-        +   '</div>'
-        +   '<div class="rl-ch-ar">→</div>'
-        +   '<div class="rl-ch-col">'
-        +     '<div class="rl-ch-k">' + (ch.after.length ? '여기서 뻗어 나간 것' : '끝') + '</div>'
-        +     (ch.after.length
-                ? ch.after.map(function(i){ return node(i,'rl-nd-a'); }).join('')
-                : '<div class="rl-ch-none">아직 다음<br>갈래가 없습니다</div>')
-        +   '</div>'
-        + '</div>'
         /* 아래: 갈래 전체 지도 — 이름 · 위치 · 각 칸 */
         + '<div class="rl-meta">'
         +   '<div class="rl-mt-head">'
@@ -423,16 +394,25 @@
         +     '<button type="button" class="rl-mt-edit">' + (meta.title ? '고치기' : '이름 붙이기') + '</button>'
         +   '</div>'
         +   (meta.desc ? '<div class="rl-mt-d">' + esc(meta.desc) + '</div>' : '')
+        +   (list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); })
+              ? '<div class="rl-ex-note">이 갈래는 기능을 보여드리는 <b>표본</b>입니다. '
+                + '각 칸을 눌러 오가며 흐름을 확인해 보세요. 아래에서 한 번에 지울 수 있습니다.</div>'
+              : '')
         +   '<div class="rl-map">' + full.map(function(n, i){
                 var on = (n.ref === ref);
                 var passed = i < ch.pos - 1;
-                return '<button type="button" class="rl-mp' + (on ? ' on' : (passed ? ' done' : ''))
-                  + '"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
-                  + '<span class="rl-mp-bar"' + ((on || passed) ? ' style="background:' + esc(n.color) + '"' : '') + '></span>'
-                  + '<span class="rl-mp-h"><span class="rl-mp-n">' + (i + 1) + '</span>'
-                  +   '<span class="rl-mp-l">' + esc(n.label) + '</span></span>'
-                  + '<span class="rl-mp-t">' + esc(n.title) + '</span>'
-                  + '</button>';
+                var rid = relIdOf(n.ref);
+                return '<span class="rl-mp-wrap">'
+                  + '<button type="button" class="rl-mp' + (on ? ' on' : (passed ? ' done' : ''))
+                  +   '"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
+                  +   '<span class="rl-mp-bar"' + ((on || passed) ? ' style="background:' + esc(n.color) + '"' : '') + '></span>'
+                  +   '<span class="rl-mp-h"><span class="rl-mp-n">' + (i + 1) + '</span>'
+                  +     '<span class="rl-mp-l">' + esc(n.label) + '</span>'
+                  +     (on ? '<span class="rl-mp-now">지금</span>' : '') + '</span>'
+                  +   '<span class="rl-mp-t">' + esc(n.title) + '</span>'
+                  + '</button>'
+                  + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
+                  + '</span>';
               }).join('') + '</div>'
         +   (meta.title || meta.desc ? ''
               : '<div class="rl-mt-empty">이 갈래에 이름을 붙여 두면, 흩어진 기록이 <b>하나의 이야기</b>로 묶입니다.</div>')
@@ -692,7 +672,6 @@
       title:'[예시] 돈의 심리학',
       cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">📘 <b>맥락 예시 · 1단계</b> — 한 권의 책에서 <b>하나의 아이디어</b>를 건져 올리는 단계입니다. 아래 <b>맥락</b>을 보시면 이 아이디어가 어디로 이어졌는지 따라갈 수 있습니다.</div>',
         '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
         '<div style="font-weight:700;margin-top:14px">건져 올린 아이디어</div>',
@@ -710,7 +689,6 @@
       type:'economics', id:'rlx_check', stage:'check',
       title:'[예시] 72의 법칙으로 확인한 것',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">📗 <b>맥락 예시 · 2단계</b> — 책에서 얻은 아이디어를 <b>숫자로 검증</b>하는 단계입니다.</div>',
         '<div style="font-weight:700;margin-top:6px">검증할 명제</div>',
         '<div>“수익률을 높이는 것보다 기간을 늘리는 것이 결과에 더 크다.”</div>',
         '<div style="font-weight:700;margin-top:14px">계산</div>',
@@ -735,7 +713,6 @@
       type:'thesis', id:'rlx_judge', stage:'judge',
       title:'[예시] 20년을 버틸 수 있는 방식만 고른다',
       content: noteHTML([
-        '<div class="np-note" contenteditable="false">💭 <b>맥락 예시 · 3단계 — 판단한다</b><br>확인한 사실을 바탕으로 <b>내 원칙과 종목</b>을 정하는 단계입니다. 위 <b>맥락</b>에서 앞뒤 단계를 오갈 수 있습니다.</div>',
         '<div style="font-weight:700;margin-top:6px">내가 내린 판단</div>',
         '<div>수익률을 좇기보다 <b>20년 동안 손대지 않을 수 있는 구조</b>를 만든다.<br>핵심 자산은 광범위 인덱스로 두고, 개별 종목은 “없어도 잠이 오는” 비중까지만 가져간다.</div>',
         '<div style="font-weight:700;margin-top:16px">여기까지 온 과정</div>',

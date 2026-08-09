@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=15" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=15"/>
+<link rel="preload" href="nn-style.css?v=16" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=16"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -154,16 +154,11 @@
     <div class="dd-head">
       <span class="dd-label"><i class="dd-live"></i>TODAY'S BRIEFING</span>
       <span class="dd-date" id="ddDate"></span>
+      <button type="button" class="dd-mini" data-tip="매크로 탭의 관심 종목으로 이동" onclick="window.__nnGoWatchlist&&window.__nnGoWatchlist()">📌 관심 종목 →</button>
     </div>
     <div class="dd-sum" id="ddSum">시장 데이터를 불러오는 중...</div>
     <div class="dd-pills" id="ddPills"></div>
-    <div class="dd-jump">
-      <button type="button" class="dd-jump-btn" onclick="window.__nnGoWatchlist&&window.__nnGoWatchlist()">
-        <span class="ddj-ic">📌</span>
-        <span class="ddj-b"><span class="ddj-t">관심 종목 보기</span><span class="ddj-s">매크로 탭 · 지켜보는 종목</span></span>
-        <span class="ddj-ar">→</span>
-      </button>
-    </div>
+
   </div>
   <div class="dd-card dd-macro reveal-up" id="ddMacroCard">
     <div class="dd-head">
@@ -3003,6 +2998,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=12"></script><script src="nn-conviction.js?v=1"></script><script src="nn-modules.js?v=3"></script>
+<script src="nn-relations.js?v=13"></script><script src="nn-conviction.js?v=1"></script><script src="nn-modules.js?v=3"></script>
 </body>
 </html>

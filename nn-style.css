@@ -7311,3 +7311,47 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-t{color:var(--lp-ink)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-s{color:var(--lp-ink3)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-jump-btn:hover .ddj-t{color:var(--lp-brass)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .ddj-ar{color:var(--lp-brass)}
+
+/* ══ [수정] 색 묶음 — 같은 카테고리이므로 구분선 없음 ══
+   글자색과 배경은 하나의 '색' 묶음이다. 세로선으로 가르면 안 된다.
+   라벨과 바로 뒤 칩은 붙이고, 두 묶음 사이만 살짝 띄운다. */
+.tb-grp[data-g="색"] .tb-label{
+  margin-left:0!important;margin-right:5px!important;
+  padding-left:0!important;border-left:none!important}
+.tb-color-group{display:inline-flex;align-items:center;gap:4px}
+.tb-color-group + .tb-color-group{
+  margin-left:16px!important;padding-left:0!important;border-left:none!important}
+
+/* ══ TODAY'S BRIEFING — 구석의 작은 바로가기 ══ */
+.dd-head{position:relative}
+.dd-mini{margin-left:auto;flex:none;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  color:rgba(255,255,255,.55);font-family:'Pretendard',sans-serif;
+  font-size:10.5px;font-weight:600;padding:4px 11px;cursor:pointer;transition:.16s;white-space:nowrap}
+.dd-mini:hover{background:rgba(201,169,110,.18);border-color:rgba(201,169,110,.5);color:#e8c47e}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini{
+  background:#fff;border-color:rgba(20,18,15,.13);color:var(--lp-ink2)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
+  background:rgba(138,106,36,.1);border-color:rgba(138,106,36,.45);color:var(--lp-brass)}
+
+/* ══ 맥락 — 예시 표시 ══ */
+.rl-ex-badge{flex:none;font-size:9px;font-weight:700;letter-spacing:.04em;
+  color:#a8935f;background:rgba(201,169,110,.16);border:1px solid rgba(201,169,110,.38);
+  border-radius:20px;padding:2px 8px}
+.rl-ex-note{font-size:11px;color:#a8935f;line-height:1.7;margin-bottom:10px;
+  background:rgba(201,169,110,.08);border-left:2px solid rgba(201,169,110,.5);
+  border-radius:0 7px 7px 0;padding:8px 12px}
+.rl-ex-note b{color:#8a6a24;font-weight:700}
+/* 지도 칸의 '지금' 표시 · 끊기 버튼 */
+.rl-mp-wrap{position:relative;flex:1;min-width:0;display:flex}
+.rl-mp{flex:1;min-width:0}
+.rl-mp-now{font-size:8px;font-weight:700;color:#8a6a24;background:rgba(201,169,110,.24);
+  border-radius:20px;padding:1px 6px;margin-left:2px}
+.rl-mp-wrap .rl-nd-x{position:absolute;right:5px;top:6px;width:17px;height:17px;border-radius:50%;
+  background:rgba(255,255,255,.94);border:1px solid rgba(0,0,0,.12);color:#b0aba0;
+  font-size:8.5px;line-height:1;cursor:pointer;opacity:0;transition:.14s;
+  display:flex;align-items:center;justify-content:center;font-family:'Pretendard',sans-serif;z-index:2}
+.rl-mp-wrap:hover .rl-nd-x{opacity:1}
+.rl-mp-wrap .rl-nd-x:hover{color:#e05252;border-color:rgba(224,82,82,.5);background:#fff}
+/* 맥락 패널 상단 여백 — 위쪽 흐름이 사라졌으므로 정리 */
+.rl-pos{padding:14px 16px 15px}
