@@ -7476,3 +7476,39 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
 /* 기본 글자색 칩 — 흰 배경에서도 보이게 테두리 */
 .tb-swatch.tb-fg-default{border:1px solid rgba(255,255,255,.45)!important;
   box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+
+/* ══ [수정] 맥락 구슬이 잘려 보이던 문제 ══
+   .rl-mp 에 overflow:hidden 이 남아 있어, 카드 위로 나온 구슬이 잘렸다.
+   실도 그 뒤에 가려 보이지 않았다. */
+.rl-map{overflow:visible!important;padding-top:18px!important;position:relative}
+.rl-mp-wrap{overflow:visible!important}
+.rl-mp{overflow:visible!important}
+/* 실 — 구슬 중심(14px)을 정확히 관통 */
+.rl-map::before{
+  content:''!important;position:absolute!important;
+  left:9%!important;right:9%!important;top:14px!important;
+  height:2px!important;z-index:0!important;border-radius:2px;
+  background:linear-gradient(90deg,
+    rgba(201,169,110,0), rgba(201,169,110,.55) 14%,
+    rgba(201,169,110,.55) 86%, rgba(201,169,110,0))!important;
+}
+/* 구슬 — 카드 위로 완전히 노출 */
+.rl-mp::before{
+  content:''!important;position:absolute!important;
+  left:50%!important;top:-9px!important;transform:translateX(-50%)!important;
+  width:11px!important;height:11px!important;border-radius:50%!important;
+  background:#e8dfcb!important;border:3px solid #fbf9f4!important;
+  z-index:3!important;transition:.22s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 1px 3px rgba(20,18,15,.14)!important;
+}
+.rl-mp.done::before{background:#c9a96e!important}
+.rl-mp.on::before{
+  background:#c9a96e!important;width:15px!important;height:15px!important;top:-11px!important;
+  box-shadow:0 0 0 4px rgba(201,169,110,.2), 0 2px 8px rgba(160,124,44,.45)!important;
+}
+.rl-mp[data-ref]:hover::before{background:#d9bd84!important}
+@media(max-width:760px){
+  .rl-map{padding-top:0!important}
+  .rl-map::before{display:none!important}
+  .rl-mp::before{display:none!important}
+}

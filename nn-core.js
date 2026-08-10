@@ -5843,26 +5843,18 @@ window.__nnGoWatchlist = function(){
     /* 관심종목 구역 찾기 — 첫 진입 때 아직 안 그려졌을 수 있으므로
        '실제 종목 항목이 존재하는' 구역만 인정한다.
        (예전에는 제목 글자만 보고 엉뚱한 카드를 잡아 금리 쪽으로 갔다) */
+    /* 관심종목 카드 찾기
+       실제 제목은 "나의 관심종목 · MY WATCHLIST" 이다.
+       예전 정규식이 '관심 종목'(띄어쓰기)만 찾아 엉뚱한 카드를 잡았다. */
     function findSec(){
-      var page = document.getElementById('page-macro') || document;
-
-      /* ① 실제 관심종목 항목이 그려졌는지 먼저 확인 */
-      var item = page.querySelector('.wl-name, .wl-sr-name, .wl-row, .wl-card, .wl-item');
-      if(item){
-        var up = item.closest('.macro-card, section, .rs-sec, .macro-sec');
-        return up || item;
-      }
-
-      /* ② 전용 id/class 가 있으면 사용 */
-      var el = page.querySelector('#wlSec, #watchlistSec, .wl-sec, .watchlist-sec, .wl-wrap');
-      if(el) return el;
-
-      /* ③ 제목 줄에 '관심 종목'이 있는 카드 — 본문 전체가 아니라 제목만 본다 */
-      var cards = page.querySelectorAll('.macro-card, section, .rs-sec');
-      for(var i=0;i<cards.length;i++){
-        var head = cards[i].querySelector('.mc-title, .macro-card-title, h2, h3, .rs-t, .mc-h');
-        var t = head ? (head.textContent || '') : '';
-        if(/관심\s*종목|WATCH\s*?LIST/i.test(t)) return cards[i];
+      var page = document.getElementById('page-macro');
+      if(!page) return null;
+      var titles = page.querySelectorAll('.macro-card-title');
+      for(var i=0;i<titles.length;i++){
+        var t = (titles[i].textContent || '').replace(/\s+/g, '');
+        if(t.indexOf('관심종목') >= 0 || /MYWATCHLIST/i.test(t)){
+          return titles[i].closest('.macro-card') || titles[i];
+        }
       }
       return null;
     }
