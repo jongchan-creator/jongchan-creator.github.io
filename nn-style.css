@@ -7355,3 +7355,114 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
 .rl-mp-wrap .rl-nd-x:hover{color:#e05252;border-color:rgba(224,82,82,.5);background:#fff}
 /* 맥락 패널 상단 여백 — 위쪽 흐름이 사라졌으므로 정리 */
 .rl-pos{padding:14px 16px 15px}
+
+/* ══ [수정] 배경 첫 칩이 투명이라 빈 공간처럼 보이던 문제 ══
+   '배경 없음' 칩이 배경도 테두리도 거의 없어 여백처럼 읽혔다.
+   대각선을 그어 '색 없음'임을 눈에 보이게 한다. */
+.tb-swatch.tb-bg[data-back="transparent"]{
+  background:#fff!important;
+  border:1px solid rgba(0,0,0,.22)!important;
+  position:relative;overflow:hidden;
+}
+.tb-swatch.tb-bg[data-back="transparent"]::after{
+  content:'';position:absolute;left:-2px;right:-2px;top:50%;height:1px;
+  background:rgba(214,72,72,.75);transform:rotate(-45deg);
+}
+.tb-color-group{gap:4px!important}
+.tb-grp[data-g="색"] .tb-label{margin-right:5px!important}
+
+/* ══════════════════════════════════════════════════════════════════
+   맥락 — 고급화
+   기록을 잇는 '실'이라는 개념이 눈에 보이도록 다듬는다.
+   ══════════════════════════════════════════════════════════════════ */
+.rl-panel{
+  background:linear-gradient(180deg,#fdfcfa,#f8f6f1);
+  border:1px solid rgba(20,18,15,.09);
+  border-radius:14px;padding:16px 18px 17px;
+  box-shadow:0 1px 2px rgba(20,18,15,.03), 0 10px 24px -20px rgba(20,18,15,.3);
+  position:relative;overflow:hidden;
+}
+/* 좌측 상단에서 흐르는 은은한 빛 */
+.rl-panel::before{
+  content:'';position:absolute;left:0;top:0;width:180px;height:74px;pointer-events:none;
+  background:radial-gradient(ellipse at top left, rgba(201,169,110,.11), transparent 70%);
+}
+.rl-head{position:relative;z-index:1;padding-bottom:13px;margin-bottom:13px;
+  border-bottom:1px solid rgba(20,18,15,.07)}
+.rl-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.22em;
+  color:#b8975a;flex:none;line-height:1}
+.rl-head .rl-title{font-size:14px;font-weight:700;color:#2b2823;letter-spacing:-.01em}
+.rl-n{font-family:'Orbitron',sans-serif;font-size:11px;color:#a8935f;font-weight:700}
+.rl-pos{background:none;border:none;padding:0;margin:0;position:relative;z-index:1}
+.rl-meta{margin-top:0;padding-top:0;border-top:none}
+/* 갈래 이름 줄 */
+.rl-mt-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.rl-mt-k{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.16em;color:#bdb6a8}
+.rl-mt-t{font-size:14px;font-weight:700;color:#221f1a;letter-spacing:-.01em}
+.rl-mt-n{font-family:'Orbitron',sans-serif;font-size:11.5px;color:#8a6a24;
+  background:rgba(201,169,110,.14);border-radius:20px;padding:2px 9px}
+.rl-mt-d{font-size:11.5px;color:#7d7869;line-height:1.8;margin-bottom:13px;
+  padding-left:11px;border-left:2px solid rgba(201,169,110,.34)}
+/* 지도 — 실로 꿰인 구슬처럼 */
+.rl-map{display:flex;gap:0;align-items:stretch;position:relative;padding-top:4px}
+/* 칸을 잇는 실 */
+.rl-map::before{
+  content:'';position:absolute;left:6%;right:6%;top:11px;height:1.5px;z-index:0;
+  background:linear-gradient(90deg,
+    rgba(201,169,110,.15), rgba(201,169,110,.5) 20%,
+    rgba(201,169,110,.5) 80%, rgba(201,169,110,.15));
+}
+.rl-mp-wrap{position:relative;flex:1;min-width:0;display:flex;padding:0 4px;z-index:1}
+.rl-mp{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start;
+  text-align:left;background:#fff;border:1px solid rgba(20,18,15,.08);border-radius:11px;
+  padding:16px 12px 12px;cursor:pointer;transition:.2s cubic-bezier(.22,1,.36,1);
+  position:relative;font-family:'Pretendard',sans-serif;opacity:.72}
+/* 실에 꿰인 구슬 */
+.rl-mp::before{
+  content:'';position:absolute;left:50%;top:-5px;transform:translateX(-50%);
+  width:9px;height:9px;border-radius:50%;background:#efe9dc;
+  border:2px solid #fdfcfa;transition:.2s;
+}
+.rl-mp-bar{display:none}
+.rl-mp-h{display:flex;align-items:center;gap:6px;margin-top:2px}
+.rl-mp-n{font-family:'Orbitron',sans-serif;font-size:9px;color:#bdb6a8;font-weight:600}
+.rl-mp-l{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:.1em;color:#a09a8e}
+.rl-mp-t{font-size:12px;color:#4a453c;line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rl-mp.done{opacity:.9}
+.rl-mp.done::before{background:#c9a96e}
+.rl-mp.on{opacity:1;background:#fff;border-color:rgba(201,169,110,.55);
+  box-shadow:0 4px 16px -6px rgba(160,124,44,.32), 0 0 0 3px rgba(201,169,110,.08);
+  transform:translateY(-2px)}
+.rl-mp.on::before{background:#c9a96e;width:11px;height:11px;top:-6px;
+  box-shadow:0 0 0 3px rgba(201,169,110,.24)}
+.rl-mp.on .rl-mp-t{font-weight:700;color:#221f1a}
+.rl-mp.on .rl-mp-n{color:#8a6a24}
+.rl-mp[data-ref]:hover{opacity:1;border-color:rgba(201,169,110,.5);transform:translateY(-2px);
+  box-shadow:0 6px 18px -8px rgba(20,18,15,.24)}
+.rl-mp[data-ref]:hover::before{background:#d9bd84}
+.rl-mp-now{font-family:'Pretendard',sans-serif;font-size:8.5px;font-weight:700;color:#fff;
+  background:#c9a96e;border-radius:20px;padding:1.5px 7px;letter-spacing:.02em}
+.rl-mp.on{cursor:default}
+/* 버튼 */
+.rl-add{background:linear-gradient(180deg,rgba(201,169,110,.16),rgba(201,169,110,.1));
+  border:1px solid rgba(201,169,110,.45);box-shadow:0 1px 2px rgba(160,124,44,.1)}
+.rl-add:hover{background:linear-gradient(180deg,rgba(201,169,110,.28),rgba(201,169,110,.18));
+  border-color:rgba(201,169,110,.7)}
+.rl-mt-edit{background:transparent;border:1px solid rgba(20,18,15,.14);color:#8a8578}
+.rl-mt-edit:hover{border-color:rgba(201,169,110,.6);color:#8a6a24;background:rgba(201,169,110,.08)}
+.rl-clear{margin-top:13px}
+/* 이동해 온 곳 잠깐 강조 */
+.nn-jump-hit{animation:nnJumpHit 1.8s ease}
+@keyframes nnJumpHit{
+  0%,100%{box-shadow:none}
+  18%,60%{box-shadow:0 0 0 2px rgba(201,169,110,.55), 0 0 30px -6px rgba(201,169,110,.5)}
+}
+@media (prefers-reduced-motion: reduce){ .nn-jump-hit{animation:none} }
+@media(max-width:760px){
+  .rl-map{flex-direction:column;gap:6px;padding-top:0}
+  .rl-map::before{display:none}
+  .rl-mp::before{display:none}
+  .rl-mp-wrap{padding:0}
+  .rl-mp{padding:11px 12px}
+}

@@ -5760,18 +5760,52 @@ window.ThesisApp = (function(){
 window.__nnGoWatchlist = function(){
   try{
     if(typeof switchPage === 'function') switchPage('macro');
-    setTimeout(function(){
-      var el = document.querySelector('.wl-sec, #watchlistSec, .watchlist-sec, [id*="watchlist" i], [class*="watchlist" i]');
-      if(!el){
-        /* 관심종목 이름표를 가진 요소를 거슬러 찾아본다 */
-        var nm = document.querySelector('.wl-name, .wl-sr-name');
-        if(nm) el = nm.closest('section, .macro-card, .rs-sec') || nm;
+
+    /* 관심종목 구역을 확실히 찾는다.
+       ① 전용 id/class → ② 관심종목 항목의 조상 → ③ 제목 글자로 역추적 */
+    function findSec(){
+      var el = document.querySelector('#wlSec, #watchlistSec, .wl-sec, .watchlist-sec');
+      if(el) return el;
+      var item = document.querySelector('.wl-name, .wl-sr-name, .wl-row, .wl-card');
+      if(item){
+        var up = item.closest('section, .macro-card, .rs-sec, .macro-sec');
+        if(up) return up;
+        return item;
       }
-      if(el && el.scrollIntoView) el.scrollIntoView({behavior:'smooth', block:'start'});
-      else window.scrollTo({top: 600, behavior:'smooth'});
-    }, 420);
+      /* 제목 텍스트로 찾기 */
+      var heads = document.querySelectorAll('#page-macro .macro-card, #page-macro section, #page-macro .rs-sec');
+      for(var i=0;i<heads.length;i++){
+        var t = (heads[i].textContent || '').slice(0, 120);
+        if(/관심\s*종목|WATCH\s*LIST|WATCHLIST/i.test(t)) return heads[i];
+      }
+      return null;
+    }
+
+    /* 상단 고정 네비 높이만큼 띄워서 잘리지 않게 */
+    function navGap(){
+      var nav = document.querySelector('nav.nav, .nav');
+      var h = nav ? nav.getBoundingClientRect().height : 58;
+      return Math.round(h + 18);
+    }
+    function goTo(el){
+      var y = el.getBoundingClientRect().top + window.pageYOffset - navGap();
+      window.scrollTo({ top: Math.max(0, y), behavior:'smooth' });
+      /* 잠깐 강조해 어디로 왔는지 알려 준다 */
+      el.classList.add('nn-jump-hit');
+      setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+    }
+
+    /* 탭 전환 직후에는 아직 그려지지 않았을 수 있어 몇 번 확인한다 */
+    var tries = 0;
+    (function attempt(){
+      var el = findSec();
+      if(el){ goTo(el); return; }
+      if(++tries > 12) return;
+      setTimeout(attempt, 160);
+    })();
   }catch(e){}
 };
+
 
 /* ══════════ 편집 툴바 고정 상태 감지 ══════════
    sticky로 위에 붙는 순간에만 그림자를 준다.

@@ -470,7 +470,7 @@
     var mtE = wrap.querySelector('.rl-mt-edit');
     if(mtE) mtE.onclick = function(){ openMetaEditor(ref, function(){ paint(wrap, ref); }); };
 
-    wrap.querySelectorAll('.rl-nd[data-ref]').forEach(function(b){
+    wrap.querySelectorAll('.rl-mp[data-ref], .rl-nd[data-ref]').forEach(function(b){
       b.onclick = function(){
         var info = R.resolve(b.getAttribute('data-ref'));
         if(info && info.open) info.open();
