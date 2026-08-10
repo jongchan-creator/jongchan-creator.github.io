@@ -7404,10 +7404,10 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
 .rl-mt-d{font-size:11.5px;color:#7d7869;line-height:1.8;margin-bottom:13px;
   padding-left:11px;border-left:2px solid rgba(201,169,110,.34)}
 /* 지도 — 실로 꿰인 구슬처럼 */
-.rl-map{display:flex;gap:0;align-items:stretch;position:relative;padding-top:4px}
+.rl-map{display:flex;gap:0;align-items:stretch;position:relative;padding-top:16px}
 /* 칸을 잇는 실 */
 .rl-map::before{
-  content:'';position:absolute;left:6%;right:6%;top:11px;height:1.5px;z-index:0;
+  content:'';position:absolute;left:8%;right:8%;top:11.75px;height:1.5px;z-index:0;
   background:linear-gradient(90deg,
     rgba(201,169,110,.15), rgba(201,169,110,.5) 20%,
     rgba(201,169,110,.5) 80%, rgba(201,169,110,.15));
@@ -7419,9 +7419,9 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
   position:relative;font-family:'Pretendard',sans-serif;opacity:.72}
 /* 실에 꿰인 구슬 */
 .rl-mp::before{
-  content:'';position:absolute;left:50%;top:-5px;transform:translateX(-50%);
-  width:9px;height:9px;border-radius:50%;background:#efe9dc;
-  border:2px solid #fdfcfa;transition:.2s;
+  content:'';position:absolute;left:50%;top:-11px;transform:translateX(-50%);
+  width:10px;height:10px;border-radius:50%;background:#e6ddc9;
+  border:2.5px solid #fbf9f4;transition:.22s cubic-bezier(.22,1,.36,1);z-index:2;
 }
 .rl-mp-bar{display:none}
 .rl-mp-h{display:flex;align-items:center;gap:6px;margin-top:2px}
@@ -7434,8 +7434,8 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
 .rl-mp.on{opacity:1;background:#fff;border-color:rgba(201,169,110,.55);
   box-shadow:0 4px 16px -6px rgba(160,124,44,.32), 0 0 0 3px rgba(201,169,110,.08);
   transform:translateY(-2px)}
-.rl-mp.on::before{background:#c9a96e;width:11px;height:11px;top:-6px;
-  box-shadow:0 0 0 3px rgba(201,169,110,.24)}
+.rl-mp.on::before{background:#c9a96e;width:13px;height:13px;top:-12.5px;
+  box-shadow:0 0 0 4px rgba(201,169,110,.22), 0 2px 6px rgba(160,124,44,.4)}
 .rl-mp.on .rl-mp-t{font-weight:700;color:#221f1a}
 .rl-mp.on .rl-mp-n{color:#8a6a24}
 .rl-mp[data-ref]:hover{opacity:1;border-color:rgba(201,169,110,.5);transform:translateY(-2px);
@@ -7466,3 +7466,13 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
   .rl-mp-wrap{padding:0}
   .rl-mp{padding:11px 12px}
 }
+
+/* ══ 붙여넣기 임베드 — 동영상 ══ */
+.nn-embed{margin:14px 0;border-radius:12px;overflow:hidden;
+  border:1px solid rgba(20,18,15,.1);background:#0d0c0e;
+  box-shadow:0 6px 20px -12px rgba(20,18,15,.4)}
+.nn-embed-box{position:relative;width:100%;height:0}
+.nn-embed-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+/* 기본 글자색 칩 — 흰 배경에서도 보이게 테두리 */
+.tb-swatch.tb-fg-default{border:1px solid rgba(255,255,255,.45)!important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.12)}

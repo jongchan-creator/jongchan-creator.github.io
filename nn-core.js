@@ -3022,7 +3022,7 @@ window.KnowledgeNotes = {
     })();
     if (!note) { var placeholder = document.createElement('div'); placeholder.className = 'editor-placeholder'; placeholder.innerHTML = '좌측 패널에서 카드를 추가하거나<br/>정리해 둔 단어를 선택하여 실시간 편집 및 지식을 누적하세요.'; mainContainer.appendChild(placeholder); return; }
     var self = this; var toolbar = document.createElement('div'); toolbar.className = 'editor-toolbar';
-    toolbar.innerHTML = `<span class="tb-grp" data-g="글자"><button class="tb-btn" data-cmd="bold" style="font-weight:bold" data-tip="굵게 · Ctrl+B">B</button><button class="tb-btn" data-cmd="italic" style="font-style:italic" data-tip="기울임 · Ctrl+I">I</button><button class="tb-btn" data-cmd="underline" style="text-decoration:underline" data-tip="밑줄 · Ctrl+U">U</button><button class="tb-btn" data-cmd="strikeThrough" style="text-decoration:line-through" data-tip="취소선">S</button></span><span class="tb-grp" data-g="서체"><select class="tb-font" data-tip="글꼴을 바꿉니다 · 먼저 글자를 선택하세요"><option value="">글꼴</option><optgroup label="고딕"><option value="Pretendard">기본 고딕</option><option value="Noto Sans KR">노토 고딕</option><option value="Nanum Gothic">나눔고딕</option><option value="IBM Plex Sans KR">플렉스 고딕</option><option value="Gowun Dodum">고운돋움</option><option value="Sunflower">해바라기</option></optgroup><optgroup label="명조·세리프"><option value="Noto Serif KR">노토 명조</option><option value="Nanum Myeongjo">나눔명조</option><option value="Gowun Batang">고운바탕</option><option value="Song Myung">송명</option><option value="Hahmlet">함렛</option></optgroup><optgroup label="굵은 제목용"><option value="Gothic A1">고딕 A1</option><option value="Black Han Sans">검은고딕</option><option value="Do Hyeon">도현</option><option value="Jua">주아</option><option value="Stylish">스타일리시</option></optgroup><optgroup label="손글씨"><option value="Nanum Pen Script">나눔손글씨 펜</option><option value="Nanum Brush Script">나눔손글씨 붓</option><option value="Gaegu">개구</option><option value="Poor Story">푸어스토리</option><option value="Kirang Haerang">기랑해랑</option></optgroup><optgroup label="고정폭·영문"><option value="Nanum Gothic Coding">나눔고딕코딩</option><option value="Share Tech Mono">테크 모노</option><option value="Cormorant Garamond">Cormorant</option><option value="Bebas Neue">Bebas Neue</option><option value="Syne">Syne</option><option value="Orbitron">Orbitron</option></optgroup></select><span class="tb-sizewrap" data-tip="글자 크기 (px) · 먼저 글자를 선택하세요"><button type="button" class="tb-szbtn" data-sz="-1">−</button><input type="number" class="tb-size" min="8" max="140" step="1" value="16" aria-label="글자 크기"><button type="button" class="tb-szbtn" data-sz="1">＋</button></span></span><span class="tb-grp" data-g="제목"><button class="tb-btn" data-block="h1" data-tip="큰 제목">H1</button><button class="tb-btn" data-block="h2" data-tip="중간 제목">H2</button><button class="tb-btn" data-block="h3" data-tip="작은 제목">H3</button><button class="tb-btn" data-block="p" data-tip="본문으로 되돌리기">T</button></span><span class="tb-grp" data-g="목록"><button class="tb-btn" data-list="ul" data-tip="점 목록">&#8226; 목록</button><button class="tb-btn" data-list="ol" data-tip="번호 목록">1. 목록</button><button class="tb-btn tb-autolist" data-tip="엔터로 목록이 자동으로 이어지게 할지 정합니다">•&#8629;</button><button class="tb-btn" data-action="check" data-tip="체크박스 할 일">&#9745; 할일</button></span><span class="tb-grp" data-g="강조"><button class="tb-btn" data-block="blockquote" data-tip="인용문">&#8220; 인용</button><button class="tb-btn" data-action="callout" data-tip="강조 상자">&#128161; 콜아웃</button><button class="tb-btn" data-action="link" data-tip="링크 걸기">&#128279; 링크</button><button class="tb-btn" data-action="hr" data-tip="가로 구분선">&#8212; 구분선</button></span><span class="tb-grp" data-g="들여쓰기"><button class="tb-btn" data-action="outdent" data-tip="내어쓰기">&#8676;</button><button class="tb-btn" data-action="indent" data-tip="들여쓰기">&#8677;</button><div class="tb-color-group"></span><span class="tb-grp" data-g="색"><span class="tb-label" data-tip="선택한 글자의 색을 바꿉니다">글자색</span><button class="tb-swatch" data-fore="#f0ede6" style="background:#f0ede6"></button><button class="tb-swatch" data-fore="#c9a96e" style="background:#c9a96e"></button><button class="tb-swatch" data-fore="#ff6e40" style="background:#ff6e40"></button><button class="tb-swatch" data-fore="#7a9e7e" style="background:#7a9e7e"></button><button class="tb-swatch" data-fore="#8ab4d4" style="background:#8ab4d4"></button><button class="tb-swatch" data-fore="#b28ad4" style="background:#b28ad4"></button><button class="tb-swatch" data-fore="#e05555" style="background:#e05555"></button></div><div class="tb-color-group"><span class="tb-label" data-tip="선택한 글자에 형광펜을 칠합니다">배경</span><button class="tb-swatch tb-bg" data-back="transparent" style="background:transparent;border:0.5px solid rgba(255,255,255,.3)"></button><button class="tb-swatch tb-bg" data-back="rgba(201,169,110,.25)" style="background:rgba(201,169,110,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(255,110,64,.25)" style="background:rgba(255,110,64,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(122,158,126,.25)" style="background:rgba(122,158,126,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(138,180,212,.25)" style="background:rgba(138,180,212,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(178,138,212,.25)" style="background:rgba(178,138,212,.45)"></button></div></span><span class="tb-grp" data-g="넣기"><button class="tb-btn" data-action="img" style="color:#1fe0ff" data-tip="사진 한 장 넣기">&#128247; 사진</button><button class="tb-btn" data-action="gallery" style="color:#1fe0ff" data-tip="사진 여러 장 넣기">&#128444; 사진 여러장</button><button class="tb-btn" data-action="table" data-tip="표 삽입">⊞ 표</button></span>`;
+    toolbar.innerHTML = `<span class="tb-grp" data-g="글자"><button class="tb-btn" data-cmd="bold" style="font-weight:bold" data-tip="굵게 · Ctrl+B">B</button><button class="tb-btn" data-cmd="italic" style="font-style:italic" data-tip="기울임 · Ctrl+I">I</button><button class="tb-btn" data-cmd="underline" style="text-decoration:underline" data-tip="밑줄 · Ctrl+U">U</button><button class="tb-btn" data-cmd="strikeThrough" style="text-decoration:line-through" data-tip="취소선">S</button></span><span class="tb-grp" data-g="서체"><select class="tb-font" data-tip="글꼴을 바꿉니다 · 먼저 글자를 선택하세요"><option value="">글꼴</option><optgroup label="고딕"><option value="Pretendard">기본 고딕</option><option value="Noto Sans KR">노토 고딕</option><option value="Nanum Gothic">나눔고딕</option><option value="IBM Plex Sans KR">플렉스 고딕</option><option value="Gowun Dodum">고운돋움</option><option value="Sunflower">해바라기</option></optgroup><optgroup label="명조·세리프"><option value="Noto Serif KR">노토 명조</option><option value="Nanum Myeongjo">나눔명조</option><option value="Gowun Batang">고운바탕</option><option value="Song Myung">송명</option><option value="Hahmlet">함렛</option></optgroup><optgroup label="굵은 제목용"><option value="Gothic A1">고딕 A1</option><option value="Black Han Sans">검은고딕</option><option value="Do Hyeon">도현</option><option value="Jua">주아</option><option value="Stylish">스타일리시</option></optgroup><optgroup label="손글씨"><option value="Nanum Pen Script">나눔손글씨 펜</option><option value="Nanum Brush Script">나눔손글씨 붓</option><option value="Gaegu">개구</option><option value="Poor Story">푸어스토리</option><option value="Kirang Haerang">기랑해랑</option></optgroup><optgroup label="고정폭·영문"><option value="Nanum Gothic Coding">나눔고딕코딩</option><option value="Share Tech Mono">테크 모노</option><option value="Cormorant Garamond">Cormorant</option><option value="Bebas Neue">Bebas Neue</option><option value="Syne">Syne</option><option value="Orbitron">Orbitron</option></optgroup></select><span class="tb-sizewrap" data-tip="글자 크기 (px) · 먼저 글자를 선택하세요"><button type="button" class="tb-szbtn" data-sz="-1">−</button><input type="number" class="tb-size" min="8" max="140" step="1" value="16" aria-label="글자 크기"><button type="button" class="tb-szbtn" data-sz="1">＋</button></span></span><span class="tb-grp" data-g="제목"><button class="tb-btn" data-block="h1" data-tip="큰 제목">H1</button><button class="tb-btn" data-block="h2" data-tip="중간 제목">H2</button><button class="tb-btn" data-block="h3" data-tip="작은 제목">H3</button><button class="tb-btn" data-block="p" data-tip="본문으로 되돌리기">T</button></span><span class="tb-grp" data-g="목록"><button class="tb-btn" data-list="ul" data-tip="점 목록">&#8226; 목록</button><button class="tb-btn" data-list="ol" data-tip="번호 목록">1. 목록</button><button class="tb-btn tb-autolist" data-tip="엔터로 목록이 자동으로 이어지게 할지 정합니다">•&#8629;</button><button class="tb-btn" data-action="check" data-tip="체크박스 할 일">&#9745; 할일</button></span><span class="tb-grp" data-g="강조"><button class="tb-btn" data-block="blockquote" data-tip="인용문">&#8220; 인용</button><button class="tb-btn" data-action="callout" data-tip="강조 상자">&#128161; 콜아웃</button><button class="tb-btn" data-action="link" data-tip="링크 걸기">&#128279; 링크</button><button class="tb-btn" data-action="hr" data-tip="가로 구분선">&#8212; 구분선</button></span><span class="tb-grp" data-g="들여쓰기"><button class="tb-btn" data-action="outdent" data-tip="내어쓰기">&#8676;</button><button class="tb-btn" data-action="indent" data-tip="들여쓰기">&#8677;</button><div class="tb-color-group"></span><span class="tb-grp" data-g="색"><span class="tb-label" data-tip="선택한 글자의 색을 바꿉니다">글자색</span><button class="tb-swatch tb-fg-default" data-fore="#2b2823" style="background:#2b2823" data-tip="기본 글자색으로 되돌리기"></button><button class="tb-swatch" data-fore="#f0ede6" style="background:#f0ede6"></button><button class="tb-swatch" data-fore="#c9a96e" style="background:#c9a96e"></button><button class="tb-swatch" data-fore="#ff6e40" style="background:#ff6e40"></button><button class="tb-swatch" data-fore="#7a9e7e" style="background:#7a9e7e"></button><button class="tb-swatch" data-fore="#8ab4d4" style="background:#8ab4d4"></button><button class="tb-swatch" data-fore="#b28ad4" style="background:#b28ad4"></button><button class="tb-swatch" data-fore="#e05555" style="background:#e05555"></button></div><div class="tb-color-group"><span class="tb-label" data-tip="선택한 글자에 형광펜을 칠합니다">배경</span><button class="tb-swatch tb-bg" data-back="transparent" style="background:transparent;border:0.5px solid rgba(255,255,255,.3)"></button><button class="tb-swatch tb-bg" data-back="rgba(201,169,110,.25)" style="background:rgba(201,169,110,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(255,110,64,.25)" style="background:rgba(255,110,64,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(122,158,126,.25)" style="background:rgba(122,158,126,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(138,180,212,.25)" style="background:rgba(138,180,212,.45)"></button><button class="tb-swatch tb-bg" data-back="rgba(178,138,212,.25)" style="background:rgba(178,138,212,.45)"></button></div></span><span class="tb-grp" data-g="넣기"><button class="tb-btn" data-action="img" style="color:#1fe0ff" data-tip="사진 한 장 넣기">&#128247; 사진</button><button class="tb-btn" data-action="gallery" style="color:#1fe0ff" data-tip="사진 여러 장 넣기">&#128444; 사진 여러장</button><button class="tb-btn" data-action="table" data-tip="표 삽입">⊞ 표</button></span>`;
     toolbar.querySelectorAll('[data-cmd]').forEach(function(b){ b.onmousedown = function(e){ e.preventDefault(); }; b.onclick = function(){ self.execCmd(this.dataset.cmd); }; });
     toolbar.querySelectorAll('[data-block]').forEach(function(b){ b.onmousedown = function(e){ e.preventDefault(); }; b.onclick = function(){ self.execCmd('formatBlock', '<'+this.dataset.block+'>'); }; });
     toolbar.querySelectorAll('[data-list]').forEach(function(b){ b.onmousedown = function(e){ e.preventDefault(); }; b.onclick = function(){ self.execCmd(this.dataset.list === 'ol' ? 'insertOrderedList' : 'insertUnorderedList'); }; });
@@ -5756,6 +5756,83 @@ window.ThesisApp = (function(){
   })();
 })();
 
+/* ══════════════════════════════════════════════════════════════════════
+   붙여넣기 자동 임베드 — 노션처럼 동영상 주소를 넣으면 화면이 뜬다
+   지원: YouTube · Vimeo · 네이버TV
+   그 외 주소는 건드리지 않고 그대로 둔다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  if(window.__nnEmbedReady) return;
+  window.__nnEmbedReady = true;
+
+  function parse(url){
+    url = String(url || '').trim();
+    if(!/^https?:\/\//i.test(url)) return null;
+    var m;
+    /* YouTube */
+    m = url.match(/(?:youtube\.com\/(?:watch\?[^#]*\bv=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/i);
+    if(m) return { kind:'youtube', src:'https://www.youtube.com/embed/' + m[1], ratio:56.25 };
+    /* Vimeo */
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d{6,})/i);
+    if(m) return { kind:'vimeo', src:'https://player.vimeo.com/video/' + m[1], ratio:56.25 };
+    /* 네이버TV */
+    m = url.match(/tv\.naver\.com\/v\/(\d+)/i);
+    if(m) return { kind:'navertv', src:'https://tv.naver.com/embed/' + m[1], ratio:56.25 };
+    return null;
+  }
+  window.__nnParseEmbed = parse;
+
+  function build(info){
+    var wrap = document.createElement('div');
+    wrap.className = 'nn-embed';
+    wrap.setAttribute('contenteditable', 'false');
+    wrap.innerHTML =
+        '<div class="nn-embed-box" style="padding-bottom:' + info.ratio + '%">'
+      +   '<iframe src="' + info.src + '" frameborder="0" loading="lazy" '
+      +     'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" '
+      +     'allowfullscreen></iframe>'
+      + '</div>';
+    return wrap;
+  }
+  window.__nnBuildEmbed = build;
+
+  /* 편집 영역에 붙여넣기 감시 — 한 번만 등록 */
+  document.addEventListener('paste', function(e){
+    try{
+      var body = e.target && e.target.closest && e.target.closest('[contenteditable="true"]');
+      if(!body) return;
+      var txt = (e.clipboardData || window.clipboardData);
+      if(!txt) return;
+      var url = (txt.getData('text/plain') || '').trim();
+      if(!url || /\s/.test(url)) return;          /* 여러 줄·문장은 대상 아님 */
+      var info = parse(url);
+      if(!info) return;                            /* 알 수 없는 주소는 그대로 */
+
+      e.preventDefault();
+      var node = build(info);
+      var sel = window.getSelection();
+      if(sel && sel.rangeCount){
+        var r = sel.getRangeAt(0);
+        r.deleteContents();
+        r.insertNode(node);
+        /* 임베드 뒤에 빈 줄을 만들어 계속 쓸 수 있게 */
+        var after = document.createElement('div');
+        after.innerHTML = '<br>';
+        if(node.nextSibling) node.parentNode.insertBefore(after, node.nextSibling);
+        else node.parentNode.appendChild(after);
+        var nr = document.createRange();
+        nr.setStart(after, 0); nr.collapse(true);
+        sel.removeAllRanges(); sel.addRange(nr);
+      } else {
+        body.appendChild(node);
+      }
+      body.dispatchEvent(new Event('input', {bubbles:true}));
+      if(window.__nnToast) window.__nnToast('\u2713 ' +
+        (info.kind === 'youtube' ? '유튜브' : info.kind === 'vimeo' ? 'Vimeo' : '네이버TV') + ' 영상을 넣었습니다');
+    }catch(err){}
+  }, true);
+})();
+
 /* ══════════ 홈 → 매크로 관심종목 바로가기 ══════════ */
 window.__nnGoWatchlist = function(){
   try{
@@ -5763,20 +5840,29 @@ window.__nnGoWatchlist = function(){
 
     /* 관심종목 구역을 확실히 찾는다.
        ① 전용 id/class → ② 관심종목 항목의 조상 → ③ 제목 글자로 역추적 */
+    /* 관심종목 구역 찾기 — 첫 진입 때 아직 안 그려졌을 수 있으므로
+       '실제 종목 항목이 존재하는' 구역만 인정한다.
+       (예전에는 제목 글자만 보고 엉뚱한 카드를 잡아 금리 쪽으로 갔다) */
     function findSec(){
-      var el = document.querySelector('#wlSec, #watchlistSec, .wl-sec, .watchlist-sec');
-      if(el) return el;
-      var item = document.querySelector('.wl-name, .wl-sr-name, .wl-row, .wl-card');
+      var page = document.getElementById('page-macro') || document;
+
+      /* ① 실제 관심종목 항목이 그려졌는지 먼저 확인 */
+      var item = page.querySelector('.wl-name, .wl-sr-name, .wl-row, .wl-card, .wl-item');
       if(item){
-        var up = item.closest('section, .macro-card, .rs-sec, .macro-sec');
-        if(up) return up;
-        return item;
+        var up = item.closest('.macro-card, section, .rs-sec, .macro-sec');
+        return up || item;
       }
-      /* 제목 텍스트로 찾기 */
-      var heads = document.querySelectorAll('#page-macro .macro-card, #page-macro section, #page-macro .rs-sec');
-      for(var i=0;i<heads.length;i++){
-        var t = (heads[i].textContent || '').slice(0, 120);
-        if(/관심\s*종목|WATCH\s*LIST|WATCHLIST/i.test(t)) return heads[i];
+
+      /* ② 전용 id/class 가 있으면 사용 */
+      var el = page.querySelector('#wlSec, #watchlistSec, .wl-sec, .watchlist-sec, .wl-wrap');
+      if(el) return el;
+
+      /* ③ 제목 줄에 '관심 종목'이 있는 카드 — 본문 전체가 아니라 제목만 본다 */
+      var cards = page.querySelectorAll('.macro-card, section, .rs-sec');
+      for(var i=0;i<cards.length;i++){
+        var head = cards[i].querySelector('.mc-title, .macro-card-title, h2, h3, .rs-t, .mc-h');
+        var t = head ? (head.textContent || '') : '';
+        if(/관심\s*종목|WATCH\s*?LIST/i.test(t)) return cards[i];
       }
       return null;
     }
@@ -5800,8 +5886,8 @@ window.__nnGoWatchlist = function(){
     (function attempt(){
       var el = findSec();
       if(el){ goTo(el); return; }
-      if(++tries > 12) return;
-      setTimeout(attempt, 160);
+      if(++tries > 30) return;      /* 첫 진입 때는 렌더가 늦다 */
+      setTimeout(attempt, 140);
     })();
   }catch(e){}
 };
