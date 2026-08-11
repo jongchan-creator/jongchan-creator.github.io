@@ -25,6 +25,9 @@ window.switchPage = function(name) {
   var nb = document.getElementById('nav-'+name);
   if(nb) nb.classList.add('active');
   window.scrollTo(0,0);
+  if(name === 'journal' && window.__nnJnRender){
+    setTimeout(function(){ try{ window.__nnJnRender(); }catch(e){} }, 40);
+  }
   if(name === 'conviction' && window.__nnConvRender){
     setTimeout(function(){ try{ window.__nnConvRender(); }catch(e){} }, 40);
   }

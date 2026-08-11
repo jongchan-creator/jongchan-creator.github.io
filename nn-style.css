@@ -7690,3 +7690,155 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
   .rl-mp{padding:12px 13px}
   .rl-mp.on{transform:none}
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   [3단계] 투자 일지 (JOURNAL) — 상징색 진한 청록
+   ══════════════════════════════════════════════════════════════════ */
+#page-journal{ --jnc:#1f9e8c; --jnc-lt:#3fc4b0; }
+.cove-line.jn-line{background:linear-gradient(90deg,#1f9e8c,transparent)!important}
+#page-journal .as-eyebrow{color:#5fd0be!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(31,158,140,.5)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(31,158,140,.3)!important}
+#page-journal .as-hsub{color:rgba(95,208,190,.55)!important}
+#nav-journal{color:#f8f8fa!important}
+#nav-journal:hover,#nav-journal.active{color:#5fd0be!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(31,158,140,.8)}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#1f9e8c,transparent)!important}
+.jn-body{margin-top:34px;font-family:'Pretendard',sans-serif}
+/* 탭 */
+.jn-tabs{display:flex;align-items:center;gap:7px;margin-bottom:18px;flex-wrap:wrap}
+.jn-tab{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;
+  color:rgba(255,255,255,.5);font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;
+  padding:7px 16px;cursor:pointer;transition:.16s}
+.jn-tab:hover{border-color:rgba(63,196,176,.45);color:#9fe4d8}
+.jn-tab.on{background:rgba(31,158,140,.2);border-color:rgba(63,196,176,.6);color:#9fe4d8}
+.jn-new{margin-left:auto;background:rgba(31,158,140,.16);border:1px solid rgba(63,196,176,.5);
+  border-radius:9px;color:#9fe4d8;font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:600;
+  padding:8px 16px;cursor:pointer;transition:.16s;white-space:nowrap}
+.jn-new:hover{background:rgba(31,158,140,.3);border-color:rgba(63,196,176,.8)}
+/* 알림 */
+.jn-due{display:flex;flex-direction:column;gap:3px;background:rgba(31,158,140,.1);
+  border:1px solid rgba(63,196,176,.3);border-left:3px solid #1f9e8c;border-radius:3px 10px 10px 3px;
+  padding:12px 15px;margin-bottom:16px}
+.jn-due b{font-size:12px;color:#9fe4d8}
+.jn-due span{font-size:11.5px;color:rgba(255,255,255,.5)}
+/* 빈 상태 */
+.jn-empty{text-align:center;padding:44px 20px;background:rgba(255,255,255,.02);
+  border:1px dashed rgba(63,196,176,.24);border-radius:14px}
+.jn-e-t{font-size:15px;font-weight:700;color:#f0ede6;margin-bottom:10px}
+.jn-e-d{font-size:12.5px;color:rgba(255,255,255,.48);line-height:1.9;margin-bottom:20px}
+.jn-e-d b{color:#5fd0be;font-weight:600}
+/* 목록 */
+.jn-list{display:flex;flex-direction:column;gap:9px}
+.jn-card{display:flex;width:100%;text-align:left;background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;cursor:pointer;transition:.18s}
+.jn-card:hover{border-color:rgba(63,196,176,.45);transform:translateY(-2px);
+  box-shadow:0 14px 30px -18px rgba(0,0,0,.8)}
+.jn-c-side{width:3px;flex:none}
+.jn-c-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding:14px 16px}
+.jn-c-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jn-c-act{font-size:10px;font-weight:700;border:1px solid;border-radius:20px;padding:2px 9px}
+.jn-c-tk{font-family:'Orbitron',sans-serif;font-size:11px;color:#5fd0be;letter-spacing:.06em}
+.jn-c-date{font-family:'Orbitron',sans-serif;font-size:10px;color:rgba(255,255,255,.32)}
+.jn-c-cv{font-size:10.5px;color:#3fc4b0;letter-spacing:1px;margin-left:auto}
+.jn-c-why{font-size:12.5px;color:rgba(255,255,255,.66);line-height:1.5}
+.jn-c-meta{display:flex;gap:12px;font-size:10.5px;color:rgba(255,255,255,.3);flex-wrap:wrap}
+.jn-c-th{color:rgba(109,164,255,.7)}
+.jn-od{color:#e8a06a!important;font-weight:600}
+.jn-done{color:rgba(95,208,190,.7)!important}
+/* 상세 */
+.jn-back{background:none;border:1px solid rgba(255,255,255,.14);border-radius:8px;
+  color:rgba(255,255,255,.55);font-family:'Pretendard',sans-serif;font-size:12px;
+  padding:7px 14px;cursor:pointer;margin-bottom:20px;transition:.15s}
+.jn-back:hover{border-color:rgba(63,196,176,.5);color:#9fe4d8}
+.jn-d-line{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+.jn-d-px{font-family:'Orbitron',sans-serif;font-size:16px;color:#f0ede6;margin-bottom:6px}
+.jn-d-sw{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:16px}
+.jn-d-sw b{color:#e8a0a0}
+.jn-d-acts{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0 24px}
+.jn-act{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:8px;
+  color:rgba(255,255,255,.7);font-family:'Pretendard',sans-serif;font-size:12px;
+  padding:8px 15px;cursor:pointer;transition:.15s}
+.jn-act:hover{border-color:rgba(63,196,176,.6);color:#9fe4d8;background:rgba(31,158,140,.12)}
+.jn-del:hover{border-color:rgba(212,103,122,.6)!important;color:#e88a9a!important;background:rgba(212,103,122,.12)!important}
+.jn-blk{margin-bottom:22px}
+.jn-blk-t{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:rgba(95,208,190,.8);
+  padding-bottom:8px;margin-bottom:11px;border-bottom:1px solid rgba(255,255,255,.07)}
+.jn-blk ul{margin:0;padding-left:18px}
+.jn-blk li{font-size:12.5px;color:rgba(255,255,255,.62);line-height:1.9}
+.jn-rev{font-family:'Orbitron',sans-serif;font-size:13px;color:#5fd0be}
+.jn-th-go{background:rgba(31,111,255,.12);border:1px solid rgba(77,139,255,.4);border-radius:8px;
+  color:#9dc0ff;font-family:'Pretendard',sans-serif;font-size:12.5px;padding:8px 14px;cursor:pointer;transition:.15s}
+.jn-th-go:hover{background:rgba(31,111,255,.24);border-color:rgba(77,139,255,.7)}
+.jn-out{background:rgba(31,158,140,.07);border:1px solid rgba(63,196,176,.22);
+  border-radius:11px;padding:15px 16px}
+.jn-out .jn-blk-t{border-bottom-color:rgba(63,196,176,.2)}
+.jn-out-t{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.8;margin-bottom:9px}
+.jn-out-l{font-size:12px;color:rgba(255,255,255,.55);line-height:1.8}
+.jn-out-l b{color:#5fd0be;margin-right:5px}
+/* 분기 복기 */
+.jn-qsel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.jn-q{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  color:rgba(255,255,255,.5);font-family:'Orbitron',sans-serif;font-size:11px;
+  padding:6px 13px;cursor:pointer;transition:.15s}
+.jn-q:hover{border-color:rgba(63,196,176,.45);color:#9fe4d8}
+.jn-q.on{background:rgba(31,158,140,.22);border-color:rgba(63,196,176,.6);color:#9fe4d8}
+.jn-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:16px}
+.jn-st{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);border-radius:11px;
+  padding:14px 10px;text-align:center}
+.jn-st-v{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:#5fd0be;line-height:1}
+.jn-st-l{font-size:10.5px;color:rgba(255,255,255,.5);margin-top:6px}
+.jn-st-s{font-size:9px;color:rgba(255,255,255,.28);margin-top:2px}
+.jn-top{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:20px;line-height:1.8}
+.jn-top b{color:#5fd0be;font-family:'Orbitron',sans-serif;font-size:11.5px;margin-left:6px}
+.jn-top i{font-style:normal;font-size:9px;color:rgba(255,255,255,.35);margin-left:2px}
+.jn-rform{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px}
+.jn-rf-head{font-size:13px;font-weight:700;color:#f0ede6;margin-bottom:16px}
+.jn-rf{margin-bottom:14px}
+.jn-rf-l{display:block;font-size:11px;font-weight:600;color:rgba(95,208,190,.85);margin-bottom:6px}
+.jn-rf-i{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  border-radius:9px;color:#f0ede6;font-family:'Pretendard',sans-serif;font-size:12.5px;
+  padding:10px 12px;line-height:1.7;resize:vertical;outline:none;transition:.15s}
+.jn-rf-i:focus{border-color:rgba(63,196,176,.6);background:rgba(255,255,255,.06)}
+.jn-rsave{background:rgba(31,158,140,.2);border:1px solid rgba(63,196,176,.55);border-radius:9px;
+  color:#9fe4d8;font-family:'Pretendard',sans-serif;font-size:12.5px;font-weight:600;
+  padding:9px 20px;cursor:pointer;transition:.16s;margin-top:4px}
+.jn-rsave:hover{background:rgba(31,158,140,.34);border-color:rgba(63,196,176,.85)}
+/* 기록 창 */
+.jn-modal{width:min(560px,92vw);max-height:88vh;display:flex;flex-direction:column}
+.jn-hint{font-size:11.5px;color:rgba(255,255,255,.4);line-height:1.7;margin:-2px 0 14px}
+.jn-hint b{color:#5fd0be;font-weight:600}
+.jn-form{overflow-y:auto;flex:1;padding-right:5px;margin-right:-5px;
+  scrollbar-width:thin;scrollbar-color:rgba(63,196,176,.45) transparent}
+.jn-form::-webkit-scrollbar{width:8px}
+.jn-form::-webkit-scrollbar-track{background:transparent;margin:4px 0}
+.jn-form::-webkit-scrollbar-thumb{background:rgba(63,196,176,.32);border-radius:99px;
+  border:2px solid transparent;background-clip:content-box}
+.jn-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jn-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.jn-ta{resize:vertical;min-height:64px;line-height:1.7;font-family:'Pretendard',sans-serif}
+.jn-ta-risk{border-color:rgba(212,103,122,.3)!important}
+.jn-sel{cursor:pointer}
+.jn-acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.jn-a{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  color:rgba(255,255,255,.55);font-family:'Pretendard',sans-serif;font-size:12px;font-weight:600;
+  padding:7px 14px;cursor:pointer;transition:.15s}
+.jn-a:hover{background:rgba(255,255,255,.08)}
+.jn-a.on{background:rgba(255,255,255,.1);font-weight:700;border-width:1.5px}
+.jn-sellwhy{margin-bottom:4px}
+.jn-sw-opts{display:flex;gap:6px;flex-wrap:wrap}
+.jn-sw{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.11);border-radius:8px;
+  color:rgba(255,255,255,.5);font-family:'Pretendard',sans-serif;font-size:11.5px;
+  padding:6px 12px;cursor:pointer;transition:.15s}
+.jn-sw:hover{border-color:rgba(212,103,122,.45);color:#e8a0a0}
+.jn-sw.on{background:rgba(212,103,122,.2);border-color:rgba(212,103,122,.6);color:#e8a0a0;font-weight:600}
+.jn-ou-modal{width:min(500px,92vw)}
+.jn-ou-was{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.jn-ou-k{font-size:10px;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:7px}
+.jn-ou-was ul{margin:0;padding-left:16px}
+.jn-ou-was li{font-size:12px;color:rgba(255,255,255,.6);line-height:1.8}
+@media(max-width:820px){
+  .jn-stats{grid-template-columns:repeat(3,1fr)}
+  .jn-row3,.jn-row2{grid-template-columns:1fr}
+}
