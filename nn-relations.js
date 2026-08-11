@@ -402,7 +402,7 @@
                 var on = (n.ref === ref);
                 var passed = i < ch.pos - 1;
                 var rid = relIdOf(n.ref);
-                return '<span class="rl-mp-wrap">'
+                return '<span class="rl-mp-wrap' + (on ? ' has-cur' : '') + '">'
                   + '<button type="button" class="rl-mp' + (on ? ' on' : (passed ? ' done' : ''))
                   +   '"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
                   +   '<span class="rl-mp-bar"' + ((on || passed) ? ' style="background:' + esc(n.color) + '"' : '') + '></span>'

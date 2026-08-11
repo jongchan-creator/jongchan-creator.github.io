@@ -5838,14 +5838,7 @@ window.__nnGoWatchlist = function(){
   try{
     if(typeof switchPage === 'function') switchPage('macro');
 
-    /* 관심종목 구역을 확실히 찾는다.
-       ① 전용 id/class → ② 관심종목 항목의 조상 → ③ 제목 글자로 역추적 */
-    /* 관심종목 구역 찾기 — 첫 진입 때 아직 안 그려졌을 수 있으므로
-       '실제 종목 항목이 존재하는' 구역만 인정한다.
-       (예전에는 제목 글자만 보고 엉뚱한 카드를 잡아 금리 쪽으로 갔다) */
-    /* 관심종목 카드 찾기
-       실제 제목은 "나의 관심종목 · MY WATCHLIST" 이다.
-       예전 정규식이 '관심 종목'(띄어쓰기)만 찾아 엉뚱한 카드를 잡았다. */
+    /* 관심종목 카드 — 실제 제목은 "나의 관심종목 · MY WATCHLIST" */
     function findSec(){
       var page = document.getElementById('page-macro');
       if(!page) return null;
@@ -5858,31 +5851,53 @@ window.__nnGoWatchlist = function(){
       }
       return null;
     }
-
-    /* 상단 고정 네비 높이만큼 띄워서 잘리지 않게 */
     function navGap(){
       var nav = document.querySelector('nav.nav, .nav');
       var h = nav ? nav.getBoundingClientRect().height : 58;
       return Math.round(h + 18);
     }
-    function goTo(el){
-      var y = el.getBoundingClientRect().top + window.pageYOffset - navGap();
-      window.scrollTo({ top: Math.max(0, y), behavior:'smooth' });
-      /* 잠깐 강조해 어디로 왔는지 알려 준다 */
-      el.classList.add('nn-jump-hit');
-      setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+    function targetY(el){
+      return Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - navGap());
     }
 
-    /* 탭 전환 직후에는 아직 그려지지 않았을 수 있어 몇 번 확인한다 */
-    var tries = 0;
-    (function attempt(){
-      var el = findSec();
-      if(el){ goTo(el); return; }
-      if(++tries > 30) return;      /* 첫 진입 때는 렌더가 늦다 */
-      setTimeout(attempt, 140);
-    })();
+    /* ── 핵심 ──
+       이 탭에는 TradingView 위젯이 30개 넘게 있고, 나중에 로드되며
+       높이가 커진다. 한 번만 계산해 이동하면 그 사이 목표가 아래로
+       밀려나 엉뚱한 카드(금리·원자재)에 멈춘다.
+       그래서 이동한 뒤에도 위치를 계속 확인해 바로잡는다. */
+    var el = null, tries = 0, settle = 0, last = -1;
+
+    function step(){
+      if(!el){
+        el = findSec();
+        if(!el){
+          if(++tries > 40) return;
+          return setTimeout(step, 120);
+        }
+      }
+      var y = targetY(el);
+      var diff = Math.abs(y - window.pageYOffset);
+
+      if(diff <= 6){
+        /* 제자리에 왔다 — 몇 번 더 확인해 흔들리지 않는지 본다 */
+        if(++settle >= 4){
+          el.classList.add('nn-jump-hit');
+          setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+          return;
+        }
+      } else {
+        settle = 0;
+        /* 위치가 계속 변하면 부드럽게, 안정되면 즉시 맞춘다 */
+        window.scrollTo({ top: y, behavior: (Math.abs(y - last) > 40 ? 'smooth' : 'auto') });
+        last = y;
+      }
+      if(++tries > 40) return;
+      setTimeout(step, 160);
+    }
+    setTimeout(step, 60);
   }catch(e){}
 };
+
 
 
 /* ══════════ 편집 툴바 고정 상태 감지 ══════════
