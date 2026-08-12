@@ -915,22 +915,51 @@ async function polKR(){
   if(!k) throw new Error('ECOS 인증키가 없습니다');
   function d8(dt){ return dt.getFullYear()+String(dt.getMonth()+1).padStart(2,'0')+String(dt.getDate()).padStart(2,'0'); }
   var to=new Date(), from=new Date(); from.setDate(from.getDate()-400);
-  var url='https://ecos.bok.or.kr/api/StatisticSearch/'+encodeURIComponent(k)
-        +'/json/kr/1/200/722Y001/D/'+d8(from)+'/'+d8(to)+'/0101000';
-  var txt=await polFetch(url, '/ecos?key='+encodeURIComponent(k)+'&from='+d8(from)+'&to='+d8(to));
-  var j=JSON.parse(txt);
-  if(j && j.RESULT && j.RESULT.CODE) throw new Error('ECOS ('+j.RESULT.CODE+') '+(j.RESULT.MESSAGE||''));
-  /* 한국은행이 오류를 돌려줄 때 이유를 그대로 보여 준다.
-     '불러오지 못했습니다'만으로는 무엇이 문제인지 알 수 없다. */
-  if(j && j.RESULT && j.RESULT.CODE){
-    var cd=String(j.RESULT.CODE||''), ms=String(j.RESULT.MESSAGE||'');
-    var hint = cd==='INFO-100' ? '인증키가 올바르지 않습니다. 발급받은 키를 다시 확인해 주세요.'
-             : cd==='INFO-200' ? '해당 기간에 자료가 없습니다.'
-             : cd==='ERROR-300' ? '필수 값이 빠졌습니다.'
-             : cd==='ERROR-500' ? '한국은행 서버에 일시적 문제가 있습니다. 잠시 후 다시 시도해 주세요.'
-             : ms || '알 수 없는 오류';
-    throw new Error('ECOS ' + cd + ' · ' + hint);
+  /* 한국은행 기준금리 — 통계코드가 개편되며 바뀌어 왔다.
+     하나만 쓰면 '데이터 없음'이 나므로 알려진 조합을 차례로 시도한다.
+       722Y001 / 0101000 : 한국은행 기준금리 (일별)
+       098Y001 / 0101000 : 시장금리 계열의 기준금리
+       722Y001 / 0101000 (월별 M) : 일별이 비어 있을 때 대비 */
+  var CANDS = [
+    { code:'722Y001', cycle:'D', item:'0101000' },
+    { code:'098Y001', cycle:'D', item:'0101000' },
+    { code:'722Y001', cycle:'M', item:'0101000' },
+    { code:'098Y001', cycle:'M', item:'0101000' }
+  ];
+  var lastErr = null, j = null, used = null;
+
+  for(var ci=0; ci<CANDS.length; ci++){
+    var C = CANDS[ci];
+    var f8 = (C.cycle === 'M') ? d8(from).slice(0,6) : d8(from);
+    var t8 = (C.cycle === 'M') ? d8(to).slice(0,6)   : d8(to);
+    var url = 'https://ecos.bok.or.kr/api/StatisticSearch/' + encodeURIComponent(k)
+            + '/json/kr/1/200/' + C.code + '/' + C.cycle + '/' + f8 + '/' + t8 + '/' + C.item;
+    try{
+      var txt = await polFetch(url, '/ecos?key=' + encodeURIComponent(k)
+              + '&code=' + C.code + '&cycle=' + C.cycle + '&item=' + C.item
+              + '&from=' + f8 + '&to=' + t8);
+      var jj = JSON.parse(txt);
+
+      if(jj && jj.RESULT && jj.RESULT.CODE){
+        var cd = String(jj.RESULT.CODE || ''), ms = String(jj.RESULT.MESSAGE || '');
+        /* 키 문제면 다른 코드를 시도해도 소용없다 — 즉시 알린다 */
+        if(cd === 'INFO-100' || cd === 'INFO-300'){
+          throw new Error('인증키가 올바르지 않습니다 · 한국은행에서 받은 키를 다시 확인해 주세요 (' + cd + ')');
+        }
+        lastErr = new Error('ECOS ' + cd + (ms ? ' · ' + ms : ''));
+        continue;   /* 자료 없음 등은 다음 조합으로 */
+      }
+      if(jj && jj.StatisticSearch && jj.StatisticSearch.row && jj.StatisticSearch.row.length){
+        j = jj; used = C; break;
+      }
+      lastErr = new Error('자료가 비어 있습니다 (' + C.code + '/' + C.cycle + ')');
+    }catch(e){
+      if(e && /인증키/.test(e.message || '')) throw e;
+      lastErr = e;
+    }
   }
+  if(!j) throw (lastErr || new Error('기준금리 자료를 찾지 못했습니다'));
+
   var rows=j && j.StatisticSearch && j.StatisticSearch.row;
   if(!rows || !rows.length) throw new Error('데이터가 없습니다');
   for(var i=rows.length-1;i>=0;i--){
@@ -5890,73 +5919,78 @@ window.__nnGoWatchlist = function(){
       return Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - navGap());
     }
 
-    /* ── 위젯이 늦게 로드되며 목표가 밀리는 문제 ──
-       TradingView 위젯 30여 개가 나중에 커지면서 관심종목이 아래로 밀린다.
-       그래서 이동 후에도 잠시 위치를 따라간다.
-       단, 사용자가 스크롤·휠·터치를 하면 즉시 손을 뗀다.
-       (예전에는 이 감지가 없어 스크롤을 올려도 계속 끌어내렸다) */
-    var el = null, tries = 0, settle = 0, last = -1;
-    var aborted = false, timer = 0;
-    var myScrollAt = 0;
+    /* ── 이동 방식 ──
+       예전에는 목표가 바뀔 때마다 scrollTo 를 다시 불러 화면이 두 번 튕겼다.
+       대신 직접 한 번만 부드럽게 굴리고, 그 사이 목표가 밀리면
+       진행 중인 애니메이션의 도착점만 조용히 갱신한다. */
+    var el = null, tries = 0, aborted = false, raf = 0, timer = 0;
+    var startY = 0, goalY = 0, startAt = 0, DUR = 620;
+
+    function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
 
     function stop(){
       if(aborted) return;
       aborted = true;
-      clearTimeout(timer);
+      cancelAnimationFrame(raf); clearTimeout(timer);
       ['wheel','touchstart','keydown'].forEach(function(ev){
         window.removeEventListener(ev, onUser, true);
       });
-      window.removeEventListener('scroll', onScroll, true);
     }
     function onUser(){ stop(); }
-    function onScroll(){
-      /* 내가 방금 움직인 것이면 무시, 사용자가 움직였으면 중단 */
-      if(Date.now() - myScrollAt < 1200) return;   /* 부드러운 스크롤이 끝날 때까지 */
-      stop();
-    }
-    /* 감시는 조금 늦게 건다.
-       버튼 클릭(mousedown)과 탭 전환이 만드는 스크롤이
-       '사용자 개입'으로 잡혀 시작하자마자 멈추던 문제가 있었다. */
     setTimeout(function(){
       if(aborted) return;
       ['wheel','touchstart','keydown'].forEach(function(ev){
         window.addEventListener(ev, onUser, {capture:true, passive:true});
       });
-      window.addEventListener('scroll', onScroll, {capture:true, passive:true});
-    }, 500);
+    }, 380);
 
-    function step(){
+    function tick(){
       if(aborted) return;
-      if(!el){
-        el = findSec();
-        if(!el){
-          if(++tries > 40){ stop(); return; }
-          timer = setTimeout(step, 120);
-          return;
-        }
-      }
-      var y = targetY(el);
-      var diff = Math.abs(y - window.pageYOffset);
+      var now = Date.now();
+      var t = Math.min(1, (now - startAt) / DUR);
+      var y = startY + (goalY - startY) * ease(t);
+      window.scrollTo(0, y);
+      if(t < 1){ raf = requestAnimationFrame(tick); return; }
 
-      if(diff <= 6){
-        if(++settle >= 4){
-          el.classList.add('nn-jump-hit');
-          setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
-          stop();
+      /* 도착 — 위젯이 더 커졌는지 잠시 확인한다 */
+      var settle = 0;
+      (function check(){
+        if(aborted) return;
+        var g = targetY(el);
+        if(Math.abs(g - window.pageYOffset) <= 4){
+          if(++settle >= 3){
+            el.classList.add('nn-jump-hit');
+            setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+            stop();
+            return;
+          }
+        } else {
+          /* 다시 부드럽게 — 튕기지 않도록 짧게 */
+          settle = 0;
+          startY = window.pageYOffset; goalY = g;
+          startAt = Date.now(); DUR = 340;
+          raf = requestAnimationFrame(tick);
           return;
         }
-      } else {
-        settle = 0;
-        myScrollAt = Date.now();
-        window.scrollTo({ top: y, behavior: (Math.abs(y - last) > 40 ? 'smooth' : 'auto') });
-        last = y;
-      }
-      if(++tries > 40){ stop(); return; }
-      timer = setTimeout(step, 160);
+        timer = setTimeout(check, 180);
+      })();
     }
-    timer = setTimeout(step, 60);
-    /* 아무리 늦어도 6초 뒤에는 손을 뗀다 */
-    setTimeout(stop, 6000);
+
+    (function findLoop(){
+      if(aborted) return;
+      el = findSec();
+      if(!el){
+        if(++tries > 40){ stop(); return; }
+        timer = setTimeout(findLoop, 110);
+        return;
+      }
+      startY = window.pageYOffset;
+      goalY = targetY(el);
+      startAt = Date.now();
+      raf = requestAnimationFrame(tick);
+    })();
+
+    setTimeout(stop, 7000);
   }catch(e){}
 };
 

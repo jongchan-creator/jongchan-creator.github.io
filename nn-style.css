@@ -7958,3 +7958,115 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
     left:50%;top:-9px;transform:translateX(-50%) rotate(135deg);
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   맥락 — 편집 도구와 확실히 구분되는 재질
+   툴바가 밝은 종이라면, 맥락은 그 위에 놓인 짙은 명판이다.
+   ══════════════════════════════════════════════════════════════════════ */
+.rl-panel{
+  background:
+    radial-gradient(ellipse 60% 100% at 8% 0%, rgba(201,169,110,.1), transparent 60%),
+    linear-gradient(160deg,#26221c 0%,#1e1b16 48%,#191713 100%)!important;
+  border:1px solid rgba(201,169,110,.22)!important;
+  border-radius:14px!important;
+  padding:18px 20px 19px!important;
+  box-shadow:
+    inset 0 1px 0 rgba(232,196,126,.13),
+    0 2px 4px rgba(12,10,8,.3),
+    0 18px 40px -28px rgba(12,10,8,.85)!important;
+  position:relative;overflow:hidden!important;
+}
+/* 상단에 흐르는 가는 금선 */
+.rl-panel::before{
+  content:''!important;display:block!important;
+  position:absolute;left:0;right:0;top:0;height:1px;width:auto!important;
+  background:linear-gradient(90deg,transparent,rgba(232,196,126,.5) 22%,
+    rgba(232,196,126,.5) 78%,transparent)!important;
+}
+.rl-head{border-bottom-color:rgba(232,196,126,.16)!important;
+  padding-bottom:14px!important;margin-bottom:15px!important}
+.rl-eyebrow{color:#d4b483!important;font-size:13.5px!important;letter-spacing:.24em!important}
+.rl-head .rl-title{color:#f2ede1!important;font-size:14.5px!important}
+.rl-n{color:#c9a96e!important}
+.rl-help{background:rgba(232,196,126,.1)!important;border-color:rgba(232,196,126,.28)!important;
+  color:rgba(242,237,225,.6)!important}
+.rl-help:hover{background:rgba(232,196,126,.22)!important;color:#f2ede1!important}
+.rl-add{background:linear-gradient(180deg,rgba(232,196,126,.2),rgba(201,169,110,.13))!important;
+  border-color:rgba(232,196,126,.45)!important;color:#f0dcae!important;
+  box-shadow:0 1px 3px rgba(12,10,8,.4)!important}
+.rl-add:hover{background:linear-gradient(180deg,rgba(232,196,126,.34),rgba(201,169,110,.24))!important;
+  border-color:rgba(232,196,126,.7)!important}
+.rl-ex-badge{background:rgba(232,196,126,.16)!important;border-color:rgba(232,196,126,.35)!important;
+  color:#d4b483!important}
+.rl-ex-note{background:rgba(232,196,126,.07)!important;color:#c4b494!important;
+  border-left-color:rgba(232,196,126,.45)!important}
+.rl-ex-note b{color:#e8c47e!important}
+
+/* 갈래 이름 줄 */
+.rl-mt-k{color:rgba(242,237,225,.35)!important}
+.rl-mt-t{color:#f2ede1!important}
+.rl-mt-t.rl-mt-un{color:rgba(242,237,225,.3)!important}
+.rl-mt-n{color:#e8c47e!important;background:rgba(232,196,126,.14)!important}
+.rl-mt-d{color:rgba(242,237,225,.5)!important;border-left-color:rgba(232,196,126,.34)!important}
+.rl-mt-empty{color:rgba(242,237,225,.32)!important}
+.rl-mt-empty b{color:rgba(242,237,225,.55)!important}
+.rl-mt-edit{background:rgba(255,255,255,.05)!important;border-color:rgba(232,196,126,.26)!important;
+  color:rgba(242,237,225,.62)!important}
+.rl-mt-edit:hover{background:rgba(232,196,126,.18)!important;border-color:rgba(232,196,126,.55)!important;
+  color:#f0dcae!important}
+
+/* 단계 카드 — 짙은 판 위의 얇은 층 */
+.rl-mp{
+  background:rgba(255,255,255,.045)!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05)!important;
+  padding:14px 15px 14px 17px!important;
+}
+.rl-mp::after{background:rgba(255,255,255,.1)!important}
+.rl-mp.done{background:rgba(255,255,255,.055)!important}
+.rl-mp.done::after{background:rgba(201,169,110,.6)!important}
+.rl-mp.on{
+  background:linear-gradient(180deg,rgba(232,196,126,.16),rgba(201,169,110,.08))!important;
+  border-color:rgba(232,196,126,.45)!important;
+  box-shadow:inset 0 1px 0 rgba(232,196,126,.2),
+    0 4px 16px -8px rgba(232,196,126,.4)!important;
+}
+.rl-mp.on::after{background:linear-gradient(180deg,#e8c47e,#b8924e)!important}
+.rl-mp[data-ref]:hover{
+  background:rgba(255,255,255,.08)!important;
+  border-color:rgba(232,196,126,.36)!important;
+  box-shadow:0 4px 14px -8px rgba(0,0,0,.6)!important;
+}
+.rl-mp-n{color:rgba(242,237,225,.32)!important}
+.rl-mp-n::before{background:rgba(255,255,255,.16)!important}
+.rl-mp.done .rl-mp-n{color:#c9a96e!important}
+.rl-mp.done .rl-mp-n::before{background:#c9a96e!important}
+.rl-mp.on .rl-mp-n{color:#e8c47e!important}
+.rl-mp.on .rl-mp-n::before{background:#e8c47e!important;
+  box-shadow:0 0 0 3px rgba(232,196,126,.22)!important}
+.rl-mp-l{color:rgba(242,237,225,.38)!important}
+.rl-mp.on .rl-mp-l{color:#d4b483!important}
+.rl-mp-t{color:rgba(242,237,225,.72)!important}
+.rl-mp.on .rl-mp-t{color:#fdf9f0!important}
+.rl-mp-now{background:rgba(232,196,126,.2)!important;border-color:rgba(232,196,126,.4)!important;
+  color:#e8c47e!important}
+.rl-mp-wrap + .rl-mp-wrap::before{
+  border-right-color:rgba(232,196,126,.3)!important;
+  border-top-color:rgba(232,196,126,.3)!important;
+}
+.rl-nd-x{background:rgba(30,27,22,.9)!important;border-color:rgba(255,255,255,.16)!important;
+  color:rgba(242,237,225,.45)!important}
+.rl-nd-x:hover{color:#ff8a8a!important;border-color:rgba(224,82,82,.55)!important;
+  background:rgba(40,22,22,.95)!important}
+.rl-clear{border-color:rgba(255,255,255,.16)!important;color:rgba(242,237,225,.4)!important}
+.rl-clear:hover{border-color:rgba(232,196,126,.5)!important;color:#e8c47e!important;
+  background:rgba(232,196,126,.08)!important}
+/* 첫 안내 카드 */
+.rl-intro{background:rgba(232,196,126,.07)!important;border-color:rgba(232,196,126,.24)!important}
+.rl-i-t{color:#e8c47e!important}
+.rl-i-d{color:rgba(242,237,225,.55)!important}
+.rl-i-d b{color:#f2ede1!important}
+.rl-i-more{background:rgba(232,196,126,.18)!important;border-color:rgba(232,196,126,.42)!important;
+  color:#f0dcae!important}
+.rl-i-x{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.16)!important;
+  color:rgba(242,237,225,.5)!important}

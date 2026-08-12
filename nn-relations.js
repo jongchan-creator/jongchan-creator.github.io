@@ -669,8 +669,10 @@
   var SAMPLE = {
     book: {
       type:'books', id:'rlx_book', stage:'read',
+      groupHint:'done',
       title:'[예시] 돈의 심리학',
       cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
+      extra:{ rating:5, author:'모건 하우절' },
       content: noteHTML([
         '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
@@ -770,11 +772,20 @@
     var now = (k._nowStr ? k._nowStr() : new Date().toISOString().slice(0,10));
     var rec = { id:spec.id, title:spec.title, content:spec.content, date:now, mtime:Date.now() };
     if(spec.cover) rec.cover = spec.cover;
+    if(spec.extra) Object.keys(spec.extra).forEach(function(kk){ rec[kk] = spec.extra[kk]; });
 
-    /* 그룹이 있는 탭이면 첫 그룹에 넣는다 */
+    /* 그룹 배정 —
+       예시 책은 반드시 '완독'에 넣는다. 읽지 않은 책에서 생각이 나올 수는 없다.
+       (첫 그룹에 넣으면 '사고 싶은 책'에 들어가 앞뒤가 맞지 않았다) */
     try{
       var g = (k.groups && k.groups[spec.type]) ? k.groups[spec.type] : [];
-      if(g && g.length) rec.groupId = g[0].id;
+      if(spec.groupHint && g && g.length){
+        for(var gi=0; gi<g.length; gi++){
+          var nm = String(g[gi].name || '') + ' ' + String(g[gi].id || '');
+          if(nm.indexOf(spec.groupHint) >= 0){ rec.groupId = g[gi].id; break; }
+        }
+      }
+      if(!rec.groupId && g && g.length) rec.groupId = g[g.length-1].id;
     }catch(e){}
     if(spec.type === 'thesis'){ rec.tags = []; rec.sources = []; }
 
