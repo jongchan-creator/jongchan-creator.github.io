@@ -7842,3 +7842,41 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .dd-mini:hover{
   .jn-stats{grid-template-columns:repeat(3,1fr)}
   .jn-row3,.jn-row2{grid-template-columns:1fr}
 }
+
+/* ══ API 키 입력칸 — 보기 전환 ══ */
+.nn-keywrap{position:relative;display:inline-flex;align-items:center;flex:1;min-width:0}
+.nn-keywrap > input{flex:1;min-width:0;padding-right:96px!important}
+.nn-keyeye{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:6px;
+  color:rgba(255,255,255,.6);font-family:'Pretendard',sans-serif;font-size:10.5px;font-weight:600;
+  padding:4px 9px;cursor:pointer;transition:.15s;z-index:2;white-space:nowrap}
+.nn-keyeye:hover{background:rgba(201,169,110,.2);border-color:rgba(201,169,110,.5);color:#e8c47e}
+.nn-keyeye.on{background:rgba(201,169,110,.24);border-color:rgba(201,169,110,.6);color:#e8c47e}
+.nn-keycnt{position:absolute;right:58px;top:50%;transform:translateY(-50%);
+  font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(255,255,255,.3);
+  pointer-events:none;z-index:2}
+.nn-keycnt.warn{color:#e8a06a}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye{
+  background:#fff;border-color:rgba(20,18,15,.16);color:var(--lp-ink2)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye:hover,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
+  background:rgba(138,106,36,.12);border-color:rgba(138,106,36,.5);color:var(--lp-brass)}
+
+/* ══ 맥락 구슬 — 애니메이션 정리 ══
+   퍼지는 파동과 흐르는 빛이 과했다. 실은 고요하게, 구슬은 재질로만 표현. */
+.rl-map::after{display:none!important}
+.rl-mp-wrap.has-cur::after,
+.rl-mp-wrap:has(.rl-mp.on)::after{display:none!important}
+.rl-mp{animation:none!important;opacity:.66}
+.rl-mp.done{opacity:.92}
+.rl-mp.on{opacity:1}
+/* 실 — 은은한 금속선 하나 */
+.rl-map::before{
+  background:linear-gradient(90deg,
+    rgba(201,169,110,0) 0%,
+    rgba(190,158,96,.32) 12%,
+    rgba(214,180,116,.6) 50%,
+    rgba(190,158,96,.32) 88%,
+    rgba(201,169,110,0) 100%)!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.7)!important;
+}

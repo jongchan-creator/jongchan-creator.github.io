@@ -1122,6 +1122,82 @@
 })();
 
 
+/* ══════════════════════════════════════════════════════════════════════
+   API 키 입력칸 — 내가 뭘 넣었는지 확인할 수 있게
+   비밀번호처럼 가려진 칸에 '보기' 버튼을 붙인다.
+   붙여넣기 실수(앞뒤 공백·줄바꿈·따옴표)도 저장 전에 정리한다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  if(window.__nnKeyReveal) return;
+  window.__nnKeyReveal = true;
+
+  var TARGETS = ['#ecosKey', '#csKey', '#aptKey', '#fmpKeyMacro', '#workerUrlMacro', '#finnhubKey'];
+
+  function attach(inp){
+    if(!inp || inp.__rev) return;
+    inp.__rev = true;
+
+    /* 감싸는 상자 */
+    var wrap = document.createElement('span');
+    wrap.className = 'nn-keywrap';
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(inp);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nn-keyeye';
+    btn.setAttribute('data-tip', '입력한 내용 보기');
+    btn.textContent = '보기';
+    wrap.appendChild(btn);
+
+    var shown = false;
+    btn.onclick = function(e){
+      e.preventDefault(); e.stopPropagation();
+      shown = !shown;
+      inp.type = shown ? 'text' : 'password';
+      btn.textContent = shown ? '숨기기' : '보기';
+      btn.classList.toggle('on', shown);
+      btn.setAttribute('data-tip', shown ? '다시 가리기' : '입력한 내용 보기');
+    };
+
+    /* 글자 수를 보여 주면 붙여넣기가 제대로 됐는지 바로 안다 */
+    var cnt = document.createElement('span');
+    cnt.className = 'nn-keycnt';
+    wrap.appendChild(cnt);
+    function paintCnt(){
+      var v = inp.value || '';
+      cnt.textContent = v ? (v.length + '자') : '';
+      cnt.classList.toggle('warn', /^\s|\s$|[\r\n"']/.test(v));
+    }
+    inp.addEventListener('input', paintCnt);
+    paintCnt();
+
+    /* 붙여넣기 직후 눈에 보이지 않는 문자를 정리한다 */
+    inp.addEventListener('paste', function(){
+      setTimeout(function(){
+        var v = (inp.value || '');
+        var cleaned = v.replace(/[\r\n\t]/g, '').replace(/^["'\s]+|["'\s]+$/g, '');
+        if(cleaned !== v){
+          inp.value = cleaned;
+          paintCnt();
+          if(window.__nnToast) window.__nnToast('붙여넣은 값의 공백·따옴표를 정리했습니다');
+        }
+      }, 10);
+    });
+  }
+
+  function scan(){
+    TARGETS.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(attach);
+    });
+  }
+  scan();
+  /* 나중에 그려지는 칸도 붙잡는다 */
+  var n = 0;
+  var iv = setInterval(function(){ scan(); if(++n > 40) clearInterval(iv); }, 500);
+  document.addEventListener('click', function(){ setTimeout(scan, 300); }, true);
+})();
+
 /* ══════════ 배경화면 관리 (목록·이름편집·추가삭제·자동전환) ══════════ */
 (function(){
   var LIST_KEY='nn_bg_list_v1', CUR_KEY='nn_site_bg_v1', AUTO_KEY='nn_bg_auto_v1';

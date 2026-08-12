@@ -920,6 +920,17 @@ async function polKR(){
   var txt=await polFetch(url, '/ecos?key='+encodeURIComponent(k)+'&from='+d8(from)+'&to='+d8(to));
   var j=JSON.parse(txt);
   if(j && j.RESULT && j.RESULT.CODE) throw new Error('ECOS ('+j.RESULT.CODE+') '+(j.RESULT.MESSAGE||''));
+  /* 한국은행이 오류를 돌려줄 때 이유를 그대로 보여 준다.
+     '불러오지 못했습니다'만으로는 무엇이 문제인지 알 수 없다. */
+  if(j && j.RESULT && j.RESULT.CODE){
+    var cd=String(j.RESULT.CODE||''), ms=String(j.RESULT.MESSAGE||'');
+    var hint = cd==='INFO-100' ? '인증키가 올바르지 않습니다. 발급받은 키를 다시 확인해 주세요.'
+             : cd==='INFO-200' ? '해당 기간에 자료가 없습니다.'
+             : cd==='ERROR-300' ? '필수 값이 빠졌습니다.'
+             : cd==='ERROR-500' ? '한국은행 서버에 일시적 문제가 있습니다. 잠시 후 다시 시도해 주세요.'
+             : ms || '알 수 없는 오류';
+    throw new Error('ECOS ' + cd + ' · ' + hint);
+  }
   var rows=j && j.StatisticSearch && j.StatisticSearch.row;
   if(!rows || !rows.length) throw new Error('데이터가 없습니다');
   for(var i=rows.length-1;i>=0;i--){
@@ -944,7 +955,11 @@ async function polRefresh(manual){
   polMsg = errs.length ? (errs.join(' · ')+' 조회 실패') : '';
   renderRates();
   if(manual && typeof fmpToast==='function'){
-    fmpToast(okN? ('✅ 기준금리를 갱신했습니다'+(errs.length?' (일부 실패)':'')) : '기준금리를 불러오지 못했습니다', okN?'ok':'out');
+    var why = errs.length ? String(errs[0] && errs[0].message || errs[0] || '').slice(0,90) : '';
+  fmpToast(okN
+    ? ('✅ 기준금리를 갱신했습니다' + (errs.length ? ' (일부 실패)' : ''))
+    : ('기준금리를 불러오지 못했습니다' + (why ? ' — ' + why : '')),
+    okN ? 'ok' : 'out');
   }
 }
 window.__polRefresh=polRefresh;
@@ -5863,41 +5878,67 @@ window.__nnGoWatchlist = function(){
       return Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - navGap());
     }
 
-    /* ── 핵심 ──
-       이 탭에는 TradingView 위젯이 30개 넘게 있고, 나중에 로드되며
-       높이가 커진다. 한 번만 계산해 이동하면 그 사이 목표가 아래로
-       밀려나 엉뚱한 카드(금리·원자재)에 멈춘다.
-       그래서 이동한 뒤에도 위치를 계속 확인해 바로잡는다. */
+    /* ── 위젯이 늦게 로드되며 목표가 밀리는 문제 ──
+       TradingView 위젯 30여 개가 나중에 커지면서 관심종목이 아래로 밀린다.
+       그래서 이동 후에도 잠시 위치를 따라간다.
+       단, 사용자가 스크롤·휠·터치를 하면 즉시 손을 뗀다.
+       (예전에는 이 감지가 없어 스크롤을 올려도 계속 끌어내렸다) */
     var el = null, tries = 0, settle = 0, last = -1;
+    var aborted = false, timer = 0;
+    var myScrollAt = 0;
+
+    function stop(){
+      if(aborted) return;
+      aborted = true;
+      clearTimeout(timer);
+      ['wheel','touchstart','keydown','mousedown'].forEach(function(ev){
+        window.removeEventListener(ev, onUser, true);
+      });
+      window.removeEventListener('scroll', onScroll, true);
+    }
+    function onUser(){ stop(); }
+    function onScroll(){
+      /* 내가 방금 움직인 것이면 무시, 사용자가 움직였으면 중단 */
+      if(Date.now() - myScrollAt < 700) return;
+      stop();
+    }
+    ['wheel','touchstart','keydown','mousedown'].forEach(function(ev){
+      window.addEventListener(ev, onUser, {capture:true, passive:true});
+    });
+    window.addEventListener('scroll', onScroll, {capture:true, passive:true});
 
     function step(){
+      if(aborted) return;
       if(!el){
         el = findSec();
         if(!el){
-          if(++tries > 40) return;
-          return setTimeout(step, 120);
+          if(++tries > 40){ stop(); return; }
+          timer = setTimeout(step, 120);
+          return;
         }
       }
       var y = targetY(el);
       var diff = Math.abs(y - window.pageYOffset);
 
       if(diff <= 6){
-        /* 제자리에 왔다 — 몇 번 더 확인해 흔들리지 않는지 본다 */
         if(++settle >= 4){
           el.classList.add('nn-jump-hit');
           setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+          stop();
           return;
         }
       } else {
         settle = 0;
-        /* 위치가 계속 변하면 부드럽게, 안정되면 즉시 맞춘다 */
+        myScrollAt = Date.now();
         window.scrollTo({ top: y, behavior: (Math.abs(y - last) > 40 ? 'smooth' : 'auto') });
         last = y;
       }
-      if(++tries > 40) return;
-      setTimeout(step, 160);
+      if(++tries > 40){ stop(); return; }
+      timer = setTimeout(step, 160);
     }
-    setTimeout(step, 60);
+    timer = setTimeout(step, 60);
+    /* 아무리 늦어도 6초 뒤에는 손을 뗀다 */
+    setTimeout(stop, 6000);
   }catch(e){}
 };
 

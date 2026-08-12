@@ -830,6 +830,15 @@
       }catch(e){}
       if(held) R.add(judgeRef, held, '③ 판단한다 → ④ 보유한다');
 
+      /* 예시 갈래에도 이름과 의의를 붙여 둔다 — 이 기능이 무엇을 위한 것인지
+         설명만으로는 와닿지 않는다. 실제로 채워진 모습을 보여야 한다. */
+      try{
+        R.setMeta(bookRef,
+          '복리와 시간 — 장기 인덱스에 이르기까지',
+          '한 문장에서 출발해 숫자로 검증하고, 원칙과 종목 선정 기준을 세워 실제 보유까지 간 기록입니다. ' +
+          '나중에 이 판단이 흔들릴 때 어디서부터 다시 봐야 하는지 이 갈래를 거슬러 오르면 알 수 있습니다.');
+      }catch(e){}
+
       try{
         k.save();
         k.renderSidebar('books');
@@ -887,6 +896,18 @@
         if(sp.cover) n.cover = sp.cover;
         touched++;
       });
+      /* 예시 갈래 이름이 비어 있으면 채운다 */
+      try{
+        var bref = R.makeRef('note','books', SAMPLE.book.id);
+        if(findNote(SAMPLE.book.type, SAMPLE.book.id) && !R.metaOf(bref).title){
+          R.setMeta(bref,
+            '복리와 시간 — 장기 인덱스에 이르기까지',
+            '한 문장에서 출발해 숫자로 검증하고, 원칙과 종목 선정 기준을 세워 실제 보유까지 간 기록입니다. ' +
+            '나중에 이 판단이 흔들릴 때 어디서부터 다시 봐야 하는지 이 갈래를 거슬러 오르면 알 수 있습니다.');
+          touched++;
+        }
+      }catch(e){}
+
       if(touched){
         k.save();
         ['books','economics','thesis'].forEach(function(t){ try{ k.renderSidebar(t); }catch(e){} });
