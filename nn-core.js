@@ -944,22 +944,34 @@ async function polRefresh(manual){
   if(polBusy) return;
   polBusy=true; polMsg=''; renderRates();
   var P=polLoad(), okN=0, errs=[];
+  /* 나라별로 결과를 따로 담는다. 예전에는 오류를 한 줄로 합쳐
+     한국 키를 넣었는데 '미국'만 보이는 혼란이 있었다. */
+  var usErr='', krErr='';
   try{ var u=await polUS(); P.us={lo:u.lo, hi:u.hi, date:u.date, src:u.src, at:Date.now()}; okN++; }
-  catch(e){ errs.push('미국'); }
+  catch(e){ usErr = (e && e.message) || '연결 실패'; errs.push('미국'); }
   if(polEcosKey()){
     try{ var k2=await polKR(); P.kr={v:k2.v, date:k2.date, src:k2.src, at:Date.now()}; okN++; }
-    catch(e){ errs.push('한국('+((e&&e.message)||'')+')'); }
+    catch(e){ krErr = (e && e.message) || '연결 실패'; errs.push('한국'); }
   }
   polSave(P);
   polBusy=false;
   polMsg = errs.length ? (errs.join(' · ')+' 조회 실패') : '';
   renderRates();
   if(manual && typeof fmpToast==='function'){
-    var why = errs.length ? String(errs[0] && errs[0].message || errs[0] || '').slice(0,90) : '';
-  fmpToast(okN
-    ? ('✅ 기준금리를 갱신했습니다' + (errs.length ? ' (일부 실패)' : ''))
-    : ('기준금리를 불러오지 못했습니다' + (why ? ' — ' + why : '')),
-    okN ? 'ok' : 'out');
+    /* 한국 키를 방금 넣었다면 한국 결과를 먼저 알려 준다 */
+    var hasKey = !!polEcosKey();
+    var msg;
+    if(hasKey && !krErr && P.kr){
+      msg = '✅ 한국 기준금리 ' + P.kr.v + '% (' + (P.kr.date||'') + ') 반영됨'
+          + (usErr ? ' · 미국은 실패' : '');
+    } else if(hasKey && krErr){
+      msg = '한국 기준금리 실패 — ' + String(krErr).slice(0,80);
+    } else if(okN){
+      msg = '✅ 기준금리를 갱신했습니다' + (errs.length ? ' (' + errs.join('·') + ' 실패)' : '');
+    } else {
+      msg = '기준금리를 불러오지 못했습니다 — ' + String(usErr || '연결 실패').slice(0,80);
+    }
+    fmpToast(msg, (hasKey ? !krErr : okN) ? 'ok' : 'out');
   }
 }
 window.__polRefresh=polRefresh;
@@ -5891,7 +5903,7 @@ window.__nnGoWatchlist = function(){
       if(aborted) return;
       aborted = true;
       clearTimeout(timer);
-      ['wheel','touchstart','keydown','mousedown'].forEach(function(ev){
+      ['wheel','touchstart','keydown'].forEach(function(ev){
         window.removeEventListener(ev, onUser, true);
       });
       window.removeEventListener('scroll', onScroll, true);
@@ -5899,13 +5911,19 @@ window.__nnGoWatchlist = function(){
     function onUser(){ stop(); }
     function onScroll(){
       /* 내가 방금 움직인 것이면 무시, 사용자가 움직였으면 중단 */
-      if(Date.now() - myScrollAt < 700) return;
+      if(Date.now() - myScrollAt < 1200) return;   /* 부드러운 스크롤이 끝날 때까지 */
       stop();
     }
-    ['wheel','touchstart','keydown','mousedown'].forEach(function(ev){
-      window.addEventListener(ev, onUser, {capture:true, passive:true});
-    });
-    window.addEventListener('scroll', onScroll, {capture:true, passive:true});
+    /* 감시는 조금 늦게 건다.
+       버튼 클릭(mousedown)과 탭 전환이 만드는 스크롤이
+       '사용자 개입'으로 잡혀 시작하자마자 멈추던 문제가 있었다. */
+    setTimeout(function(){
+      if(aborted) return;
+      ['wheel','touchstart','keydown'].forEach(function(ev){
+        window.addEventListener(ev, onUser, {capture:true, passive:true});
+      });
+      window.addEventListener('scroll', onScroll, {capture:true, passive:true});
+    }, 500);
 
     function step(){
       if(aborted) return;

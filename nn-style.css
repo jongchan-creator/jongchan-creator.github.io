@@ -7880,3 +7880,81 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
     rgba(201,169,110,0) 100%)!important;
   box-shadow:0 1px 0 rgba(255,255,255,.7)!important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   맥락 지도 — 구슬을 걷어내고 '단계 표시'로
+   실+구슬은 장식에 가까웠다. 카드 자체가 진행 상태를 말하도록 바꾼다.
+   ══════════════════════════════════════════════════════════════════════ */
+.rl-map::before{display:none!important}
+.rl-mp::before{display:none!important}
+.rl-map{padding-top:0!important;gap:10px!important}
+.rl-mp-wrap{padding:0!important}
+
+/* 카드 — 왼쪽 세로 띠로 상태를 표시 */
+.rl-mp{
+  padding:13px 14px 13px 15px!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  border:1px solid rgba(20,18,15,.08)!important;
+  box-shadow:0 1px 2px rgba(20,18,15,.03)!important;
+  opacity:1!important;
+  position:relative;overflow:hidden!important;
+  transition:border-color .22s ease, box-shadow .22s ease, transform .22s cubic-bezier(.22,1,.36,1)!important;
+}
+/* 왼쪽 상태 띠 */
+.rl-mp::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:rgba(20,18,15,.09);transition:background .22s ease;
+}
+.rl-mp.done::after{background:rgba(201,169,110,.55)}
+.rl-mp.on::after{background:linear-gradient(180deg,#e8c47e,#b8924e)}
+.rl-mp.done{border-color:rgba(20,18,15,.09)!important}
+.rl-mp.on{
+  border-color:rgba(201,169,110,.5)!important;
+  background:linear-gradient(180deg,#fffdf9,#fdf9f0)!important;
+  box-shadow:0 2px 4px rgba(160,124,44,.07), 0 8px 22px -14px rgba(160,124,44,.5)!important;
+  transform:none!important;
+}
+.rl-mp[data-ref]:hover{
+  border-color:rgba(201,169,110,.42)!important;
+  box-shadow:0 3px 10px -4px rgba(20,18,15,.16)!important;
+  transform:translateY(-1px)!important;
+}
+/* 진행 상태 — 번호 대신 채워지는 점 */
+.rl-mp-n{
+  font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;
+  color:#b8b0a0;background:none!important;padding:0!important;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.rl-mp-n::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:rgba(20,18,15,.14);transition:.22s;
+}
+.rl-mp.done .rl-mp-n{color:#a8935f}
+.rl-mp.done .rl-mp-n::before{background:#c9a96e}
+.rl-mp.on .rl-mp-n{color:#8a6a24}
+.rl-mp.on .rl-mp-n::before{background:#b8924e;box-shadow:0 0 0 3px rgba(201,169,110,.2)}
+.rl-mp-h{gap:8px!important}
+.rl-mp-l{font-family:'Bebas Neue',sans-serif;font-size:10.5px;letter-spacing:.13em;color:#aaa294}
+.rl-mp.on .rl-mp-l{color:#8a6a24}
+.rl-mp-t{font-size:12.5px;color:#4a453c;line-height:1.5;margin-top:3px}
+.rl-mp.on .rl-mp-t{font-weight:700;color:#1f1c17}
+.rl-mp-now{
+  font-family:'Pretendard',sans-serif;font-size:8.5px;font-weight:700;color:#8a6a24;
+  background:rgba(201,169,110,.18);border:1px solid rgba(201,169,110,.35);
+  border-radius:4px;padding:1px 6px;letter-spacing:.02em;box-shadow:none;
+}
+/* 칸 사이 얇은 화살표 */
+.rl-mp-wrap + .rl-mp-wrap{position:relative}
+.rl-mp-wrap + .rl-mp-wrap::before{
+  content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  width:6px;height:6px;border-right:1.5px solid rgba(20,18,15,.16);
+  border-top:1.5px solid rgba(20,18,15,.16);
+  transform:translateY(-50%) rotate(45deg);
+}
+@media(max-width:760px){
+  .rl-map{flex-direction:column;gap:8px!important}
+  .rl-mp-wrap + .rl-mp-wrap::before{
+    left:50%;top:-9px;transform:translateX(-50%) rotate(135deg);
+  }
+}
