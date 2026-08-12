@@ -8070,3 +8070,120 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
   color:#f0dcae!important}
 .rl-i-x{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.16)!important;
   color:rgba(242,237,225,.5)!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   맥락 — 깊이와 질감
+   짙은 판 위에 계단처럼 놓인 층. 지나온 칸은 가라앉고, 지금 칸은 떠오른다.
+   ══════════════════════════════════════════════════════════════════════ */
+.rl-panel{
+  background:
+    radial-gradient(ellipse 90% 60% at 0% 0%, rgba(232,196,126,.13), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(201,169,110,.07), transparent 60%),
+    linear-gradient(155deg,#2a251e 0%,#211d18 40%,#1a1713 100%)!important;
+  border:1px solid rgba(232,196,126,.2)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(232,196,126,.16),
+    inset 0 -20px 40px -30px rgba(0,0,0,.9),
+    0 3px 6px rgba(12,10,8,.28),
+    0 24px 50px -34px rgba(12,10,8,.9)!important;
+}
+/* 미세한 결 — 종이가 아니라 금속판 위라는 느낌 */
+.rl-panel::after{
+  content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:repeating-linear-gradient(112deg,
+    rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px,
+    transparent 1px, transparent 4px);
+  opacity:.7;
+}
+.rl-head,.rl-pos,.rl-meta{position:relative;z-index:1}
+
+/* 단계 카드 — 계단식 깊이 */
+.rl-map{gap:0!important;align-items:stretch}
+.rl-mp-wrap{padding:0 5px!important}
+.rl-mp{
+  padding:16px 15px 15px 18px!important;
+  border-radius:11px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.022))!important;
+  border:1px solid rgba(255,255,255,.075)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 2px 5px -3px rgba(0,0,0,.5)!important;
+  transform:translateY(3px);
+}
+/* 왼쪽 띠 — 두께와 광택으로 단계 구분 */
+.rl-mp::after{
+  width:4px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05))!important;
+  box-shadow:1px 0 3px -1px rgba(0,0,0,.4);
+}
+.rl-mp.done{
+  transform:translateY(1px);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03))!important;
+  border-color:rgba(232,196,126,.16)!important;
+}
+.rl-mp.done::after{
+  background:linear-gradient(180deg,rgba(232,196,126,.75),rgba(184,146,78,.45))!important;
+}
+.rl-mp.on{
+  transform:translateY(-3px);
+  background:linear-gradient(180deg,rgba(232,196,126,.2),rgba(184,146,78,.07))!important;
+  border-color:rgba(232,196,126,.5)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,240,205,.28),
+    0 6px 20px -10px rgba(232,196,126,.5),
+    0 2px 6px -3px rgba(0,0,0,.6)!important;
+}
+.rl-mp.on::after{
+  width:4px!important;
+  background:linear-gradient(180deg,#ffe6ac,#c9a96e 50%,#9c7c3e)!important;
+  box-shadow:2px 0 8px -1px rgba(232,196,126,.55);
+}
+.rl-mp[data-ref]:hover{
+  transform:translateY(-1px);
+  background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.045))!important;
+  border-color:rgba(232,196,126,.34)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),
+    0 6px 18px -10px rgba(0,0,0,.7)!important;
+}
+/* 번호 — 원형 배지 */
+.rl-mp-n{
+  font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;
+  width:20px;height:20px;border-radius:50%;
+  display:inline-flex!important;align-items:center;justify-content:center;gap:0!important;
+  background:rgba(255,255,255,.07)!important;color:rgba(242,237,225,.4)!important;
+  border:1px solid rgba(255,255,255,.1);flex:none;
+}
+.rl-mp-n::before{display:none!important}
+.rl-mp.done .rl-mp-n{
+  background:rgba(232,196,126,.2)!important;color:#d4b483!important;
+  border-color:rgba(232,196,126,.38);
+}
+.rl-mp.on .rl-mp-n{
+  background:linear-gradient(180deg,#e8c47e,#b8924e)!important;color:#2a231a!important;
+  border-color:rgba(255,232,168,.6);
+  box-shadow:0 2px 6px -1px rgba(232,196,126,.5), inset 0 1px 0 rgba(255,255,255,.4);
+}
+.rl-mp-h{gap:9px!important;align-items:center}
+.rl-mp-l{font-family:'Bebas Neue',sans-serif;font-size:11px!important;letter-spacing:.15em!important}
+.rl-mp-t{font-size:12.5px!important;line-height:1.55!important;margin-top:7px!important}
+.rl-mp-now{
+  background:linear-gradient(180deg,rgba(255,230,172,.28),rgba(201,169,110,.16))!important;
+  border-color:rgba(255,230,172,.45)!important;color:#ffe6ac!important;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+/* 칸 사이 연결 — 화살표 대신 흐르는 선 */
+.rl-mp-wrap + .rl-mp-wrap::before{
+  content:''!important;position:absolute!important;
+  left:-6px!important;top:30px!important;width:12px!important;height:1.5px!important;
+  border:none!important;transform:none!important;border-radius:2px;
+  background:linear-gradient(90deg,rgba(232,196,126,.18),rgba(232,196,126,.5))!important;
+}
+@media(max-width:760px){
+  .rl-mp{transform:none!important}
+  .rl-mp-wrap{padding:0!important}
+  .rl-mp-wrap + .rl-mp-wrap::before{
+    left:50%!important;top:-7px!important;width:1.5px!important;height:8px!important;
+    transform:translateX(-50%)!important;
+    background:linear-gradient(180deg,rgba(232,196,126,.18),rgba(232,196,126,.5))!important;
+  }
+}

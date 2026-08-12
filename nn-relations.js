@@ -50,7 +50,7 @@
   /* ── 대상 정보 해석 (표시용) ──────────────────────────── */
   var TAB_LABEL = {
     books:'BOOKS', lexicon:'LEXICON', media:'MEDIA',
-    economics:'ECONOMICS', thesis:'생각의 기록'
+    economics:'ECONOMICS', thesis:'THESIS'
   };
   var TAB_COLOR = {
     books:'#c9a96e', lexicon:'#9ba8b5', media:'#7fa8d4',
@@ -907,6 +907,19 @@
         if(sp.cover) n.cover = sp.cover;
         touched++;
       });
+      /* 이미 저장된 예시 본문에서 옛 안내 문구를 걷어낸다.
+         코드에서는 지웠지만 브라우저에 남은 내용은 그대로이기 때문이다. */
+      try{
+        [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
+          var n = findNote(sp.type, sp.id);
+          if(!n || !n.content) return;
+          if(n.content.indexOf('맥락 예시') < 0) return;
+          n.content = n.content.replace(
+            /<div class="np-note"[^>]*>(?:(?!<\/div>)[\s\S])*?맥락 예시(?:(?!<\/div>)[\s\S])*?<\/div>/g, '');
+          touched++;
+        });
+      }catch(e){}
+
       /* 예시 갈래 이름이 비어 있으면 채운다 */
       try{
         var bref = R.makeRef('note','books', SAMPLE.book.id);

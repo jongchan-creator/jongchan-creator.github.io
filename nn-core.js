@@ -2014,7 +2014,7 @@ window.KnowledgeNotes = {
       }
       /* 예시 페이지: economics / media (사용법 시연용) */
       if (t === 'economics' && !this.data.economics.some(function(p){ return p && p.id === 'p_seed_econ'; })) {
-        this.data.economics.push({ id: 'p_seed_econ', title: '72의 법칙 (예시 작성)', icon: '📈', date: this._nowStr(), groupId: 'grp_econ_main', content: ECON_SEED_CONTENT });
+        this.data.economics.push({ id: 'p_seed_econ', title: '[예시] 72의 법칙', icon: '📈', date: this._nowStr(), groupId: 'grp_econ_main', content: ECON_SEED_CONTENT });
       }
       if (t === 'media' && !this.data.media.some(function(p){ return p && p.id === 'p_seed_media'; })) {
         this.data.media.push({ id: 'p_seed_media', title: '[예시] TERAFAB — 사상 최대 반도체 팹', icon: '🎬', date: this._nowStr(), groupId: 'grp_media_main', url: 'https://www.youtube.com/watch?v=Txt3Wodav1o', content: 'Tesla·SpaceX·xAI가 로직·메모리·첨단 패키징을 한 지붕 아래 통합하는 초대형 반도체 제조 시설(TERAFAB) 구상. 수직 통합이 칩 공급망과 AI 하드웨어 경쟁에 어떤 의미인지 짚어볼 것. (예시 카드 — 링크를 붙이면 썸네일이 자동으로 뜹니다. ✕로 삭제하세요.)' });
@@ -5920,13 +5920,11 @@ window.__nnGoWatchlist = function(){
     }
 
     /* ── 이동 방식 ──
-       예전에는 목표가 바뀔 때마다 scrollTo 를 다시 불러 화면이 두 번 튕겼다.
-       대신 직접 한 번만 부드럽게 굴리고, 그 사이 목표가 밀리면
-       진행 중인 애니메이션의 도착점만 조용히 갱신한다. */
+       위젯이 여러 번 로드되며 목표가 계속 밀린다.
+       그때마다 다시 이동하면 화면이 오르내린다(3번 튕김).
+       그래서 "레이아웃이 잠잠해질 때까지 기다렸다가, 딱 한 번만" 움직인다. */
     var el = null, tries = 0, aborted = false, raf = 0, timer = 0;
-    var startY = 0, goalY = 0, startAt = 0, DUR = 620;
-
-    function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+    var moved = false;
 
     function stop(){
       if(aborted) return;
@@ -5944,53 +5942,49 @@ window.__nnGoWatchlist = function(){
       });
     }, 380);
 
-    function tick(){
-      if(aborted) return;
-      var now = Date.now();
-      var t = Math.min(1, (now - startAt) / DUR);
-      var y = startY + (goalY - startY) * ease(t);
-      window.scrollTo(0, y);
-      if(t < 1){ raf = requestAnimationFrame(tick); return; }
+    function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
 
-      /* 도착 — 위젯이 더 커졌는지 잠시 확인한다 */
-      var settle = 0;
-      (function check(){
+    function glide(to, dur){
+      var from = window.pageYOffset, at = Date.now();
+      (function frame(){
         if(aborted) return;
-        var g = targetY(el);
-        if(Math.abs(g - window.pageYOffset) <= 4){
-          if(++settle >= 3){
-            el.classList.add('nn-jump-hit');
-            setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
-            stop();
-            return;
-          }
-        } else {
-          /* 다시 부드럽게 — 튕기지 않도록 짧게 */
-          settle = 0;
-          startY = window.pageYOffset; goalY = g;
-          startAt = Date.now(); DUR = 340;
-          raf = requestAnimationFrame(tick);
-          return;
-        }
-        timer = setTimeout(check, 180);
+        var t = Math.min(1, (Date.now() - at) / dur);
+        window.scrollTo(0, from + (to - from) * ease(t));
+        if(t < 1){ raf = requestAnimationFrame(frame); return; }
+        el.classList.add('nn-jump-hit');
+        setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+        /* 도착 후에는 더 이상 건드리지 않는다 */
+        setTimeout(stop, 200);
       })();
     }
 
-    (function findLoop(){
-      if(aborted) return;
-      el = findSec();
+    /* 레이아웃이 안정될 때까지 기다린다 —
+       문서 높이가 세 번 연속 그대로면 위젯 로드가 끝난 것으로 본다. */
+    var lastH = -1, still = 0, waited = 0;
+    (function settleWait(){
+      if(aborted || moved) return;
       if(!el){
-        if(++tries > 40){ stop(); return; }
-        timer = setTimeout(findLoop, 110);
+        el = findSec();
+        if(!el){
+          if(++tries > 45){ stop(); return; }
+          timer = setTimeout(settleWait, 110);
+          return;
+        }
+      }
+      var h = document.documentElement.scrollHeight;
+      if(h === lastH) still++; else { still = 0; lastH = h; }
+      waited += 130;
+
+      /* 안정됐거나, 너무 오래 기다렸으면 이동 */
+      if(still >= 3 || waited > 2600){
+        moved = true;
+        glide(targetY(el), 700);
         return;
       }
-      startY = window.pageYOffset;
-      goalY = targetY(el);
-      startAt = Date.now();
-      raf = requestAnimationFrame(tick);
+      timer = setTimeout(settleWait, 130);
     })();
 
-    setTimeout(stop, 7000);
+    setTimeout(stop, 8000);
   }catch(e){}
 };
 
