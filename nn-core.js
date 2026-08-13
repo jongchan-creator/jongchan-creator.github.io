@@ -2016,7 +2016,7 @@ window.KnowledgeNotes = {
       if (t === 'books' && !this.data.books.some(function(b){ return b && b.id === 'p_seed_lynch'; })) {
         this.data.books.push({
           id: 'p_seed_lynch',
-          title: '전설로 떠나는 월가의 영웅',
+          title: '[예시] 전설로 떠나는 월가의 영웅',
           icon: '',
           cover: 'https://covers.openlibrary.org/b/isbn/0743200403-L.jpg',
           date: '2026-07-05',
@@ -5974,28 +5974,42 @@ window.__nnGoWatchlist = function(){
 
     /* 레이아웃이 안정될 때까지 기다린다 —
        문서 높이가 세 번 연속 그대로면 위젯 로드가 끝난 것으로 본다. */
-    var lastH = -1, still = 0, waited = 0;
+    /* 언제 출발할까 —
+       문서 높이만 보면 첫 진입 때 잘못된 곳에 멈춘다.
+       위젯이 '높이는 그대로인 채' 내용만 채우는 구간이 있어
+       잠깐 잠잠해 보이기 때문이다.
+       그래서 '목표 위치 자체'가 흔들리지 않는지를 본다. */
+    var lastH = -1, lastGoal = -1, still = 0, waited = 0;
+    var firstVisit = !window.__nnMacroSeen;
+
     (function settleWait(){
       if(aborted || moved) return;
       if(!el){
         el = findSec();
         if(!el){
-          if(++tries > 45){ stop(); return; }
+          if(++tries > 60){ stop(); return; }
           timer = setTimeout(settleWait, 110);
           return;
         }
       }
       var h = document.documentElement.scrollHeight;
-      if(h === lastH) still++; else { still = 0; lastH = h; }
-      waited += 130;
+      var goal = targetY(el);
+      /* 높이와 목표가 둘 다 그대로여야 '안정'으로 본다 */
+      if(h === lastH && Math.abs(goal - lastGoal) <= 2) still++;
+      else { still = 0; lastH = h; lastGoal = goal; }
+      waited += 110;
 
-      /* 안정됐거나 오래 기다렸으면 이동 — 예전 2.6초는 너무 길었다 */
-      if(still >= 4 || waited > 1800){
+      /* 첫 방문은 위젯이 전부 로드돼야 하므로 더 오래·더 엄격하게 */
+      var needStill = firstVisit ? 6 : 4;
+      var maxWait   = firstVisit ? 4200 : 1800;
+
+      if(still >= needStill || waited > maxWait){
         moved = true;
+        try{ window.__nnMacroSeen = true; }catch(e){}
         glide(targetY(el), 700);
         return;
       }
-      timer = setTimeout(settleWait, 100);
+      timer = setTimeout(settleWait, 110);
     })();
 
     setTimeout(stop, 8000);

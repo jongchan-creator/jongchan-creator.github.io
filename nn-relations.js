@@ -792,7 +792,6 @@
         '<li>정말 그런가? <b>숫자로</b> 확인해 보자 → 72의 법칙</li>',
         '<li>수익률 2%p를 더 얻는 것과, 기간을 10년 늘리는 것 중 무엇이 큰가?</li>',
         '</ul>',
-        '<div class="np-note" contenteditable="false">➡️ 다음 단계: <b>ECONOMICS · 72의 법칙</b>에서 숫자로 확인합니다. (아래 맥락에서 이동)</div>'
       ])
     },
 
@@ -816,7 +815,6 @@
         '<li>연 7%로 <b>30년</b> → 8배</li>',
         '</ul>',
         '<div class="np-note" contenteditable="false">✅ <b>확인됨.</b> 2%p 차이는 2년 남짓을 벌지만, 기간 10년은 자산을 한 번 더 두 배로 만든다. <b>기간의 힘이 압도적으로 크다.</b></div>',
-        '<div class="np-note" contenteditable="false">➡️ 다음 단계: 그렇다면 <b>어떻게 굴려야 20년을 버틸 수 있는가</b> — 생각의 기록에서 판단합니다.</div>'
       ])
     },
 
@@ -1039,14 +1037,43 @@
       try{
         ['books','economics','thesis','lexicon','media'].forEach(function(t){
           (k.data[t] || []).forEach(function(n){
-            if(!n || !n.content || n.content.indexOf('맥락 예시') < 0) return;
+            if(!n || !n.content) return;
+            if(n.content.indexOf('맥락 예시') < 0 && n.content.indexOf('다음 단계') < 0) return;
             n.content = n.content.replace(
               /<div[^>]*class="np-note"[^>]*>[\s\S]*?<\/div>/g, function(m){
-                return m.indexOf('맥락 예시') >= 0 ? '' : m;
+                return (m.indexOf('맥락 예시') >= 0 || m.indexOf('다음 단계') >= 0) ? '' : m;
               });
             touched++;
           });
         });
+      }catch(e){}
+
+      /* 4번째 칸(보유) 보완 —
+         HOLDINGS 가 늦게 정의되면 예시 생성 때 빠진다.
+         판단 → 보유 갈래가 없으면 지금 이어 붙인다. */
+      try{
+        var jRef = R.makeRef('note','thesis', SAMPLE.judge.id);
+        if(findNote(SAMPLE.judge.type, SAMPLE.judge.id)){
+          var hasHold = R.of(jRef).some(function(x){ return /^asset:/.test(x.ref); });
+          if(!hasHold){
+            var H3 = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
+            if(H3 && H3.length){
+              var pick = null;
+              var PREF3 = ['INFQ','DRAM','VOO','SPY','QQQ','VTI'];
+              for(var p3=0; p3<PREF3.length && !pick; p3++){
+                for(var h3=0; h3<H3.length; h3++){
+                  if(String(H3[h3].tk).toUpperCase() === PREF3[p3]){ pick = PREF3[p3]; break; }
+                }
+              }
+              if(!pick) for(var h4=0; h4<H3.length; h4++){
+                if(/ETF|인덱스|지수/i.test(String(H3[h4].nm||''))){ pick = String(H3[h4].tk).toUpperCase(); break; }
+              }
+              if(!pick) pick = String(H3[0].tk).toUpperCase();
+              R.add(jRef, 'asset:' + pick, '③ 판단한다 → ④ 보유한다');
+              touched++;
+            }
+          }
+        }
       }catch(e){}
 
       /* 예시 갈래 이름이 비어 있으면 채운다 */
