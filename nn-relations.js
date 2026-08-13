@@ -783,15 +783,34 @@
       cover:'https://search.pstatic.net/common/?src=https%3A%2F%2Fshopping-phinf.pstatic.net%2Fmain_5840134%2F58401345275.20260331120920.jpg&type=w276',
       extra:{ rating:5, author:'모건 하우절' },
       content: noteHTML([
-        '<div style="font-weight:700;margin-top:14px">밑줄 친 문장</div>',
+        '<div style="font-weight:700;margin-top:4px">이 책은 무엇을 말하는가</div>',
+        '<div>투자는 머리로 하는 계산이 아니라 <b>행동으로 하는 견디기</b>라는 이야기.<br>같은 정보를 가진 두 사람이 정반대 결과를 얻는 이유는 지식 차이가 아니라 <b>버티는 방식</b>의 차이라고 말한다.</div>',
+
+        '<div style="font-weight:700;margin-top:18px">밑줄 친 문장</div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
-        '<div style="font-weight:700;margin-top:14px">건져 올린 아이디어</div>',
-        '<div class="np-note" contenteditable="false">💡 <b>수익률보다 “버틴 기간”이 최종 결과를 더 크게 좌우한다.</b><br>버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력이 아니라 시간이 만든 몫이 크다.</div>',
-        '<div style="font-weight:700;margin-top:14px">그래서 확인해 볼 것</div>',
+        '<blockquote>“당신이 통제할 수 있는 유일한 변수는 시간이다.”</blockquote>',
+
+        '<div style="font-weight:700;margin-top:18px">읽으며 정리한 것</div>',
         '<ul>',
-        '<li>정말 그런가? <b>숫자로</b> 확인해 보자 → 72의 법칙</li>',
-        '<li>수익률 2%p를 더 얻는 것과, 기간을 10년 늘리는 것 중 무엇이 큰가?</li>',
+        '<li><b>수익률보다 지속 기간</b> — 버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력보다 시간이 만든 몫이 크다.</li>',
+        '<li><b>합리성보다 지속 가능성</b> — 이론상 최적인 방식보다, 내가 끝까지 지킬 수 있는 방식이 실제로는 낫다.</li>',
+        '<li><b>여유는 수익률이다</b> — 현금 비중은 손해처럼 보이지만, 팔지 않아도 되게 만들어 주는 값이다.</li>',
+        '<li><b>꼬리가 전부를 결정한다</b> — 소수의 큰 성공이 다수의 실패를 덮는다. 그러려면 그 자리에 남아 있어야 한다.</li>',
         '</ul>',
+
+        '<div style="font-weight:700;margin-top:18px">건져 올린 하나의 생각</div>',
+        '<div class="np-note" contenteditable="false">💡 <b>수익률을 높이는 것보다, 같은 방식을 오래 유지하는 것이 결과에 더 크게 작용한다.</b></div>',
+        '<div>이 책에서 가져갈 것은 이 한 문장이다. 나머지는 이 문장을 설명하는 사례에 가깝다.</div>',
+
+        '<div style="font-weight:700;margin-top:18px">읽고 나서 생긴 질문</div>',
+        '<ul>',
+        '<li>정말 그런가? 수익률 2%p와 기간 10년 중 <b>무엇이 더 큰가</b> — 숫자로 확인해 보자.</li>',
+        '<li>내가 지금 하는 방식은 20년을 버틸 수 있는 구조인가?</li>',
+        '<li>지난 하락장에서 나는 실제로 어떻게 행동했는가?</li>',
+        '</ul>',
+
+        '<div style="font-weight:700;margin-top:18px">덮으면서</div>',
+        '<div>그동안 “무엇을 살까”만 고민했다. “<b>얼마나 오래 들고 갈까</b>”는 한 번도 정해본 적이 없다.<br>이 질문부터 정리하기로 한다.</div>'
       ])
     },
 

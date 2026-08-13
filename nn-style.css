@@ -8395,3 +8395,8 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
    bottom:0 은 그대로 두고 위쪽 여백만 줄인다. 아랫변 위치는 변하지 않는다. */
 .bq-meta{padding-top:3px!important;padding-bottom:11px!important}
 .bq-card .bq-t{line-height:1.25}
+
+/* ══ 맥락 패널 — 본문 작성 영역과 간격 확보 ══ */
+.rl-panel{margin-top:26px!important;margin-bottom:30px!important}
+/* 편집 본문 시작 전 여백 */
+.editor-scroll-area > [contenteditable="true"]{margin-top:6px}

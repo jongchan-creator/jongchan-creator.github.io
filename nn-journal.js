@@ -620,3 +620,118 @@
   window.__nnJnEditor = openEditor;
   window.__nnJnOutcome = openOutcome;
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   첫 실행 시 예시 기록 두 건
+   하나는 복기까지 끝난 것, 하나는 복기를 기다리는 것으로 만든다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  var J = window.__nnJournal;
+  if(!J) return;
+  var FLAG = 'nn_jn_seed_v1';
+
+  function pickAsset(){
+    try{
+      var H = window.HOLDINGS || (typeof HOLDINGS !== 'undefined' ? HOLDINGS : []);
+      var PREF = ['INFQ','DRAM','VOO','SPY','QQQ','VTI'];
+      for(var i=0;i<PREF.length;i++)
+        for(var j=0;j<H.length;j++)
+          if(String(H[j].tk).toUpperCase() === PREF[i]) return PREF[i];
+      if(H.length) return String(H[0].tk).toUpperCase();
+    }catch(e){}
+    return 'VOO';
+  }
+  function thesisId(){
+    try{
+      var C = window.__nnConv;
+      if(!C) return '';
+      var all = C.all();
+      for(var i=0;i<all.length;i++) if(/^\[예시\]/.test(all[i].title||'')) return all[i].id;
+      return all.length ? all[0].id : '';
+    }catch(e){ return ''; }
+  }
+
+  function seed(){
+    try{
+      if(localStorage.getItem(FLAG) === '1') return;
+      if(J.all().length > 0){ localStorage.setItem(FLAG,'1'); return; }
+
+      var tk = pickAsset();
+      var tid = thesisId();
+      var d = new Date();
+      var iso = function(off){
+        return new Date(d.getTime() + off*86400000).toISOString().slice(0,10);
+      };
+
+      /* ① 복기까지 끝난 기록 — 이 기능이 무엇을 남기는지 보여 준다 */
+      var a = J.create({
+        date: iso(-120),
+        action: 'buy',
+        asset: tk,
+        price: '—',
+        qty: '—',
+        why: [
+          '수익률보다 버틴 기간이 결과를 좌우한다는 것을 72의 법칙으로 확인했다',
+          '개별 종목을 매일 확인하는 습관을 끊고 싶었다',
+          '매달 같은 금액을 넣는 구조라면 시장을 보지 않아도 굴러간다'
+        ],
+        risks: [
+          '진입 직후 하락하면 심리적으로 흔들릴 수 있다',
+          '20년을 버틴다는 전제가 아직 검증되지 않았다'
+        ],
+        conviction: 4,
+        reviewDate: iso(-30),
+        thesisId: tid
+      });
+      if(a){
+        J.update(a.id, {
+          outcome: '방향은 맞았다. 다만 한 번에 큰 금액을 넣어 첫 하락 구간에서 계속 잔고를 확인하게 됐다. 결국 팔지는 않았지만 그 두 달은 불필요한 소모였다.',
+          lesson: '확신이 강할수록 오히려 나눠서 사야 한다. 확신은 금액이 아니라 기간으로 표현하는 것이 맞다.'
+        });
+      }
+
+      /* ② 아직 복기하지 않은 기록 — 알림이 어떻게 뜨는지 보여 준다 */
+      J.create({
+        date: iso(-25),
+        action: 'add',
+        asset: tk,
+        price: '—',
+        qty: '—',
+        why: [
+          '첫 매수 이후 원칙이 흔들리지 않았다 — 같은 방식을 이어간다',
+          '지난번 배운 대로 이번에는 나눠서 넣는다'
+        ],
+        risks: ['평단이 올라가 하락 시 체감 손실이 커진다'],
+        conviction: 4,
+        reviewDate: iso(-3),
+        thesisId: tid
+      });
+
+      /* 분기 회고도 한 건 채워 둔다 */
+      try{
+        var q = J.quarterOf(iso(-120));
+        if(q) J.setReview(q, {
+          best: '읽은 것을 숫자로 확인한 뒤에 샀다 — 남의 말이 아니라 내 계산으로 결정했다',
+          worst: '확신이 크다고 한 번에 넣었다. 분할이라는 원칙을 스스로 어겼다',
+          learned: '판단의 방향이 맞아도 실행 방식이 틀리면 불필요한 심리적 비용이 든다. 확신은 금액이 아니라 기간으로 표현하는 것이 맞다.',
+          next: '모든 매수는 최소 3회로 나눈다. 논거마다 “깨지는 조건”을 반드시 먼저 적는다.'
+        });
+      }catch(e){}
+
+      /* 맥락 연결 */
+      try{
+        var R = window.__nnRel;
+        if(R && a && tid) R.add('thesis:' + tid, 'journal:' + a.id, '예시 · 논거 → 실행');
+      }catch(e){}
+
+      localStorage.setItem(FLAG,'1');
+      if(window.__nnJnRender) window.__nnJnRender();
+    }catch(e){}
+  }
+
+  (function ready(){
+    if(window.__nnConv && window.__nnRel){ setTimeout(seed, 2400); return; }
+    setTimeout(ready, 300);
+  })();
+})();

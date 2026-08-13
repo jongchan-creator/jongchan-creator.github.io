@@ -434,3 +434,94 @@
   window.__nnConvEditor = openEditor;
   window.__nnConvStatus = openStatus;
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   첫 실행 시 예시 논거 하나
+   맥락 예시(복리와 시간 → 장기 인덱스)와 이어지는 내용으로 만든다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  var C = window.__nnConv;
+  if(!C) return;
+  var FLAG = 'nn_conv_seed_v1';
+  var EX_ID = 'cv_example_1';
+
+  function pickAsset(){
+    try{
+      var H = window.HOLDINGS || (typeof HOLDINGS !== 'undefined' ? HOLDINGS : []);
+      var PREF = ['INFQ','DRAM','VOO','SPY','QQQ','VTI'];
+      for(var i=0;i<PREF.length;i++)
+        for(var j=0;j<H.length;j++)
+          if(String(H[j].tk).toUpperCase() === PREF[i]) return PREF[i];
+      for(var k=0;k<H.length;k++)
+        if(/ETF|인덱스|지수/i.test(String(H[k].nm||''))) return String(H[k].tk).toUpperCase();
+      if(H.length) return String(H[0].tk).toUpperCase();
+    }catch(e){}
+    return 'VOO';
+  }
+
+  function seed(){
+    try{
+      if(localStorage.getItem(FLAG) === '1') return;
+      if(C.all().length > 0){ localStorage.setItem(FLAG,'1'); return; }
+
+      var tk = pickAsset();
+      var d = new Date();
+      var iso = function(off){
+        var x = new Date(d.getTime() + off*86400000);
+        return x.toISOString().slice(0,10);
+      };
+
+      var rec = C.create({
+        title: '[예시] ' + tk + ' — 20년을 버틸 구조로 간다',
+        asset: tk,
+        summary: '수익률을 좇기보다, 20년 동안 손대지 않을 수 있는 구조를 만든다',
+        conviction: 4,
+        status: 'idea',
+        believe: [
+          '복리는 후반부에 가속된다 — 기간 10년이 수익률 2%p보다 크다 (72의 법칙으로 확인)',
+          '개별 기업 위험이 없어 한 회사가 무너져도 원칙이 흔들리지 않는다',
+          '보수가 낮아 20년이면 원금의 10% 이상을 아낀다',
+          '매일 확인하지 않아도 되므로 팔고 싶어지는 순간이 줄어든다'
+        ],
+        risks: [
+          '20년 이상 실질 수익이 없는 장기 횡보장에 들어설 가능성',
+          '보수 인상으로 비용 우위가 사라질 가능성',
+          '내가 하락장을 버틸 수 있다고 과신했을 가능성'
+        ],
+        breaks: [
+          '빅테크·주요국 성장률이 구조적으로 꺾였다는 근거가 2년 이상 누적된다',
+          '보수가 현재의 두 배 이상으로 오른다',
+          '내가 실제로 하락장에서 팔았다 — 전제 자체가 틀렸음이 드러난다'
+        ],
+        nextReview: iso(90)
+      });
+      if(!rec) return;
+
+      /* 상태 이력을 만들어 둔다 — 이 기능의 핵심이 무엇인지 보여야 한다 */
+      C.setStatus(rec.id, 'watching', '3개월 지켜보며 내가 정말 안 팔고 버티는지 확인');
+      C.setStatus(rec.id, 'active',   '매달 같은 금액 자동 매수 시작');
+      C.setStatus(rec.id, 'intact',   '첫 하락 구간에서 팔지 않았다 — 전제 유지');
+
+      /* 맥락에 이어 둔다 */
+      try{
+        var R = window.__nnRel;
+        if(R){
+          R.add('thesis:' + rec.id, 'asset:' + tk, '예시 · 논거 → 보유');
+          var k2 = window.KnowledgeNotes;
+          if(k2 && k2.data && (k2.data.thesis||[]).some(function(n){ return n.id === 'rlx_judge'; })){
+            R.add(R.makeRef('note','thesis','rlx_judge'), 'thesis:' + rec.id, '예시 · 판단 → 논거');
+          }
+        }
+      }catch(e){}
+
+      localStorage.setItem(FLAG,'1');
+      if(window.__nnConvRender) window.__nnConvRender();
+    }catch(e){}
+  }
+
+  (function ready(){
+    if(window.__nnRel){ setTimeout(seed, 2000); return; }
+    setTimeout(ready, 300);
+  })();
+})();

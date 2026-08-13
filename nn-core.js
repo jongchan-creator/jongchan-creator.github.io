@@ -5994,15 +5994,18 @@ window.__nnGoWatchlist = function(){
       });
     }, 380);
 
-    function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+    /* 시작은 천천히, 중간은 빠르게, 끝은 아주 부드럽게 (5차 감속) */
+    function ease(t){ return 1 - Math.pow(1 - t, 5); }
 
-    function glide(to, dur){
+    function glide(to, dur, partial){
+      cancelAnimationFrame(raf);
       var from = window.pageYOffset, at = Date.now();
       (function frame(){
         if(aborted) return;
         var t = Math.min(1, (Date.now() - at) / dur);
         window.scrollTo(0, from + (to - from) * ease(t));
         if(t < 1){ raf = requestAnimationFrame(frame); return; }
+        if(partial) return;          /* 중간 이동은 여기서 끝 */
         /* 도착 후 보정하지 않는다.
            위젯이 커져 목표가 밀려도 다시 움직이면 방방 뛰는 느낌이 난다.
            대신 이동 자체를 '레이아웃이 잠잠해진 뒤'에 하므로 대개 정확하다. */
@@ -6022,6 +6025,7 @@ window.__nnGoWatchlist = function(){
        위쪽이 더 자라지 않으면 목표도 더 밀리지 않는다. */
     var lastAbove = -1, lastH = -1, still = 0, waited = 0;
     var firstVisit = !window.__nnMacroSeen;
+    var preGlided = false;
 
     function aboveHeight(){
       /* 목표 카드의 문서상 위치 = 위쪽에 쌓인 것들의 총 높이 */
@@ -6047,8 +6051,19 @@ window.__nnGoWatchlist = function(){
       else { still = 0; lastAbove = above; lastH = h; }
       waited += 120;
 
-      var needStill = firstVisit ? 8 : 4;     /* 첫 방문은 더 오래 확인 */
-      var maxWait   = firstVisit ? 6000 : 2000;
+      var needStill = firstVisit ? 6 : 3;
+      var maxWait   = firstVisit ? 4500 : 1600;
+
+      /* 기다리는 동안 멈춰 있으면 답답하다.
+         목표 쪽으로 아주 천천히 미리 내려가 둔다.
+         (남은 거리의 일부만 좁히므로 위젯이 커져도 지나치지 않는다) */
+      if(!preGlided && waited > 260){
+        var gap = targetY(el) - window.pageYOffset;
+        if(gap > 240){
+          preGlided = true;
+          glide(window.pageYOffset + gap * 0.55, 900, true);
+        }
+      }
 
       if(still >= needStill || waited > maxWait){
         moved = true;
