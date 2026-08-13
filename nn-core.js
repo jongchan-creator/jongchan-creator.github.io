@@ -5963,20 +5963,12 @@ window.__nnGoWatchlist = function(){
         var t = Math.min(1, (Date.now() - at) / dur);
         window.scrollTo(0, from + (to - from) * ease(t));
         if(t < 1){ raf = requestAnimationFrame(frame); return; }
-        /* 도착 후 한 번만 확인 — 위젯이 더 커졌으면 조용히 맞춘다.
-           반복하면 화면이 오르내리므로 딱 한 번으로 끝낸다. */
-        timer = setTimeout(function(){
-          if(aborted) return;
-          var g = targetY(el);
-          if(Math.abs(g - window.pageYOffset) > 8 && !fixedOnce){
-            fixedOnce = true;
-            glide(g, 300);
-            return;
-          }
-          el.classList.add('nn-jump-hit');
-          setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
-          setTimeout(stop, 200);
-        }, 420);
+        /* 도착 후 보정하지 않는다.
+           위젯이 커져 목표가 밀려도 다시 움직이면 방방 뛰는 느낌이 난다.
+           대신 이동 자체를 '레이아웃이 잠잠해진 뒤'에 하므로 대개 정확하다. */
+        el.classList.add('nn-jump-hit');
+        setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+        setTimeout(stop, 150);
       })();
     }
 
@@ -5998,12 +5990,12 @@ window.__nnGoWatchlist = function(){
       waited += 130;
 
       /* 안정됐거나 오래 기다렸으면 이동 — 예전 2.6초는 너무 길었다 */
-      if(still >= 2 || waited > 1100){
+      if(still >= 4 || waited > 1800){
         moved = true;
-        glide(targetY(el), 620);
+        glide(targetY(el), 700);
         return;
       }
-      timer = setTimeout(settleWait, 90);
+      timer = setTimeout(settleWait, 100);
     })();
 
     setTimeout(stop, 8000);

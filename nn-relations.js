@@ -431,6 +431,25 @@
       var full = R.lineOf(ref);
       var isEx = list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); });
 
+      /* 칸 안에서 내용을 살짝 보여 준다 — 굳이 이동하지 않아도 되게 */
+      function preview(rf){
+        try{
+          var pr = R.parseRef(rf);
+          if(pr.kind !== 'note') return '';
+          var kk = window.KnowledgeNotes;
+          var arr = (kk && kk.data && kk.data[pr.type]) ? kk.data[pr.type] : null;
+          if(!arr) return '';
+          for(var z=0; z<arr.length; z++){
+            if(arr[z].id !== pr.id) continue;
+            var tmp = document.createElement('div');
+            tmp.innerHTML = arr[z].content || '';
+            var txt = (tmp.textContent || '').replace(/\s+/g, ' ').trim();
+            return txt.slice(0, 160);
+          }
+        }catch(e){}
+        return '';
+      }
+
       function relIdOf(otherRef){
         var f = list.filter(function(x){ return x.ref === otherRef; })[0];
         return f ? f.id : '';
@@ -464,17 +483,23 @@
             var on = (n.ref === ref);
             var passed = i < ch.pos - 1;
             var rid = relIdOf(n.ref);
-            return '<div class="rl-step ' + (on ? 'on' : (passed ? 'done' : 'next')) + '">'
+            var pv = preview(n.ref);
+            return '<div class="rl-step ' + (on ? 'on' : (passed ? 'done' : 'next')) + '" data-ref="' + esc(n.ref) + '">'
               + '<div class="rl-st-rail"><span class="rl-st-dot"></span></div>'
-              + '<button type="button" class="rl-st-body"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
-              +   '<span class="rl-st-top">'
+              + '<div class="rl-st-body">'
+              +   '<div class="rl-st-top">'
               +     '<span class="rl-st-no">' + (i + 1) + '</span>'
               +     '<span class="rl-st-tag" style="color:' + esc(n.color) + '">' + esc(n.label) + '</span>'
               +     (on ? '<span class="rl-st-now">지금 보는 기록</span>' : '')
-              +   '</span>'
-              +   '<span class="rl-st-title">' + esc(n.title) + '</span>'
-              + '</button>'
-              + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
+              +     '<span class="rl-st-tools">'
+              +       (pv ? '<button type="button" class="rl-st-peek" title="내용 살짝 보기">▾</button>' : '')
+              +       '<button type="button" class="rl-st-go" data-go="' + esc(n.ref) + '" title="이 기록으로 이동">↗</button>'
+              +       (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
+              +     '</span>'
+              +   '</div>'
+              +   '<div class="rl-st-title">' + esc(n.title) + '</div>'
+              +   (pv ? '<div class="rl-st-pv">' + esc(pv) + '</div>' : '')
+              + '</div>'
               + '</div>';
           }).join('') + '</div>';
 
@@ -535,7 +560,26 @@
     var mtE = wrap.querySelector('.rl-mt-edit');
     if(mtE) mtE.onclick = function(){ openMetaEditor(ref, function(){ paint(wrap, ref); }); };
 
-    wrap.querySelectorAll('.rl-st-body[data-ref], .rl-mp[data-ref], .rl-nd[data-ref]').forEach(function(b){
+    /* 살짝 보기 — 맥락 안에서 펼친다 */
+    wrap.querySelectorAll('.rl-st-peek').forEach(function(b){
+      b.onclick = function(e){
+        e.stopPropagation();
+        var st = b.closest('.rl-step');
+        if(!st) return;
+        var open = st.classList.toggle('peek');
+        b.textContent = open ? '▴' : '▾';
+        b.setAttribute('title', open ? '접기' : '내용 살짝 보기');
+      };
+    });
+    /* 이동은 전용 버튼으로만 */
+    wrap.querySelectorAll('.rl-st-go').forEach(function(b){
+      b.onclick = function(e){
+        e.stopPropagation();
+        var info = R.resolve(b.getAttribute('data-go'));
+        if(info && info.open) info.open();
+      };
+    });
+    wrap.querySelectorAll('.rl-mp[data-ref], .rl-nd[data-ref]').forEach(function(b){
       b.onclick = function(){
         var info = R.resolve(b.getAttribute('data-ref'));
         if(info && info.open) info.open();
@@ -899,10 +943,28 @@
       R.add(checkRef, judgeRef, '② 확인한다 → ③ 판단한다');
 
       /* ④ 실제 보유 — 보유 종목이 있으면 판단에 이어 붙인다 */
+      /* 갈래의 결론(장기 분산 보유)에 어울리는 종목을 고른다.
+         첫 항목을 그냥 쓰면 개별 성장주가 걸려 앞의 판단과 어긋난다. */
       var held = null;
       try{
         var H = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
-        if(H && H.length) held = 'asset:' + String(H[0].tk).toUpperCase();
+        if(H && H.length){
+          var PREF = ['INFQ','DRAM','VOO','SPY','QQQ','VTI'];   /* ETF·분산 성격 우선 */
+          for(var pi=0; pi<PREF.length && !held; pi++){
+            for(var hi=0; hi<H.length; hi++){
+              if(String(H[hi].tk).toUpperCase() === PREF[pi]){
+                held = 'asset:' + PREF[pi]; break;
+              }
+            }
+          }
+          /* ETF 이름이 들어간 종목이 있으면 그것도 후보 */
+          if(!held) for(var hj=0; hj<H.length; hj++){
+            if(/ETF|인덱스|지수/i.test(String(H[hj].nm||''))){
+              held = 'asset:' + String(H[hj].tk).toUpperCase(); break;
+            }
+          }
+          if(!held) held = 'asset:' + String(H[0].tk).toUpperCase();
+        }
       }catch(e){}
       if(held) R.add(judgeRef, held, '③ 판단한다 → ④ 보유한다');
 
@@ -996,6 +1058,24 @@
             '한 문장에서 출발해 숫자로 검증하고, 원칙과 종목 선정 기준을 세워 실제 보유까지 간 기록입니다. ' +
             '나중에 이 판단이 흔들릴 때 어디서부터 다시 봐야 하는지 이 갈래를 거슬러 오르면 알 수 있습니다.');
           touched++;
+        }
+      }catch(e){}
+
+      /* 이미 만들어진 예시 책이 엉뚱한 그룹(사고 싶은 책)에 있으면 완독으로 옮긴다 */
+      try{
+        var bn = findNote(SAMPLE.book.type, SAMPLE.book.id);
+        var bg = (k.groups && k.groups.books) ? k.groups.books : [];
+        if(bn && bg.length){
+          var want = null;
+          for(var bi=0; bi<bg.length; bi++){
+            var gname = String(bg[bi].name||'') + ' ' + String(bg[bi].id||'');
+            if(gname.indexOf('done') >= 0 || gname.indexOf('완독') >= 0){ want = bg[bi].id; break; }
+          }
+          if(want && bn.groupId !== want){
+            bn.groupId = want;
+            if(!bn.rating) bn.rating = 5;
+            touched++;
+          }
         }
       }catch(e){}
 
