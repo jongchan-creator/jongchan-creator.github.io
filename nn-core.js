@@ -592,6 +592,7 @@ var HOLDINGS=[
   {sym:'NYSE:INFQ',   tk:'INFQ', nm:'인플렉션',   c:'#ff9e80'},
   {sym:'NASDAQ:GOOG', tk:'GOOG', nm:'알파벳',     c:'#73a5ff'}
 ];
+try{ window.HOLDINGS = HOLDINGS; }catch(e){}   /* 다른 모듈(맥락 등)에서 참조 */
 
 /* 재구성 가능한 iframe 빌더 (종목 바뀔 때마다 교체) */
 function tvIframeInto(mountId, widgetName, settings){
@@ -5902,6 +5903,45 @@ window.ThesisApp = (function(){
         (info.kind === 'youtube' ? '유튜브' : info.kind === 'vimeo' ? 'Vimeo' : '네이버TV') + ' 영상을 넣었습니다');
     }catch(err){}
   }, true);
+})();
+
+/* ══════════ 예시 노트 제목 통일 ══════════
+   시드는 한 번만 돌기 때문에, 이미 만들어진 노트의 제목은 바뀌지 않는다.
+   [예시] 표기가 빠진 기본 제공 노트를 찾아 붙여 준다. */
+(function(){
+  var FIX = [
+    { type:'books',     id:'p_seed_lynch', title:'[예시] 전설로 떠나는 월가의 영웅' },
+    { type:'economics', id:'p_seed_econ',  title:'[예시] 72의 법칙' },
+    { type:'media',     id:'p_seed_media', title:'[예시] TERAFAB — 사상 최대 반도체 팹' }
+  ];
+  function run(){
+    try{
+      var k = window.KnowledgeNotes;
+      if(!k || !k.data) return false;
+      var n = 0;
+      FIX.forEach(function(f){
+        var arr = k.data[f.type] || [];
+        for(var i=0;i<arr.length;i++){
+          if(arr[i].id !== f.id) continue;
+          if(String(arr[i].title||'').indexOf('[예시]') === 0) break;
+          arr[i].title = f.title;
+          n++;
+          break;
+        }
+      });
+      if(n){
+        k.save();
+        FIX.forEach(function(f){ try{ k.renderSidebar(f.type); }catch(e){} });
+      }
+      return true;
+    }catch(e){ return false; }
+  }
+  var tries = 0;
+  (function wait(){
+    if(run()) return;
+    if(++tries > 40) return;
+    setTimeout(wait, 300);
+  })();
 })();
 
 /* ══════════ 홈 → 매크로 관심종목 바로가기 ══════════ */

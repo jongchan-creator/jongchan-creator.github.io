@@ -8390,3 +8390,8 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
 }
 .rl-step.peek .rl-st-pv{max-height:120px;opacity:1;margin-top:8px;
   padding-top:8px;border-top:1px solid rgba(126,232,200,.14)}
+
+/* ══ FROM MY LIBRARY — 윗변만 내려 높이 축소 ══
+   bottom:0 은 그대로 두고 위쪽 여백만 줄인다. 아랫변 위치는 변하지 않는다. */
+.bq-meta{padding-top:3px!important;padding-bottom:11px!important}
+.bq-card .bq-t{line-height:1.25}

@@ -102,7 +102,7 @@
       return {
         ref: ref, kind:'asset', id:tk, exists:true,
         title: nm ? (tk + ' · ' + nm) : tk,
-        label: held ? '보유' : '종목',
+        label: held ? 'HOLDINGS' : 'WATCHLIST',
         color: held ? '#b28ad4' : '#7fa8d4',
         open: function(){ if(typeof switchPage === 'function') switchPage(held ? 'portfolio' : 'research'); }
       };
