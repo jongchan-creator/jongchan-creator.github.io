@@ -5974,13 +5974,20 @@ window.__nnGoWatchlist = function(){
 
     /* 레이아웃이 안정될 때까지 기다린다 —
        문서 높이가 세 번 연속 그대로면 위젯 로드가 끝난 것으로 본다. */
-    /* 언제 출발할까 —
-       문서 높이만 보면 첫 진입 때 잘못된 곳에 멈춘다.
-       위젯이 '높이는 그대로인 채' 내용만 채우는 구간이 있어
-       잠깐 잠잠해 보이기 때문이다.
-       그래서 '목표 위치 자체'가 흔들리지 않는지를 본다. */
-    var lastH = -1, lastGoal = -1, still = 0, waited = 0;
+    /* ── 언제 출발할까 ──
+       회장님 지적대로, 위쪽 위젯(시총 TOP30 등)이 나중에 펼쳐지면서
+       관심종목을 아래로 밀어낸다. 문서 높이만 봐서는 이를 놓친다.
+
+       그래서 '목표 카드 위쪽에 있는 요소들의 총 높이'가 멈췄는지 본다.
+       위쪽이 더 자라지 않으면 목표도 더 밀리지 않는다. */
+    var lastAbove = -1, lastH = -1, still = 0, waited = 0;
     var firstVisit = !window.__nnMacroSeen;
+
+    function aboveHeight(){
+      /* 목표 카드의 문서상 위치 = 위쪽에 쌓인 것들의 총 높이 */
+      try{ return Math.round(el.getBoundingClientRect().top + window.pageYOffset); }
+      catch(e){ return -1; }
+    }
 
     (function settleWait(){
       if(aborted || moved) return;
@@ -5992,16 +5999,16 @@ window.__nnGoWatchlist = function(){
           return;
         }
       }
+      var above = aboveHeight();
       var h = document.documentElement.scrollHeight;
-      var goal = targetY(el);
-      /* 높이와 목표가 둘 다 그대로여야 '안정'으로 본다 */
-      if(h === lastH && Math.abs(goal - lastGoal) <= 2) still++;
-      else { still = 0; lastH = h; lastGoal = goal; }
-      waited += 110;
 
-      /* 첫 방문은 위젯이 전부 로드돼야 하므로 더 오래·더 엄격하게 */
-      var needStill = firstVisit ? 6 : 4;
-      var maxWait   = firstVisit ? 4200 : 1800;
+      /* 위쪽 높이와 문서 높이가 모두 그대로여야 안정으로 본다 */
+      if(Math.abs(above - lastAbove) <= 2 && h === lastH) still++;
+      else { still = 0; lastAbove = above; lastH = h; }
+      waited += 120;
+
+      var needStill = firstVisit ? 8 : 4;     /* 첫 방문은 더 오래 확인 */
+      var maxWait   = firstVisit ? 6000 : 2000;
 
       if(still >= needStill || waited > maxWait){
         moved = true;
@@ -6009,10 +6016,10 @@ window.__nnGoWatchlist = function(){
         glide(targetY(el), 700);
         return;
       }
-      timer = setTimeout(settleWait, 110);
+      timer = setTimeout(settleWait, 120);
     })();
 
-    setTimeout(stop, 8000);
+    setTimeout(stop, 11000);
   }catch(e){}
 };
 

@@ -1021,6 +1021,35 @@
       var k = window.KnowledgeNotes;
       if(!k || !k.data) return;
       var touched = 0;
+
+      /* ── 구버전 예시 자동 교체 ──
+         rlx_think(옛 THESIS 노트)가 남아 있으면 갈래가 3칸에서 멈춘다.
+         옛 노트와 그 갈래를 걷어내고 현재 구성으로 다시 만든다. */
+      try{
+        var oldNote = findNote('thesis', 'rlx_think');
+        var oldEcon = findNote('economics', 'p_seed_econ');
+        var needRebuild = !!oldNote || !findNote('thesis','rlx_judge');
+        if(needRebuild){
+          /* 옛 갈래 제거 */
+          R.removeAllOf(R.makeRef('note','thesis','rlx_think'));
+          /* 옛 노트 제거 */
+          var th = k.data.thesis || [];
+          for(var ti=th.length-1; ti>=0; ti--) if(th[ti].id === 'rlx_think') th.splice(ti,1);
+          /* 예시 메모가 붙은 갈래 전부 정리 */
+          R.all().slice().forEach(function(x){
+            if(/^(예시|①|②|③)/.test(x.memo||'')) R.remove(x.id);
+          });
+          /* 다시 만든다 */
+          try{ localStorage.setItem(SEED_FLAG, '0'); }catch(e){}
+          seedExample();
+          touched++;
+        }
+        /* 옛 ECONOMICS 시드 제목도 통일 */
+        if(oldEcon && oldEcon.title && oldEcon.title.indexOf('[예시]') !== 0){
+          oldEcon.title = '[예시] ' + oldEcon.title.replace(/\s*\(예시 작성\)\s*$/, '');
+          touched++;
+        }
+      }catch(e){}
       [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
         var n = findNote(sp.type, sp.id);
         if(!n) return;
