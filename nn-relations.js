@@ -108,6 +108,40 @@
       };
     }
 
+    if(r.kind === 'holding'){
+      var tk2 = String(r.id || '').toUpperCase();
+      var nm2 = '';
+      try{
+        var H2 = (typeof HOLDINGS !== 'undefined') ? HOLDINGS : (window.HOLDINGS || []);
+        for(var q=0;q<H2.length;q++) if(String(H2[q].tk).toUpperCase() === tk2){ nm2 = H2[q].nm || ''; break; }
+      }catch(e){}
+      return {
+        ref:ref, kind:'holding', id:tk2, exists:true,
+        title: nm2 ? (tk2 + ' · ' + nm2) : tk2,
+        label:'HOLDINGS', color:'#b28ad4',
+        open: function(){ if(typeof switchPage === 'function') switchPage('portfolio'); }
+      };
+    }
+
+    if(r.kind === 'wealth'){
+      var wn = '', wc = '';
+      try{
+        var A2 = JSON.parse(localStorage.getItem('nn_assets_v1') || '{}');
+        ['assets','stocks','realty','debts'].forEach(function(g){
+          (A2[g] || []).forEach(function(it){
+            if(String(it.id) === r.id){ wn = it.name || it.nm || it.ticker || ''; wc = g; }
+          });
+        });
+      }catch(e){}
+      var GL = { assets:'자산', stocks:'주식', realty:'부동산', debts:'부채' };
+      return {
+        ref:ref, kind:'wealth', id:r.id, exists: !!wn,
+        title: wn || '삭제된 항목',
+        label:'ASSETS' + (wc ? ' · ' + (GL[wc]||wc) : ''), color:'#e05555',
+        open: function(){ if(typeof switchPage === 'function') switchPage('assets'); }
+      };
+    }
+
     /* 2·3단계에서 채워질 자리 */
     return { ref:ref, kind:r.kind, id:r.id, exists:false,
              title:r.id, label:String(r.kind).toUpperCase(), color:'#9ba8b5',
@@ -190,8 +224,25 @@
         var ref = 'asset:' + String(h.tk).toUpperCase();
         if(ref === excludeRef) return;
         var info = resolve(ref);
-        out.push({ ref:ref, title:info.title, label:info.label, color:info.color,
-                   search:(info.title + ' 보유 종목').toLowerCase() });
+        out.push({ ref:ref, title:info.title, label:'HOLDINGS', color:'#b28ad4',
+                   search:(info.title + ' 보유 종목 holdings').toLowerCase() });
+      });
+    }catch(e){}
+
+    /* ASSETS 탭의 자산 항목 */
+    try{
+      var AS = JSON.parse(localStorage.getItem('nn_assets_v1') || '{}');
+      var GL2 = { assets:'자산', stocks:'주식', realty:'부동산', debts:'부채' };
+      ['stocks','realty','assets','debts'].forEach(function(g){
+        (AS[g] || []).forEach(function(it){
+          if(!it || !it.id) return;
+          var nm = it.name || it.nm || it.ticker || '';
+          if(!nm) return;
+          var ref2 = 'wealth:' + it.id;
+          if(ref2 === excludeRef) return;
+          out.push({ ref:ref2, title:nm, label:'ASSETS · ' + (GL2[g]||g), color:'#e05555',
+                     search:(nm + ' 자산 ' + (GL2[g]||g)).toLowerCase() });
+        });
       });
     }catch(e){}
 
@@ -369,54 +420,68 @@
           + '<button type="button" class="rl-add">＋ 맥락 잇기</button>'
           + '</div>';
 
-    /* ── 이 기록이 갈래의 어디쯤인지 (자동 계산) ── */
+    /* ── 갈래 지도 ──
+       구조를 새로 짰다. 상단은 '지금 어디에 있는가'를 한 줄로,
+       본문은 세로 타임라인으로 각 칸을 펼친다.
+       카드 나열보다 흐름과 위계가 분명하게 읽힌다. */
     if(list.length){
       var ch = R.chainOf(ref);
       var me = R.resolve(ref);
       var meta = R.metaOf(ref);
       var full = R.lineOf(ref);
+      var isEx = list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); });
+
       function relIdOf(otherRef){
         var f = list.filter(function(x){ return x.ref === otherRef; })[0];
         return f ? f.id : '';
       }
 
+      h += '<div class="rl-board">';
 
-
-      h += '<div class="rl-pos">'
-        /* 아래: 갈래 전체 지도 — 이름 · 위치 · 각 칸 */
-        + '<div class="rl-meta">'
-        +   '<div class="rl-mt-head">'
-        +     '<span class="rl-mt-k">이 갈래</span>'
+      /* 머리 — 갈래 이름과 현재 위치 */
+      h += '<div class="rl-bd-head">'
+        +   '<div class="rl-bd-name">'
         +     (meta.title
-                ? '<span class="rl-mt-t">' + esc(meta.title) + '</span>'
-                : '<span class="rl-mt-t rl-mt-un">이름 없는 갈래</span>')
-        +     '<span class="rl-mt-n">' + ch.pos + '<i>/</i>' + ch.total + '</span>'
-        +     '<button type="button" class="rl-mt-edit">' + (meta.title ? '고치기' : '이름 붙이기') + '</button>'
+                ? '<span class="rl-bd-t">' + esc(meta.title) + '</span>'
+                : '<span class="rl-bd-t rl-bd-un">이름 없는 갈래</span>')
+        +     (isEx ? '<span class="rl-bd-ex">예시</span>' : '')
         +   '</div>'
-        +   (meta.desc ? '<div class="rl-mt-d">' + esc(meta.desc) + '</div>' : '')
-        +   (list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); })
-              ? '<div class="rl-ex-note">이 갈래는 기능을 보여드리는 <b>표본</b>입니다. '
-                + '각 칸을 눌러 오가며 흐름을 확인해 보세요. 아래에서 한 번에 지울 수 있습니다.</div>'
-              : '')
-        +   '<div class="rl-map">' + full.map(function(n, i){
-                var on = (n.ref === ref);
-                var passed = i < ch.pos - 1;
-                var rid = relIdOf(n.ref);
-                return '<span class="rl-mp-wrap' + (on ? ' has-cur' : '') + '">'
-                  + '<button type="button" class="rl-mp' + (on ? ' on' : (passed ? ' done' : ''))
-                  +   '"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
-                  +   '<span class="rl-mp-bar"' + ((on || passed) ? ' style="background:' + esc(n.color) + '"' : '') + '></span>'
-                  +   '<span class="rl-mp-h"><span class="rl-mp-n">' + (i + 1) + '</span>'
-                  +     '<span class="rl-mp-l">' + esc(n.label) + '</span>'
-                  +     (on ? '<span class="rl-mp-now">지금</span>' : '') + '</span>'
-                  +   '<span class="rl-mp-t">' + esc(n.title) + '</span>'
-                  + '</button>'
-                  + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
-                  + '</span>';
-              }).join('') + '</div>'
-        +   (meta.title || meta.desc ? ''
-              : '<div class="rl-mt-empty">이 갈래에 이름을 붙여 두면, 흩어진 기록이 <b>하나의 이야기</b>로 묶입니다.</div>')
-        + '</div></div>';
+        +   '<div class="rl-bd-right">'
+        +     '<span class="rl-bd-pos"><b>' + ch.pos + '</b><i>/</i>' + ch.total + '</span>'
+        +     '<button type="button" class="rl-mt-edit">' + (meta.title ? '이름 고치기' : '이름 붙이기') + '</button>'
+        +   '</div>'
+        + '</div>'
+        + (meta.desc ? '<div class="rl-bd-desc">' + esc(meta.desc) + '</div>' : '');
+
+      /* 진행 눈금 */
+      h += '<div class="rl-gauge">' + full.map(function(n, i){
+            var st2 = (n.ref === ref) ? 'on' : (i < ch.pos - 1 ? 'done' : '');
+            return '<span class="rl-gg ' + st2 + '"></span>';
+          }).join('') + '</div>';
+
+      /* 세로 타임라인 */
+      h += '<div class="rl-line">' + full.map(function(n, i){
+            var on = (n.ref === ref);
+            var passed = i < ch.pos - 1;
+            var rid = relIdOf(n.ref);
+            return '<div class="rl-step ' + (on ? 'on' : (passed ? 'done' : 'next')) + '">'
+              + '<div class="rl-st-rail"><span class="rl-st-dot"></span></div>'
+              + '<button type="button" class="rl-st-body"' + (on ? '' : ' data-ref="' + esc(n.ref) + '"') + '>'
+              +   '<span class="rl-st-top">'
+              +     '<span class="rl-st-no">' + (i + 1) + '</span>'
+              +     '<span class="rl-st-tag" style="color:' + esc(n.color) + '">' + esc(n.label) + '</span>'
+              +     (on ? '<span class="rl-st-now">지금 보는 기록</span>' : '')
+              +   '</span>'
+              +   '<span class="rl-st-title">' + esc(n.title) + '</span>'
+              + '</button>'
+              + (rid ? '<button type="button" class="rl-nd-x" data-id="' + rid + '" title="맥락 끊기">✕</button>' : '')
+              + '</div>';
+          }).join('') + '</div>';
+
+      if(isEx){
+        h += '<div class="rl-bd-note">기능을 보여드리는 <b>표본</b>입니다. 각 칸을 눌러 오가며 흐름을 확인해 보세요.</div>';
+      }
+      h += '</div>';
     }
 
     if(!list.length){
@@ -470,7 +535,7 @@
     var mtE = wrap.querySelector('.rl-mt-edit');
     if(mtE) mtE.onclick = function(){ openMetaEditor(ref, function(){ paint(wrap, ref); }); };
 
-    wrap.querySelectorAll('.rl-mp[data-ref], .rl-nd[data-ref]').forEach(function(b){
+    wrap.querySelectorAll('.rl-st-body[data-ref], .rl-mp[data-ref], .rl-nd[data-ref]').forEach(function(b){
       b.onclick = function(){
         var info = R.resolve(b.getAttribute('data-ref'));
         if(info && info.open) info.open();
@@ -907,16 +972,18 @@
         if(sp.cover) n.cover = sp.cover;
         touched++;
       });
-      /* 이미 저장된 예시 본문에서 옛 안내 문구를 걷어낸다.
-         코드에서는 지웠지만 브라우저에 남은 내용은 그대로이기 때문이다. */
+      /* 옛 안내 문구 정리 — 특정 예시가 아니라 '모든 노트'를 훑는다.
+         구버전 예시(rlx_think 등)에도 남아 있어 계속 보였다. */
       try{
-        [SAMPLE.book, SAMPLE.check, SAMPLE.judge].forEach(function(sp){
-          var n = findNote(sp.type, sp.id);
-          if(!n || !n.content) return;
-          if(n.content.indexOf('맥락 예시') < 0) return;
-          n.content = n.content.replace(
-            /<div class="np-note"[^>]*>(?:(?!<\/div>)[\s\S])*?맥락 예시(?:(?!<\/div>)[\s\S])*?<\/div>/g, '');
-          touched++;
+        ['books','economics','thesis','lexicon','media'].forEach(function(t){
+          (k.data[t] || []).forEach(function(n){
+            if(!n || !n.content || n.content.indexOf('맥락 예시') < 0) return;
+            n.content = n.content.replace(
+              /<div[^>]*class="np-note"[^>]*>[\s\S]*?<\/div>/g, function(m){
+                return m.indexOf('맥락 예시') >= 0 ? '' : m;
+              });
+            touched++;
+          });
         });
       }catch(e){}
 

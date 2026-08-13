@@ -920,11 +920,18 @@ async function polKR(){
        722Y001 / 0101000 : 한국은행 기준금리 (일별)
        098Y001 / 0101000 : 시장금리 계열의 기준금리
        722Y001 / 0101000 (월별 M) : 일별이 비어 있을 때 대비 */
+  /* 한국은행 기준금리 통계 조합.
+     ECOS는 개편이 잦아 코드·주기·항목이 맞아야 자료가 나온다.
+     722Y001/0101000 : 한국은행 기준금리 (가장 널리 쓰이는 조합)
+     817Y002/010101000 : 시장금리 계열 (콜금리 등과 함께 제공)
+     098Y001 계열은 항목코드가 다르므로 여러 형태를 시도한다. */
   var CANDS = [
-    { code:'722Y001', cycle:'D', item:'0101000' },
-    { code:'098Y001', cycle:'D', item:'0101000' },
     { code:'722Y001', cycle:'M', item:'0101000' },
-    { code:'098Y001', cycle:'M', item:'0101000' }
+    { code:'722Y001', cycle:'D', item:'0101000' },
+    { code:'722Y001', cycle:'M', item:'' },
+    { code:'817Y002', cycle:'D', item:'010101000' },
+    { code:'817Y002', cycle:'M', item:'010101000' },
+    { code:'098Y001', cycle:'M', item:'' }
   ];
   var lastErr = null, j = null, used = null;
 
@@ -933,7 +940,8 @@ async function polKR(){
     var f8 = (C.cycle === 'M') ? d8(from).slice(0,6) : d8(from);
     var t8 = (C.cycle === 'M') ? d8(to).slice(0,6)   : d8(to);
     var url = 'https://ecos.bok.or.kr/api/StatisticSearch/' + encodeURIComponent(k)
-            + '/json/kr/1/200/' + C.code + '/' + C.cycle + '/' + f8 + '/' + t8 + '/' + C.item;
+            + '/json/kr/1/200/' + C.code + '/' + C.cycle + '/' + f8 + '/' + t8
+      + (C.item ? '/' + C.item : '');
     try{
       var txt = await polFetch(url, '/ecos?key=' + encodeURIComponent(k)
               + '&code=' + C.code + '&cycle=' + C.cycle + '&item=' + C.item
@@ -958,7 +966,11 @@ async function polKR(){
       lastErr = e;
     }
   }
-  if(!j) throw (lastErr || new Error('기준금리 자료를 찾지 못했습니다'));
+  if(!j){
+    var m0 = (lastErr && lastErr.message) || '';
+    throw new Error('기준금리 자료를 찾지 못했습니다 · ' + CANDS.length + '가지 통계코드를 시도했습니다'
+      + (m0 ? ' (마지막: ' + m0.slice(0,60) + ')' : ''));
+  }
 
   var rows=j && j.StatisticSearch && j.StatisticSearch.row;
   if(!rows || !rows.length) throw new Error('데이터가 없습니다');
@@ -5924,7 +5936,7 @@ window.__nnGoWatchlist = function(){
        그때마다 다시 이동하면 화면이 오르내린다(3번 튕김).
        그래서 "레이아웃이 잠잠해질 때까지 기다렸다가, 딱 한 번만" 움직인다. */
     var el = null, tries = 0, aborted = false, raf = 0, timer = 0;
-    var moved = false;
+    var moved = false, fixedOnce = false;
 
     function stop(){
       if(aborted) return;
@@ -5951,10 +5963,20 @@ window.__nnGoWatchlist = function(){
         var t = Math.min(1, (Date.now() - at) / dur);
         window.scrollTo(0, from + (to - from) * ease(t));
         if(t < 1){ raf = requestAnimationFrame(frame); return; }
-        el.classList.add('nn-jump-hit');
-        setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
-        /* 도착 후에는 더 이상 건드리지 않는다 */
-        setTimeout(stop, 200);
+        /* 도착 후 한 번만 확인 — 위젯이 더 커졌으면 조용히 맞춘다.
+           반복하면 화면이 오르내리므로 딱 한 번으로 끝낸다. */
+        timer = setTimeout(function(){
+          if(aborted) return;
+          var g = targetY(el);
+          if(Math.abs(g - window.pageYOffset) > 8 && !fixedOnce){
+            fixedOnce = true;
+            glide(g, 300);
+            return;
+          }
+          el.classList.add('nn-jump-hit');
+          setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
+          setTimeout(stop, 200);
+        }, 420);
       })();
     }
 
@@ -5975,13 +5997,13 @@ window.__nnGoWatchlist = function(){
       if(h === lastH) still++; else { still = 0; lastH = h; }
       waited += 130;
 
-      /* 안정됐거나, 너무 오래 기다렸으면 이동 */
-      if(still >= 3 || waited > 2600){
+      /* 안정됐거나 오래 기다렸으면 이동 — 예전 2.6초는 너무 길었다 */
+      if(still >= 2 || waited > 1100){
         moved = true;
-        glide(targetY(el), 700);
+        glide(targetY(el), 620);
         return;
       }
-      timer = setTimeout(settleWait, 130);
+      timer = setTimeout(settleWait, 90);
     })();
 
     setTimeout(stop, 8000);
