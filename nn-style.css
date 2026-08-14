@@ -8641,3 +8641,78 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .fl-body{
   .fl-ar{display:none}
   .fl-body{padding:18px 15px 22px}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   상징색 조정
+   FLOW    자홍(306°)  — HOLDINGS 보라(270°)와 겹쳐 구분이 안 됐다
+   JOURNAL 남보라(244°) — ECONOMICS 초록과 혼동되던 청록에서 옮긴다
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── FLOW · 자홍 ── */
+.cove-line.fl-line{background:linear-gradient(90deg,#d831c7,transparent)!important}
+#page-flow .as-eyebrow{color:#e458d6!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(216,49,199,.5)!important}
+#page-flow .as-h1{text-shadow:0 0 22px rgba(216,49,199,.3)!important}
+#page-flow .as-hsub{color:rgba(228,88,214,.55)!important}
+#nav-flow:hover,#nav-flow.active{color:#e458d6!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(216,49,199,.8)!important}
+#nav-flow .sh{background:linear-gradient(90deg,transparent,#d831c7,transparent)!important}
+.fl-sum{background:rgba(216,49,199,.1)!important;border-left-color:rgba(228,88,214,.5)!important}
+.fl-sum b{color:#e458d6!important}
+.fl-st[data-go]:hover{border-color:rgba(228,88,214,.4)!important}
+.fl-as-tk{color:#e458d6!important}
+.fl-as.on{border-color:rgba(228,88,214,.32)!important}
+.fl-as.open{background:rgba(216,49,199,.16)!important;border-color:rgba(228,88,214,.6)!important}
+.fl-as-tag{color:rgba(228,88,214,.75)!important}
+.fl-tr{border-color:rgba(228,88,214,.24)!important}
+.fl-tr-h{color:#e458d6!important}
+.fl-tr-step::before{background:rgba(228,88,214,.28)!important}
+.fl-tr-no{background:rgba(216,49,199,.24)!important;border-color:rgba(228,88,214,.45)!important;
+  color:#e458d6!important}
+.fl-tr-t:hover{color:#f39ee8!important}
+.fl-tr-sub{color:rgba(228,88,214,.7)!important}
+.fl-tr-c:hover{background:rgba(216,49,199,.14)!important;border-color:rgba(228,88,214,.42)!important}
+
+/* ── JOURNAL · 남보라 ── */
+.cove-line.jn-line{background:linear-gradient(90deg,#4f45d9,transparent)!important}
+#page-journal .as-eyebrow{color:#8f88ee!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(79,69,217,.5)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(79,69,217,.32)!important}
+#page-journal .as-hsub{color:rgba(143,136,238,.55)!important}
+#nav-journal:hover,#nav-journal.active{color:#8f88ee!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(79,69,217,.85)!important}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#4f45d9,transparent)!important}
+.jn-tab:hover{border-color:rgba(143,136,238,.45)!important;color:#b3aef5!important}
+.jn-tab.on{background:rgba(79,69,217,.24)!important;border-color:rgba(143,136,238,.6)!important;
+  color:#b3aef5!important}
+.jn-new{background:rgba(79,69,217,.2)!important;border-color:rgba(143,136,238,.5)!important;
+  color:#b3aef5!important}
+.jn-new:hover{background:rgba(79,69,217,.34)!important;border-color:rgba(143,136,238,.8)!important}
+.jn-due{background:rgba(79,69,217,.12)!important;border-color:rgba(143,136,238,.3)!important;
+  border-left-color:#4f45d9!important}
+.jn-due b{color:#b3aef5!important}
+.jn-empty{border-color:rgba(143,136,238,.24)!important}
+.jn-e-d b{color:#8f88ee!important}
+.jn-card:hover{border-color:rgba(143,136,238,.45)!important}
+.jn-c-tk{color:#8f88ee!important}
+.jn-c-cv{color:#746ce5!important}
+.jn-back:hover,.jn-act:hover{border-color:rgba(143,136,238,.6)!important;color:#b3aef5!important;
+  background:rgba(79,69,217,.14)!important}
+.jn-blk-t{color:rgba(143,136,238,.85)!important}
+.jn-rev{color:#8f88ee!important}
+.jn-out{background:rgba(79,69,217,.08)!important;border-color:rgba(143,136,238,.24)!important}
+.jn-out .jn-blk-t{border-bottom-color:rgba(143,136,238,.22)!important}
+.jn-out-l b{color:#8f88ee!important}
+.jn-q:hover{border-color:rgba(143,136,238,.45)!important;color:#b3aef5!important}
+.jn-q.on{background:rgba(79,69,217,.24)!important;border-color:rgba(143,136,238,.6)!important;
+  color:#b3aef5!important}
+.jn-st-v{color:#8f88ee!important}
+.jn-top b{color:#8f88ee!important}
+.jn-rf-l{color:rgba(143,136,238,.9)!important}
+.jn-rf-i:focus{border-color:rgba(143,136,238,.6)!important}
+.jn-rsave{background:rgba(79,69,217,.24)!important;border-color:rgba(143,136,238,.55)!important;
+  color:#b3aef5!important}
+.jn-rsave:hover{background:rgba(79,69,217,.38)!important;border-color:rgba(143,136,238,.85)!important}
+.jn-hint b{color:#8f88ee!important}
+.jn-form::-webkit-scrollbar-thumb{background:rgba(143,136,238,.34)!important}
+#page-journal .nn-callout{border-left-color:#746ce5!important}
