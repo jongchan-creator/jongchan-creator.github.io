@@ -8716,3 +8716,87 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .fl-body{
 .jn-hint b{color:#8f88ee!important}
 .jn-form::-webkit-scrollbar-thumb{background:rgba(143,136,238,.34)!important}
 #page-journal .nn-callout{border-left-color:#746ce5!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   상징색 재조정
+   CONVICTION 진한 파랑 · JOURNAL 쥐색(LEXICON 회색보다 진하게)
+   면(구분선·배경)은 진하게, 글자는 읽히는 밝기로 나눠 쓴다.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── CONVICTION · 진한 파랑 ── */
+.cove-line.cv-navy{background:linear-gradient(90deg,#1e4fc4,transparent)!important}
+#page-conviction .as-eyebrow{color:#4a86f0!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(30,79,196,.6)!important}
+#page-conviction .as-h1{text-shadow:0 0 24px rgba(30,79,196,.4)!important}
+#page-conviction .as-hsub{color:rgba(74,134,240,.55)!important}
+#nav-conviction:hover,#nav-conviction.active{color:#4a86f0!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(30,79,196,.9)!important}
+#nav-conviction .sh{background:linear-gradient(90deg,transparent,#1e4fc4,transparent)!important}
+#page-conviction .cv-new{background:rgba(30,79,196,.24)!important;
+  border-color:rgba(74,134,240,.5)!important;color:#8fb6f7!important}
+#page-conviction .cv-new:hover{background:rgba(30,79,196,.4)!important;
+  border-color:rgba(74,134,240,.8)!important}
+#page-conviction .cv-card:hover{border-color:rgba(74,134,240,.5)!important;
+  box-shadow:0 14px 30px -18px rgba(10,30,90,.95)!important}
+#page-conviction .cv-c-tk{color:#4a86f0!important}
+#page-conviction .cv-blk-t{color:rgba(122,168,247,.9)!important}
+#page-conviction .cv-back:hover,#page-conviction .cv-act:hover{
+  border-color:rgba(74,134,240,.6)!important;color:#8fb6f7!important;
+  background:rgba(30,79,196,.2)!important}
+#page-conviction .cv-rev{color:#4a86f0!important}
+#page-conviction .cv-e-d b{color:#4a86f0!important}
+#page-conviction .cv-empty{border-color:rgba(74,134,240,.26)!important}
+#page-conviction .cv-c-cv{color:#3d7fe8!important}
+#page-conviction .nn-callout{border-left-color:#1e4fc4!important}
+.cv-modal .cv-star.on,.cv-st-modal .cv-star.on{color:#4a86f0!important}
+.cv-modal .cv-hint b,.cv-st-modal .cv-hint b{color:#4a86f0!important}
+.cv-st-opt:hover{background:rgba(30,79,196,.2)!important;border-color:rgba(74,134,240,.5)!important}
+.cv-st-opt.sel{background:rgba(30,79,196,.34)!important;border-color:rgba(74,134,240,.8)!important}
+.cv-form::-webkit-scrollbar-thumb{background:rgba(74,134,240,.36)!important}
+.jn-th-go{background:rgba(30,79,196,.18)!important;border-color:rgba(74,134,240,.42)!important;
+  color:#8fb6f7!important}
+.jn-th-go:hover{background:rgba(30,79,196,.32)!important;border-color:rgba(74,134,240,.7)!important}
+
+/* ── JOURNAL · 쥐색 ── */
+.cove-line.jn-line{background:linear-gradient(90deg,#63686e,transparent)!important}
+#page-journal .as-eyebrow{color:#9aa0a6!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(99,104,110,.55)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(120,126,133,.34)!important}
+#page-journal .as-hsub{color:rgba(154,160,166,.5)!important}
+#nav-journal:hover,#nav-journal.active{color:#b6bcc2!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(154,160,166,.7)!important}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#8c9196,transparent)!important}
+.jn-tab:hover{border-color:rgba(154,160,166,.5)!important;color:#c3c8cd!important}
+.jn-tab.on{background:rgba(99,104,110,.34)!important;border-color:rgba(154,160,166,.6)!important;
+  color:#d2d6da!important}
+.jn-new{background:rgba(99,104,110,.3)!important;border-color:rgba(154,160,166,.5)!important;
+  color:#c3c8cd!important}
+.jn-new:hover{background:rgba(99,104,110,.48)!important;border-color:rgba(154,160,166,.8)!important}
+.jn-due{background:rgba(99,104,110,.16)!important;border-color:rgba(154,160,166,.28)!important;
+  border-left-color:#8c9196!important}
+.jn-due b{color:#c3c8cd!important}
+.jn-empty{border-color:rgba(154,160,166,.24)!important}
+.jn-e-d b{color:#9aa0a6!important}
+.jn-card:hover{border-color:rgba(154,160,166,.45)!important}
+.jn-c-tk{color:#9aa0a6!important}
+.jn-c-cv{color:#8c9196!important}
+.jn-back:hover,.jn-act:hover{border-color:rgba(154,160,166,.6)!important;color:#c3c8cd!important;
+  background:rgba(99,104,110,.24)!important}
+.jn-blk-t{color:rgba(178,184,190,.9)!important}
+.jn-rev{color:#9aa0a6!important}
+.jn-out{background:rgba(99,104,110,.12)!important;border-color:rgba(154,160,166,.24)!important}
+.jn-out .jn-blk-t{border-bottom-color:rgba(154,160,166,.22)!important}
+.jn-out-l b{color:#9aa0a6!important}
+.jn-q:hover{border-color:rgba(154,160,166,.45)!important;color:#c3c8cd!important}
+.jn-q.on{background:rgba(99,104,110,.34)!important;border-color:rgba(154,160,166,.6)!important;
+  color:#d2d6da!important}
+.jn-st-v{color:#b6bcc2!important}
+.jn-top b{color:#9aa0a6!important}
+.jn-rf-l{color:rgba(178,184,190,.9)!important}
+.jn-rf-i:focus{border-color:rgba(154,160,166,.6)!important}
+.jn-rsave{background:rgba(99,104,110,.34)!important;border-color:rgba(154,160,166,.55)!important;
+  color:#c3c8cd!important}
+.jn-rsave:hover{background:rgba(99,104,110,.5)!important;border-color:rgba(154,160,166,.85)!important}
+.jn-hint b{color:#9aa0a6!important}
+.jn-form::-webkit-scrollbar-thumb{background:rgba(154,160,166,.34)!important}
+#page-journal .nn-callout{border-left-color:#63686e!important}
