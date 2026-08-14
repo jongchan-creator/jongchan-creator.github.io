@@ -446,7 +446,9 @@
     var list = R.of(ref);
     var h = '<div class="rl-head">'
           + '<span class="rl-eyebrow">THREAD</span><span class="rl-title">맥락</span>'
-          + (list.length ? '<span class="rl-n">' + list.length + '</span>' : '')
+          + (list.length
+              ? '<span class="rl-n">' + R.lineOf(ref).length + '</span>'
+              : '')
           + (list.some(function(x){ return /^(예시|①|②|③)/.test(x.memo||''); })
               ? '<span class="rl-ex-badge">예시</span>' : '')
           + '<button type="button" class="rl-help" title="맥락이란?">?</button>'
@@ -820,11 +822,12 @@
         '<div>투자는 머리로 하는 계산이 아니라 <b>행동으로 하는 견디기</b>라는 이야기.<br>같은 정보를 가진 두 사람이 정반대 결과를 얻는 이유는 지식 차이가 아니라 <b>버티는 방식</b>의 차이라고 말한다.</div>',
 
         '<div style="font-weight:700;margin-top:18px">밑줄 친 문장</div>',
-        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">📖</span><div class="nn-callout-body"><b>여기 적은 문장은 홈 화면에 나타납니다.</b><br>완독한 책의 <b>인용</b>(툴바 “ 인용)에 적어 두면, 홈 FROM MY LIBRARY 카드에 무작위로 떠오릅니다.</div></div>',
+
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
         '<blockquote>“당신이 통제할 수 있는 유일한 변수는 시간이다.”</blockquote>',
 
         '<div style="font-weight:700;margin-top:18px">읽으며 정리한 것</div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">📖</span><div class="nn-callout-body"><b>완독한 책의 점 목록(•)에 적은 문장은 홈 화면에 나타납니다.</b><br>홈 <b>FROM MY LIBRARY</b> 카드에 무작위로 떠오릅니다. 한 줄에 한 구절씩 적어 두세요.</div></div>',
         '<ul>',
         '<li><b>수익률보다 지속 기간</b> — 버핏 자산의 대부분은 65세 이후에 만들어졌다. 실력보다 시간이 만든 몫이 크다.</li>',
         '<li><b>합리성보다 지속 가능성</b> — 이론상 최적인 방식보다, 내가 끝까지 지킬 수 있는 방식이 실제로는 낫다.</li>',

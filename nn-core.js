@@ -5969,6 +5969,7 @@ window.__nnGoWatchlist = function(){
     var h = '<div class="wlp-head">'
       + '<span class="wlp-t">관심 종목</span>'
       + '<span class="wlp-n">' + list.length + '</span>'
+      + '<span class="wlp-tag">간략 보기</span>'
       + '<button type="button" class="wlp-go">매크로 탭에서 보기 →</button>'
       + '<button type="button" class="wlp-x">✕</button>'
       + '</div>';
@@ -5988,17 +5989,24 @@ window.__nnGoWatchlist = function(){
           + '</div>';
       }).join('') + '</div>';
       if(list.length > 24) h += '<div class="wlp-more">외 ' + (list.length - 24) + '종목</div>';
+      h += '<div class="wlp-note">종목명과 메모만 보여 드립니다. '
+         + '<b>시세·차트·수익률</b>은 매크로 탭 <b>맨 아래</b>의 '
+         + '“나의 관심종목 · MY WATCHLIST” 카드에서 확인하세요.</div>';
     }
     box.innerHTML = h;
 
+    /* 브리핑 카드 '안쪽'에 넣는다 — 지표 알약 바로 아래 */
+    var pills = document.getElementById('ddPills');
     var brief = document.getElementById('ddBrief');
-    if(brief && brief.parentNode) brief.parentNode.insertBefore(box, brief.nextSibling);
+    if(pills && pills.parentNode) pills.parentNode.insertBefore(box, pills.nextSibling);
+    else if(brief) brief.appendChild(box);
     else document.body.appendChild(box);
 
     box.querySelector('.wlp-x').onclick = function(){ box.remove(); };
     box.querySelector('.wlp-go').onclick = function(){
       box.remove();
       if(typeof switchPage === 'function') switchPage('macro');
+      if(window.__nnToast) window.__nnToast('매크로 탭 맨 아래 “나의 관심종목” 카드로 내려가 보세요');
     };
     requestAnimationFrame(function(){ box.classList.add('show'); });
   }catch(e){}
