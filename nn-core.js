@@ -5945,136 +5945,62 @@ window.ThesisApp = (function(){
 })();
 
 /* ══════════ 홈 → 매크로 관심종목 바로가기 ══════════ */
+/* 관심 종목 — 탭을 옮기지 않고 홈에서 바로 펼쳐 본다.
+   매크로 탭까지 스크롤로 데려가는 방식은 위젯 로딩 때문에
+   위치가 계속 밀려 체감이 나빴다. 목적은 '지금 뭘 보고 있는지'를
+   확인하는 것이므로, 홈에서 바로 보여 주는 편이 빠르고 정확하다. */
 window.__nnGoWatchlist = function(){
   try{
-    if(typeof switchPage === 'function') switchPage('macro');
+    var prev = document.getElementById('wlPeek');
+    if(prev){ prev.remove(); return; }        /* 다시 누르면 닫힘 */
 
-    /* 관심종목 카드 — 실제 제목은 "나의 관심종목 · MY WATCHLIST" */
-    function findSec(){
-      var page = document.getElementById('page-macro');
-      if(!page) return null;
-      var titles = page.querySelectorAll('.macro-card-title');
-      for(var i=0;i<titles.length;i++){
-        var t = (titles[i].textContent || '').replace(/\s+/g, '');
-        if(t.indexOf('관심종목') >= 0 || /MYWATCHLIST/i.test(t)){
-          return titles[i].closest('.macro-card') || titles[i];
-        }
-      }
-      return null;
+    var list = [];
+    try{ list = JSON.parse(localStorage.getItem('nn_watchlist_v1') || '[]'); }catch(e){}
+
+    var memo = {};
+    try{ memo = JSON.parse(localStorage.getItem('nn_wl_memo_v1') || '{}'); }catch(e){}
+
+    function esc(x){ return String(x==null?'':x)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    var box = document.createElement('div');
+    box.id = 'wlPeek'; box.className = 'wl-peek';
+
+    var h = '<div class="wlp-head">'
+      + '<span class="wlp-t">관심 종목</span>'
+      + '<span class="wlp-n">' + list.length + '</span>'
+      + '<button type="button" class="wlp-go">매크로 탭에서 보기 →</button>'
+      + '<button type="button" class="wlp-x">✕</button>'
+      + '</div>';
+
+    if(!list.length){
+      h += '<div class="wlp-empty">아직 등록한 관심 종목이 없습니다.<br>'
+         + '매크로 탭에서 지켜볼 종목을 추가해 보세요.</div>';
+    } else {
+      h += '<div class="wlp-list">' + list.slice(0, 24).map(function(it){
+        var sym = String(it.sym || it.tk || '');
+        var tk = sym.replace(/^.*:/, '');
+        var mm = memo[sym] || memo[tk] || '';
+        return '<div class="wlp-i">'
+          + '<span class="wlp-tk">' + esc(tk) + '</span>'
+          + (it.nm ? '<span class="wlp-nm">' + esc(it.nm) + '</span>' : '')
+          + (mm ? '<span class="wlp-memo">' + esc(mm) + '</span>' : '')
+          + '</div>';
+      }).join('') + '</div>';
+      if(list.length > 24) h += '<div class="wlp-more">외 ' + (list.length - 24) + '종목</div>';
     }
-    function navGap(){
-      var nav = document.querySelector('nav.nav, .nav');
-      var h = nav ? nav.getBoundingClientRect().height : 58;
-      return Math.round(h + 18);
-    }
-    function targetY(el){
-      return Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - navGap());
-    }
+    box.innerHTML = h;
 
-    /* ── 이동 방식 ──
-       위젯이 여러 번 로드되며 목표가 계속 밀린다.
-       그때마다 다시 이동하면 화면이 오르내린다(3번 튕김).
-       그래서 "레이아웃이 잠잠해질 때까지 기다렸다가, 딱 한 번만" 움직인다. */
-    var el = null, tries = 0, aborted = false, raf = 0, timer = 0;
-    var moved = false, fixedOnce = false;
+    var brief = document.getElementById('ddBrief');
+    if(brief && brief.parentNode) brief.parentNode.insertBefore(box, brief.nextSibling);
+    else document.body.appendChild(box);
 
-    function stop(){
-      if(aborted) return;
-      aborted = true;
-      cancelAnimationFrame(raf); clearTimeout(timer);
-      ['wheel','touchstart','keydown'].forEach(function(ev){
-        window.removeEventListener(ev, onUser, true);
-      });
-    }
-    function onUser(){ stop(); }
-    setTimeout(function(){
-      if(aborted) return;
-      ['wheel','touchstart','keydown'].forEach(function(ev){
-        window.addEventListener(ev, onUser, {capture:true, passive:true});
-      });
-    }, 380);
-
-    /* 시작은 천천히, 중간은 빠르게, 끝은 아주 부드럽게 (5차 감속) */
-    function ease(t){ return 1 - Math.pow(1 - t, 5); }
-
-    function glide(to, dur, partial){
-      cancelAnimationFrame(raf);
-      var from = window.pageYOffset, at = Date.now();
-      (function frame(){
-        if(aborted) return;
-        var t = Math.min(1, (Date.now() - at) / dur);
-        window.scrollTo(0, from + (to - from) * ease(t));
-        if(t < 1){ raf = requestAnimationFrame(frame); return; }
-        if(partial) return;          /* 중간 이동은 여기서 끝 */
-        /* 도착 후 보정하지 않는다.
-           위젯이 커져 목표가 밀려도 다시 움직이면 방방 뛰는 느낌이 난다.
-           대신 이동 자체를 '레이아웃이 잠잠해진 뒤'에 하므로 대개 정확하다. */
-        el.classList.add('nn-jump-hit');
-        setTimeout(function(){ el.classList.remove('nn-jump-hit'); }, 1800);
-        setTimeout(stop, 150);
-      })();
-    }
-
-    /* 레이아웃이 안정될 때까지 기다린다 —
-       문서 높이가 세 번 연속 그대로면 위젯 로드가 끝난 것으로 본다. */
-    /* ── 언제 출발할까 ──
-       회장님 지적대로, 위쪽 위젯(시총 TOP30 등)이 나중에 펼쳐지면서
-       관심종목을 아래로 밀어낸다. 문서 높이만 봐서는 이를 놓친다.
-
-       그래서 '목표 카드 위쪽에 있는 요소들의 총 높이'가 멈췄는지 본다.
-       위쪽이 더 자라지 않으면 목표도 더 밀리지 않는다. */
-    var lastAbove = -1, lastH = -1, still = 0, waited = 0;
-    var firstVisit = !window.__nnMacroSeen;
-    var preGlided = false;
-
-    function aboveHeight(){
-      /* 목표 카드의 문서상 위치 = 위쪽에 쌓인 것들의 총 높이 */
-      try{ return Math.round(el.getBoundingClientRect().top + window.pageYOffset); }
-      catch(e){ return -1; }
-    }
-
-    (function settleWait(){
-      if(aborted || moved) return;
-      if(!el){
-        el = findSec();
-        if(!el){
-          if(++tries > 60){ stop(); return; }
-          timer = setTimeout(settleWait, 110);
-          return;
-        }
-      }
-      var above = aboveHeight();
-      var h = document.documentElement.scrollHeight;
-
-      /* 위쪽 높이와 문서 높이가 모두 그대로여야 안정으로 본다 */
-      if(Math.abs(above - lastAbove) <= 2 && h === lastH) still++;
-      else { still = 0; lastAbove = above; lastH = h; }
-      waited += 120;
-
-      var needStill = firstVisit ? 6 : 3;
-      var maxWait   = firstVisit ? 4500 : 1600;
-
-      /* 기다리는 동안 멈춰 있으면 답답하다.
-         목표 쪽으로 아주 천천히 미리 내려가 둔다.
-         (남은 거리의 일부만 좁히므로 위젯이 커져도 지나치지 않는다) */
-      if(!preGlided && waited > 260){
-        var gap = targetY(el) - window.pageYOffset;
-        if(gap > 240){
-          preGlided = true;
-          glide(window.pageYOffset + gap * 0.55, 900, true);
-        }
-      }
-
-      if(still >= needStill || waited > maxWait){
-        moved = true;
-        try{ window.__nnMacroSeen = true; }catch(e){}
-        glide(targetY(el), 700);
-        return;
-      }
-      timer = setTimeout(settleWait, 120);
-    })();
-
-    setTimeout(stop, 11000);
+    box.querySelector('.wlp-x').onclick = function(){ box.remove(); };
+    box.querySelector('.wlp-go').onclick = function(){
+      box.remove();
+      if(typeof switchPage === 'function') switchPage('macro');
+    };
+    requestAnimationFrame(function(){ box.classList.add('show'); });
   }catch(e){}
 };
 

@@ -8400,3 +8400,67 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nn-keyeye.on{
 .rl-panel{margin-top:26px!important;margin-bottom:30px!important}
 /* 편집 본문 시작 전 여백 */
 .editor-scroll-area > [contenteditable="true"]{margin-top:6px}
+
+/* ══ 콜아웃 — 밝은/어두운 배경 모두에서 읽히게 ══ */
+.nn-callout{
+  display:flex;gap:10px;align-items:flex-start;
+  background:#f7f5f0;border:1px solid rgba(20,18,15,.1);
+  border-left:3px solid #c9a96e;border-radius:0 9px 9px 0;
+  padding:12px 15px;margin:12px 0;
+}
+.nn-callout-icon{flex:none;font-size:14px;line-height:1.6}
+.nn-callout-body{flex:1;min-width:0;font-size:13px;color:#3d3a33;line-height:1.75}
+.nn-callout-body b{color:#1f1c17;font-weight:700}
+/* CONVICTION·JOURNAL 안의 콜아웃(어두운 배경) */
+#page-conviction .nn-callout,#page-journal .nn-callout{
+  background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+#page-conviction .nn-callout-body,#page-journal .nn-callout-body{color:rgba(255,255,255,.72)}
+#page-conviction .nn-callout-body b{color:#f0ede6}
+#page-conviction .nn-callout{border-left-color:#4d8bff}
+#page-journal .nn-callout{border-left-color:#3fc4b0}
+
+/* ══ 관심 종목 — 홈에서 바로 펼쳐 보기 ══ */
+.wl-peek{
+  margin:0 0 22px;padding:16px 18px;border-radius:14px;
+  background:linear-gradient(160deg,rgba(0,0,0,.62),rgba(0,0,0,.5));
+  border:1px solid rgba(201,169,110,.3);
+  box-shadow:inset 0 1px 0 rgba(232,196,126,.12), 0 16px 36px -26px rgba(0,0,0,.9);
+  font-family:'Pretendard',sans-serif;
+  opacity:0;transform:translateY(-6px);
+  transition:opacity .28s ease, transform .28s cubic-bezier(.22,1,.36,1);
+}
+.wl-peek.show{opacity:1;transform:translateY(0)}
+.wlp-head{display:flex;align-items:center;gap:9px;padding-bottom:12px;margin-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.09)}
+.wlp-t{font-size:13px;font-weight:700;color:#f0ede6}
+.wlp-n{font-family:'Orbitron',sans-serif;font-size:11px;color:#e8c47e;
+  background:rgba(201,169,110,.16);border-radius:20px;padding:2px 9px}
+.wlp-go{margin-left:auto;background:rgba(201,169,110,.14);border:1px solid rgba(201,169,110,.4);
+  border-radius:7px;color:#e8c47e;font-family:'Pretendard',sans-serif;font-size:11px;font-weight:600;
+  padding:5px 12px;cursor:pointer;transition:.15s;white-space:nowrap}
+.wlp-go:hover{background:rgba(201,169,110,.28)}
+.wlp-x{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);font-size:11px;
+  cursor:pointer;transition:.15s;flex:none;line-height:1}
+.wlp-x:hover{color:#f0ede6;background:rgba(255,255,255,.1)}
+.wlp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.wlp-i{display:flex;flex-direction:column;gap:2px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 11px}
+.wlp-tk{font-family:'Orbitron',sans-serif;font-size:12px;color:#e8c47e;letter-spacing:.04em}
+.wlp-nm{font-size:11px;color:rgba(255,255,255,.55)}
+.wlp-memo{font-size:10.5px;color:rgba(255,255,255,.35);line-height:1.5;margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wlp-empty{font-size:12px;color:rgba(255,255,255,.42);line-height:1.8;padding:8px 2px}
+.wlp-more{font-size:10.5px;color:rgba(255,255,255,.3);margin-top:9px;text-align:center}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wl-peek{
+  background:linear-gradient(160deg,#fff,#faf8f4);border-color:rgba(138,106,36,.28);
+  box-shadow:0 2px 4px rgba(20,18,15,.04), 0 16px 34px -26px rgba(20,18,15,.5)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-t{color:var(--lp-ink)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-head{border-bottom-color:var(--lp-rule)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-i{background:#fbf9f5;border-color:rgba(20,18,15,.08)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-tk{color:var(--lp-brass)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-nm{color:var(--lp-ink2)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-memo,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-empty{color:var(--lp-ink3)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-x{color:var(--lp-ink3);
+  background:#fff;border-color:rgba(20,18,15,.12)}

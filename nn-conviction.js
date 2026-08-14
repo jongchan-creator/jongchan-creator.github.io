@@ -503,17 +503,10 @@
       C.setStatus(rec.id, 'active',   '매달 같은 금액 자동 매수 시작');
       C.setStatus(rec.id, 'intact',   '첫 하락 구간에서 팔지 않았다 — 전제 유지');
 
-      /* 맥락에 이어 둔다 */
-      try{
-        var R = window.__nnRel;
-        if(R){
-          R.add('thesis:' + rec.id, 'asset:' + tk, '예시 · 논거 → 보유');
-          var k2 = window.KnowledgeNotes;
-          if(k2 && k2.data && (k2.data.thesis||[]).some(function(n){ return n.id === 'rlx_judge'; })){
-            R.add(R.makeRef('note','thesis','rlx_judge'), 'thesis:' + rec.id, '예시 · 판단 → 논거');
-          }
-        }
-      }catch(e){}
+      /* 맥락에는 넣지 않는다.
+         논거는 갈래의 '결론'이지 중간 기록이 아니다.
+         맥락 갈래에 끼워 넣으면 THESIS 칸이 두 번 나오고
+         제목 대신 내부 id 가 노출되는 문제가 있었다. */
 
       localStorage.setItem(FLAG,'1');
       if(window.__nnConvRender) window.__nnConvRender();

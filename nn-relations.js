@@ -142,6 +142,39 @@
       };
     }
 
+    if(r.kind === 'thesis'){
+      var cv = null;
+      try{ cv = window.__nnConv ? window.__nnConv.byId(r.id) : null; }catch(e){}
+      return {
+        ref:ref, kind:'thesis', id:r.id, exists: !!cv,
+        title: cv ? (cv.title || '제목 없는 논거') : '삭제된 논거',
+        label:'CONVICTION', color:'#1f6fff',
+        open: function(){
+          if(typeof switchPage === 'function') switchPage('conviction');
+          setTimeout(function(){ try{ if(window.__nnConvOpen) window.__nnConvOpen(r.id); }catch(e){} }, 260);
+        }
+      };
+    }
+
+    if(r.kind === 'journal'){
+      var jn = null;
+      try{ jn = window.__nnJournal ? window.__nnJournal.byId(r.id) : null; }catch(e){}
+      var jt = '';
+      if(jn){
+        var av = window.__nnJournal.actionOf(jn.action);
+        jt = (jn.date || '') + ' · ' + av.lb + (jn.asset ? ' · ' + jn.asset : '');
+      }
+      return {
+        ref:ref, kind:'journal', id:r.id, exists: !!jn,
+        title: jt || '삭제된 기록',
+        label:'JOURNAL', color:'#1f9e8c',
+        open: function(){
+          if(typeof switchPage === 'function') switchPage('journal');
+          setTimeout(function(){ try{ if(window.__nnJnOpen) window.__nnJnOpen(r.id); }catch(e){} }, 260);
+        }
+      };
+    }
+
     /* 2·3단계에서 채워질 자리 */
     return { ref:ref, kind:r.kind, id:r.id, exists:false,
              title:r.id, label:String(r.kind).toUpperCase(), color:'#9ba8b5',
@@ -787,6 +820,7 @@
         '<div>투자는 머리로 하는 계산이 아니라 <b>행동으로 하는 견디기</b>라는 이야기.<br>같은 정보를 가진 두 사람이 정반대 결과를 얻는 이유는 지식 차이가 아니라 <b>버티는 방식</b>의 차이라고 말한다.</div>',
 
         '<div style="font-weight:700;margin-top:18px">밑줄 친 문장</div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">📖</span><div class="nn-callout-body"><b>여기 적은 문장은 홈 화면에 나타납니다.</b><br>완독한 책의 <b>인용</b>(툴바 “ 인용)에 적어 두면, 홈 FROM MY LIBRARY 카드에 무작위로 떠오릅니다.</div></div>',
         '<blockquote>“부자가 되는 것과 부를 지키는 것은 완전히 다른 기술이다. 전자는 위험을 감수해야 하고, 후자는 겸손을 요구한다.”</blockquote>',
         '<blockquote>“당신이 통제할 수 있는 유일한 변수는 시간이다.”</blockquote>',
 
@@ -799,7 +833,7 @@
         '</ul>',
 
         '<div style="font-weight:700;margin-top:18px">건져 올린 하나의 생각</div>',
-        '<div class="np-note" contenteditable="false">💡 <b>수익률을 높이는 것보다, 같은 방식을 오래 유지하는 것이 결과에 더 크게 작용한다.</b></div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">💡</span><div class="nn-callout-body"><b>수익률을 높이는 것보다, 같은 방식을 오래 유지하는 것이 결과에 더 크게 작용한다.</b></div></div>',
         '<div>이 책에서 가져갈 것은 이 한 문장이다. 나머지는 이 문장을 설명하는 사례에 가깝다.</div>',
 
         '<div style="font-weight:700;margin-top:18px">읽고 나서 생긴 질문</div>',
@@ -833,7 +867,7 @@
         '<li>연 7%로 <b>20년</b> → 4배</li>',
         '<li>연 7%로 <b>30년</b> → 8배</li>',
         '</ul>',
-        '<div class="np-note" contenteditable="false">✅ <b>확인됨.</b> 2%p 차이는 2년 남짓을 벌지만, 기간 10년은 자산을 한 번 더 두 배로 만든다. <b>기간의 힘이 압도적으로 크다.</b></div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">✅</span><div class="nn-callout-body"><b>확인됨.</b> 2%p 차이는 2년 남짓을 벌지만, 기간 10년은 자산을 한 번 더 두 배로 만든다. <b>기간의 힘이 압도적으로 크다.</b></div></div>',
       ])
     },
 
@@ -864,9 +898,9 @@
         '<li><b>고배당주 집중</b> — 배당을 좇다 산업이 한쪽으로 쏠린다. 기준 1번에 걸림</li>',
         '</ul>',
         '<div style="font-weight:700;margin-top:16px">결정</div>',
-        '<div class="np-note" contenteditable="false">📌 광범위 인덱스를 핵심으로, <b>매달 같은 금액을 자동 매수</b>한다.<br>시장을 보지 않아도 굴러가게 만드는 것이 이 판단의 핵심이다.</div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">📌</span><div class="nn-callout-body">광범위 인덱스를 핵심으로, <b>매달 같은 금액을 자동 매수</b>한다.<br>시장을 보지 않아도 굴러가게 만드는 것이 이 판단의 핵심이다.</div></div>',
         '<div style="font-weight:700;margin-top:16px">이 판단이 깨지는 조건</div>',
-        '<div class="np-note" contenteditable="false">⚠️ 아래 중 하나라도 사실이 되면 <b>이 판단과 아래로 이어진 보유 종목을 함께 다시 봐야 합니다.</b><br>① 20년 이상 실질 수익이 없는 장기 횡보장에 들어섰다는 근거가 쌓임<br>② 인덱스 보수가 의미 있게 올라 비용 우위가 사라짐<br>③ 내가 하락장에서 실제로 팔았음 — “버틸 수 있다”는 전제가 틀렸음</div>',
+        '<div class="nn-callout"><span class="nn-callout-icon" contenteditable="false">⚠</span><div class="nn-callout-body">️ 아래 중 하나라도 사실이 되면 <b>이 판단과 아래로 이어진 보유 종목을 함께 다시 봐야 합니다.</b><br>① 20년 이상 실질 수익이 없는 장기 횡보장에 들어섰다는 근거가 쌓임<br>② 인덱스 보수가 의미 있게 올라 비용 우위가 사라짐<br>③ 내가 하락장에서 실제로 팔았음 — “버틸 수 있다”는 전제가 틀렸음</div></div>',
         '<div style="font-weight:700;margin-top:16px">다음 점검</div>',
         '<div>분기에 한 번, 위 세 조건을 하나씩 확인한다. 아무것도 해당하지 않으면 <b>아무것도 하지 않는다.</b></div>'
       ])
