@@ -25,6 +25,9 @@ window.switchPage = function(name) {
   var nb = document.getElementById('nav-'+name);
   if(nb) nb.classList.add('active');
   window.scrollTo(0,0);
+  if(name === 'flow' && window.__nnFlowRender){
+    setTimeout(function(){ try{ window.__nnFlowRender(); }catch(e){} }, 40);
+  }
   if(name === 'journal' && window.__nnJnRender){
     setTimeout(function(){ try{ window.__nnJnRender(); }catch(e){} }, 40);
   }
@@ -5994,6 +5997,13 @@ window.__nnGoWatchlist = function(){
           }catch(e){}
         }
         if(!nm){
+          /* 매크로 탭이 시세를 받아올 때 저장해 둔 종목명 */
+          try{
+            var NM = JSON.parse(localStorage.getItem('nn_wl_names_v1') || '{}');
+            nm = NM[sym] || NM[tk] || '';
+          }catch(e){}
+        }
+        if(!nm){
           try{
             var TK = JSON.parse(localStorage.getItem('nn_ticker_v1') || '{}');
             nm = TK[sym] || TK[tk] || '';
@@ -6008,6 +6018,10 @@ window.__nnGoWatchlist = function(){
           + '</div>';
       }).join('') + '</div>';
       if(list.length > 24) h += '<div class="wlp-more">외 ' + (list.length - 24) + '종목</div>';
+      if(list.some(function(it){ return /^\d{6}$/.test(String(it.sym||'').replace(/^.*:/,'')); })
+         && !localStorage.getItem('nn_wl_names_v1')){
+        h += '<div class="wlp-hint">종목명은 매크로 탭을 한 번 열어 시세를 불러오면 표시됩니다.</div>';
+      }
       h += '<div class="wlp-note">종목명과 메모만 보여 드립니다. '
          + '<b>시세·차트·수익률</b>은 매크로 탭 <b>맨 아래</b>의 '
          + '“나의 관심종목 · MY WATCHLIST” 카드에서 확인하세요.</div>';

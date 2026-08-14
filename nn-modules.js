@@ -2360,6 +2360,16 @@
       var it=data[i];
       var o=(res[it.market]||{})[it.sym]||null;
       var name=o&&o.name?o.name:it.sym;
+      /* 종목명을 저장해 둔다 — 홈 간략 보기에서 코드 대신 이름을 쓰기 위해 */
+      try{
+        if(o && o.name){
+          var NMC = JSON.parse(localStorage.getItem('nn_wl_names_v1') || '{}');
+          if(NMC[it.sym] !== o.name){
+            NMC[it.sym] = o.name;
+            localStorage.setItem('nn_wl_names_v1', JSON.stringify(NMC));
+          }
+        }
+      }catch(e){}
       var cur=o&&o.cur?o.cur:(it.market==='kr'?'KRW':'USD');
       var mktLabel=it.market==='us'?'US':it.market==='kr'?'KR':'CRYPTO';
       var mktCls=it.market;

@@ -8545,3 +8545,99 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) #page-journal .jn-body{
   #page-conviction .cv-body,#page-journal .jn-body{padding:16px 14px 20px;border-radius:13px}
   #page-conviction .cv-blk,#page-journal .jn-blk{padding:12px 13px}
 }
+.wlp-hint{font-size:10.5px;color:rgba(232,196,126,.62);line-height:1.7;margin-top:10px;
+  padding:7px 10px;background:rgba(201,169,110,.09);border-radius:7px}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-hint{
+  color:var(--lp-brass);background:rgba(138,106,36,.08)}
+
+/* ══════════════════════════════════════════════════════════════════
+   [4단계] 지식에서 자본까지 (FLOW) — 상징색 자수정
+   ══════════════════════════════════════════════════════════════════ */
+.cove-line.fl-line{background:linear-gradient(90deg,#a06bd4,transparent)!important}
+#page-flow .as-eyebrow{color:#c79ae8!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(160,107,212,.5)!important}
+#page-flow .as-h1{text-shadow:0 0 22px rgba(160,107,212,.3)!important}
+#page-flow .as-hsub{color:rgba(199,154,232,.55)!important}
+#nav-flow{color:#f8f8fa!important}
+#nav-flow:hover,#nav-flow.active{color:#c79ae8!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(160,107,212,.8)}
+#nav-flow .sh{background:linear-gradient(90deg,transparent,#a06bd4,transparent)!important}
+.fl-body{margin-top:34px;font-family:'Pretendard',sans-serif;
+  background:rgba(10,9,8,.88);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:24px 26px 28px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 20px 44px -32px rgba(0,0,0,.9)}
+/* 단계 띠 */
+.fl-stages{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-bottom:16px}
+.fl-ar{display:flex;align-items:center;color:rgba(255,255,255,.2);font-size:13px;padding:0 6px;flex:none}
+.fl-st{flex:1;min-width:96px;display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  text-align:left;position:relative;overflow:hidden;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;padding:15px 13px 13px;cursor:pointer;
+  font-family:'Pretendard',sans-serif;transition:.2s cubic-bezier(.22,1,.36,1)}
+.fl-st-bar{position:absolute;left:0;top:0;right:0;height:3px}
+.fl-st.zero{opacity:.45}
+.fl-st[data-go]:hover{background:rgba(255,255,255,.08);transform:translateY(-2px);
+  border-color:rgba(199,154,232,.4)}
+.fl-st-n{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;color:#f0ede6;line-height:1}
+.fl-st-n i{font-style:normal;font-size:10px;color:rgba(255,255,255,.4);margin-left:3px}
+.fl-st-lb{font-size:12px;font-weight:600;color:rgba(255,255,255,.72);margin-top:4px}
+.fl-st-sub{font-family:'Bebas Neue',sans-serif;font-size:9.5px;letter-spacing:.14em;
+  color:rgba(255,255,255,.3)}
+/* 요약 */
+.fl-sum{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.8;
+  padding:12px 15px;background:rgba(160,107,212,.1);
+  border-left:2px solid rgba(199,154,232,.5);border-radius:0 9px 9px 0;margin-bottom:26px}
+.fl-sum b{color:#c79ae8;font-weight:700}
+.fl-sec-t{font-size:13px;font-weight:700;color:#f0ede6;margin-bottom:13px}
+.fl-empty{font-size:12px;color:rgba(255,255,255,.4);padding:20px 0}
+/* 자산 목록 */
+.fl-assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px}
+.fl-as{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;
+  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;padding:12px 14px;cursor:pointer;transition:.18s;
+  font-family:'Pretendard',sans-serif;opacity:.68}
+.fl-as.on{opacity:1;border-color:rgba(199,154,232,.32)}
+.fl-as:hover{background:rgba(255,255,255,.07);opacity:1;transform:translateY(-2px)}
+.fl-as.open{background:rgba(160,107,212,.16);border-color:rgba(199,154,232,.6);opacity:1}
+.fl-as-tk{font-family:'Orbitron',sans-serif;font-size:13px;color:#c79ae8;letter-spacing:.05em}
+.fl-as-nm{font-size:11.5px;color:rgba(255,255,255,.6)}
+.fl-as-tag{font-size:10px;color:rgba(199,154,232,.75);margin-top:3px}
+.fl-as-none{font-size:10px;color:rgba(255,255,255,.28);margin-top:3px}
+/* 역추적 */
+.fl-tr{margin-top:14px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(199,154,232,.24);border-radius:13px;padding:18px 20px}
+.fl-tr-h{font-size:13px;font-weight:700;color:#c79ae8;margin-bottom:14px}
+.fl-tr-chain{display:flex;flex-direction:column;gap:0}
+.fl-tr-step{display:flex;align-items:center;gap:10px;padding:9px 0;position:relative}
+.fl-tr-step::before{content:'';position:absolute;left:9px;top:26px;bottom:-4px;width:1.5px;
+  background:rgba(199,154,232,.28)}
+.fl-tr-step.last::before,.fl-tr-step:last-child::before{display:none}
+.fl-tr-no{width:19px;height:19px;border-radius:50%;flex:none;z-index:1;
+  background:rgba(160,107,212,.24);border:1px solid rgba(199,154,232,.45);
+  font-family:'Orbitron',sans-serif;font-size:9px;color:#c79ae8;
+  display:flex;align-items:center;justify-content:center}
+.fl-tr-tag{font-family:'Bebas Neue',sans-serif;font-size:10.5px;letter-spacing:.13em;flex:none}
+.fl-tr-t{flex:1;min-width:0;text-align:left;background:none;border:none;cursor:pointer;
+  font-family:'Pretendard',sans-serif;font-size:12.5px;color:rgba(255,255,255,.75);
+  padding:2px 0;transition:.15s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-tr-t:hover{color:#e0c4f5;text-decoration:underline}
+.fl-tr-none{font-size:12px;color:rgba(255,255,255,.42);line-height:1.85;padding:6px 0}
+.fl-tr-none b{color:rgba(255,255,255,.7)}
+.fl-tr-sub{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:rgba(199,154,232,.7);
+  margin:18px 0 9px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}
+.fl-tr-cards{display:flex;flex-direction:column;gap:6px}
+.fl-tr-c{display:flex;align-items:center;gap:9px;text-align:left;width:100%;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:9px;padding:9px 12px;cursor:pointer;transition:.15s;
+  font-family:'Pretendard',sans-serif}
+.fl-tr-c:hover{background:rgba(160,107,212,.14);border-color:rgba(199,154,232,.42)}
+.fl-tr-c-st{font-size:10px;font-weight:700;flex:none}
+.fl-tr-c-t{flex:1;min-width:0;font-size:12px;color:rgba(255,255,255,.7);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .fl-body{
+  background:rgba(255,255,255,.9);border-color:rgba(20,18,15,.1)}
+@media(max-width:820px){
+  .fl-stages{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .fl-ar{display:none}
+  .fl-body{padding:18px 15px 22px}
+}
