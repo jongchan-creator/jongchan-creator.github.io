@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=31" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=31"/>
+<link rel="preload" href="nn-style.css?v=32" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=32"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -1219,7 +1219,7 @@
 
 
   </div></div> </div>
-<script src="nn-core.js?v=26"></script>
+<script src="nn-core.js?v=27"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -1838,7 +1838,13 @@
     t.className='nn-cloud-toast'+(kind==='ok'?' ok':(kind==='out'?' out':''));
     t.innerHTML=msg;
     requestAnimationFrame(function(){ t.classList.add('show'); });
-    clearTimeout(t.__timer); t.__timer=setTimeout(function(){ t.classList.remove('show'); }, 3400);
+    clearTimeout(t.__timer);
+    t.__timer=setTimeout(function(){
+      t.classList.remove('show');
+      /* 사라진 뒤 아예 걷어낸다 — 클래스만 지우면 화면에 남는 경우가 있었다 */
+      clearTimeout(t.__gone);
+      t.__gone=setTimeout(function(){ if(t.parentNode && !t.classList.contains('show')) t.remove(); }, 500);
+    }, 3400);
   }
   window.__cloudToast = cloudToast;
 
@@ -3011,6 +3017,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=26"></script><script src="nn-conviction.js?v=3"></script><script src="nn-journal.js?v=2"></script><script src="nn-modules.js?v=4"></script>
+<script src="nn-relations.js?v=27"></script><script src="nn-conviction.js?v=3"></script><script src="nn-journal.js?v=2"></script><script src="nn-modules.js?v=4"></script>
 </body>
 </html>

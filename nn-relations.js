@@ -382,23 +382,52 @@
   function lineOf(ref){
     var all = load();
     function outs(r){ return all.filter(function(x){ return x.from === r; }).map(function(x){ return x.to; }); }
-    var root = rootOf(ref);
-    var seq = [], seen = {};
-    var cur = root;
-    while(cur && !seen[cur]){
-      seen[cur] = 1;
-      var info = resolve(cur);
-      if(info.exists || info.kind === 'asset') seq.push(info);
-      var nx = outs(cur);
-      if(!nx.length) break;
-      /* 여러 갈래로 나뉘면 지금 보고 있는 쪽을 우선 따라간다 */
-      cur = nx.indexOf(ref) >= 0 ? ref : nx[0];
-      if(seq.length > 12) break;
+    function ins(r){ return all.filter(function(x){ return x.to === r; }).map(function(x){ return x.from; }); }
+
+    /* ── 어느 칸에서 보든 같은 갈래가 나와야 한다 ──
+       예전에는 갈라지는 지점에서 '지금 보는 쪽'을 따라가, BOOKS에서는 4칸
+       CONVICTION에서는 5칸으로 서로 달라 보였다.
+       이제는 현재 기록까지 거슬러 오른 경로를 먼저 확정하고,
+       그 뒤로 가장 긴 줄기를 이어 붙인다. */
+
+    /* ① 현재에서 뿌리까지 거슬러 오르기 */
+    var upPath = [], seenUp = {}, cur = ref;
+    while(cur && !seenUp[cur]){
+      seenUp[cur] = 1;
+      upPath.unshift(cur);
+      var pv = ins(cur);
+      if(!pv.length) break;
+      cur = pv[0];
+      if(upPath.length > 12) break;
     }
-    /* 현재 기록이 빠졌다면 (곁가지) 끝에 붙인다 */
+
+    /* ② 현재에서 가장 긴 아래 줄기 찾기 */
+    function longest(r, seen){
+      seen = seen || {};
+      if(seen[r]) return [];
+      seen[r] = 1;
+      var nx = outs(r), best = [];
+      for(var i=0;i<nx.length;i++){
+        var sub = longest(nx[i], seen);
+        if(sub.length + 1 > best.length) best = [nx[i]].concat(sub);
+      }
+      return best;
+    }
+    var downPath = longest(ref, {});
+
+    /* ③ 합쳐서 실제 존재하는 것만 남긴다 */
+    var full = upPath.concat(downPath);
+    var seq = [], mark = {};
+    full.forEach(function(r){
+      if(mark[r]) return;
+      mark[r] = 1;
+      var info = resolve(r);
+      if(info.exists || info.kind === 'asset') seq.push(info);
+    });
     if(!seq.some(function(x){ return x.ref === ref; })) seq.push(resolve(ref));
     return seq;
   }
+
 
   /* ── 통계 (4단계 Flow 시각화에서 사용) ─────────────── */
   function stats(){

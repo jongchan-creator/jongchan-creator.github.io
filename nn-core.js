@@ -5982,9 +5982,28 @@ window.__nnGoWatchlist = function(){
         var sym = String(it.sym || it.tk || '');
         var tk = sym.replace(/^.*:/, '');
         var mm = memo[sym] || memo[tk] || '';
+        /* 코스피 종목은 코드(005930)만 남아 무슨 회사인지 알 수 없다.
+           저장된 이름이나 보유 목록에서 한글명을 찾아 함께 보여 준다. */
+        var nm = it.nm || it.name || it.label || '';
+        if(!nm){
+          try{
+            var H = window.HOLDINGS || [];
+            for(var q=0;q<H.length;q++){
+              if(String(H[q].tk).toUpperCase() === tk.toUpperCase()){ nm = H[q].nm || ''; break; }
+            }
+          }catch(e){}
+        }
+        if(!nm){
+          try{
+            var TK = JSON.parse(localStorage.getItem('nn_ticker_v1') || '{}');
+            nm = TK[sym] || TK[tk] || '';
+          }catch(e){}
+        }
+        var isCode = /^\d{6}$/.test(tk);
         return '<div class="wlp-i">'
-          + '<span class="wlp-tk">' + esc(tk) + '</span>'
-          + (it.nm ? '<span class="wlp-nm">' + esc(it.nm) + '</span>' : '')
+          + '<span class="wlp-tk">' + esc(nm && isCode ? nm : tk) + '</span>'
+          + ((nm && isCode) ? '<span class="wlp-nm">' + esc(tk) + '</span>'
+              : (nm ? '<span class="wlp-nm">' + esc(nm) + '</span>' : ''))
           + (mm ? '<span class="wlp-memo">' + esc(mm) + '</span>' : '')
           + '</div>';
       }).join('') + '</div>';

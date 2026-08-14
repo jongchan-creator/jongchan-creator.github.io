@@ -8483,3 +8483,65 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-tag{
 html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-note{
   color:var(--lp-ink3);border-top-color:var(--lp-rule)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .wlp-note b{color:var(--lp-ink2)}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CONVICTION · JOURNAL — 가독성
+   본문이 투명이라 배경화면이 그대로 비쳐 글씨가 묻혔다.
+   다른 탭처럼 어두운 패널을 깔아 어떤 배경에서도 읽히게 한다.
+   ══════════════════════════════════════════════════════════════════════ */
+#page-conviction .cv-body,
+#page-journal .jn-body{
+  background:rgba(10,9,8,.88);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:22px 24px 26px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 20px 44px -32px rgba(0,0,0,.9);
+}
+/* 상세 화면의 각 구역 — 배경 위에 한 겹 더 */
+#page-conviction .cv-blk,
+#page-journal .jn-blk{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:11px;
+  padding:14px 16px 15px;
+  margin-bottom:12px;
+}
+#page-conviction .cv-blk-t,
+#page-journal .jn-blk-t{border-bottom-color:rgba(255,255,255,.09)}
+/* 제목·요약도 배경 위에 */
+#page-conviction .cv-d-head,
+#page-journal .jn-d-head{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  padding:16px 18px 17px;
+  margin-bottom:16px;
+}
+/* 글자 대비 강화 */
+#page-conviction .cv-blk li,
+#page-journal .jn-blk li{color:rgba(255,255,255,.78)}
+#page-conviction .cv-d-s,
+#page-journal .jn-out-t{color:rgba(255,255,255,.72)}
+#page-conviction .cv-h-n{color:rgba(255,255,255,.62)}
+#page-conviction .cv-c-s{color:rgba(255,255,255,.55)}
+#page-journal .jn-c-why{color:rgba(255,255,255,.74)}
+#page-conviction .cv-e-d,
+#page-journal .jn-e-d{color:rgba(255,255,255,.6)}
+/* 이력 — 구분선 보이게 */
+#page-conviction .cv-h-row{border-bottom-color:rgba(255,255,255,.08)}
+/* 분기 집계 카드 */
+#page-journal .jn-st{background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.1)}
+#page-journal .jn-rform{background:rgba(0,0,0,.4);border-color:rgba(255,255,255,.1)}
+#page-journal .jn-top{color:rgba(255,255,255,.6)}
+/* 목록 카드 — 배경 위에서 더 또렷하게 */
+#page-conviction .cv-card,
+#page-journal .jn-card{background:rgba(0,0,0,.62);border-color:rgba(255,255,255,.1)}
+/* 밝은 배경 모드 */
+html.nn-lightsurface:not(.nn-bgscroll-dark) #page-conviction .cv-body,
+html.nn-lightsurface:not(.nn-bgscroll-dark) #page-journal .jn-body{
+  background:rgba(255,255,255,.9);border-color:rgba(20,18,15,.1);
+  box-shadow:0 2px 6px rgba(20,18,15,.05)}
+@media(max-width:700px){
+  #page-conviction .cv-body,#page-journal .jn-body{padding:16px 14px 20px;border-radius:13px}
+  #page-conviction .cv-blk,#page-journal .jn-blk{padding:12px 13px}
+}
