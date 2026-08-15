@@ -8903,3 +8903,71 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-close{
   .ab-h2 span{display:block;margin:6px 0 0}
   .ab-g-a{min-width:100%}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   JOURNAL — 아이보리 강화 (따뜻한 크림 쪽으로)
+   ══════════════════════════════════════════════════════════════════════ */
+.cove-line.jn-line{background:linear-gradient(90deg,#d6c9a4,transparent)!important}
+#page-journal .as-eyebrow{color:#f2ecd8!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(214,201,164,.55)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(232,224,196,.34)!important}
+#page-journal .as-hsub{color:rgba(242,236,216,.5)!important}
+#nav-journal:hover,#nav-journal.active{color:#f2ecd8!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 10px rgba(232,224,196,.75)!important}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#e0d5b4,transparent)!important}
+.jn-c-tk,.jn-rev,.jn-e-d b,.jn-out-l b,.jn-top b,.jn-hint b{color:#ede4c8!important}
+.jn-st-v{color:#f2ecd8!important}
+.jn-blk-t,.jn-rf-l{color:rgba(237,228,200,.9)!important}
+.jn-tab.on,.jn-q.on{color:#f2ecd8!important}
+.jn-new,.jn-rsave{color:#ede4c8!important}
+.jn-due b{color:#ede4c8!important}
+.jn-c-cv{color:#dccfa8!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FROM MY LIBRARY — 제목이 윗변에 붙던 문제
+   ══════════════════════════════════════════════════════════════════════ */
+.bq-meta{padding-top:11px!important}
+.bq-card .bq-t{margin-top:2px}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ABOUT — 넓은 화면 활용
+   글이 왼쪽에만 몰려 오른쪽이 비어 있었다. 격자로 펼친다.
+   ══════════════════════════════════════════════════════════════════════ */
+.ab-philo{max-width:1120px!important}
+/* 이름 — 왼쪽 설명 + 오른쪽 세 가지 이유 */
+.ab-name{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;
+  margin-bottom:64px!important}
+.ab-name .ab-eyebrow,.ab-name .ab-h2{grid-column:1 / -1}
+.ab-name .ab-lead{grid-column:1;margin-bottom:16px}
+.ab-name .ab-lead-2{grid-column:1}
+.ab-why{grid-column:2;grid-row:3 / span 2;display:flex;flex-direction:column;gap:16px;
+  padding-left:6px}
+.ab-why-i{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:15px 17px}
+.ab-why-k{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;
+  color:rgba(201,169,110,.85);margin-bottom:7px}
+.ab-why-i p{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.85;margin:0}
+.ab-why-i b{color:rgba(255,255,255,.8);font-weight:600}
+/* 문제 인식 — 2열 */
+.ab-gaps{display:grid;grid-template-columns:1fr 1fr;gap:0 34px}
+.ab-gap{flex-direction:column;gap:5px;align-items:flex-start}
+.ab-g-a{min-width:0}
+.ab-g-b{min-width:0;padding-left:15px}
+/* 원칙 — 2열 */
+.ab-rules{display:grid;grid-template-columns:1fr 1fr;gap:22px 34px}
+/* 질문 — 2열 */
+.ab-qs{display:grid;grid-template-columns:1fr 1fr;gap:0 34px}
+.ab-close,.ab-sign{grid-column:1 / -1}
+.ab-sign{font-size:13px;color:rgba(255,255,255,.42);line-height:2;margin:18px 0 0;
+  padding-left:18px;border-left:2px solid rgba(201,169,110,.3)}
+.ab-sign b{color:#e8c47e;font-weight:600}
+/* 하단 패널 — 2열 */
+.ab-panels{display:grid;grid-template-columns:1fr 1fr;gap:22px;
+  max-width:1120px;margin-top:56px;align-items:start}
+.ab-panels > div{margin-top:0!important;padding:28px 30px 30px!important}
+@media(max-width:980px){
+  .ab-name{grid-template-columns:1fr;gap:24px}
+  .ab-why{grid-column:1;grid-row:auto;padding-left:0}
+  .ab-gaps,.ab-rules,.ab-qs,.ab-panels{grid-template-columns:1fr}
+  .ab-panels{gap:18px}
+}
