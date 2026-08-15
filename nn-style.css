@@ -9048,3 +9048,69 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df b{color:var(--lp-brass)}
   .ab-open .ab-h2{font-size:2rem}
   .ab-divider{margin:56px 0 32px;gap:12px}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   [수정] BOOKS 탭이 항상 노랗던 문제
+   .books-btn 에 색을 직접 걸어, 마우스를 올리지 않아도 적용됐다.
+   다른 탭처럼 기본은 흰색, hover·active 에서만 색이 나오게 되돌린다.
+   ══════════════════════════════════════════════════════════════════════ */
+.books-btn{color:#f8f8fa!important;text-shadow:none!important}
+.nbtn.books-btn:hover,.nbtn.books-btn.active,#nav-books:hover,#nav-books.active{
+  color:#f5c75c!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),
+    0 0 8px rgba(244,182,37,.95),0 0 20px rgba(244,182,37,.5)!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   JOURNAL — 미숫가루 (따뜻한 곡물빛)
+   흰빛 아이보리로는 구분이 약했다. 채도를 올리고 명도를 낮춘다.
+   ══════════════════════════════════════════════════════════════════════ */
+.cove-line.jn-line{background:linear-gradient(90deg,#c8a87e,transparent)!important}
+#page-journal .as-eyebrow{color:#d8c3a2!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(200,168,126,.55)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(206,188,161,.3)!important}
+#page-journal .as-hsub{color:rgba(216,195,162,.5)!important}
+#nav-journal:hover,#nav-journal.active{color:#dcc9aa!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 10px rgba(200,168,126,.75)!important}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#c8a87e,transparent)!important}
+.jn-c-tk,.jn-rev,.jn-e-d b,.jn-out-l b,.jn-top b,.jn-hint b{color:#d8c3a2!important}
+.jn-st-v{color:#dcc9aa!important}
+.jn-blk-t,.jn-rf-l{color:rgba(216,195,162,.9)!important}
+.jn-tab.on,.jn-q.on,.jn-new,.jn-rsave,.jn-due b{color:#d8c3a2!important}
+.jn-c-cv{color:#c8a87e!important}
+.jn-tab:hover,.jn-q:hover{border-color:rgba(200,168,126,.5)!important;color:#d8c3a2!important}
+.jn-tab.on,.jn-q.on{background:rgba(160,130,90,.3)!important;border-color:rgba(200,168,126,.6)!important}
+.jn-new{background:rgba(160,130,90,.26)!important;border-color:rgba(200,168,126,.5)!important}
+.jn-new:hover{background:rgba(160,130,90,.42)!important;border-color:rgba(200,168,126,.8)!important}
+.jn-due{background:rgba(160,130,90,.14)!important;border-color:rgba(200,168,126,.28)!important;
+  border-left-color:#c8a87e!important}
+.jn-card:hover{border-color:rgba(200,168,126,.45)!important}
+.jn-back:hover,.jn-act:hover{border-color:rgba(200,168,126,.6)!important;color:#d8c3a2!important;
+  background:rgba(160,130,90,.2)!important}
+.jn-out{background:rgba(160,130,90,.1)!important;border-color:rgba(200,168,126,.24)!important}
+.jn-rf-i:focus{border-color:rgba(200,168,126,.6)!important}
+.jn-rsave{background:rgba(160,130,90,.3)!important;border-color:rgba(200,168,126,.55)!important}
+.jn-rsave:hover{background:rgba(160,130,90,.46)!important}
+.jn-empty{border-color:rgba(200,168,126,.24)!important}
+.jn-form::-webkit-scrollbar-thumb{background:rgba(200,168,126,.34)!important}
+#page-journal .nn-callout{border-left-color:#c8a87e!important}
+
+/* ══════════════════════════════════════════════════════════════════════
+   ABOUT — 제목 밑줄 제거 · 폭 확장
+   ══════════════════════════════════════════════════════════════════════ */
+.ab-open .ab-h2 em{color:#ffffff!important;text-shadow:0 0 30px rgba(255,255,255,.3)!important;
+  font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;font-size:1.05em}
+.ab-open .ab-h2 em::after{display:none!important}
+/* 폭 확장 — 오른쪽 끝까지 */
+.ab-philo{max-width:none!important;width:100%}
+.ab-panels{max-width:none!important;grid-template-columns:1fr 1fr!important}
+.ab-divider{max-width:none!important}
+.ab-name{grid-template-columns:1.15fr 1fr!important;gap:56px!important}
+.ab-gaps{gap:0 48px!important}
+.ab-rules{gap:24px 48px!important}
+.ab-qs{gap:0 48px!important}
+.ab-diff{gap:18px 48px!important}
+.ab-why{gap:18px!important}
+@media(max-width:980px){
+  .ab-name{grid-template-columns:1fr!important;gap:24px!important}
+  .ab-panels{grid-template-columns:1fr!important}
+}
