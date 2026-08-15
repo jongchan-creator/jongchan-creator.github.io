@@ -9114,3 +9114,38 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df b{color:var(--lp-brass)}
   .ab-name{grid-template-columns:1fr!important;gap:24px!important}
   .ab-panels{grid-template-columns:1fr!important}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   ABOUT — 서문을 화면 가운데로, 헤더와 간격 확보
+   ══════════════════════════════════════════════════════════════════════ */
+.ab-philo{margin-top:104px!important}
+.ab-open{
+  grid-column:1 / -1;
+  text-align:center;
+  max-width:660px;
+  margin:0 auto 64px!important;
+}
+.ab-name{position:relative}
+.ab-name > .ab-open{position:relative;left:50%;transform:translateX(-50%);width:100vw;
+  max-width:660px;margin-left:0;margin-right:0}
+/* 위 규칙이 격자 안에서 어긋날 수 있어, 서문을 격자 밖처럼 다룬다 */
+.ab-name{display:block!important}
+.ab-name .ab-body{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:start}
+.ab-name > .ab-open{position:static;left:auto;transform:none;width:auto}
+.ab-open .ab-h2{font-size:2.9rem!important}
+.ab-op-sub{font-size:1.2rem!important}
+
+/* 본문 가독성 — 문단이 길어졌으므로 줄 간격을 넉넉히 */
+.ab-g-b{line-height:1.95!important;font-size:12.5px!important}
+.ab-why-i p{line-height:1.95!important}
+.ab-df p{line-height:1.95!important}
+.ab-r-b p{line-height:1.95!important}
+.ab-b-d{line-height:1.95!important;max-width:900px}
+.ab-gap{padding:16px 0!important}
+.ab-why-i{padding:17px 19px!important}
+.ab-rules{gap:28px 48px!important}
+@media(max-width:980px){
+  .ab-name .ab-body{grid-template-columns:1fr;gap:24px}
+  .ab-philo{margin-top:64px!important}
+  .ab-open .ab-h2{font-size:2rem!important}
+}
