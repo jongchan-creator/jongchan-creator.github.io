@@ -8971,3 +8971,80 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-close{
   .ab-gaps,.ab-rules,.ab-qs,.ab-panels{grid-template-columns:1fr}
   .ab-panels{gap:18px}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   BOOKS · JOURNAL 최종 분리
+   BOOKS   더 선명한 골드 (채도 88%)
+   JOURNAL 더 옅은 아이보리 (채도 22%) — 채도 차 66%p 로 확실히 갈린다
+   ══════════════════════════════════════════════════════════════════════ */
+.books-btn{color:#f5c75c!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),
+    0 0 8px rgba(244,182,37,.95),0 0 20px rgba(244,182,37,.5)!important}
+#nav-books .sh,.books-btn .sh{background:linear-gradient(90deg,transparent,#f4b625,transparent)!important}
+#page-books .as-eyebrow,#page-books .cv-eyebrow{color:#f5c75c!important}
+.cove-line.cv-gold{background:linear-gradient(90deg,#f4b625,transparent)!important}
+
+/* JOURNAL — 옅은 아이보리 */
+.cove-line.jn-line{background:linear-gradient(90deg,#d4cfb9,transparent)!important}
+#page-journal .as-eyebrow{color:#ebe9e0!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(212,207,185,.5)!important}
+#page-journal .as-h1{text-shadow:0 0 22px rgba(235,233,224,.28)!important}
+#page-journal .as-hsub{color:rgba(235,233,224,.46)!important}
+#nav-journal:hover,#nav-journal.active{color:#f2f0e9!important;
+  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 10px rgba(212,207,185,.7)!important}
+#nav-journal .sh{background:linear-gradient(90deg,transparent,#d4cfb9,transparent)!important}
+.jn-c-tk,.jn-rev,.jn-e-d b,.jn-out-l b,.jn-top b,.jn-hint b{color:#ebe9e0!important}
+.jn-st-v{color:#f2f0e9!important}
+.jn-blk-t,.jn-rf-l{color:rgba(235,233,224,.88)!important}
+.jn-tab.on,.jn-q.on,.jn-new,.jn-rsave,.jn-due b{color:#ebe9e0!important}
+.jn-c-cv{color:#d4cfb9!important}
+
+/* ══ ABOUT — 서문 제목 ══ */
+.ab-open{text-align:center;margin-bottom:44px}
+.ab-op-rule{height:1px;max-width:120px;margin:0 auto;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,.65),transparent)}
+.ab-op-rule2{max-width:200px;margin-top:26px}
+.ab-op-k{font-size:11px;font-weight:600;letter-spacing:.22em;color:rgba(201,169,110,.7);
+  margin:20px 0 14px}
+.ab-open .ab-h2{font-size:2.6rem;font-weight:700;color:#f7f4ee;letter-spacing:-.03em;
+  margin:0 0 14px;line-height:1.25}
+.ab-open .ab-h2 em{font-style:normal;color:#e8c47e;position:relative;
+  text-shadow:0 0 26px rgba(201,169,110,.45)}
+.ab-open .ab-h2 em::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,.65),transparent)}
+.ab-op-sub{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;
+  color:rgba(255,255,255,.42);margin:0;letter-spacing:.01em}
+.ab-lead-3{border-left-color:rgba(201,169,110,.75)!important;margin-bottom:0!important}
+
+/* 차별점 */
+.ab-diff{display:grid;grid-template-columns:1fr 1fr;gap:16px 30px}
+.ab-df{padding-left:17px;position:relative}
+.ab-df::before{content:'';position:absolute;left:0;top:6px;bottom:4px;width:2px;
+  background:linear-gradient(180deg,rgba(255,120,120,.5),rgba(255,120,120,.08));border-radius:2px}
+.ab-df-x{display:block;font-size:13px;font-weight:700;color:rgba(255,255,255,.82);margin-bottom:6px}
+.ab-df p{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.85;margin:0}
+.ab-df b{color:#e8c47e;font-weight:600}
+
+/* 철학 ↔ 안내 구분선 */
+.ab-divider{display:flex;align-items:center;gap:20px;max-width:1120px;margin:80px 0 44px}
+.ab-dv-line{flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent)}
+.ab-dv-mid{display:flex;flex-direction:column;align-items:center;gap:5px;flex:none;
+  padding:0 6px}
+.ab-dv-k{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.3em;
+  color:rgba(201,169,110,.6)}
+.ab-dv-t{font-size:13px;font-weight:600;color:rgba(255,255,255,.5)}
+
+/* 밝은 배경 */
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-open .ab-h2{color:var(--lp-ink)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-open .ab-h2 em{color:var(--lp-brass);text-shadow:none}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-op-sub,
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-dv-t{color:var(--lp-ink3)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df-x{color:var(--lp-ink)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df p{color:var(--lp-ink3)}
+html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df b{color:var(--lp-brass)}
+@media(max-width:980px){
+  .ab-diff{grid-template-columns:1fr}
+  .ab-open .ab-h2{font-size:2rem}
+  .ab-divider{margin:56px 0 32px;gap:12px}
+}
