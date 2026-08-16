@@ -7288,9 +7288,38 @@ window.__nnGoWatchlist = function(){
     return t;
   }
   function fmtKB(b){ return b>=1048576 ? (b/1048576).toFixed(2)+'MB' : Math.round(b/1024)+'KB'; }
+  /* 브라우저가 알려 주는 실제 여유 공간 (IndexedDB 포함).
+     한 번 조회해 두고 재사용한다 — 매번 묻기엔 비동기라 번거롭다. */
+  var diskQuota = 0;
+  function askQuota(){
+    try{
+      if(navigator.storage && navigator.storage.estimate){
+        navigator.storage.estimate().then(function(e){
+          diskQuota = e.quota || 0;
+          /* 렌더 함수가 아래에서 정의되므로, 정의된 뒤에 다시 그린다 */
+          setTimeout(function(){
+            if(window.__nnRenderStorage) window.__nnRenderStorage();
+          }, 0);
+        });
+      }
+    }catch(e){}
+  }
+
+  function fmtBig(b){
+    if(b >= 1073741824) return (b/1073741824).toFixed(b >= 10737418240 ? 0 : 1) + 'GB';
+    if(b >= 1048576) return Math.round(b/1048576) + 'MB';
+    return Math.round(b/1024) + 'KB';
+  }
+
   window.__nnStorageInfo=function(){
     var u=usedBytes(), p=Math.min(100, u/LIMIT*100);
-    return {used:u, limit:LIMIT, pct:p, text:fmtKB(u)+' / 5MB', level:(p>=90?'danger':p>=70?'warn':'ok')};
+    return {
+      used:u, limit:LIMIT, pct:p,
+      text:fmtKB(u)+' / 5MB',
+      level:(p>=90?'danger':p>=70?'warn':'ok'),
+      diskQuota: diskQuota,
+      diskText: diskQuota ? fmtBig(diskQuota) : ''
+    };
   };
 
   /* 사용량 바 렌더 (모든 .nn-storage-bar 요소) */
@@ -7309,11 +7338,23 @@ window.__nnGoWatchlist = function(){
       el.innerHTML='<div class="nnsb-head"><span class="nnsb-lb">저장 공간</span>'
         +'<span class="nnsb-val nnsb-'+info.level+'">'+info.text+' ('+info.pct.toFixed(0)+'%)</span></div>'
         +'<div class="nnsb-track"><div class="nnsb-fill nnsb-'+info.level+'" style="width:'+info.pct.toFixed(1)+'%"></div></div>'
-        +(info.level==='danger'?'<div class="nnsb-msg">⚠ 공간이 거의 찼습니다. 불필요한 항목을 정리하세요.</div>'
-          :info.level==='warn'?'<div class="nnsb-msg">공간이 70%를 넘었습니다.</div>':'')
+        +(info.level==='danger'
+            ? '<div class="nnsb-msg">⚠ 빠른 저장 공간이 거의 찼습니다. 아래 여유 공간으로 자동 이전됩니다.</div>'
+            : info.level==='warn'
+              ? '<div class="nnsb-msg">빠른 저장 공간이 70%를 넘었습니다. 곧 여유 공간을 함께 사용합니다.</div>' : '')
+        +'<div class="nnsb-more">'
+        +  '<span class="nnsb-m-k">여유 공간</span>'
+        +  '<span class="nnsb-m-v">' + (info.diskText || '확인 중') + '</span>'
+        +  '<span class="nnsb-m-d">위 5MB는 <b>즉시 불러오는 영역</b>입니다. '
+        +    '기록이 늘면 이 여유 공간을 함께 써서 <b>사실상 제한 없이</b> 저장합니다.'
+        +    (info.diskText ? ' 현재 이 기기에서 ' + info.diskText + '까지 쓸 수 있습니다.' : '')
+        +  '</span>'
+        +'</div>'
         +syncTxt;
     });
   };
+
+  askQuota();   /* 렌더 함수 정의 후 조회 시작 */
 
   /* 이미지 URL 안전장치: base64 등 위험 입력 차단 */
   window.__nnCheckImgUrl=function(url,opt){
