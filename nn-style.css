@@ -9149,3 +9149,116 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df b{color:var(--lp-brass)}
   .ab-philo{margin-top:64px!important}
   .ab-open .ab-h2{font-size:2rem!important}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   [수정] 모바일에서 격자가 2열로 남던 문제
+   폭 확장 규칙(!important)이 앞선 미디어쿼리를 덮어써,
+   휴대폰에서도 두 칸으로 갈라져 글이 좁아졌다.
+   파일 맨 끝에 다시 선언해 확실히 1열로 되돌린다.
+   ══════════════════════════════════════════════════════════════════════ */
+@media(max-width:980px){
+  .ab-philo{margin-top:60px!important}
+  .ab-name{display:block!important}
+  .ab-name .ab-body{display:block!important}
+  .ab-why{margin-top:26px!important;padding-left:0!important}
+  .ab-gaps,.ab-rules,.ab-qs,.ab-diff,.ab-panels,.ab-cycle{
+    display:grid!important;grid-template-columns:1fr!important;gap:16px!important}
+  .ab-cycle{grid-template-columns:1fr 1fr!important;gap:9px!important}
+  .ab-open{margin-bottom:40px!important}
+  .ab-open .ab-h2{font-size:1.9rem!important}
+  .ab-op-sub{font-size:1rem!important}
+  .ab-divider{margin:48px 0 30px!important;gap:12px!important}
+  .ab-panels > div{padding:22px 20px 24px!important}
+}
+@media(max-width:560px){
+  .ab-cycle{grid-template-columns:1fr!important}
+  .ab-gap{padding:13px 0!important}
+  .ab-g-a{font-size:13px!important}
+  .ab-g-b,.ab-why-i p,.ab-df p,.ab-r-b p{font-size:12px!important;line-height:1.9!important}
+  .ab-open .ab-h2{font-size:1.6rem!important}
+  .ab-lead{font-size:13px!important;padding-left:13px!important}
+  .ab-close{padding:16px 16px!important;font-size:12.5px!important}
+  .ab-rule{gap:11px!important}
+}
+
+/* ══ 관심 종목 패널 — 모바일 대응이 없었다 ══ */
+@media(max-width:560px){
+  .wl-peek,.dd-brief .wl-peek{padding:12px 13px!important}
+  .wlp-head{flex-wrap:wrap;gap:7px}
+  .wlp-go{margin-left:0;order:3;width:100%;text-align:center}
+  .wlp-x{margin-left:auto}
+  .wlp-list{grid-template-columns:1fr 1fr!important;gap:6px}
+  .wlp-i{padding:8px 9px}
+  .wlp-tk{font-size:11px}
+  .wlp-nm,.wlp-memo{font-size:10px}
+  .wlp-note{font-size:10px;line-height:1.7}
+}
+
+/* ══ 신규 탭 — 좁은 화면 보강 ══ */
+@media(max-width:560px){
+  /* 맥락 */
+  .rl-panel{padding:14px 14px 15px!important;border-radius:12px!important}
+  .rl-st-body{padding:10px 12px!important}
+  .rl-st-title{font-size:12.5px!important}
+  .rl-bd-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .rl-bd-right{width:100%;justify-content:space-between}
+  .rl-bd-t{font-size:14px!important}
+  .rl-st-tools{opacity:1!important}
+  /* 논거·일지 */
+  #page-conviction .cv-body,#page-journal .jn-body,#page-flow .fl-body{
+    padding:15px 13px 18px!important;border-radius:12px!important}
+  .cv-d-t{font-size:1.35rem!important}
+  .cv-c-t,.jn-c-why{font-size:13px!important}
+  .cv-h-row{gap:6px!important}
+  .jn-stats{grid-template-columns:repeat(2,1fr)!important}
+  .jn-tabs{gap:5px}
+  .jn-tab{padding:6px 12px!important;font-size:11.5px!important}
+  .jn-new,.cv-new{width:100%;margin-left:0!important;text-align:center}
+  /* 흐름 */
+  .fl-stages{grid-template-columns:repeat(2,1fr)!important;gap:7px!important}
+  .fl-st{min-width:0!important;padding:12px 10px 11px!important}
+  .fl-st-n{font-size:18px!important}
+  .fl-assets{grid-template-columns:1fr!important}
+  .fl-tr{padding:14px 14px!important}
+  .fl-tr-step{gap:8px!important}
+  /* 창 */
+  .cv-modal,.jn-modal,.rl-mt-modal,.jn-ou-modal,.cv-st-modal,.rlg-modal{
+    width:calc(100vw - 24px)!important;max-height:88vh!important}
+  .cv-row2,.jn-row2,.jn-row3{grid-template-columns:1fr!important}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   모바일 — 화면을 넘던 요소들
+   폭이 고정된 창·서랍이 좁은 화면에서 잘려 버튼을 누를 수 없었다.
+   ══════════════════════════════════════════════════════════════════════ */
+@media(max-width:560px){
+  /* 확인·입력 창 (여러 기능이 공유하는 기반) */
+  .hub-modal{width:calc(100vw - 24px)!important;max-width:none!important;
+    max-height:86vh!important;overflow-y:auto}
+  .cmdk{width:calc(100vw - 20px)!important;max-width:none!important}
+  .tk-modal{width:calc(100vw - 24px)!important}
+  .bga-card{width:calc(100vw - 24px)!important;max-width:none!important}
+  .intel-drawer{width:100vw!important;max-width:100%!important}
+  .bq-card{width:calc(100vw - 20px)!important;max-width:none!important;right:10px!important}
+  /* 창 안쪽 여백도 줄인다 */
+  .hub-modal{padding:20px 18px!important}
+  .hm-btns{flex-wrap:wrap;gap:8px}
+  .hm-btn{flex:1;min-width:110px}
+
+  /* 터치 영역 — 손가락으로 누를 수 있게 */
+  .tb-btn{min-height:34px!important;padding:7px 10px!important}
+  .tb-swatch{width:24px!important;height:24px!important}
+  .editor-back-btn,.bk-sort-btn,.nn-tp-btn,.tw-mbtn,.lex-confirm button{
+    min-height:34px!important}
+  .nn-cal-nav button{min-width:34px!important;min-height:34px!important}
+  .page-del-btn{min-width:30px!important;min-height:30px!important}
+  .rl-st-go,.rl-st-peek,.rl-step .rl-nd-x{width:30px!important;height:30px!important}
+  .wlp-x{width:32px!important;height:32px!important}
+  /* 툴바가 두 줄 이상 접히므로 여백 확보 */
+  .editor-toolbar{padding:14px 10px!important;gap:5px!important;row-gap:16px!important}
+  .tb-grp{padding-right:8px!important;margin-right:4px!important}
+  .tb-grp::before{display:none!important}   /* 좁은 화면에선 묶음 이름 숨김 */
+}
+
+/* 100vw 로 인한 가로 스크롤 방지 */
+html,body{max-width:100%;overflow-x:clip}
