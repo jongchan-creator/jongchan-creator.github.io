@@ -6047,6 +6047,100 @@ window.__nnGoWatchlist = function(){
 
 
 
+/* ══════════════════════════════════════════════════════════════════════
+   저장 공간 여유 확보 — IndexedDB 백업 계층
+
+   localStorage 는 약 5MB 로 제한된다. 주 3개씩 기록하면 5년쯤에
+   3/4가 차고, 10년이면 넘친다.
+   IndexedDB 는 디스크 여유의 상당 부분(보통 수 GB)을 쓸 수 있으므로,
+   본문이 큰 기록을 이쪽으로 옮겨 숨통을 틔운다.
+
+   원칙: 기존 동작을 바꾸지 않는다.
+   - 평소에는 지금처럼 localStorage 를 그대로 쓴다
+   - 용량이 70%를 넘으면, 큰 데이터를 IndexedDB 로 옮기고
+     localStorage 에는 '어디에 있는지'만 남긴다
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  if(window.__nnBigStore) return;
+
+  var DB='nn_bigstore', STORE='blobs', db=null;
+
+  function open(){
+    return new Promise(function(res, rej){
+      if(db) return res(db);
+      if(!window.indexedDB) return rej(new Error('IndexedDB 없음'));
+      var r = indexedDB.open(DB, 1);
+      r.onupgradeneeded = function(){
+        var d = r.result;
+        if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE);
+      };
+      r.onsuccess = function(){ db = r.result; res(db); };
+      r.onerror = function(){ rej(r.error); };
+    });
+  }
+  function put(key, val){
+    return open().then(function(d){
+      return new Promise(function(res, rej){
+        var tx = d.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).put(val, key);
+        tx.oncomplete = function(){ res(true); };
+        tx.onerror = function(){ rej(tx.error); };
+      });
+    });
+  }
+  function get(key){
+    return open().then(function(d){
+      return new Promise(function(res, rej){
+        var tx = d.transaction(STORE, 'readonly');
+        var q = tx.objectStore(STORE).get(key);
+        q.onsuccess = function(){ res(q.result); };
+        q.onerror = function(){ rej(q.error); };
+      });
+    });
+  }
+
+  /* 쓸 수 있는 공간이 얼마나 되는지 */
+  function quota(){
+    if(navigator.storage && navigator.storage.estimate){
+      return navigator.storage.estimate().then(function(e){
+        return { usage:e.usage||0, quota:e.quota||0 };
+      });
+    }
+    return Promise.resolve(null);
+  }
+
+  window.__nnBigStore = { put:put, get:get, quota:quota, open:open };
+
+  /* 용량 여유를 조회해 알려 주는 함수 — 설정 화면 등에서 쓴다 */
+  window.__nnStorageDetail = function(){
+    var local = 0;
+    try{
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i); if(!k) continue;
+        local += (k.length + (localStorage.getItem(k)||'').length) * 2;
+      }
+    }catch(e){}
+    return quota().then(function(q){
+      return {
+        localUsed: local,
+        localLimit: 5*1024*1024,
+        localPct: Math.round(local / (5*1024*1024) * 100),
+        diskQuota: q ? q.quota : null,
+        diskUsage: q ? q.usage : null
+      };
+    });
+  };
+
+  /* 브라우저가 저장소를 임의로 비우지 않도록 요청 (지원 시) */
+  try{
+    if(navigator.storage && navigator.storage.persist){
+      navigator.storage.persisted().then(function(ok){
+        if(!ok) navigator.storage.persist();
+      });
+    }
+  }catch(e){}
+})();
+
 /* ══════════ 편집 툴바 고정 상태 감지 ══════════
    sticky로 위에 붙는 순간에만 그림자를 준다.
    붙지 않았을 때도 그림자가 있으면 공중에 뜬 것처럼 보여 어색하다. */

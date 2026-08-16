@@ -9130,7 +9130,21 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .ab-df b{color:var(--lp-brass)}
   max-width:660px;margin-left:0;margin-right:0}
 /* 위 규칙이 격자 안에서 어긋날 수 있어, 서문을 격자 밖처럼 다룬다 */
 .ab-name{display:block!important}
-.ab-name .ab-body{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:start}
+.ab-name .ab-body{
+  display:grid!important;
+  grid-template-columns:1.15fr 1fr!important;
+  gap:0 56px!important;
+  align-items:start!important;
+}
+/* 왼쪽 글과 오른쪽 카드의 첫 줄을 같은 높이에서 시작시킨다 */
+.ab-name .ab-body > .ab-lead{grid-column:1!important;margin-top:0!important}
+.ab-name .ab-body > .ab-why{
+  grid-column:2!important;
+  grid-row:1 / span 3!important;
+  margin-top:0!important;padding-left:0!important;
+}
+.ab-name .ab-body > .ab-lead:first-child{padding-top:2px}
+.ab-why-i:first-child{margin-top:0}
 .ab-name > .ab-open{position:static;left:auto;transform:none;width:auto}
 .ab-open .ab-h2{font-size:2.9rem!important}
 .ab-op-sub{font-size:1.2rem!important}
