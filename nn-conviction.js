@@ -109,6 +109,26 @@
     return gone;
   }
 
+  /* ── 되돌리기 ──
+     논거 하나에는 수년치 상태 이력이 들어 있다.
+     노트 한 장보다 훨씬 무거운 데이터이므로 실행취소가 있어야 한다.
+     기록 순서를 흐트러뜨리지 않도록 원래 자리에 되돌린다. */
+  function restore(rec, at){
+    if(!rec || !rec.id) return null;
+    var a = load();
+    for(var i=0;i<a.length;i++) if(a[i].id === rec.id) return a[i];   /* 이미 있음 */
+    if(typeof at === 'number' && at >= 0 && at <= a.length) a.splice(at, 0, rec);
+    else a.push(rec);
+    return save(a) ? rec : null;
+  }
+
+  /* 삭제 전 위치 — 되돌릴 때 같은 자리로 넣기 위해 */
+  function indexOf(id){
+    var a = load();
+    for(var i=0;i<a.length;i++) if(a[i].id === id) return i;
+    return -1;
+  }
+
   /* ── 검토 시점이 지난 것 ── */
   function dueList(){
     var t = today();
@@ -136,7 +156,7 @@
   window.__nnConv = {
     STATUS: STATUS, statusOf: statusOf,
     all: load, byId: byId, create: create, update: update,
-    setStatus: setStatus, remove: remove,
+    setStatus: setStatus, remove: remove, restore: restore, indexOf: indexOf,
     dueList: dueList, stats: stats, forAsset: forAsset
   };
 })();
@@ -275,13 +295,27 @@
     el.querySelector('#cvStatus').onclick = function(){ if(window.__nnConvStatus) window.__nnConvStatus(id); };
     el.querySelector('#cvDel').onclick = function(){
       var run = function(){
-        C.remove(id);
+        /* 지우기 전에 스냅샷 — 논거 본체 · 목록에서의 자리 · 걸려 있던 맥락 */
+        var at = C.indexOf(id);
+        var rels = [];
+        try{ if(window.__nnRel) rels = window.__nnRel.rawOf('thesis:' + id); }catch(e){}
+
+        var gone = C.remove(id);
         renderList();
-        if(window.__nnToast) window.__nnToast('논거를 삭제했습니다', {kind:'del'});
+        if(!gone) return;
+
+        if(window.__nnToast) window.__nnToast(
+          '🗑 논거 "' + esc(gone.title || '제목 없는 논거') + '" 삭제됨',
+          {kind:'del', undo:function(){
+            C.restore(gone, at);
+            try{ if(window.__nnRel) window.__nnRel.restore(rels); }catch(e){}
+            openDetail(gone.id);
+            if(window.__nnToast) window.__nnToast('✓ 되돌렸습니다 — 변해 온 기록도 그대로입니다');
+          }});
       };
       if(window.__nnConfirm) window.__nnConfirm({
         title:'"' + (x.title || '제목 없는 논거') + '"를 삭제할까요?',
-        msg:'변해 온 기록도 함께 사라집니다. 되돌릴 수 없습니다.',
+        msg:'변해 온 기록도 함께 사라집니다. 삭제 후 잠시 동안은 되돌리기로 복구할 수 있습니다.',
         ok:'삭제', onOk:run
       });
       else run();

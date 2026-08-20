@@ -5505,8 +5505,9 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .macro-keyguide{
 .hub-modal input[type="date"].hm-in::-webkit-calendar-picker-indicator:hover{opacity:1;transform:scale(1.12)}
 
 /* 미니 캘린더 — D-DAY 표시 */
-.mc-cell{position:relative}
-.mc-cell.mc-ev::after{content:'';position:absolute;left:50%;bottom:2px;transform:translateX(-50%);
+.mc-cell{position:relative;padding-top:8px!important;padding-bottom:3px!important}
+/* 일정 표시 점 — 날짜 숫자 위쪽에 둔다 */
+.mc-cell.mc-ev::after{content:'';position:absolute;left:50%;top:2px;transform:translateX(-50%);
   width:3.5px;height:3.5px;border-radius:50%;background:#e8cb92;
   box-shadow:0 0 5px rgba(232,203,146,.95)}
 .mc-cell.mc-ev.mc-today::after{background:#2a1e0c;box-shadow:none}

@@ -100,6 +100,23 @@
     return gone;
   }
 
+  /* ── 되돌리기 ──
+     "그때의 생각"과 복기는 여기에만 남는다. 증권사에도 없다.
+     한 번 지우면 되살릴 곳이 없으므로 실행취소를 둔다. */
+  function restore(rec, at){
+    if(!rec || !rec.id) return null;
+    var a = load();
+    for(var i=0;i<a.length;i++) if(a[i].id === rec.id) return a[i];
+    if(typeof at === 'number' && at >= 0 && at <= a.length) a.splice(at, 0, rec);
+    else a.push(rec);
+    return save(a) ? rec : null;
+  }
+  function indexOf(id){
+    var a = load();
+    for(var i=0;i<a.length;i++) if(a[i].id === id) return i;
+    return -1;
+  }
+
   /* 최신순 */
   function all(){
     return load().slice().sort(function(a,b){
@@ -213,6 +230,7 @@
   window.__nnJournal = {
     ACTIONS:ACTIONS, actionOf:actionOf, SELL_WHY:SELL_WHY,
     all:all, byId:byId, create:create, update:update, remove:remove,
+    restore:restore, indexOf:indexOf,
     forAsset:forAsset, forThesis:forThesis, dueList:dueList,
     quarters:quarters, quarterOf:quarterOf, summary:summary,
     reviewOf:reviewOf, setReview:setReview
@@ -364,10 +382,28 @@
     el.querySelector('#jnEdit').onclick = function(){ if(window.__nnJnEditor) window.__nnJnEditor(id); };
     el.querySelector('#jnOut').onclick = function(){ if(window.__nnJnOutcome) window.__nnJnOutcome(id); };
     el.querySelector('#jnDel').onclick = function(){
-      var run = function(){ J.remove(id); render();
-        if(window.__nnToast) window.__nnToast('기록을 삭제했습니다', {kind:'del'}); };
+      var run = function(){
+        var at = J.indexOf(id);
+        var rels = [];
+        try{ if(window.__nnRel) rels = window.__nnRel.rawOf('journal:' + id); }catch(e){}
+
+        var gone = J.remove(id);
+        render();
+        if(!gone) return;
+
+        var lb = (gone.asset ? gone.asset + ' · ' : '') + (gone.date || '');
+        if(window.__nnToast) window.__nnToast(
+          '🗑 기록 "' + esc(lb || '날짜 미상') + '" 삭제됨',
+          {kind:'del', undo:function(){
+            J.restore(gone, at);
+            try{ if(window.__nnRel) window.__nnRel.restore(rels); }catch(e){}
+            openDetail(gone.id);
+            if(window.__nnToast) window.__nnToast('✓ 되돌렸습니다 — 그때의 생각도 그대로입니다');
+          }});
+      };
       if(window.__nnConfirm) window.__nnConfirm({
-        title:'이 기록을 삭제할까요?', msg:'그때의 생각과 복기가 함께 사라집니다.',
+        title:'이 기록을 삭제할까요?',
+        msg:'그때의 생각과 복기가 함께 사라집니다. 삭제 후 잠시 동안은 되돌리기로 복구할 수 있습니다.',
         ok:'삭제', onOk:run });
       else run();
     };

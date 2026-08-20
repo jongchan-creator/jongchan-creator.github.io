@@ -230,6 +230,29 @@
     return n;
   }
 
+  /* ── 이 대상에 걸린 연결을 원본 그대로 뽑아 둔다 ──
+     of() 는 표시용으로 가공한 값을 주고 삭제된 대상을 걸러내므로,
+     되돌리기용 스냅샷에는 쓸 수 없다. */
+  function rawOf(ref){
+    return load().filter(function(x){ return x.from === ref || x.to === ref; });
+  }
+
+  /* ── 되돌리기 ──
+     논거·기록을 지우면 거기 걸린 연결도 함께 사라진다.
+     실행취소 때 원래 id 그대로 되살려야 다른 화면의 참조가 어긋나지 않는다. */
+  function restore(recs){
+    if(!recs) return 0;
+    if(!Array.isArray(recs)) recs = [recs];
+    var a = load(), seen = {}, n = 0;
+    a.forEach(function(x){ seen[x.id] = 1; });
+    recs.forEach(function(r){
+      if(!r || !r.id || seen[r.id]) return;
+      a.push(r); seen[r.id] = 1; n++;
+    });
+    if(n) save(a);
+    return n;
+  }
+
   /* ── 이을 수 있는 대상 목록 (선택 UI용) ──────────────── */
   function candidates(excludeRef){
     var out = [];
@@ -444,6 +467,7 @@
 
   window.__nnRel = {
     add:add, remove:remove, removeAllOf:removeAllOf,
+    rawOf:rawOf, restore:restore,
     of:of, countOf:countOf, exists:exists,
     resolve:resolve, makeRef:makeRef, parseRef:parseRef,
     candidates:candidates, stats:stats, chainOf:chainOf, lineOf:lineOf, metaOf:metaOf, setMeta:setMeta, rootOf:rootOf,
