@@ -3595,10 +3595,17 @@ window.KnowledgeNotes = {
     {t:'미디어', sub:'MEDIA', page:'media'},
     {t:'렉시콘', sub:'LEXICON', page:'lexicon'},
     {t:'이코노믹스', sub:'ECONOMICS', page:'economics'},
-    {t:'포트폴리오', sub:'PORTFOLIO', page:'portfolio'},
+    {t:'포트폴리오', sub:'PORTFOLIO · 보유 종목', page:'portfolio'},
+    {t:'논지', sub:'THESIS · 생각의 기록', page:'thesis'},
+    {t:'투자 논거', sub:'CONVICTION · 나는 왜 이걸 사는가', page:'conviction'},
+    {t:'투자 일지', sub:'JOURNAL · 왜 그렇게 했는가', page:'journal'},
+    {t:'흐름', sub:'FLOW · 지식에서 자본까지', page:'flow'},
     {t:'어바웃', sub:'ABOUT', page:'about'}
   ];
   var NOTE_META={books:{lb:'BOOKS',c:'#e8c47e'},media:{lb:'MEDIA',c:'#7fbef5'},lexicon:{lb:'LEXICON',c:'#aeb1b4'},economics:{lb:'ECON',c:'#7fd58c'}};
+  /* THESIS 는 KnowledgeNotes.data.thesis 에 있지만 여는 방법이 다르다(ThesisApp.open).
+     그래서 NOTE_META 에 넣지 않고 따로 수집한다. */
+  var THESIS_C='#e0709c', CONV_C='#4d8bff', JN_C='#3fc4b0';
 
   /* 실행 명령 */
   function goHome(fn,delay){
@@ -3713,6 +3720,121 @@ window.KnowledgeNotes = {
         });
       }
     }catch(e){}
+    /* ── THESIS 글 — 여는 방법이 달라 따로 수집한다 ── */
+    try{
+      var kt=window.KnowledgeNotes;
+      if(kt && kt.data && Array.isArray(kt.data.thesis)){
+        kt.data.thesis.forEach(function(n){
+          if(!n||!n.id) return;
+          var title=(n.title||'').trim()||'제목 없음';
+          var body='';
+          try{
+            var tmp=document.createElement('div'); tmp.innerHTML=String(n.content||'');
+            body=(tmp.textContent||'').replace(/\s+/g,' ').trim();
+          }catch(e){}
+          out.push({kind:'thesis', lb:'THESIS', c:THESIS_C, t:title, sub:'생각의 기록 열기',
+            mt:n.mtime||n.ctime||0, body:body,
+            key:(title+' '+body).toLowerCase(),
+            run:function(){
+              if(typeof switchPage==='function') switchPage('thesis');
+              setTimeout(function(){ try{ if(window.ThesisApp) window.ThesisApp.open(n.id); }catch(e){} },260);
+            }});
+        });
+      }
+    }catch(e){}
+
+    /* ── 사용자가 만든 탭과 그 안의 기록 ── */
+    try{
+      var cts=window.__nnCustomTabs ? window.__nnCustomTabs() : [];
+      var kc=window.KnowledgeNotes;
+      cts.forEach(function(ct){
+        if(!ct||!ct.id) return;
+        var cc=ct.color||'#c9a96e';
+        var cn=(ct.name||'내 탭');
+        out.push({kind:'tab', lb:'TAB', c:cc, t:cn, sub:'내가 만든 탭',
+          key:(cn+' '+ct.id).toLowerCase(),
+          run:function(){ if(typeof switchPage==='function') switchPage(ct.id); }});
+        var arr=(kc&&kc.data&&kc.data[ct.id])?kc.data[ct.id]:[];
+        arr.forEach(function(n){
+          if(!n||!n.id) return;
+          var title=(n.title||'').trim()||'제목 없음';
+          var body='';
+          try{
+            var tmp2=document.createElement('div'); tmp2.innerHTML=String(n.content||'');
+            body=(tmp2.textContent||'').replace(/\s+/g,' ').trim();
+          }catch(e){}
+          out.push({kind:'note', lb:cn.toUpperCase().slice(0,9), c:cc, t:title, sub:'노트 열기',
+            mt:n.mtime||0, body:body,
+            key:(title+' '+body).toLowerCase(),
+            run:function(){
+              if(typeof switchPage==='function') switchPage(ct.id);
+              setTimeout(function(){
+                try{
+                  var k3=window.KnowledgeNotes;
+                  k3.activeIds[ct.id]=n.id; k3.save();
+                  k3.renderSidebar(ct.id); k3.renderEditor(ct.id);
+                }catch(e){}
+              },260);
+            }});
+        });
+      });
+    }catch(e){}
+
+    /* ── 투자 논거 ──
+       제목만이 아니라 "왜 믿는가 · 무엇이 위험한가 · 무엇이 사실이면 깨지는가"까지
+       색인한다. 몇 해 뒤 다시 찾게 되는 건 대개 그 문장들이다. */
+    try{
+      var C=window.__nnConv;
+      if(C){
+        C.all().forEach(function(x){
+          if(!x||!x.id) return;
+          var st=C.statusOf(x.status);
+          var title=(x.title||'').trim()||'제목 없는 논거';
+          var body=[x.summary||'']
+            .concat(x.believe||[], x.risks||[], x.breaks||[])
+            .filter(Boolean).join(' ');
+          var subBits=[];
+          if(st&&st.lb) subBits.push(st.lb);
+          if(x.asset) subBits.push(x.asset);
+          if(x.nextReview) subBits.push('검토 '+x.nextReview);
+          out.push({kind:'conv', lb:'논거', c:CONV_C, t:title,
+            sub:subBits.join(' · ')||'투자 논거',
+            mt:Date.parse(x.updatedAt||x.createdAt||'')||0, body:body,
+            key:(title+' '+(x.asset||'')+' '+body).toLowerCase(),
+            run:function(){
+              if(typeof switchPage==='function') switchPage('conviction');
+              setTimeout(function(){ try{ if(window.__nnConvOpen) window.__nnConvOpen(x.id); }catch(e){} },260);
+            }});
+        });
+      }
+    }catch(e){}
+
+    /* ── 투자 일지 ──
+       "그때 이렇게 생각했다"와 복기 내용까지 넣는다.
+       가격은 증권사에도 남지만 이 문장은 여기에만 있다. */
+    try{
+      var J=window.__nnJournal;
+      if(J){
+        J.all().forEach(function(x){
+          if(!x||!x.id) return;
+          var a=J.actionOf(x.action);
+          var head=(x.asset?x.asset+' ':'')+((a&&a.lb)||'기록');
+          var body=[].concat(x.why||[], x.risks||[], [x.outcome||'', x.lesson||''])
+            .filter(Boolean).join(' ');
+          var subBits2=[x.date||''];
+          if(x.why&&x.why[0]) subBits2.push(x.why[0]);
+          out.push({kind:'jn', lb:'일지', c:JN_C, t:head,
+            sub:subBits2.filter(Boolean).join(' · ')||'투자 일지',
+            mt:Date.parse(x.createdAt||'')||Date.parse((x.date||'')+'T00:00:00')||0, body:body,
+            key:(head+' '+(x.date||'')+' '+body).toLowerCase(),
+            run:function(){
+              if(typeof switchPage==='function') switchPage('journal');
+              setTimeout(function(){ try{ if(window.__nnJnOpen) window.__nnJnOpen(x.id); }catch(e){} },260);
+            }});
+        });
+      }
+    }catch(e){}
+
     try{
       var wl=JSON.parse(localStorage.getItem('nn_watchlist_v1')||'[]');
       wl.forEach(function(it){
@@ -3775,19 +3897,20 @@ window.KnowledgeNotes = {
     var src=collect();
     if(!q){
       var cmds=src.filter(function(x){ return x.kind==='cmd'; }).slice(0,9);
-      var notes=src.filter(function(x){ return x.kind==='note'; })
+      /* 최근에 손댄 기록 — 노트·논지·논거·일지를 함께 본다 */
+      var notes=src.filter(function(x){ return x.mt; })
         .sort(function(a,b){ return (b.mt||0)-(a.mt||0); }).slice(0,3);
       items=cmds.concat(notes);
     }else{
       items=src.filter(function(x){ return x.key.indexOf(q)>=0; }).slice(0,14);
-      /* 본문에서 매칭된 노트는 해당 문장을 미리보기로 */
+      /* 본문에서 매칭된 항목은 해당 문장을 미리보기로 */
       items.forEach(function(x){
-        if(x.kind!=='note' || !x.body) return;
+        if(!x.body) return;
         if(x.t.toLowerCase().indexOf(q)>=0) return;   /* 제목 매칭이면 그대로 */
         var pos=x.body.toLowerCase().indexOf(q);
         if(pos<0) return;
-        var st=Math.max(0,pos-24);
-        x.sub='…'+x.body.slice(st, st+62).trim()+'…';
+        var st=Math.max(0,pos-24), en=st+62;
+        x.sub=(st>0?'…':'')+x.body.slice(st, en).trim()+(en<x.body.length?'…':'');
       });
     }
     activeIdx=0;
