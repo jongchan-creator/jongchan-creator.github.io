@@ -2014,16 +2014,57 @@
   const KEY2DOC = {};
   Object.keys(SYNC).forEach(g => SYNC[g].forEach(k => KEY2DOC[k]=g));
 
+  /* ══════════════════════════════════════════════════════════════════
+     동기화 안전장치 (2026-08-18)
+
+     예전 코드에는 구멍이 셋 있었고, 겹치면 기록이 사라졌다.
+       ① 로그인 확인 전(currentUser=null)에 저장한 것은 업로드 예약조차
+          되지 않았고, 나중에 다시 시도하지도 않았다.
+       ② 업로드는 1.5초 뒤 예약인데, 그 전에 탭을 떠나면 그냥 취소됐다.
+       ③ 그리고 클라우드를 내려받을 때 updatedAt 을 비교하지도 않고
+          로컬을 무조건 덮어썼다.
+     그래서 ①②로 못 올라간 기록이 ③에서 사라졌다.
+
+     고친 방식
+       · 저장이 일어나면 로그인 여부와 상관없이 '이 그룹이 바뀐 시각'을
+         localStorage 에 남긴다 (nn_local_touch_v1)
+       · 업로드에 성공하면 '올린 시각'을 남긴다 (nn_last_push_v1)
+       · 둘을 비교해 아직 안 올라간 변경이 있으면(dirty)
+         내려받기가 그 그룹을 건드리지 않고, 오히려 로컬을 올려보낸다
+       · 덮어쓰기가 꼭 필요한 경우에도 직전 로컬 내용을 IndexedDB 에
+         스냅샷으로 남긴다 (그룹당 최근 3개)
+       · 탭을 떠날 때 밀린 업로드를 즉시 밀어낸다
+       · 로그인이 늦게 붙어도, 붙는 즉시 밀린 것을 전부 올린다
+     ══════════════════════════════════════════════════════════════════ */
+  const TOUCH_KEY = 'nn_local_touch_v1';   /* 그룹별 마지막 로컬 변경 시각 */
+  const PUSH_KEY  = 'nn_last_push_v1';     /* 그룹별 마지막 업로드 성공 시각 */
+  const SNAP_KEY  = 'nn_cloud_snap_idx_v1';/* 스냅샷 목록 */
+
   let currentUser = null;
   let applying = false;           /* 클라우드→로컬 반영 중엔 재업로드 방지 */
   const timers = {};
   const _set = localStorage.setItem.bind(localStorage);
 
-  /* 모든 앱의 저장을 가로채 자동 클라우드 업로드 */
+  function readMap(key){
+    try{ const o = JSON.parse(localStorage.getItem(key) || '{}');
+         return (o && typeof o === 'object') ? o : {}; }catch(e){ return {}; }
+  }
+  function writeMap(key, o){ try{ _set(key, JSON.stringify(o)); }catch(e){} }
+
+  const touchOf  = g => readMap(TOUCH_KEY)[g] || 0;
+  const pushedOf = g => readMap(PUSH_KEY)[g]  || 0;
+  const isDirty  = g => touchOf(g) > pushedOf(g);
+  function markTouch(g){ const m = readMap(TOUCH_KEY); m[g] = Date.now(); writeMap(TOUCH_KEY, m); }
+  function markPushed(g){ const m = readMap(PUSH_KEY); m[g] = Date.now(); writeMap(PUSH_KEY, m); }
+
+  /* 모든 앱의 저장을 가로챈다.
+     ⚠ 변경 시각 기록은 로그인 여부와 무관하게 항상 한다 — 구멍 ① 대응 */
   localStorage.setItem = function(k, v){
     _set(k, v);
     const g = KEY2DOC[k];
-    if (g && currentUser && !applying){
+    if (!g || applying) return;
+    markTouch(g);
+    if (currentUser){
       clearTimeout(timers[g]);
       timers[g] = setTimeout(() => pushGroup(g), 1500);
     }
@@ -2044,37 +2085,137 @@
     }
   }
 
-  async function pushGroup(g){
-    if (!currentUser) return;
-    const payload = { updatedAt: new Date().toISOString() };
-    SYNC[g].forEach(k => { const v = localStorage.getItem(k); if (v !== null) payload[k] = v; });
-    try { await setDoc(doc(db, 'users', currentUser.uid, 'data', g), payload);
-          try{ localStorage.setItem('nn_last_sync', String(Date.now())); }catch(e){}
-          if(window.__nnRenderStorage) window.__nnRenderStorage(); }
-    catch(e){ console.error('[cloud] 저장 실패:', g, e); }
+  /* ── 덮어쓰기 직전 로컬 스냅샷 ──
+     localStorage 는 5MB 뿐이라 사본을 여기 두면 오히려 위험하다.
+     nn-core.js 가 열어 둔 IndexedDB 계층에 넣는다. */
+  async function snapshot(g, why){
+    try{
+      if(!window.__nnBigStore) return;
+      const data = {};
+      SYNC[g].forEach(k => { const v = localStorage.getItem(k); if (v !== null) data[k] = v; });
+      if(!Object.keys(data).length) return;
+      const key = 'snap_' + g + '_' + Date.now();
+      await window.__nnBigStore.put(key, { at:new Date().toISOString(), why:why||'', group:g, data:data });
+      const idx = readMap(SNAP_KEY);
+      idx[g] = (idx[g] || []).concat(key).slice(-3);   /* 그룹당 최근 3개만 */
+      writeMap(SNAP_KEY, idx);
+      console.log('[cloud] 덮어쓰기 전 스냅샷 저장:', key);
+    }catch(e){ console.warn('[cloud] 스냅샷 실패:', g, e); }
   }
+
+  /* 클라우드 내용이 지금 로컬과 같은가 */
+  function sameAsLocal(g, d){
+    return SYNC[g].every(k => {
+      const cloud = (typeof d[k] === 'string') ? d[k] : null;
+      const local = localStorage.getItem(k);
+      return cloud === local || (cloud === null && local === null);
+    });
+  }
+
+  async function pushGroup(g){
+    if (!currentUser) return false;
+    clearTimeout(timers[g]);
+    const stamp = Date.now();
+    const payload = { updatedAt: new Date(stamp).toISOString(), updatedMs: stamp };
+    SYNC[g].forEach(k => { const v = localStorage.getItem(k); if (v !== null) payload[k] = v; });
+    try {
+      await setDoc(doc(db, 'users', currentUser.uid, 'data', g), payload);
+      markPushed(g);
+      try{ _set('nn_last_sync', String(Date.now())); }catch(e){}
+      if(window.__nnRenderStorage) window.__nnRenderStorage();
+      return true;
+    }
+    catch(e){ console.error('[cloud] 저장 실패:', g, e); return false; }
+  }
+
+  /* 아직 안 올라간 그룹을 전부 밀어낸다 — 구멍 ①② 대응 */
+  async function flushDirty(reason){
+    if (!currentUser) return 0;
+    let n = 0;
+    for (const g of Object.keys(SYNC)){
+      if (!isDirty(g)) continue;
+      if (await pushGroup(g)) n++;
+    }
+    if (n) console.log('[cloud] 밀린 업로드 ' + n + '건 처리 (' + (reason||'') + ')');
+    return n;
+  }
+
+  /* 탭을 떠날 때 즉시 밀어낸다.
+     여기서 못 끝내도 dirty 표시가 남으므로 다음 접속 때 반드시 올라간다. */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushDirty('탭 숨김');
+  });
+  window.addEventListener('pagehide', () => { flushDirty('페이지 종료'); });
 
   async function pullAll(uid){
     let restored = false;
+    const kept = [];
     for (const g of Object.keys(SYNC)){
       try {
         const snap = await getDoc(doc(db, 'users', uid, 'data', g));
-        if (snap.exists()){
-          const d = snap.data();
-          applying = true;
-          SYNC[g].forEach(k => { if (typeof d[k] === 'string') _set(k, d[k]); });
-          applying = false;
-          restored = true;
-          if(window.__hubRender) try{ window.__hubRender(); }catch(e){}
-          if(window.__rdRender) try{ window.__rdRender(); }catch(e){}
-          if(window.__wlRender) try{ window.__wlRender(); }catch(e){}
-        } else {
+
+        if (!snap.exists()){
           await pushGroup(g);   /* 첫 로그인: 이 기기의 데이터를 내 클라우드로 이관 */
+          continue;
         }
+        const d = snap.data();
+
+        /* ⚠ 핵심 — 이 기기에 아직 안 올라간 변경이 있으면 절대 덮지 않는다.
+           오히려 이쪽이 최신이므로 클라우드로 올려보낸다. */
+        if (isDirty(g)){
+          kept.push(g);
+          await pushGroup(g);
+          continue;
+        }
+
+        /* 내용이 같으면 손댈 이유가 없다 (불필요한 새로고침도 막는다) */
+        if (sameAsLocal(g, d)) continue;
+
+        await snapshot(g, '클라우드 내려받기 전');
+
+        applying = true;
+        SYNC[g].forEach(k => { if (typeof d[k] === 'string') _set(k, d[k]); });
+        applying = false;
+        markPushed(g);          /* 방금 받은 것 = 클라우드와 동일 → dirty 해제 */
+        restored = true;
+
+        if(window.__hubRender) try{ window.__hubRender(); }catch(e){}
+        if(window.__rdRender) try{ window.__rdRender(); }catch(e){}
+        if(window.__wlRender) try{ window.__wlRender(); }catch(e){}
       } catch(e){ console.error('[cloud] 불러오기 실패:', g, e); }
+    }
+    if (kept.length){
+      console.log('[cloud] 이 기기가 더 최신이라 지킨 그룹:', kept.join(', '));
+      cloudToast('✓ 이 기기의 최신 기록을 지키고 클라우드에 올렸습니다', 'ok');
     }
     return restored;
   }
+
+  /* ── 스냅샷 보기 · 되돌리기 (콘솔에서 사용) ── */
+  window.__nnCloudSnapshots = async function(){
+    const idx = readMap(SNAP_KEY);
+    const out = [];
+    for (const g of Object.keys(idx)){
+      for (const key of (idx[g] || [])){
+        try{
+          const rec = await window.__nnBigStore.get(key);
+          if (rec) out.push({ key, group:rec.group, at:rec.at, why:rec.why,
+                              keys:Object.keys(rec.data||{}).join(', ') });
+        }catch(e){}
+      }
+    }
+    console.table(out);
+    return out;
+  };
+  window.__nnCloudRestore = async function(key){
+    const rec = await window.__nnBigStore.get(key);
+    if(!rec) { console.warn('그런 스냅샷이 없습니다:', key); return false; }
+    Object.keys(rec.data).forEach(k => { _set(k, rec.data[k]); });
+    markTouch(rec.group);
+    await pushGroup(rec.group);
+    console.log('[cloud] 되돌렸습니다:', key, '— 새로고침하세요');
+    return true;
+  };
 
   function cloudToast(msg, kind){
     var t=document.getElementById('nnCloudToast');
