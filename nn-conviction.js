@@ -344,9 +344,12 @@
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function lines(v){ return String(v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); }
 
-  /* ── 논거 세우기 / 고치기 ── */
-  function openEditor(id){
+  /* ── 논거 세우기 / 고치기 ──
+     seed 는 새로 세울 때만 쓰는 초기값이다.
+     FLOW 의 "논거 없이 들고 있는 종목"에서 종목코드를 넘겨 준다. */
+  function openEditor(id, seed){
     var x = id ? C.byId(id) : null;
+    seed = seed || {};
     var prev = document.getElementById('cvEd'); if(prev) prev.remove();
     var ov = document.createElement('div');
     ov.id = 'cvEd'; ov.className = 'hub-modal-ov';
@@ -360,7 +363,7 @@
       +   '<input class="hm-in" id="cvT" maxlength="60" placeholder="예: 엔비디아 — AI 인프라 성장" value="' + esc(x ? x.title : '') + '">'
       +   '<div class="cv-row2">'
       +     '<div><label class="hm-lb">종목 코드</label>'
-      +       '<input class="hm-in" id="cvA" maxlength="12" placeholder="NVDA" value="' + esc(x ? x.asset : '') + '"></div>'
+      +       '<input class="hm-in" id="cvA" maxlength="12" placeholder="NVDA" value="' + esc(x ? x.asset : (seed.asset || '')) + '"></div>'
       +     '<div><label class="hm-lb">다음 검토일</label>'
       +       '<input class="hm-in" id="cvR" type="date" value="' + esc(x ? x.nextReview : '') + '"></div>'
       +   '</div>'

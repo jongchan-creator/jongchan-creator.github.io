@@ -42,11 +42,64 @@
     }catch(e){}
     try{ if(window.__nnConv) out.thesis = window.__nnConv.all().length; }catch(e){}
     try{ if(window.__nnJournal) out.journal = window.__nnJournal.all().length; }catch(e){}
+    try{ out.assets = heldAssets().length; }catch(e){}
+    return out;
+  }
+
+  /* ── 실제로 들고 있는 것 모으기 ──
+     HOLDINGS 는 홈·차트에 띄우는 '표시용' 목록이고,
+     실제 수량·평단이 든 곳은 ASSETS(nn_assets_v1)의 stocks 다.
+     둘을 티커 기준으로 합쳐야 "나는 왜 이걸 갖고 있는가"가
+     진짜 내 포트폴리오를 대상으로 하게 된다. */
+  function heldAssets(){
+    var map = {}, order = [];
+
+    function put(tk, nm, src, extra){
+      tk = String(tk || '').trim().toUpperCase();
+      if(!tk) return;
+      if(!map[tk]){
+        map[tk] = { tk:tk, nm:'', src:{}, shares:0, ccy:'' };
+        order.push(tk);
+      }
+      var m = map[tk];
+      if(!m.nm && nm) m.nm = String(nm).trim();
+      m.src[src] = 1;
+      if(extra){
+        if(extra.shares) m.shares += extra.shares;
+        if(extra.ccy && !m.ccy) m.ccy = extra.ccy;
+      }
+    }
+
     try{
       var H = window.HOLDINGS || [];
-      out.assets = H.length;
+      H.forEach(function(h){ put(h.tk, h.nm, 'hold'); });
     }catch(e){}
-    return out;
+
+    try{
+      var S = JSON.parse(localStorage.getItem('nn_assets_v1') || '{}');
+      (S.stocks || []).forEach(function(s){
+        var n = parseFloat(s.shares);
+        put(s.ticker, s.name, 'assets', { shares: isNaN(n) ? 0 : n, ccy: s.ccy || '' });
+      });
+    }catch(e){}
+
+    return order.map(function(k){ return map[k]; });
+  }
+
+  /* ── 논거 없이 들고 있는 종목 ──
+     이 사이트가 던질 수 있는 가장 날카로운 질문.
+     종료(closed)된 논거만 남은 것도 '없음'으로 본다 —
+     정리한 논거를 근거로 계속 들고 있을 수는 없기 때문이다. */
+  function gapList(){
+    return heldAssets().filter(function(a){
+      try{
+        if(!window.__nnConv) return true;
+        var live = window.__nnConv.forAsset(a.tk).filter(function(x){
+          return x.status !== 'closed';
+        });
+        return live.length === 0;
+      }catch(e){ return true; }
+    });
   }
 
   /* ── 자산별 역추적 ──
@@ -72,13 +125,11 @@
 
   /* ── 자산 목록 (연결된 것 우선) ── */
   function assetList(){
-    var H = [];
-    try{ H = window.HOLDINGS || []; }catch(e){}
-    return H.map(function(h){
-      var tk = String(h.tk || '').toUpperCase();
-      var t = traceAsset(tk);
+    return heldAssets().map(function(h){
+      var t = traceAsset(h.tk);
       return {
-        tk: tk, nm: h.nm || '',
+        tk: h.tk, nm: h.nm || '',
+        src: h.src, shares: h.shares, ccy: h.ccy,
         chainLen: t.chain.length,
         thesisN: t.thesis.length,
         journalN: t.journal.length,
@@ -90,7 +141,8 @@
     });
   }
 
-  window.__nnFlow = { counts:counts, traceAsset:traceAsset, assetList:assetList };
+  window.__nnFlow = { counts:counts, traceAsset:traceAsset, assetList:assetList,
+                      heldAssets:heldAssets, gapList:gapList };
 })();
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -135,11 +187,36 @@
       }).join('') + '</div>';
 
     /* 한 줄 요약 */
+    var gaps = F.gapList();
     h += '<div class="fl-sum">'
       + (linkedN
           ? '보유 ' + c.assets + '종목 중 <b>' + linkedN + '종목</b>이 내 기록과 이어져 있습니다.'
           : '아직 기록과 이어진 자산이 없습니다. 맥락에서 <b>기록과 종목을 이어</b> 보세요.')
+      + (gaps.length ? ' 논거 없이 들고 있는 종목이 <b>' + gaps.length + '개</b> 있습니다.' : '')
       + '</div>';
+
+    /* 논거 없이 들고 있는 종목 — 이 화면에서 가장 값진 한 칸 */
+    if(c.assets){
+      if(gaps.length){
+        h += '<div class="fl-gap">'
+          + '<div class="fl-gap-h"><span class="fl-gap-t">논거 없이 들고 있는 종목</span>'
+          +   '<span class="fl-gap-n">' + gaps.length + '</span></div>'
+          + '<div class="fl-gap-d">왜 갖고 있는지 적어 두지 않은 종목입니다. '
+          +   '지금 한 줄이라도 남겨 두면, 나중에 판단이 흔들릴 때 무엇을 다시 봐야 하는지 알 수 있습니다.</div>'
+          + '<div class="fl-gap-list">' + gaps.map(function(g){
+              return '<button type="button" class="fl-gap-i" data-tk="' + esc(g.tk) + '">'
+                + '<b>' + esc(g.tk) + '</b>'
+                + (g.nm ? '<span>' + esc(g.nm) + '</span>' : '')
+                + '<i>＋ 논거 세우기</i></button>';
+            }).join('') + '</div>'
+          + '</div>';
+      } else {
+        h += '<div class="fl-gap fl-gap-ok">'
+          + '<div class="fl-gap-h"><span class="fl-gap-t">보유한 모든 종목에 논거가 있습니다</span></div>'
+          + '<div class="fl-gap-d">왜 갖고 있는지가 전부 기록으로 남아 있습니다.</div>'
+          + '</div>';
+      }
+    }
 
     /* 자산별 */
     h += '<div class="fl-sec-t">나는 왜 이걸 갖고 있는가</div>';
@@ -147,8 +224,13 @@
       h += '<div class="fl-empty">보유 종목이 없습니다.</div>';
     } else {
       h += '<div class="fl-assets">' + list.map(function(a){
+        /* 어디에 들어 있는 종목인지 — 표시용 목록인지 실제 보유 자산인지 */
+        var srcLb = (a.src && a.src.assets)
+          ? (a.shares ? '보유 ' + (Math.round(a.shares * 100) / 100) + '주' : 'ASSETS')
+          : '';
         return '<button type="button" class="fl-as' + (a.linked ? ' on' : '') + (openTk===a.tk ? ' open' : '') + '" data-tk="' + esc(a.tk) + '">'
-          + '<span class="fl-as-tk">' + esc(a.tk) + '</span>'
+          + '<span class="fl-as-tk">' + esc(a.tk)
+          +   (srcLb ? '<i class="fl-as-src">' + esc(srcLb) + '</i>' : '') + '</span>'
           + (a.nm ? '<span class="fl-as-nm">' + esc(a.nm) + '</span>' : '')
           + (a.linked
               ? '<span class="fl-as-tag">' + (a.chainLen > 1 ? a.chainLen + '칸 갈래' : '') 
@@ -172,6 +254,16 @@
         var tk = b.getAttribute('data-tk');
         openTk = (openTk === tk) ? null : tk;
         render();
+      };
+    });
+    /* 논거 없는 종목 → 종목코드가 채워진 채로 논거 세우기 창을 연다 */
+    el.querySelectorAll('.fl-gap-i').forEach(function(b){
+      b.onclick = function(){
+        var tk = b.getAttribute('data-tk');
+        if(typeof switchPage === 'function') switchPage('conviction');
+        setTimeout(function(){
+          try{ if(window.__nnConvEditor) window.__nnConvEditor(null, {asset:tk}); }catch(e){}
+        }, 300);
       };
     });
     if(openTk) drawTrace(openTk);

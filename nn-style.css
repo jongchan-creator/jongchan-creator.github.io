@@ -9290,3 +9290,47 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-k,
 html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-d{color:var(--lp-ink3)}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-v{color:#1f8a5a}
 html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-d b{color:var(--lp-ink2)}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FLOW — 논거 없이 들고 있는 종목 (2026-08-18 추가)
+   파일 맨 끝에 덧붙인다. 기존 규칙 순서를 건드리지 않기 위해서다.
+   FLOW 화면은 어두운 배경 전용이라 밝은 모드 대응은 필요 없다.
+   ══════════════════════════════════════════════════════════════════════ */
+.fl-gap{margin:-10px 0 24px;padding:15px 17px 16px;border-radius:12px;
+  background:rgba(212,103,122,.08);border:1px solid rgba(212,103,122,.26)}
+.fl-gap-h{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.fl-gap-t{font-family:'Pretendard',sans-serif;font-size:13px;font-weight:700;color:#e8899b}
+.fl-gap-n{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:#d4677a;
+  background:rgba(212,103,122,.16);border:1px solid rgba(212,103,122,.4);
+  border-radius:9px;padding:2px 8px;line-height:1.4}
+.fl-gap-d{font-family:'Pretendard',sans-serif;font-size:11.5px;font-weight:300;
+  color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:11px}
+.fl-gap-list{display:flex;flex-wrap:wrap;gap:8px}
+.fl-gap-i{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(212,103,122,.3);
+  border-radius:10px;padding:9px 12px;cursor:pointer;transition:.17s;
+  font-family:'Pretendard',sans-serif;text-align:left}
+.fl-gap-i:hover{background:rgba(212,103,122,.14);border-color:rgba(212,103,122,.6);
+  transform:translateY(-1px)}
+.fl-gap-i b{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:#f0ede6;letter-spacing:.03em}
+.fl-gap-i span{font-size:11px;font-weight:300;color:rgba(255,255,255,.5)}
+.fl-gap-i i{font-style:normal;font-size:10.5px;font-weight:600;color:#e8899b;
+  border-left:1px solid rgba(212,103,122,.3);padding-left:8px;margin-left:1px}
+.fl-gap-i:hover i{color:#ffb3c0}
+
+/* 전부 논거가 있을 때 — 조용한 확인 */
+.fl-gap.fl-gap-ok{background:rgba(92,174,148,.07);border-color:rgba(92,174,148,.24)}
+.fl-gap.fl-gap-ok .fl-gap-t{color:#7fc9ad}
+.fl-gap.fl-gap-ok .fl-gap-d{margin-bottom:0}
+
+/* 자산 카드 — 실제 보유 수량 표시 */
+.fl-as-src{font-style:normal;font-family:'Pretendard',sans-serif;font-size:9.5px;font-weight:600;
+  color:rgba(199,154,232,.85);background:rgba(160,107,212,.14);
+  border:1px solid rgba(160,107,212,.3);border-radius:6px;padding:1.5px 5px;margin-left:6px;
+  vertical-align:1px;letter-spacing:0}
+
+@media (max-width:560px){
+  .fl-gap{padding:13px 14px 14px}
+  .fl-gap-list{flex-direction:column}
+  .fl-gap-i{width:100%}
+}
