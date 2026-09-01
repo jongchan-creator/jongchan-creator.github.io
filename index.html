@@ -85,7 +85,7 @@
         <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button>
         <button class="nbtn portfolio-btn" id="nav-portfolio" onclick="switchPage('portfolio')">HOLDINGS<div class="sh"></div></button>
         <button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">CONVICTION<div class="sh"></div></button>
-        <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button>
+        <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button><button class="nbtn diary-btn" id="nav-diary" onclick="switchPage('diary')">DIARY<div class="sh"></div></button>
         <button class="nbtn flow-btn" id="nav-flow" onclick="switchPage('flow')">FLOW<div class="sh"></div></button>
       </div>
     </div>
@@ -1153,6 +1153,19 @@
       </div>
     </div>
 
+    <div class="page" id="page-diary">
+      <div class="as-page-wrap">
+        <div class="as-header">
+          <div class="as-eyebrow">DIARY</div>
+          <h1 class="as-h1">투자 일기</h1>
+          <p class="as-hsub">What I Saw Today</p>
+          <div class="cove-line dy-line" style="max-width:520px;margin-top:18px;margin-bottom:6px;"></div>
+          <p class="as-hdesc">매매가 없는 날에도 씁니다. 오늘 무엇을 봤는지 한 줄이면 됩니다.<br/>하루치는 메모지만, 1년이 모이면 내 판단이 무엇에 흔들려 왔는지가 드러납니다.</p>
+        </div>
+        <div id="dy-body" class="dy-body"></div>
+      </div>
+    </div>
+
     <div class="page" id="page-flow">
       <div class="as-page-wrap">
         <div class="as-header">
@@ -1463,7 +1476,7 @@
 
   </div>
     </div></div> </div>
-<script src="nn-core.js?v=31"></script>
+<script src="nn-core.js?v=32"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -2008,7 +2021,7 @@
     assets:   ['nn_assets_v1'],
     holdings: ['nn_hold_v2','nn_hold_order'],
     watch:    ['nn_tb_watch'],
-    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1'],
+    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1','nn_diary_v1'],
     hub:      ['nn_hub_v1','nn_refdesk_v1','nn_masters_v1']
   };
   const KEY2DOC = {};
@@ -3402,6 +3415,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=3"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=3"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=1"></script>
 </body>
 </html>

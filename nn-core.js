@@ -31,6 +31,9 @@ window.switchPage = function(name) {
   if(name === 'journal' && window.__nnJnRender){
     setTimeout(function(){ try{ window.__nnJnRender(); }catch(e){} }, 40);
   }
+  if(name === 'diary' && window.__nnDiaryRender){
+    setTimeout(function(){ try{ window.__nnDiaryRender(); }catch(e){} }, 40);
+  }
   if(name === 'conviction' && window.__nnConvRender){
     setTimeout(function(){ try{ window.__nnConvRender(); }catch(e){} }, 40);
   }
@@ -5032,6 +5035,18 @@ window.KnowledgeNotes = {
       var rs=await Promise.all(qs.map(function(u){ return fetch(u).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }); }));
       var krIdx=rs[0]||{}, q=rs[1]||{};
       var kospi=krIdx.kospi||{}, spx=(q.us||{})['^GSPC']||{}, ixic=(q.us||{})['^IXIC']||{};
+
+      /* 오늘 숫자를 밖에서도 쓸 수 있게 둔다 — 투자 일기가 그날 시장을 함께 박제한다.
+         나중에 소급해서 만들 수 없는 값이라 기록 시점에 잡아 두어야 한다. */
+      try{
+        window.__nnMarketToday = {
+          date: new Date().toISOString().slice(0,10),
+          kospi: (kospi.chg==null||isNaN(kospi.chg)) ? null : Number(kospi.chg),
+          spx:   (spx.chg==null||isNaN(spx.chg))     ? null : Number(spx.chg),
+          ixic:  (ixic.chg==null||isNaN(ixic.chg))   ? null : Number(ixic.chg),
+          at: Date.now()
+        };
+      }catch(e){}
 
       /* 관심종목 최다 변동 */
       var top=null;
