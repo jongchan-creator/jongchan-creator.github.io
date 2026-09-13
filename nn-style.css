@@ -9466,3 +9466,32 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-d b{color:var(--lp-ink2)}
   .ag-tag{margin-left:0}
   .ag-btns .db-btn{flex:1 1 100%}
 }
+
+/* ── ABOUT 안내 — 접기/펼치기 (2026-09-13) ──
+   전부 펼쳐 두면 길어서 원하는 항목만 찾기 어렵다.
+   제목만 보이게 접고, 손이 가야 하는 04 만 기본으로 열어 둔다.
+   <details>/<summary> 라 자바스크립트 없이 동작하고 키보드로도 열린다. */
+.ag-card > summary.ag-h{cursor:pointer;list-style:none;user-select:none;
+  margin-bottom:0;transition:border-color .18s}
+.ag-card > summary.ag-h::-webkit-details-marker{display:none}
+.ag-card:not([open]) > summary.ag-h{border-bottom-color:transparent;padding-bottom:0}
+.ag-card > summary.ag-h:hover .ag-t{color:#e0c389}
+.ag-card > summary.ag-h:focus-visible{outline:2px solid rgba(201,169,110,.6);
+  outline-offset:4px;border-radius:6px}
+.ag-chev{margin-left:auto;width:9px;height:9px;flex:none;align-self:center;
+  border-right:1.6px solid rgba(201,169,110,.65);border-bottom:1.6px solid rgba(201,169,110,.65);
+  transform:rotate(45deg) translate(-2px,-2px);transition:transform .22s ease}
+.ag-card[open] .ag-chev{transform:rotate(-135deg) translate(-2px,-2px)}
+.ag-card[open] > summary.ag-h{margin-bottom:16px}
+.ag-body{animation:agOpen .24s ease}
+@keyframes agOpen{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.ag-card:not([open]){padding-bottom:22px}
+/* 접혀 있어도 '해야 할 일' 카드는 눈에 띄게 */
+.ag-card-do:not([open]) > summary.ag-h .ag-t::after{content:'— 눌러서 펼치기';
+  font-size:11px;font-weight:400;color:rgba(201,169,110,.6);margin-left:9px}
+@media (prefers-reduced-motion: reduce){
+  .ag-chev,.ag-body{transition:none!important;animation:none!important}
+}
+@media (max-width:760px){
+  .ag-card-do:not([open]) > summary.ag-h .ag-t::after{display:none}
+}

@@ -36,6 +36,20 @@
     try{ var o = JSON.parse(localStorage.getItem(KEY)); return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {}; }
     catch(e){ return {}; }
   }
+
+  /* 예전 기록에 남아 있는 '샀다/팔았다'를 '매매했다'로 옮긴다.
+     한 번만 돌고, 옮길 게 없으면 아무것도 쓰지 않는다. */
+  (function migrate(){
+    try{
+      if(localStorage.getItem('nn_diary_mig_v2') === '1') return;
+      var o = load(), n = 0;
+      Object.keys(o).forEach(function(d){
+        if(o[d] && (o[d].action === 'bought' || o[d].action === 'sold')){ o[d].action = 'traded'; n++; }
+      });
+      if(n) localStorage.setItem(KEY, JSON.stringify(o));
+      localStorage.setItem('nn_diary_mig_v2', '1');
+    }catch(e){}
+  })();
   function save(o){
     try{ localStorage.setItem(KEY, JSON.stringify(o)); return true; }catch(e){ return false; }
   }
@@ -139,11 +153,13 @@
     { k:'some',   lb:'조금',  c:'#e0a94a' },
     { k:'strong', lb:'많이',  c:'#d4677a' }
   ];
+  /* ⚠ 예전에는 '샀다/팔았다'가 있었는데, 그건 JOURNAL 이 하는 일이라 뺐다.
+     둘 다 매매를 받으면 "오늘 샀으면 어디에 쓰지?"가 생긴다.
+     여기서는 매매했다는 사실만 남기고, 내용은 일지로 넘긴다. */
   var ACTION = [
-    { k:'nothing', lb:'아무것도' },
+    { k:'nothing', lb:'아무것도 안 함' },
     { k:'held',    lb:'참았다' },
-    { k:'bought',  lb:'샀다' },
-    { k:'sold',    lb:'팔았다' }
+    { k:'traded',  lb:'매매했다' }
   ];
   function impulseOf(k){ for(var i=0;i<IMPULSE.length;i++) if(IMPULSE[i].k===k) return IMPULSE[i]; return null; }
   function actionOf(k){ for(var i=0;i<ACTION.length;i++) if(ACTION[i].k===k) return ACTION[i]; return null; }
@@ -230,6 +246,15 @@
       if(im) h += '<span class="dy-chip" style="color:' + im.c + ';border-color:' + im.c + '55">팔고 싶었다 · ' + im.lb + '</span>';
       if(ac) h += '<span class="dy-chip">' + esc(ac.lb) + '</span>';
       h += '</div>';
+    }
+    /* 매매한 날인데 일지가 없으면 건너갈 길을 둔다 —
+       "무엇을 왜 샀나"는 일지 몫이다 */
+    if(rec.action === 'traded'){
+      var jn = 0;
+      try{ jn = window.__nnJournal ? window.__nnJournal.all().filter(function(x){ return x.date === rec.date; }).length : 0; }catch(e){}
+      h += jn
+        ? '<button type="button" class="dy-jn dy-jn-ok" data-d="' + esc(rec.date) + '">이날 매매 기록 ' + jn + '건 보기 →</button>'
+        : '<button type="button" class="dy-jn" data-d="' + esc(rec.date) + '">＋ 이날 매매를 일지에 남기기</button>';
     }
     if(rec.conv && rec.conv.length){
       h += '<div class="dy-blk"><div class="dy-blk-t">이날 생각이 바뀐 논거</div>'
@@ -355,7 +380,7 @@
         box.innerHTML = dayHTML(openDate);
         var eb = box.querySelector('#dyDayEdit');
         if(eb) eb.onclick = function(){ if(window.__nnDiaryEditor) window.__nnDiaryEditor(openDate); };
-        bindCv(box);
+        bindCv(box); bindJn(box);
       }
     }
   }
@@ -394,6 +419,19 @@
       };
     });
     bindCv(el);
+    bindJn(el);
+  }
+
+  function bindJn(el){
+    el.querySelectorAll('.dy-jn').forEach(function(b){
+      b.onclick = function(ev){
+        ev.stopPropagation();
+        var d = b.getAttribute('data-d');
+        var hasLog = b.classList.contains('dy-jn-ok');
+        if(window.__nnJnGoto) window.__nnJnGoto(hasLog ? null : d);
+        else if(typeof switchPage === 'function') switchPage('journal');
+      };
+    });
   }
 
   function bindCv(el){
@@ -446,11 +484,13 @@
     { k:'some',   lb:'조금',  c:'#e0a94a' },
     { k:'strong', lb:'많이',  c:'#d4677a' }
   ];
+  /* ⚠ 예전에는 '샀다/팔았다'가 있었는데, 그건 JOURNAL 이 하는 일이라 뺐다.
+     둘 다 매매를 받으면 "오늘 샀으면 어디에 쓰지?"가 생긴다.
+     여기서는 매매했다는 사실만 남기고, 내용은 일지로 넘긴다. */
   var ACTION = [
-    { k:'nothing', lb:'아무것도' },
+    { k:'nothing', lb:'아무것도 안 함' },
     { k:'held',    lb:'참았다' },
-    { k:'bought',  lb:'샀다' },
-    { k:'sold',    lb:'팔았다' }
+    { k:'traded',  lb:'매매했다' }
   ];
 
   function convOptions(){

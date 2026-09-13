@@ -251,7 +251,7 @@
   function lines(v){ return String(v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); }
   function host(){ return document.getElementById('jn-body'); }
 
-  var view = 'log';   /* log | review */
+  var view = 'diary';   /* diary | log | review — 일기가 기본 (매일 쓰는 쪽) */
   var curQ = null;
 
   function thesisTitle(id){
@@ -263,16 +263,34 @@
   }
 
   /* ── 목록 ── */
+  /* 일기 화면은 nn-diary.js 가 그린다.
+     저장소는 따로 두되(성격이 다르다) 탭만 한 자리에 모은다. */
+  function diaryBox(){ return document.getElementById('dy-body'); }
+  function showDiary(on){
+    var d = diaryBox();
+    if(d) d.style.display = on ? '' : 'none';
+  }
+
   function render(){
     var el = host(); if(!el) return;
     var list = J.all();
     var due = J.dueList();
 
     var h = '<div class="jn-tabs">'
-      + '<button type="button" class="jn-tab' + (view==='log'?' on':'') + '" data-v="log">기록</button>'
+      + '<button type="button" class="jn-tab' + (view==='diary'?' on':'') + '" data-v="diary">일기</button>'
+      + '<button type="button" class="jn-tab' + (view==='log'?' on':'') + '" data-v="log">매매 기록</button>'
       + '<button type="button" class="jn-tab' + (view==='review'?' on':'') + '" data-v="review">분기 복기</button>'
-      + '<button type="button" class="jn-new" id="jnNew">＋ 기록하기</button>'
+      + (view==='log' ? '<button type="button" class="jn-new" id="jnNew">＋ 기록하기</button>' : '')
       + '</div>';
+
+    if(view === 'diary'){
+      el.innerHTML = h;
+      bindTabs(el);
+      showDiary(true);
+      try{ if(window.__nnDiaryRender) window.__nnDiaryRender(); }catch(e){}
+      return;
+    }
+    showDiary(false);
 
     if(view === 'review'){ el.innerHTML = h + reviewHTML(); bindReview(el); return; }
 
@@ -333,6 +351,7 @@
   function openDetail(id){
     var x = J.byId(id); if(!x) return;
     var el = host(); if(!el) return;
+    showDiary(false);
     var a = J.actionOf(x.action);
     var th = thesisTitle(x.thesisId);
     var sw = x.sellWhy ? (J.SELL_WHY.filter(function(s){ return s.k===x.sellWhy; })[0]||{}).lb : '';
@@ -478,6 +497,18 @@
 
   window.__nnJnRender = render;
   window.__nnJnOpen = openDetail;
+  /* date 를 주면 그 날짜로 새 기록 창까지 연다. 없으면 매매 기록 목록만 */
+  window.__nnJnGoto = function(date){
+    view = 'log';
+    if(typeof switchPage === 'function') switchPage('journal');
+    setTimeout(function(){
+      try{
+        render();
+        if(date && window.__nnJnEditor) window.__nnJnEditor(null, { date:date });
+      }catch(e){}
+    }, 240);
+  };
+  window.__nnJnSetView = function(v){ view = v || 'diary'; render(); };
 })();
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -504,8 +535,10 @@
     return out;
   }
 
-  function openEditor(id){
+  /* seed 는 새로 쓸 때만 쓰는 초기값. 일기에서 날짜를 넘겨준다. */
+  function openEditor(id, seed){
     var x = id ? J.byId(id) : null;
+    seed = seed || {};
     var prev = document.getElementById('jnEd'); if(prev) prev.remove();
     var ov = document.createElement('div');
     ov.id = 'jnEd'; ov.className = 'hub-modal-ov';
@@ -516,7 +549,7 @@
       +   '<b>그때의 생각</b>을 남기세요. 1년 뒤 가장 값진 부분이 됩니다.</div>'
       + '<div class="jn-form">'
       +   '<div class="jn-row3">'
-      +     '<div><label class="hm-lb">날짜</label><input class="hm-in" id="jnD" type="date" value="' + esc(x ? x.date : new Date().toISOString().slice(0,10)) + '"></div>'
+      +     '<div><label class="hm-lb">날짜</label><input class="hm-in" id="jnD" type="date" value="' + esc(x ? x.date : (seed.date || new Date().toISOString().slice(0,10))) + '"></div>'
       +     '<div><label class="hm-lb">종목</label><input class="hm-in" id="jnA" maxlength="12" placeholder="VOO" value="' + esc(x ? x.asset : '') + '"></div>'
       +     '<div><label class="hm-lb">복기 예정</label><input class="hm-in" id="jnR" type="date" value="' + esc(x ? x.reviewDate : '') + '"></div>'
       +   '</div>'

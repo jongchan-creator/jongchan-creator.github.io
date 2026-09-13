@@ -13,6 +13,8 @@
 
 /* ══ PAGE SWITCH ══ */
 window.switchPage = function(name) {
+  var __wantDiary = (name === 'diary');
+  if(__wantDiary) name = 'journal';
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); p.classList.remove('pg-in'); });
   document.querySelectorAll('.nbtn').forEach(function(b){ b.classList.remove('active'); });
   var pg = document.getElementById('page-'+name);
@@ -31,8 +33,9 @@ window.switchPage = function(name) {
   if(name === 'journal' && window.__nnJnRender){
     setTimeout(function(){ try{ window.__nnJnRender(); }catch(e){} }, 40);
   }
-  if(name === 'diary' && window.__nnDiaryRender){
-    setTimeout(function(){ try{ window.__nnDiaryRender(); }catch(e){} }, 40);
+  /* DIARY 는 JOURNAL 탭 안으로 들어갔다. 예전 이름으로 불러도 그리로 보낸다. */
+  if(__wantDiary){
+    if(window.__nnJnSetView){ setTimeout(function(){ try{ window.__nnJnSetView('diary'); }catch(e){} }, 40); }
   }
   if(name === 'conviction' && window.__nnConvRender){
     setTimeout(function(){ try{ window.__nnConvRender(); }catch(e){} }, 40);

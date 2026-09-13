@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=47" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=47"/>
+<link rel="preload" href="nn-style.css?v=48" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=48"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -85,7 +85,7 @@
         <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button>
         <button class="nbtn portfolio-btn" id="nav-portfolio" onclick="switchPage('portfolio')">HOLDINGS<div class="sh"></div></button>
         <button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">CONVICTION<div class="sh"></div></button>
-        <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button><button class="nbtn diary-btn" id="nav-diary" onclick="switchPage('diary')">DIARY<div class="sh"></div></button>
+        <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button>
         <button class="nbtn flow-btn" id="nav-flow" onclick="switchPage('flow')">FLOW<div class="sh"></div></button>
       </div>
     </div>
@@ -1144,25 +1144,13 @@
       <div class="as-page-wrap">
         <div class="as-header">
           <div class="as-eyebrow">JOURNAL</div>
-          <h1 class="as-h1">투자 일지</h1>
-          <p class="as-hsub">Decision · Reason · Review</p>
+          <h1 class="as-h1">기록</h1>
+          <p class="as-hsub">Daily · Decision · Review</p>
           <div class="cove-line jn-line" style="max-width:520px;margin-top:18px;margin-bottom:6px;"></div>
-          <p class="as-hdesc">사고팔 때 “왜 그렇게 했는지”를 남깁니다.<br/>가격은 증권사에 남지만, 그때의 생각은 여기에만 남습니다.</p>
+          <p class="as-hdesc"><b>일기</b>는 매일, <b>매매 기록</b>은 돈이 움직였을 때만 씁니다.<br/>가격은 증권사에 남지만, 그때의 생각은 여기에만 남습니다.</p>
         </div>
         <div id="jn-body" class="jn-body"></div>
-      </div>
-    </div>
-
-    <div class="page" id="page-diary">
-      <div class="as-page-wrap">
-        <div class="as-header">
-          <div class="as-eyebrow">DIARY</div>
-          <h1 class="as-h1">투자 일기</h1>
-          <p class="as-hsub">What I Saw Today</p>
-          <div class="cove-line dy-line" style="max-width:520px;margin-top:18px;margin-bottom:6px;"></div>
-          <p class="as-hdesc">매매가 없는 날에도 씁니다. 오늘 무엇을 봤는지 한 줄이면 됩니다.<br/>하루치는 메모지만, 1년이 모이면 내 판단이 무엇에 흔들려 왔는지가 드러납니다.</p>
-        </div>
-        <div id="dy-body" class="dy-body"></div>
+        <div id="dy-body" class="dy-body" style="display:none"></div>
       </div>
     </div>
 
@@ -1425,8 +1413,9 @@
       </div>
 
       <!-- ════════ 01 ════════ -->
-      <section class="ag-card">
-        <div class="ag-h"><span class="ag-n">01</span><h3 class="ag-t">내 기록은 어디에 있나</h3></div>
+      <details class="ag-card">
+        <summary class="ag-h"><span class="ag-n">01</span><h3 class="ag-t">내 기록은 어디에 있나</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
 
         <div class="ag-split">
           <div class="ag-sp">
@@ -1454,11 +1443,13 @@
           <a href="https://github.com/jongchan-creator/jongchan-creator.github.io" target="_blank" rel="noopener" class="ag-link ag-l-white">⌨ GitHub 저장소 (코드) ↗</a>
           <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" class="ag-link ag-l-blue">🛡 보안 규칙 문서 ↗</a>
         </div>
-      </section>
+      </div>
+      </details>
 
       <!-- ════════ 02 ════════ -->
-      <section class="ag-card">
-        <div class="ag-h"><span class="ag-n">02</span><h3 class="ag-t">시작하기</h3></div>
+      <details class="ag-card">
+        <summary class="ag-h"><span class="ag-n">02</span><h3 class="ag-t">시작하기</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
         <div class="ag-steps">
           <div class="ag-step"><span class="ag-s-n">1</span><div>
             <b>로그인합니다.</b> 우측 상단 <b class="ag-au">LOGIN</b> → 구글 계정 선택.
@@ -1475,11 +1466,13 @@
             <b>로그아웃은 계정 이름 버튼을 다시 누릅니다.</b> 이 기기의 기록은 남고 자동 저장만 꺼집니다.
           </div></div>
         </div>
-      </section>
+      </div>
+      </details>
 
       <!-- ════════ 03 ════════ -->
-      <section class="ag-card">
-        <div class="ag-h"><span class="ag-n">03</span><h3 class="ag-t">기록이 지켜지는 방식</h3></div>
+      <details class="ag-card">
+        <summary class="ag-h"><span class="ag-n">03</span><h3 class="ag-t">기록이 지켜지는 방식</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
         <p class="ag-lead">한 겹으로는 부족해서 <b>세 겹</b>으로 둡니다. 앞의 두 겹은 알아서 돌아가고, 마지막 한 겹만 손이 갑니다.</p>
 
         <div class="ag-layers">
@@ -1516,11 +1509,13 @@
           클라우드는 <b>백업이 아니라 거울</b>입니다. 지금 상태를 비출 뿐, 이전 버전을 보관하지 않습니다.
           잘못된 내용이 올라가면 그것이 전부가 됩니다. 그래서 2겹과 3겹이 따로 필요합니다.
         </div>
-      </section>
+      </div>
+      </details>
 
       <!-- ════════ 04 ════════ -->
-      <section class="ag-card ag-card-do">
-        <div class="ag-h"><span class="ag-n">04</span><h3 class="ag-t">한 달에 한 번 해주실 것</h3></div>
+      <details class="ag-card ag-card-do" open>
+        <summary class="ag-h"><span class="ag-n">04</span><h3 class="ag-t">한 달에 한 번 해주실 것</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
         <p class="ag-lead">아래 버튼 한 번. <b>이 사이트에서 사람이 해야 하는 일은 이것 하나뿐입니다.</b></p>
 
         <div class="ag-do">
@@ -1538,11 +1533,13 @@
           </button>
         </div>
         <div class="ag-btns-c">왼쪽은 내려받기, 오른쪽은 그 파일로 되돌리기입니다. 처음 쓸 때 잠금 번호(PIN)를 한 번 정합니다.</div>
-      </section>
+      </div>
+      </details>
 
       <!-- ════════ 05 ════════ -->
-      <section class="ag-card">
-        <div class="ag-h"><span class="ag-n">05</span><h3 class="ag-t">문제가 생겼을 때</h3></div>
+      <details class="ag-card">
+        <summary class="ag-h"><span class="ag-n">05</span><h3 class="ag-t">문제가 생겼을 때</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
         <p class="ag-lead">기록이 비어 보이면 <b>새로 쓰지 마시고</b> 먼저 아래를 확인하세요. 새로 쓰면 되돌릴 여지가 줄어듭니다.</p>
         <p class="ag-lead ag-lead-2"><b>F12</b> → <b>Console</b> 탭에 아래를 붙여넣고 Enter.</p>
 
@@ -1558,21 +1555,24 @@
           기록이 이상하다고 느끼면 <b>다른 기기에서 사이트를 열지 마세요.</b>
           그 기기에 멀쩡한 기록이 남아 있을 수 있는데, 여는 순간 동기화가 일어나 상황이 복잡해집니다.
         </div>
-      </section>
+      </div>
+      </details>
 
       <!-- ════════ 알아두면 좋은 점 ════════ -->
-      <section class="ag-card ag-card-tip">
-        <div class="ag-tip-k">💡 알아두면 좋은 점</div>
+      <details class="ag-card ag-card-tip">
+        <summary class="ag-h"><span class="ag-n">＋</span><h3 class="ag-t">💡 알아두면 좋은 점</h3><span class="ag-chev" aria-hidden="true"></span></summary>
+        <div class="ag-body">
         <ul class="ag-list">
           <li>무료 요금제 기준 <b>하루 읽기 5만 회 · 쓰기 2만 회 · 저장 공간 1GiB</b>. 개인 아카이브로는 차고 넘칩니다.</li>
           <li>항목 하나당 한도가 1MiB라, 책 표지 같은 이미지는 <b>파일 업로드보다 이미지 주소(URL)</b>로 넣는 편이 안전합니다.</li>
           <li>브라우저 한 곳에 담을 수 있는 양에도 한계가 있어, 용량이 차면 큰 기록은 자동으로 다른 칸으로 옮겨 둡니다.</li>
         </ul>
-      </section>
+      </div>
+      </details>
 
     </div>
     </div></div> </div>
-<script src="nn-core.js?v=32"></script>
+<script src="nn-core.js?v=33"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -3546,6 +3546,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=3"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=1"></script><script src="nn-backup.js?v=1"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script>
 </body>
 </html>
