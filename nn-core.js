@@ -6382,11 +6382,10 @@ window.__nnGoWatchlist = function(){
 /* ══════════ 사용자 탭 — 추가 · 삭제 · 기본 탭 숨기기 ══════════ */
 (function(){
   var TABS_KEY='nn_custom_tabs_v1', HIDE_KEY='nn_hidden_tabs_v1';
+  /* 기본 탭 — BOOKS·LEXICON·MEDIA·ECONOMICS 는 NOTES 한 탭으로 합쳐졌다.
+     숨기기는 네비 버튼 단위라 여기도 합친 이름으로 둔다. */
   var BUILTIN=[
-    {k:'books',     lb:'BOOKS'},
-    {k:'lexicon',   lb:'LEXICON'},
-    {k:'media',     lb:'MEDIA'},
-    {k:'economics', lb:'ECONOMICS'},
+    {k:'notes',     lb:'NOTES'},
     {k:'thesis',    lb:'THESIS'}
   ];
   var PALETTE=[

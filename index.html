@@ -65,11 +65,11 @@
     <div class="nav-group ng-knowledge">
       <button class="nbtn nav-trigger">KNOWLEDGE<span class="ng-caret">▾</span></button>
       <div class="nav-dropdown">
-        <button class="nbtn books-btn" id="nav-books" onclick="switchPage('books')">BOOKS<div class="sh"></div></button>
-        <button class="nbtn lexicon-btn" id="nav-lexicon" onclick="switchPage('lexicon')">LEXICON<div class="sh"></div></button>
-        <button class="nbtn media-btn" id="nav-media" onclick="switchPage('media')">MEDIA<div class="sh"></div></button>
-        <button class="nbtn econ-btn" id="nav-economics" onclick="switchPage('economics')">ECONOMICS<div class="sh"></div></button>
-        <button class="nbtn thesis-btn" id="nav-thesis" onclick="switchPage('thesis')">THESIS<div class="sh"></div></button>
+        
+        
+        
+        
+        <button class="nbtn notes-btn" id="nav-notes" onclick="switchPage('notes')">NOTES<div class="sh"></div></button><button class="nbtn thesis-btn" id="nav-thesis" onclick="switchPage('thesis')">THESIS<div class="sh"></div></button>
       </div>
     </div>
     <div class="nav-group ng-markets">
@@ -457,27 +457,15 @@
 </div><!-- /page-macro -->
 
 <!-- Simple placeholder pages -->
-<div class="page" id="page-lexicon">
-  <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
-    <div style="font-size:9px;letter-spacing:.26em;color:#aeb1b4;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(174,177,180,.6),0 0 22px rgba(174,177,180,.25)">LEXICON</div>
-    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(174,177,180,.3)">어휘 및 개념 사전</h1>
-    <p style="font-size:11px;letter-spacing:.16em;color:rgba(174,177,180,.5);font-weight:300">Advanced Terminology &amp; Concept Archive</p>
-    <div class="cove-line cv-gray" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
-    <p class="hold-desc">독서, 매크로 및 인텔리전스 리서치 도중 새롭게 습득한 핵심 어휘를 저장합니다.<br/>도메인별로 분류된 패널을 통해 지식의 밀도를 한 차원 높여갑니다.</p>
-    <div id="lexQuizHost"></div>
-    
-    <div class="editor-layout books-board" id="lexicon-editor-layout">
-      <div class="editor-sidebar" id="lexor-layout-box">
-        <div id="lexicon-sidebar-list" class="editor-sidebar-list"></div>
+<div class="page" id="page-notes">
+  <div class="kn-wrap">
+      <div class="kn-tabs" id="knTabs">
+        <button type="button" class="kn-tab" data-k="books">책<i>BOOKS</i></button>
+        <button type="button" class="kn-tab" data-k="lexicon">용어<i>LEXICON</i></button>
+        <button type="button" class="kn-tab" data-k="media">미디어<i>MEDIA</i></button>
+        <button type="button" class="kn-tab" data-k="economics">경제<i>ECONOMICS</i></button>
       </div>
-      <div class="editor-main" id="lexicon-editor-main">
-        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('lexicon')">← 목록으로</button>
-        <div class="editor-placeholder">좌측 패널에서 카드를 추가하거나<br/>정리해 둔 단어를 선택하여 실시간 편집 및 지식을 누적하세요.</div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="page" id="page-books">
+<div class="kn-pane" id="page-books">
     <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
     <div style="font-size:9px;letter-spacing:.26em;color:#c9a96e;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(201,169,110,.6),0 0 22px rgba(201,169,110,.25)">BOOKS</div>
     <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(201,169,110,.3)">독서 기록</h1>
@@ -500,6 +488,74 @@
   </div>
   
 </div>
+<div class="kn-pane" id="page-lexicon">
+  <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
+    <div style="font-size:9px;letter-spacing:.26em;color:#aeb1b4;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(174,177,180,.6),0 0 22px rgba(174,177,180,.25)">LEXICON</div>
+    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(174,177,180,.3)">어휘 및 개념 사전</h1>
+    <p style="font-size:11px;letter-spacing:.16em;color:rgba(174,177,180,.5);font-weight:300">Advanced Terminology &amp; Concept Archive</p>
+    <div class="cove-line cv-gray" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
+    <p class="hold-desc">독서, 매크로 및 인텔리전스 리서치 도중 새롭게 습득한 핵심 어휘를 저장합니다.<br/>도메인별로 분류된 패널을 통해 지식의 밀도를 한 차원 높여갑니다.</p>
+    <div id="lexQuizHost"></div>
+    
+    <div class="editor-layout books-board" id="lexicon-editor-layout">
+      <div class="editor-sidebar" id="lexor-layout-box">
+        <div id="lexicon-sidebar-list" class="editor-sidebar-list"></div>
+      </div>
+      <div class="editor-main" id="lexicon-editor-main">
+        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('lexicon')">← 목록으로</button>
+        <div class="editor-placeholder">좌측 패널에서 카드를 추가하거나<br/>정리해 둔 단어를 선택하여 실시간 편집 및 지식을 누적하세요.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="kn-pane" id="page-media">
+    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="font-size:9px;letter-spacing:.26em;color:#8ab4d4;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(138,180,212,.6),0 0 22px rgba(138,180,212,.25)">MEDIA</div>
+    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(138,180,212,.3)">미디어 인사이트</h1>
+    <p style="font-size:11px;letter-spacing:.16em;color:rgba(138,180,212,.6);font-weight:300">Documentary &amp; Video Log</p>
+    <div class="cove-line cv-blue" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
+    <p class="hold-desc">시대를 읽는 인사이트와 영감을 주는 미디어 콘텐츠를 큐레이션합니다.<br/>영상 링크와 함께 핵심 메시지를 기록하여 나만의 시청각 라이브러리를 구축하세요.</p>
+    
+    <div class="editor-layout" id="media-editor-layout">
+      <div class="editor-sidebar">
+        <button class="add-page-btn" onclick="KnowledgeNotes.create('media','grp_media_main')">+ 새 영상·미디어 추가</button>
+        <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('media')">+ 새 그룹(토글)</button>
+        <div id="media-sidebar-list" class="editor-sidebar-list"></div>
+      </div>
+      <div class="editor-main" id="media-editor-main">
+        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('media')">← 목록으로</button>
+        <div class="editor-placeholder">좌측에서 새 페이지를 생성하거나<br/>목록에서 노트를 선택하여 미디어 기록을 남기세요.</div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+<div class="kn-pane" id="page-economics">
+    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="font-size:9px;letter-spacing:.26em;color:#7a9e7e;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(122,158,126,.6),0 0 22px rgba(122,158,126,.25)">ECONOMICS</div>
+    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(122,158,126,.3)">경제 지식</h1>
+    <p style="font-size:11px;letter-spacing:.16em;color:rgba(122,158,126,.6);font-weight:300">Economic Study Platform</p>
+    <div class="cove-line cv-green" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
+    <p class="hold-desc">경제 흐름과 핵심 매크로 지식을 아카이빙하는 워크스페이스입니다.<br/>거시 경제부터 시장의 미세한 메커니즘까지, 투자의 기준이 되는 지식을 기록합니다.</p>
+    
+    <div class="editor-layout" id="economics-editor-layout">
+      <div class="editor-sidebar">
+        <button class="add-page-btn" onclick="KnowledgeNotes.create('economics','grp_econ_main')">+ 새 페이지 추가</button>
+        <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('economics')">+ 새 그룹(토글)</button>
+        <div id="economics-sidebar-list" class="editor-sidebar-list"></div>
+      </div>
+      <div class="editor-main" id="economics-editor-main">
+        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('economics')">← 목록으로</button>
+        <div class="editor-placeholder">좌측에서 새 페이지를 생성하거나<br/>목록에서 노트를 선택하여 경제 분석을 기록하세요.</div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+  </div>
+</div>
+
+
 
 <div class="page" id="page-thesis">
     <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
@@ -527,51 +583,9 @@
   </div>
 </div>
 
-<div class="page" id="page-economics">
-    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
-    <div style="font-size:9px;letter-spacing:.26em;color:#7a9e7e;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(122,158,126,.6),0 0 22px rgba(122,158,126,.25)">ECONOMICS</div>
-    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(122,158,126,.3)">경제 지식</h1>
-    <p style="font-size:11px;letter-spacing:.16em;color:rgba(122,158,126,.6);font-weight:300">Economic Study Platform</p>
-    <div class="cove-line cv-green" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
-    <p class="hold-desc">경제 흐름과 핵심 매크로 지식을 아카이빙하는 워크스페이스입니다.<br/>거시 경제부터 시장의 미세한 메커니즘까지, 투자의 기준이 되는 지식을 기록합니다.</p>
-    
-    <div class="editor-layout" id="economics-editor-layout">
-      <div class="editor-sidebar">
-        <button class="add-page-btn" onclick="KnowledgeNotes.create('economics','grp_econ_main')">+ 새 페이지 추가</button>
-        <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('economics')">+ 새 그룹(토글)</button>
-        <div id="economics-sidebar-list" class="editor-sidebar-list"></div>
-      </div>
-      <div class="editor-main" id="economics-editor-main">
-        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('economics')">← 목록으로</button>
-        <div class="editor-placeholder">좌측에서 새 페이지를 생성하거나<br/>목록에서 노트를 선택하여 경제 분석을 기록하세요.</div>
-      </div>
-    </div>
-  </div>
-  
-</div>
 
-<div class="page" id="page-media">
-    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
-    <div style="font-size:9px;letter-spacing:.26em;color:#8ab4d4;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(138,180,212,.6),0 0 22px rgba(138,180,212,.25)">MEDIA</div>
-    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(138,180,212,.3)">미디어 인사이트</h1>
-    <p style="font-size:11px;letter-spacing:.16em;color:rgba(138,180,212,.6);font-weight:300">Documentary &amp; Video Log</p>
-    <div class="cove-line cv-blue" style="max-width:520px;margin-top:18px;margin-bottom:8px;"></div>
-    <p class="hold-desc">시대를 읽는 인사이트와 영감을 주는 미디어 콘텐츠를 큐레이션합니다.<br/>영상 링크와 함께 핵심 메시지를 기록하여 나만의 시청각 라이브러리를 구축하세요.</p>
-    
-    <div class="editor-layout" id="media-editor-layout">
-      <div class="editor-sidebar">
-        <button class="add-page-btn" onclick="KnowledgeNotes.create('media','grp_media_main')">+ 새 영상·미디어 추가</button>
-        <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('media')">+ 새 그룹(토글)</button>
-        <div id="media-sidebar-list" class="editor-sidebar-list"></div>
-      </div>
-      <div class="editor-main" id="media-editor-main">
-        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('media')">← 목록으로</button>
-        <div class="editor-placeholder">좌측에서 새 페이지를 생성하거나<br/>목록에서 노트를 선택하여 미디어 기록을 남기세요.</div>
-      </div>
-    </div>
-  </div>
-  
-</div>
+
+
 
 <div class="page" id="page-research">
     <div class="macro-page research-page">
@@ -1572,7 +1586,7 @@
 
     </div>
     </div></div> </div>
-<script src="nn-core.js?v=33"></script>
+<script src="nn-core.js?v=34"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -3546,6 +3560,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script><script src="nn-notes.js?v=2"></script>
 </body>
 </html>
