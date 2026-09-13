@@ -9334,3 +9334,135 @@ html.nn-lightsurface:not(.nn-bgscroll-dark) .nnsb-m-d b{color:var(--lp-ink2)}
   .fl-gap-list{flex-direction:column}
   .fl-gap-i{width:100%}
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   ABOUT — 안내(GUIDE) 영역 재구성 (2026-09-13)
+
+   원래 이 자리는 인라인 style 속성 수백 개로 짜여 있어 손대기 어려웠다.
+   같은 값이 50번 넘게 되풀이됐고, 한 곳만 고쳐도 나머지가 어긋났다.
+   클래스로 옮기고 1열 흐름으로 바꿔 위에서 아래로 읽히게 한다.
+   파일 맨 끝에 덧붙인다 — 기존 규칙 순서를 건드리지 않기 위해서다.
+   어바웃 화면은 어두운 배경 전용이라 밝은 모드 대응은 필요 없다.
+   ══════════════════════════════════════════════════════════════════════ */
+.ag-guide{max-width:820px;margin:52px auto 0;display:flex;flex-direction:column;gap:20px;
+  font-family:'Pretendard',sans-serif}
+
+/* 목차 */
+.ag-toc{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  padding:15px 20px;border-radius:12px;
+  background:rgba(201,169,110,.06);border:1px solid rgba(201,169,110,.2)}
+.ag-toc-k{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:.22em;
+  color:rgba(201,169,110,.85);flex:none}
+.ag-toc ol{margin:0;padding:0;list-style:none;display:flex;gap:18px;flex-wrap:wrap;counter-reset:agt}
+.ag-toc li{counter-increment:agt;font-size:12px;color:rgba(255,255,255,.5)}
+.ag-toc li::before{content:counter(agt,decimal-leading-zero);margin-right:6px;
+  font-family:'Orbitron',sans-serif;font-size:9.5px;color:rgba(201,169,110,.6)}
+
+/* 카드 */
+.ag-card{background:rgba(7,7,9,.66);border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;padding:28px 32px 30px;
+  box-shadow:0 24px 70px -34px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.05)}
+.ag-h{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;
+  padding-bottom:13px;border-bottom:1px solid rgba(201,169,110,.18)}
+.ag-n{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;
+  color:rgba(201,169,110,.7);flex:none}
+.ag-t{font-family:'Pretendard',sans-serif;font-size:16.5px;font-weight:700;
+  color:#f0ede6;margin:0;letter-spacing:-.01em}
+.ag-lead{font-size:13px;font-weight:300;color:rgba(255,255,255,.62);line-height:1.9;margin:0 0 16px}
+.ag-lead-2{margin-top:-8px}
+.ag-lead b,.ag-list b,.ag-steps b,.ag-ly li b,.ag-do b{color:rgba(240,237,230,.9);font-weight:600}
+.ag-au{color:#e0c389!important;font-weight:700!important}
+
+/* 목록 */
+.ag-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px}
+.ag-list li{font-size:12.5px;font-weight:300;color:rgba(255,255,255,.58);line-height:1.85}
+
+/* 코드 vs 데이터 */
+.ag-split{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;
+  margin:0 0 18px}
+.ag-sp{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:14px 16px}
+.ag-sp-k{font-size:10px;letter-spacing:.12em;color:rgba(255,255,255,.35);
+  font-family:'Bebas Neue',sans-serif;margin-bottom:3px}
+.ag-sp-v{font-family:'Orbitron',sans-serif;font-size:12.5px;font-weight:700;color:#e0c389;margin-bottom:7px}
+.ag-sp p{margin:0;font-size:11.5px;font-weight:300;color:rgba(255,255,255,.45);line-height:1.7}
+.ag-sp-x{font-size:10px;color:rgba(255,255,255,.28);white-space:nowrap;letter-spacing:.04em}
+
+/* 링크 */
+.ag-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.ag-link{display:block;font-size:11.5px;font-weight:600;text-decoration:none;
+  border-radius:9px;padding:9px 14px;transition:.18s;font-family:'Pretendard',sans-serif}
+.ag-link:hover{transform:translateY(-1px)}
+.ag-l-gold{color:#e0c389;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.35)}
+.ag-l-gold:hover{background:rgba(201,169,110,.2)}
+.ag-l-orange{color:#ffca7a;background:rgba(255,170,60,.09);border:1px solid rgba(255,170,60,.35)}
+.ag-l-orange:hover{background:rgba(255,170,60,.18)}
+.ag-l-white{color:#e6e6e6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.26)}
+.ag-l-white:hover{background:rgba(255,255,255,.12)}
+.ag-l-blue{color:#9ed7ff;background:rgba(125,200,255,.08);border:1px solid rgba(125,200,255,.33)}
+.ag-l-blue:hover{background:rgba(125,200,255,.16)}
+
+/* 단계 */
+.ag-steps,.ag-do{display:flex;flex-direction:column;gap:13px}
+.ag-step,.ag-do-1{display:flex;gap:13px;font-size:12.5px;font-weight:300;
+  color:rgba(255,255,255,.6);line-height:1.85}
+.ag-s-n{color:#0a0a0e;background:rgba(201,169,110,.9);font-weight:700;font-size:11px;
+  width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:2px;font-family:'Pretendard',sans-serif}
+
+/* 3겹 */
+.ag-layers{display:flex;flex-direction:column;gap:11px}
+.ag-ly{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:15px 17px 16px}
+.ag-ly-you{background:rgba(201,169,110,.08);border-color:rgba(201,169,110,.32)}
+.ag-ly-h{display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.ag-ly-h b{font-size:13.5px;color:#f0ede6;font-weight:700}
+.ag-ly-n{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;
+  color:#e0c389;background:rgba(201,169,110,.14);border:1px solid rgba(201,169,110,.35);
+  border-radius:7px;padding:3px 8px;flex:none}
+.ag-tag{font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;margin-left:auto;flex:none}
+.ag-auto{color:#7fc9ad;background:rgba(92,174,148,.13);border:1px solid rgba(92,174,148,.32)}
+.ag-me{color:#f0c98a;background:rgba(224,169,74,.15);border:1px solid rgba(224,169,74,.42)}
+.ag-ly ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:7px}
+.ag-ly li{font-size:12px;font-weight:300;color:rgba(255,255,255,.55);line-height:1.8}
+
+/* 짚고 넘어가는 칸 */
+.ag-note{margin-top:16px;padding:14px 17px;border-radius:11px;
+  background:rgba(125,200,255,.05);border:1px solid rgba(125,200,255,.18);
+  font-size:12px;font-weight:300;color:rgba(255,255,255,.55);line-height:1.85}
+.ag-note b{display:block;color:rgba(155,212,255,.95);font-weight:700;font-size:11.5px;
+  margin-bottom:6px;letter-spacing:.03em}
+.ag-note b:not(:first-child){display:inline;color:rgba(240,237,230,.9);font-size:inherit;margin:0}
+.ag-note-warn{background:rgba(212,103,122,.06);border-color:rgba(212,103,122,.26)}
+.ag-note-warn > b:first-child{color:#e8899b}
+
+/* 04 — 해야 할 일 */
+.ag-card-do{background:rgba(201,169,110,.07);border-color:rgba(201,169,110,.26)}
+.ag-btns{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap}
+.ag-btns-c{margin-top:11px;font-size:11.5px;font-weight:300;color:rgba(255,255,255,.4);line-height:1.7}
+
+/* 05 — 명령 */
+.ag-cmds{display:flex;flex-direction:column;gap:9px}
+.ag-cmd{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:11px 14px}
+.ag-cmd code{font-family:'Nanum Gothic Coding','Share Tech Mono',monospace;
+  font-size:12px;color:#9fe8c8;background:transparent;flex:none;word-break:break-all}
+.ag-cmd span{font-size:11.5px;font-weight:300;color:rgba(255,255,255,.45);line-height:1.6}
+
+/* 알아두면 좋은 점 */
+.ag-card-tip{background:rgba(125,200,255,.045);border-color:rgba(125,200,255,.16)}
+.ag-tip-k{font-size:12px;font-weight:700;color:rgba(155,212,255,.92);margin-bottom:12px;letter-spacing:.03em}
+
+@media (max-width:760px){
+  .ag-guide{margin-top:36px;gap:15px}
+  .ag-card{padding:20px 17px 22px;border-radius:14px}
+  .ag-split{grid-template-columns:1fr;gap:9px}
+  .ag-sp-x{text-align:center;padding:2px 0}
+  .ag-links{grid-template-columns:1fr}
+  .ag-t{font-size:15px}
+  .ag-toc{gap:10px}
+  .ag-toc ol{gap:10px 14px}
+  .ag-tag{margin-left:0}
+  .ag-btns .db-btn{flex:1 1 100%}
+}

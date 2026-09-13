@@ -26,8 +26,8 @@
   }catch(e){}
 })();
 </script>
-<link rel="preload" href="nn-style.css?v=46" as="style"/>
-<link rel="stylesheet" href="nn-style.css?v=46"/>
+<link rel="preload" href="nn-style.css?v=47" as="style"/>
+<link rel="stylesheet" href="nn-style.css?v=47"/>
 
 <title>NEWNORMAL</title>
 <link rel="icon" type="image/png" href="https://jongchan-creator.github.io/favicon.png"/>
@@ -1411,70 +1411,166 @@
       <span class="ab-dv-line"></span>
     </div>
 
-    <div class="ab-panels">
-    <div style="background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:56px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
-    <div style="font-size:11px; letter-spacing:.18em; color:rgba(201,169,110,.7); margin-bottom:12px; font-family:'Orbitron', sans-serif; font-weight:600;">DATA SYSTEM MANAGEMENT</div>
-          <p style="font-size:12.5px; color:rgba(255,255,255,.3); line-height:1.7; margin-bottom:24px; font-weight:300; letter-spacing:0.01em;">도메인 주소가 변경되거나 브라우저 기록 청소 시 데이터 유실을 막기 위해<br/>현재까지 기록된 모든 데이터를 백업하고 원클릭으로 복구할 수 있습니다.</p>
-<div style="display:flex; gap:14px;">
-  <button class="db-btn db-export" onclick="window.dbLock('export')">
-    <span class="db-icon">📥</span>
-    <span class="db-text">BACKUP DATA</span>
-    <div class="sh"></div>
-  </button>
- <button class="db-btn db-import" onclick="window.dbLock('import')">
-    <span class="db-icon">📤</span>
-    <span class="db-text">RESTORE DATA</span>
-    <div class="sh"></div>
-  </button>
-</div>  
+    <div class="ag-guide">
+
+      <div class="ag-toc">
+        <span class="ag-toc-k">이 안내에서 다루는 것</span>
+        <ol>
+          <li>내 기록은 어디에 있나</li>
+          <li>시작하기</li>
+          <li>기록이 지켜지는 방식</li>
+          <li>한 달에 한 번 해주실 것</li>
+          <li>문제가 생겼을 때</li>
+        </ol>
+      </div>
+
+      <!-- ════════ 01 ════════ -->
+      <section class="ag-card">
+        <div class="ag-h"><span class="ag-n">01</span><h3 class="ag-t">내 기록은 어디에 있나</h3></div>
+
+        <div class="ag-split">
+          <div class="ag-sp">
+            <div class="ag-sp-k">화면 (코드)</div>
+            <div class="ag-sp-v">GitHub Pages</div>
+            <p>디자인과 기능. 사이트를 고쳐도 여기만 바뀝니다.</p>
+          </div>
+          <span class="ag-sp-x">따로 삽니다</span>
+          <div class="ag-sp">
+            <div class="ag-sp-k">내 기록 (데이터)</div>
+            <div class="ag-sp-v">Google Firebase</div>
+            <p>쓴 내용. 사이트가 바뀌어도 그대로 남습니다.</p>
+          </div>
+        </div>
+
+        <ul class="ag-list">
+          <li><b>회원가입이 없습니다.</b> 우측 상단 <b class="ag-au">LOGIN</b> 에서 구글 계정을 고르면 그 계정 전용 공간이 생깁니다.</li>
+          <li><b>계정끼리 완전히 분리됩니다.</b> 접근 제한은 서버(Firebase 보안 규칙)가 강제하므로, 이 사이트의 코드가 공개돼 있어도 남이 내 기록을 볼 통로는 없습니다.</li>
+          <li><b>로그인하지 않아도 쓸 수 있습니다.</b> 다만 그때는 <b>지금 이 브라우저에만</b> 남습니다. 여러 기기를 오간다면 로그인하는 편이 낫습니다.</li>
+        </ul>
+
+        <div class="ag-links">
+          <a href="https://myaccount.google.com/" target="_blank" rel="noopener" class="ag-link ag-l-gold">🔐 내 구글 계정 관리 ↗</a>
+          <a href="https://console.firebase.google.com/project/newnormal-lilac/overview" target="_blank" rel="noopener" class="ag-link ag-l-orange">🔥 Firebase 콘솔 (내 데이터) ↗</a>
+          <a href="https://github.com/jongchan-creator/jongchan-creator.github.io" target="_blank" rel="noopener" class="ag-link ag-l-white">⌨ GitHub 저장소 (코드) ↗</a>
+          <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" class="ag-link ag-l-blue">🛡 보안 규칙 문서 ↗</a>
+        </div>
+      </section>
+
+      <!-- ════════ 02 ════════ -->
+      <section class="ag-card">
+        <div class="ag-h"><span class="ag-n">02</span><h3 class="ag-t">시작하기</h3></div>
+        <div class="ag-steps">
+          <div class="ag-step"><span class="ag-s-n">1</span><div>
+            <b>로그인합니다.</b> 우측 상단 <b class="ag-au">LOGIN</b> → 구글 계정 선택.
+            처음이라면 지금까지 이 기기에만 있던 기록이 <b>자동으로 내 클라우드로 옮겨집니다.</b> 기존 기록은 사라지지 않습니다.
+          </div></div>
+          <div class="ag-step"><span class="ag-s-n">2</span><div>
+            <b>그냥 씁니다.</b> 저장 버튼이 없습니다. 무언가 쓰거나 고치면 <b>약 1.5초 뒤 자동으로</b> 올라갑니다.
+            지식금고·자산·보유종목·논거·일지·일기·워치리스트·API 키까지 전부 함께 동기화됩니다.
+          </div></div>
+          <div class="ag-step"><span class="ag-s-n">3</span><div>
+            <b>다른 기기에서 이어서 합니다.</b> 집·회사·휴대폰 어디서든 같은 계정으로 로그인하면 그대로 이어집니다.
+          </div></div>
+          <div class="ag-step"><span class="ag-s-n">4</span><div>
+            <b>로그아웃은 계정 이름 버튼을 다시 누릅니다.</b> 이 기기의 기록은 남고 자동 저장만 꺼집니다.
+          </div></div>
+        </div>
+      </section>
+
+      <!-- ════════ 03 ════════ -->
+      <section class="ag-card">
+        <div class="ag-h"><span class="ag-n">03</span><h3 class="ag-t">기록이 지켜지는 방식</h3></div>
+        <p class="ag-lead">한 겹으로는 부족해서 <b>세 겹</b>으로 둡니다. 앞의 두 겹은 알아서 돌아가고, 마지막 한 겹만 손이 갑니다.</p>
+
+        <div class="ag-layers">
+          <div class="ag-ly">
+            <div class="ag-ly-h"><span class="ag-ly-n">1겹</span><b>쓰는 즉시 클라우드로</b><span class="ag-tag ag-auto">자동</span></div>
+            <ul>
+              <li>로그인 확인 전에 쓴 것도 빠지지 않습니다. 다음 접속 때 반드시 올라갑니다.</li>
+              <li>탭을 닫을 때 밀린 것을 먼저 밀어냅니다.</li>
+              <li><b>클라우드가 이 기기의 최신 기록을 함부로 덮지 않습니다.</b> 아직 안 올라간 게 있으면 오히려 이쪽을 올려보냅니다.</li>
+              <li>내용이 갑자기 크게 줄어든 채 올라가려 하면, 예전 내용부터 따로 보관합니다.</li>
+            </ul>
+          </div>
+
+          <div class="ag-ly">
+            <div class="ag-ly-h"><span class="ag-ly-n">2겹</span><b>하루 한 번 자동 스냅샷</b><span class="ag-tag ag-auto">자동</span></div>
+            <ul>
+              <li>접속하면 하루 한 번, 그 시점의 <b>모든 기록을 통째로</b> 떠서 브라우저 안에 보관합니다.</li>
+              <li><b>최근 30일치</b>가 남아 있어, 며칠 전 상태로 되돌릴 수 있습니다.</li>
+              <li>다만 브라우저 안이라 <b>‘사이트 데이터 삭제’를 하면 같이 사라집니다.</b></li>
+            </ul>
+          </div>
+
+          <div class="ag-ly ag-ly-you">
+            <div class="ag-ly-h"><span class="ag-ly-n">3겹</span><b>파일로 내려받기</b><span class="ag-tag ag-me">내가 함</span></div>
+            <ul>
+              <li><b>브라우저 밖으로 나가는 것은 이것뿐입니다.</b> 그래서 이것만이 진짜 백업입니다.</li>
+              <li>브라우저를 갈아엎어도, 기기를 잃어버려도, 이 파일만 있으면 전부 돌아옵니다.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="ag-note">
+          <b>왜 클라우드만으로는 부족한가</b>
+          클라우드는 <b>백업이 아니라 거울</b>입니다. 지금 상태를 비출 뿐, 이전 버전을 보관하지 않습니다.
+          잘못된 내용이 올라가면 그것이 전부가 됩니다. 그래서 2겹과 3겹이 따로 필요합니다.
+        </div>
+      </section>
+
+      <!-- ════════ 04 ════════ -->
+      <section class="ag-card ag-card-do">
+        <div class="ag-h"><span class="ag-n">04</span><h3 class="ag-t">한 달에 한 번 해주실 것</h3></div>
+        <p class="ag-lead">아래 버튼 한 번. <b>이 사이트에서 사람이 해야 하는 일은 이것 하나뿐입니다.</b></p>
+
+        <div class="ag-do">
+          <div class="ag-do-1"><span class="ag-s-n">1</span><span><b>BACKUP DATA</b> 를 누릅니다. JSON 파일이 하나 내려받아집니다.</span></div>
+          <div class="ag-do-1"><span class="ag-s-n">2</span><span>그 파일을 <b>바탕화면처럼 클라우드에 동기화되는 폴더</b>에 둡니다. 그러면 파일 자체의 이전 버전까지 관리됩니다.</span></div>
+          <div class="ag-do-1"><span class="ag-s-n">3</span><span>끝입니다. 마지막 백업이 <b>30일</b>을 넘기면 홈 화면 위에 조용히 한 줄로 알려 드립니다.</span></div>
+        </div>
+
+        <div class="ag-btns">
+          <button class="db-btn db-export" onclick="window.dbLock('export')">
+            <span class="db-icon">📥</span><span class="db-text">BACKUP DATA</span><div class="sh"></div>
+          </button>
+          <button class="db-btn db-import" onclick="window.dbLock('import')">
+            <span class="db-icon">📤</span><span class="db-text">RESTORE DATA</span><div class="sh"></div>
+          </button>
+        </div>
+        <div class="ag-btns-c">왼쪽은 내려받기, 오른쪽은 그 파일로 되돌리기입니다. 처음 쓸 때 잠금 번호(PIN)를 한 번 정합니다.</div>
+      </section>
+
+      <!-- ════════ 05 ════════ -->
+      <section class="ag-card">
+        <div class="ag-h"><span class="ag-n">05</span><h3 class="ag-t">문제가 생겼을 때</h3></div>
+        <p class="ag-lead">기록이 비어 보이면 <b>새로 쓰지 마시고</b> 먼저 아래를 확인하세요. 새로 쓰면 되돌릴 여지가 줄어듭니다.</p>
+        <p class="ag-lead ag-lead-2"><b>F12</b> → <b>Console</b> 탭에 아래를 붙여넣고 Enter.</p>
+
+        <div class="ag-cmds">
+          <div class="ag-cmd"><code>__nnBackupList()</code><span>하루 한 번 떠 둔 자동 백업 목록 (최근 30일)</span></div>
+          <div class="ag-cmd"><code>__nnBackupRestore('auto_2026-09-13')</code><span>그 날짜 상태로 되돌리기 — 되돌린 뒤 새로고침</span></div>
+          <div class="ag-cmd"><code>__nnCloudSnapshots()</code><span>클라우드가 덮어쓰기 직전에 남겨 둔 사본 목록</span></div>
+          <div class="ag-cmd"><code>__nnCloudRestore('snap_vault_…')</code><span>그 사본으로 되돌리기</span></div>
+        </div>
+
+        <div class="ag-note ag-note-warn">
+          <b>이것만은 조심</b>
+          기록이 이상하다고 느끼면 <b>다른 기기에서 사이트를 열지 마세요.</b>
+          그 기기에 멀쩡한 기록이 남아 있을 수 있는데, 여는 순간 동기화가 일어나 상황이 복잡해집니다.
+        </div>
+      </section>
+
+      <!-- ════════ 알아두면 좋은 점 ════════ -->
+      <section class="ag-card ag-card-tip">
+        <div class="ag-tip-k">💡 알아두면 좋은 점</div>
+        <ul class="ag-list">
+          <li>무료 요금제 기준 <b>하루 읽기 5만 회 · 쓰기 2만 회 · 저장 공간 1GiB</b>. 개인 아카이브로는 차고 넘칩니다.</li>
+          <li>항목 하나당 한도가 1MiB라, 책 표지 같은 이미지는 <b>파일 업로드보다 이미지 주소(URL)</b>로 넣는 편이 안전합니다.</li>
+          <li>브라우저 한 곳에 담을 수 있는 양에도 한계가 있어, 용량이 차면 큰 기록은 자동으로 다른 칸으로 옮겨 둡니다.</li>
+        </ul>
+      </section>
+
     </div>
-
-    <div style="background:rgba(7,7,9,.66); border:1px solid rgba(255,255,255,.09); border-radius:20px; padding:34px 40px 38px; margin-top:64px; box-shadow:0 24px 70px -34px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.05);">
-    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:0 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>CLOUD ARCHIVE — 사용자별 분리 저장</div>
-    <p style="font-size:13px; color:rgba(255,255,255,.62); line-height:1.9; margin-bottom:14px; font-weight:300; max-width:580px;">
-      이 홈페이지는 회원가입 절차 없이 <b style="color:rgba(240,237,230,.85); font-weight:500;">구글 계정으로 바로 로그인</b>해서 씁니다.
-      우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> 버튼을 누르고 본인 구글 계정을 선택하면, 그때부터 이 사이트에 기록하는 모든 내용
-      (독서·어휘·경제·미디어 노트, 자산·보유종목, 워치리스트, 메모 등)이 <b style="color:rgba(240,237,230,.85); font-weight:500;">본인 전용 클라우드 공간</b>에 실시간으로 안전하게 보관됩니다.
-    </p>
-    <p style="font-size:13px; color:rgba(255,255,255,.62); line-height:1.9; margin-bottom:16px; font-weight:300; max-width:580px;">
-      사용자마다 저장 공간이 <b style="color:rgba(240,237,230,.85); font-weight:500;">완전히 분리</b>되어 있어, 다른 사람이 내 기록을 열람하거나 수정하는 것은 불가능합니다.
-      로그인하지 않아도 사용할 수 있으며, 이 경우 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">지금 쓰는 브라우저에만</b> 저장되는 로컬 모드로 동작합니다
-      (다른 기기에서는 보이지 않으니, 여러 기기를 오간다면 로그인을 권장합니다).
-    </p>
-    <div style="display:flex; flex-direction:column; gap:9px; margin:22px 0 4px; max-width:340px;">
-      <a href="https://myaccount.google.com/" target="_blank" rel="noopener" class="about-link al-gold" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#e0c389; text-decoration:none; background:rgba(201,169,110,.1); border:1px solid rgba(201,169,110,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔐 내 구글 계정 관리 ↗</a>
-      <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" rel="noopener" class="about-link al-blue" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#9ed7ff; text-decoration:none; background:rgba(125,200,255,.08); border:1px solid rgba(125,200,255,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🛡 보안 규칙 문서 ↗</a>
-      <a href="https://github.com/jongchan-creator/jongchan-creator.github.io" target="_blank" rel="noopener" class="about-link al-white" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#e6e6e6; text-decoration:none; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.28); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">⌨ GitHub 저장소 (코드) ↗</a>
-      <a href="https://console.firebase.google.com/project/newnormal-lilac/overview" target="_blank" rel="noopener" class="about-link al-orange" style="display:flex; align-items:center; justify-content:space-between; gap:7px; font-size:11.5px; font-weight:600; color:#ffca7a; text-decoration:none; background:rgba(255,170,60,.09); border:1px solid rgba(255,170,60,.35); border-radius:8px; padding:8px 15px; font-family:'Pretendard',sans-serif; transition:.2s;">🔥 Firebase 콘솔 (데이터) ↗</a>
-    </div>
-
-    <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
-    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:32px 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>HOW IT WORKS — 운영 방식</div>
-    <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
-      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">화면(코드)과 데이터는 따로 삽니다.</b> 홈페이지의 디자인·기능은 <b style="color:rgba(240,237,230,.85); font-weight:500;">GitHub Pages</b>에, 내가 입력한 기록은 <b style="color:rgba(240,237,230,.85); font-weight:500;">Google Firebase</b>에 저장됩니다. 덕분에 사이트가 업데이트되거나 디자인이 바뀌어도 그동안 쌓아온 기록은 전혀 사라지지 않습니다.</span></div>
-      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">저장 버튼이 없습니다.</b> 무언가를 입력하거나 수정하면 <b style="color:rgba(240,237,230,.85); font-weight:500;">약 1.5초 뒤 자동으로</b> 클라우드에 반영됩니다. 따로 "저장"을 누를 필요 없이, 쓰는 순간 곧바로 보관됩니다.</span></div>
-      <div style="display:flex; gap:12px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:rgba(201,169,110,.75); font-size:9px; margin-top:6px; flex-shrink:0;">◆</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">보안은 서버가 강제합니다.</b> 계정별 접근 제한은 Firebase 보안 규칙이 서버 차원에서 처리하므로, 설령 이 사이트의 코드가 공개되더라도 다른 사람이 내 데이터에 접근할 수 있는 통로는 열리지 않습니다.</span></div>
-    </div>
-
-    <div style="height:1px; background:linear-gradient(90deg, rgba(201,169,110,.25), transparent); margin:38px 0 0;"></div>
-    <div style="display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.16em; color:#e0c389; margin:32px 0 18px; font-family:'Orbitron', sans-serif; font-weight:700; text-shadow:0 0 12px rgba(201,169,110,.35);"><span style="width:22px; height:2px; background:linear-gradient(90deg,#e0c389,rgba(201,169,110,.2)); display:inline-block;"></span>HOW TO USE — 사용 방법</div>
-    <div style="max-width:580px; display:flex; flex-direction:column; gap:15px;">
-      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">로그인하기.</b> 우측 상단 <b style="color:rgba(201,169,110,.9); font-weight:600;">LOGIN</b> → 구글 계정 선택. 처음 로그인하는 것이라면, 지금까지 이 기기에만 있던 기록이 <b style="color:rgba(240,237,230,.85); font-weight:500;">자동으로 내 클라우드로 옮겨집니다</b> (기존 기록이 사라지지 않으니 안심하세요).</span></div>
-      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">평소처럼 쓰기.</b> 이후에는 신경 쓸 것 없이 그냥 쓰면 됩니다. 지식금고(BOOKS·LEXICON·ECONOMICS·MEDIA), 자산(ASSETS), 보유종목(HOLDINGS), 텐베거 워치리스트·메모, 최근 검색, API 키까지 <b style="color:rgba(240,237,230,.85); font-weight:500;">모두 자동으로 동기화</b>됩니다.</span></div>
-      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">다른 기기에서 이어서.</b> 집·회사·휴대폰 등 어디서든 같은 구글 계정으로 로그인하면 <b style="color:rgba(240,237,230,.85); font-weight:500;">클라우드의 기록이 그대로 복원</b>되어 이어서 작업할 수 있습니다.</span></div>
-      <div style="display:flex; gap:13px; font-size:12.5px; color:rgba(255,255,255,.6); line-height:1.85; font-weight:300;"><span style="color:#0a0a0e; background:rgba(201,169,110,.9); font-weight:700; font-size:11px; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</span><span><b style="color:rgba(240,237,230,.85); font-weight:500;">로그아웃 & 백업.</b> 우측 상단 버튼(로그인하면 계정 이름으로 바뀜)을 다시 누르면 로그아웃됩니다 — 이 기기의 기록은 남고 자동 저장만 꺼집니다. 만약을 대비해 위쪽 <b style="color:#e0c389; font-weight:600;">BACKUP DATA</b> 버튼으로 주기적으로 JSON 파일 백업도 받아두면 더욱 안전합니다.</span></div>
-    </div>
-
-    <div style="background:rgba(125,200,255,.05); border:1px solid rgba(125,200,255,.18); border-radius:12px; padding:16px 18px; margin-top:32px; max-width:580px;">
-      <div style="font-size:11px; font-weight:700; color:rgba(155,212,255,.9); margin-bottom:8px; letter-spacing:.04em; font-family:'Pretendard',sans-serif;">💡 알아두면 좋은 점</div>
-      <p style="font-size:12px; color:rgba(255,255,255,.55); line-height:1.85; font-weight:300; margin:0;">
-        무료 요금제 기준 <b style="color:rgba(240,237,230,.8); font-weight:500;">하루 읽기 5만 회 · 쓰기 2만 회 · 총 1GiB 저장 공간</b>이 제공되며, 개인 아카이브 용도로는 차고 넘칩니다.
-        다만 항목 하나당 저장 한도(1MiB)가 있어, 책 표지 같은 이미지는 <b style="color:rgba(240,237,230,.8); font-weight:500;">파일 업로드가 아닌 이미지 URL 방식</b>으로 넣는 것을 권장합니다.
-      </p>
-    </div>
-
-
-  </div>
     </div></div> </div>
 <script src="nn-core.js?v=32"></script>
 
