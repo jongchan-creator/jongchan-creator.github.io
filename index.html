@@ -83,7 +83,6 @@
       <button class="nbtn nav-trigger">PORTFOLIO<span class="ng-caret">▾</span></button>
       <div class="nav-dropdown">
         <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button>
-        <button class="nbtn portfolio-btn" id="nav-portfolio" onclick="switchPage('portfolio')">HOLDINGS<div class="sh"></div></button>
         <button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">CONVICTION<div class="sh"></div></button>
         <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button>
         <button class="nbtn flow-btn" id="nav-flow" onclick="switchPage('flow')">FLOW<div class="sh"></div></button>
@@ -1075,6 +1074,7 @@
           <div class="as-navgrp">직접 입력 <span>여기 넣은 값이 자산 현황으로 모입니다</span></div>
           <button class="as-navbtn active" data-sec="networth"><span class="as-navi">💎</span> 자산 현황</button>
           <button class="as-navbtn" data-sec="stocks"><span class="as-navi">📈</span> 주식</button>
+          <button class="as-navbtn as-nav-hold" data-sec="holdings"><span class="as-navi">🪙</span> 보유 종목</button>
           <button class="as-navbtn" data-sec="realty"><span class="as-navi">🏠</span> 부동산</button>
           <button class="as-navbtn" data-sec="income"><span class="as-navi">💰</span> 소득</button>
 
@@ -1106,11 +1106,7 @@
         </div>
       </aside>
       <main class="as-content" id="asContent"></main>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page-portfolio">
+<div class="pf-pane" id="page-portfolio" style="display:none">
     <div class="hold-wrap">
     <div class="hold-header">
       <div class="hold-eyebrow">HOLDINGS</div>
@@ -1141,6 +1137,11 @@
   </div>
   
 </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-conviction">
       <div class="as-page-wrap">
         <div class="as-header">
@@ -1586,7 +1587,7 @@
 
     </div>
     </div></div> </div>
-<script src="nn-core.js?v=34"></script>
+<script src="nn-core.js?v=35"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -3560,6 +3561,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script><script src="nn-notes.js?v=2"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script><script src="nn-wealth.js?v=1"></script><script src="nn-notes.js?v=3"></script>
 </body>
 </html>

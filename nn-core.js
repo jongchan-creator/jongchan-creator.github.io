@@ -817,6 +817,8 @@ function initHoldings(){
   }
   loadHolding(__holdCur || HOLDINGS[0].sym);
 }
+/* ASSETS 안으로 들어간 '보유 종목' 칸이 바깥에서 불러 쓴다 (nn-wealth.js) */
+try{ window.initHoldings = initHoldings; }catch(e){}
 
 var MEGACAPS=[
   {s:'NVDA',n:'엔비디아',p:222.82,rk:1,pr:1,mc:5230,dom:'nvidia.com',ctry:'US'},
@@ -3601,7 +3603,7 @@ window.KnowledgeNotes = {
     {t:'미디어', sub:'MEDIA', page:'media'},
     {t:'렉시콘', sub:'LEXICON', page:'lexicon'},
     {t:'이코노믹스', sub:'ECONOMICS', page:'economics'},
-    {t:'포트폴리오', sub:'PORTFOLIO · 보유 종목', page:'portfolio'},
+    {t:'보유 종목', sub:'ASSETS · HOLDINGS · 종목별 심층', page:'portfolio'},
     {t:'논지', sub:'THESIS · 생각의 기록', page:'thesis'},
     {t:'투자 논거', sub:'CONVICTION · 나는 왜 이걸 사는가', page:'conviction'},
     {t:'투자 일지', sub:'JOURNAL · 왜 그렇게 했는가', page:'journal'},

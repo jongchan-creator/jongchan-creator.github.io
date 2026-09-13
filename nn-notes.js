@@ -128,18 +128,45 @@
   '  border-radius:10px;padding:9px 16px;transition:.16s;font-family:\'Pretendard\',sans-serif}',
   '.kn-tab i{font-style:normal;font-family:\'Bebas Neue\',sans-serif;font-size:9.5px;',
   '  letter-spacing:.16em;color:rgba(255,255,255,.28)}',
-  '.kn-tab:hover{color:#fff;background:rgba(255,255,255,.08)}',
-  '.kn-tab.on{color:#e8c47e;border-color:rgba(201,169,110,.5);background:rgba(201,169,110,.13)}',
-  '.kn-tab.on i{color:rgba(232,196,126,.6)}',
+  /* ── 원래 탭이 갖고 있던 상징색을 되살린다 ──
+     네 탭을 한 곳에 합치면서 색까지 잃으면 구분이 사라진다.
+     평소엔 무채색으로 두었다가 손을 올리면 제 색이 드러나고,
+     고른 탭은 그 색을 그대로 유지한다. 값은 기존 네비 버튼에서 그대로 가져왔다.
+       BOOKS      #f5c75c  (.books-btn)
+       LEXICON    #aeb1b4  (.nbtn.lexicon-btn:hover)
+       MEDIA      #7fbef5  (.nbtn.media-btn:hover)
+       ECONOMICS  #7fd58c  (.nbtn.econ-btn:hover) */
+  '.kn-tab[data-k="books"]    {--kc:#f5c75c;--kg:244,182,37}',
+  '.kn-tab[data-k="lexicon"]  {--kc:#aeb1b4;--kg:174,177,180}',
+  '.kn-tab[data-k="media"]    {--kc:#7fbef5;--kg:138,180,212}',
+  '.kn-tab[data-k="economics"]{--kc:#7fd58c;--kg:122,158,126}',
+  '.kn-tab:hover{color:var(--kc);border-color:rgba(var(--kg),.55);',
+  '  background:rgba(var(--kg),.10);transform:translateY(-1px);',
+  '  text-shadow:0 0 9px rgba(var(--kg),.55),0 0 20px rgba(var(--kg),.3);',
+  '  box-shadow:0 6px 18px -8px rgba(var(--kg),.65)}',
+  '.kn-tab:hover i{color:rgba(var(--kg),.8)}',
+  '.kn-tab.on{color:var(--kc);border-color:rgba(var(--kg),.55);background:rgba(var(--kg),.14);',
+  '  text-shadow:0 0 8px rgba(var(--kg),.45)}',
+  '.kn-tab.on i{color:rgba(var(--kg),.7)}',
+  /* 고른 탭 밑에 색 띠 하나 — 어느 칸을 보고 있는지 눈에 박히게 */
+  '.kn-tab{position:relative;overflow:hidden}',
+  '.kn-tab::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;',
+  '  background:var(--kc);border-radius:2px 2px 0 0;opacity:0;transform:translateY(2px);transition:.18s}',
+  '.kn-tab.on::after{opacity:1;transform:none}',
+  /* NOTES 네비 버튼 — 지식 쪽 대표색(사이트 금색)을 쓴다 */
+  '#nav-notes:hover,#nav-notes.active{color:#e8c47e!important;',
+  '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(201,169,110,.9)}',
+  '#nav-notes .sh{background:linear-gradient(90deg,transparent,#e8c47e,transparent)!important}',
   /* 합쳐진 칸은 원래 페이지처럼 보이게 — 위 여백만 줄인다 */
   '.kn-pane > div:first-child{padding-top:18px!important}',
   /* 첫 화면만 흰색 모드 */
-  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab{',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab:not(:hover):not(.on){',
   '  background:transparent!important;border-color:rgba(138,106,36,.28)!important;',
   '  color:var(--lp-ink3)!important}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab:hover,',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab.on{',
-  '  color:var(--lp-brass)!important;border-color:rgba(138,106,36,.6)!important;',
-  '  background:rgba(138,106,36,.08)!important}',
+  '  color:var(--kc)!important;border-color:rgba(var(--kg),.65)!important;',
+  '  background:rgba(var(--kg),.12)!important;text-shadow:none!important}',
   '@media (max-width:760px){',
   '  .kn-tabs{padding:66px 1.2rem 0;gap:5px}',
   '  .kn-tab{font-size:12.5px;padding:8px 12px}',
