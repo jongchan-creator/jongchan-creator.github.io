@@ -2052,6 +2052,7 @@
   const TOUCH_KEY = 'nn_local_touch_v1';   /* 그룹별 마지막 로컬 변경 시각 */
   const PUSH_KEY  = 'nn_last_push_v1';     /* 그룹별 마지막 업로드 성공 시각 */
   const SNAP_KEY  = 'nn_cloud_snap_idx_v1';/* 스냅샷 목록 */
+  const SIZE_KEY  = 'nn_push_size_v1';     /* 그룹별 마지막 업로드 크기 — 급격한 축소 감지용 */
 
   let currentUser = null;
   let applying = false;           /* 클라우드→로컬 반영 중엔 재업로드 방지 */
@@ -2116,6 +2117,29 @@
     }catch(e){ console.warn('[cloud] 스냅샷 실패:', g, e); }
   }
 
+  /* ── 올리기 직전 안전장치 ──
+     로컬이 더 최신이면 로컬이 이기도록 고쳤는데(구멍 ③ 대응),
+     뒤집어 보면 '비어 버린 로컬'이 멀쩡한 클라우드를 덮을 수 있다.
+     그래서 올릴 내용이 직전보다 절반 넘게 줄었으면
+     클라우드에 있던 것을 먼저 스냅샷으로 떠 둔다. */
+  async function snapshotCloud(g, why){
+    try{
+      if(!window.__nnBigStore || !currentUser) return;
+      const snap = await getDoc(doc(db, 'users', currentUser.uid, 'data', g));
+      if(!snap.exists()) return;
+      const d = snap.data(), data = {};
+      SYNC[g].forEach(k => { if (typeof d[k] === 'string') data[k] = d[k]; });
+      if(!Object.keys(data).length) return;
+      const key = 'snap_' + g + '_' + Date.now();
+      await window.__nnBigStore.put(key, { at:new Date().toISOString(), why:why||'',
+                                           group:g, data:data, source:'cloud' });
+      const idx = readMap(SNAP_KEY);
+      idx[g] = (idx[g] || []).concat(key).slice(-3);
+      writeMap(SNAP_KEY, idx);
+      console.log('[cloud] 올리기 전 클라우드 사본 저장:', key);
+    }catch(e){ console.warn('[cloud] 클라우드 스냅샷 실패:', g, e); }
+  }
+
   /* 클라우드 내용이 지금 로컬과 같은가 */
   function sameAsLocal(g, d){
     return SYNC[g].every(k => {
@@ -2130,10 +2154,21 @@
     clearTimeout(timers[g]);
     const stamp = Date.now();
     const payload = { updatedAt: new Date(stamp).toISOString(), updatedMs: stamp };
-    SYNC[g].forEach(k => { const v = localStorage.getItem(k); if (v !== null) payload[k] = v; });
+    let bytes = 0;
+    SYNC[g].forEach(k => { const v = localStorage.getItem(k); if (v !== null){ payload[k] = v; bytes += v.length; } });
+
+    /* 직전보다 절반 넘게 줄었으면 — 사고일 가능성이 있다 */
+    const prevBytes = readMap(SIZE_KEY)[g] || 0;
+    if (prevBytes > 2048 && bytes < prevBytes * 0.5){
+      const drop = Math.round((1 - bytes / prevBytes) * 100);
+      await snapshotCloud(g, '올리기 전 — 내용이 ' + drop + '% 줄어듦');
+      cloudToast('⚠ 기록이 크게 줄어 예전 내용을 먼저 백업했습니다 · 콘솔에서 __nnCloudSnapshots()', 'out');
+    }
+
     try {
       await setDoc(doc(db, 'users', currentUser.uid, 'data', g), payload);
       markPushed(g);
+      { const sm = readMap(SIZE_KEY); sm[g] = bytes; writeMap(SIZE_KEY, sm); }
       try{ _set('nn_last_sync', String(Date.now())); }catch(e){}
       if(window.__nnRenderStorage) window.__nnRenderStorage();
       return true;
@@ -3415,6 +3450,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=3"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=1"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=3"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=1"></script><script src="nn-backup.js?v=1"></script>
 </body>
 </html>
