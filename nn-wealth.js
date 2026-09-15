@@ -30,8 +30,8 @@
      ② 머리글 — HOLDINGS 전용 머리글(보라 eyebrow + 3.2rem 제목 + 코브라인)을
         아예 없앴다. 그것만 다른 칸과 형식이 달라 혼자 동떨어져 보였다.
         지금은 다른 칸(NET WORTH·STOCK PORTFOLIO·DIVIDENDS …)과 똑같이
-        `.as-sec-head` + `.as-sec-sub` 두 줄만 쓴다. 보라색 정체성은
-        글로우 색(.as-sec-hold)과 목록·테두리에만 남겼다.
+        `.as-sec-head` + `.as-sec-sub` 두 줄만 쓴다.
+        보라색 정체성은 2026-09-15 에 전부 걷어내고 ASSETS 빨강으로 통일했다.
         ASSETS 머리글('자산 관리')은 어느 칸이든 늘 그대로 있다.
 
    nn-assets.js 는 글자 하나만 바꿨다 (카드 제목 '보유 종목' → '종목 목록')
@@ -276,26 +276,41 @@
      ② 머리글은 칸마다 바뀌지 않는다. HOLDINGS 전용 머리글은 없앴고
         ASSETS 머리글은 늘 떠 있다. 세로로 튈 일 자체가 사라졌다. */
   '#page-assets > .as-page-wrap{max-width:1586px}',
-  /* 다른 칸의 제목과 같은 형식. 글로우만 HOLDINGS 보라색으로 */
-  '.as-sec-head.as-sec-hold{text-shadow:0 1px 6px rgba(0,0,0,.85),0 0 16px rgba(178,138,212,.45)}',
+  /* ── 색을 ASSETS 빨강(#ff4d4d)으로 통일 (2026-09-15) ──
+     HOLDINGS 가 독립 탭이던 시절의 보라색은, ASSETS 안으로 들어온 지금은
+     이 칸만 혼자 다른 집처럼 보이게 만든다. 사이드바·카드·표가 전부 빨강인데
+     한 칸만 보라면 "같은 페이지"로 안 읽힌다. 그래서 전부 빨강으로 맞췄다.
+     nn-style.css 는 건드리지 않고 여기서 덮어쓴다(순서 불변 규칙).
+     ⚠ `.hold-desc` 는 사용자가 만든 탭(ct_*)도 쓰므로 반드시 #page-portfolio 안으로 좁힐 것. */
+  '#page-portfolio .hold-item{background:rgba(30,20,22,.55)!important;',
+  '  border-color:rgba(255,77,77,.3)!important;--bc:#ff4d4d!important}',
+  '#page-portfolio .hold-detail-title{color:rgba(255,150,150,.98)!important;',
+  '  text-shadow:0 0 10px rgba(255,77,77,.6)!important}',
+  '#page-portfolio .hold-w{border-color:rgba(255,77,77,.16)!important;',
+  '  box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),0 0 18px rgba(255,77,77,.05)!important}',
+  '#page-portfolio .hold-add-btn{background:rgba(255,77,77,.12)!important;',
+  '  border-color:rgba(255,77,77,.5)!important;color:#ffb0b0!important}',
+  '#page-portfolio .hold-add-btn:hover{border-color:#ff4d4d!important;',
+  '  box-shadow:0 0 18px -5px #ff4d4d!important}',
+  '#page-portfolio .hw-krw{background:rgba(24,16,17,.4)!important;',
+  '  border-left-color:rgba(255,77,77,.5)!important}',
+  /* 제목 글로우도 다른 칸과 같은 빨강 (.as-sec-head 기본값) — as-sec-hold 는 덮지 않는다 */
   /* 두 목록을 잇는 칩 줄 */
   '.hold-link{display:flex;flex-direction:column;gap:7px;margin:0 0 16px}',
   '.hl-row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-family:\'Pretendard\',sans-serif}',
   '.hl-lb{font-size:11.5px;font-weight:600;letter-spacing:.01em}',
-  '.hl-lb.hl-add{color:rgba(178,138,212,.95)}',
+  '.hl-lb.hl-add{color:rgba(255,140,140,.95)}',
   '.hl-lb.hl-warn{color:rgba(255,190,120,.9)}',
   '.hl-chip{font-family:\'Pretendard\',sans-serif;font-size:12px;font-weight:600;',
   '  padding:5px 11px;border-radius:999px;line-height:1.25}',
-  '.hl-c-add{cursor:pointer;color:#cbaae6;background:rgba(178,138,212,.12);',
-  '  border:1px solid rgba(178,138,212,.45);transition:.16s}',
-  '.hl-c-add:hover{background:rgba(178,138,212,.24);border-color:#b28ad4;',
-  '  box-shadow:0 0 16px -4px #b28ad4;transform:translateY(-1px)}',
+  '.hl-c-add{cursor:pointer;color:#ffb0b0;background:rgba(255,77,77,.12);',
+  '  border:1px solid rgba(255,77,77,.45);transition:.16s}',
+  '.hl-c-add:hover{background:rgba(255,77,77,.24);border-color:#ff4d4d;',
+  '  box-shadow:0 0 16px -4px #ff4d4d;transform:translateY(-1px)}',
   '.hl-c-warn{color:rgba(255,205,150,.92);background:rgba(255,180,100,.08);',
   '  border:1px solid rgba(255,180,100,.3)}',
   '.hl-note{font-size:11px;color:rgba(255,255,255,.45)}',
-  /* 사이드바 버튼 — 이 칸만 HOLDINGS 의 보라색을 쓴다 */
-  '.as-navbtn.as-nav-hold{--bc:#b28ad4}',
-  '.as-navbtn.as-nav-hold.active{color:#cbaae6;text-shadow:0 0 10px rgba(178,138,212,.6)}',
+
   /* 900px 아래에서는 nn-style.css 가 사이드바를 위로 올린다(.as-wrap{flex-direction:column}).
      그때는 좁힐 이유가 없으니 여백과 최대폭을 원래대로 돌려놓는다. */
   '@media (max-width:900px){',

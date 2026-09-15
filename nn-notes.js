@@ -24,7 +24,7 @@
   if(window.__nnNotes) return;
 
   var KEY   = 'nn_notes_tab_v1';
-  var TYPES = ['books','lexicon','media','economics'];
+  var TYPES = ['books','lexicon','media','economics','daily'];
   var cur   = null;
 
   function remember(t){ try{ localStorage.setItem(KEY, t); }catch(e){} }
@@ -135,11 +135,14 @@
        BOOKS      #f5c75c  (.books-btn)
        LEXICON    #aeb1b4  (.nbtn.lexicon-btn:hover)
        MEDIA      #7fbef5  (.nbtn.media-btn:hover)
-       ECONOMICS  #7fd58c  (.nbtn.econ-btn:hover) */
+       ECONOMICS  #7fd58c  (.nbtn.econ-btn:hover)
+       DAILY      #c2a0e8  (새로 만든 칸 — 옛 HOLDINGS 보라) */
   '.kn-tab[data-k="books"]    {--kc:#f5c75c;--kg:244,182,37}',
   '.kn-tab[data-k="lexicon"]  {--kc:#aeb1b4;--kg:174,177,180}',
   '.kn-tab[data-k="media"]    {--kc:#7fbef5;--kg:138,180,212}',
   '.kn-tab[data-k="economics"]{--kc:#7fd58c;--kg:122,158,126}',
+  /* 일기 — HOLDINGS 가 ASSETS 빨강으로 옮겨가며 비운 보라를 물려받았다 */
+  '.kn-tab[data-k="daily"]   {--kc:#c2a0e8;--kg:194,160,232}',
   '.kn-tab:hover{color:var(--kc);border-color:rgba(var(--kg),.55);',
   '  background:rgba(var(--kg),.10);transform:translateY(-1px);',
   '  text-shadow:0 0 9px rgba(var(--kg),.55),0 0 20px rgba(var(--kg),.3);',
@@ -153,10 +156,15 @@
   '.kn-tab::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;',
   '  background:var(--kc);border-radius:2px 2px 0 0;opacity:0;transform:translateY(2px);transition:.18s}',
   '.kn-tab.on::after{opacity:1;transform:none}',
-  /* NOTES 네비 버튼 — 지식 쪽 대표색(사이트 금색)을 쓴다 */
-  '#nav-notes:hover,#nav-notes.active{color:#e8c47e!important;',
-  '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),0 0 9px rgba(201,169,110,.9)}',
-  '#nav-notes .sh{background:linear-gradient(90deg,transparent,#e8c47e,transparent)!important}',
+  /* ── NOTES 네비 버튼 = 형광 주황 ──
+     처음엔 사이트 기본 금색(#e8c47e)을 썼는데 BOOKS(#e8c47e)와 같은 값이라
+     상위 탭과 하위 탭이 구분되지 않았다. 아무도 안 쓰는 형광 주황으로 옮겼다.
+     MACRO 의 주황(#ff8252)은 채도가 낮은 살구색이라 나란히 놓아도 갈린다.
+     RESEARCH 의 형광 연두(#ccff00)와 같은 네온 계열이라 사이트 톤에도 맞는다. */
+  '#nav-notes:hover,#nav-notes.active{color:#ff7a00!important;',
+  '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),',
+  '  0 0 7px rgba(255,122,0,.95),0 0 18px rgba(255,122,0,.72),0 0 36px rgba(255,122,0,.42)!important}',
+  '#nav-notes .sh{background:linear-gradient(90deg,transparent,#ff9a3c,transparent)!important}',
   /* 합쳐진 칸은 원래 페이지처럼 보이게 — 위 여백만 줄인다 */
   '.kn-pane > div:first-child{padding-top:18px!important}',
   /* 첫 화면만 흰색 모드 */

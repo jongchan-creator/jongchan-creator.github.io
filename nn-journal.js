@@ -251,7 +251,10 @@
   function lines(v){ return String(v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); }
   function host(){ return document.getElementById('jn-body'); }
 
-  var view = 'diary';   /* diary | log | review — 일기가 기본 (매일 쓰는 쪽) */
+  /* 2026-09-15 — 일기는 NOTES 안 '일기' 칸(nn-daily.js)으로 옮겼다.
+     여기 남은 것은 돈이 움직였을 때 쓰는 매매 기록과 분기 복기 둘뿐이고,
+     매매 기록은 CONVICTION 종목 상세에서도 바로 보인다(nn-tradelog.js). */
+  var view = 'log';   /* log | review */
   var curQ = null;
 
   function thesisTitle(id){
@@ -277,19 +280,11 @@
     var due = J.dueList();
 
     var h = '<div class="jn-tabs">'
-      + '<button type="button" class="jn-tab' + (view==='diary'?' on':'') + '" data-v="diary">일기</button>'
       + '<button type="button" class="jn-tab' + (view==='log'?' on':'') + '" data-v="log">매매 기록</button>'
       + '<button type="button" class="jn-tab' + (view==='review'?' on':'') + '" data-v="review">분기 복기</button>'
       + (view==='log' ? '<button type="button" class="jn-new" id="jnNew">＋ 기록하기</button>' : '')
       + '</div>';
 
-    if(view === 'diary'){
-      el.innerHTML = h;
-      bindTabs(el);
-      showDiary(true);
-      try{ if(window.__nnDiaryRender) window.__nnDiaryRender(); }catch(e){}
-      return;
-    }
     showDiary(false);
 
     if(view === 'review'){ el.innerHTML = h + reviewHTML(); bindReview(el); return; }
@@ -508,7 +503,8 @@
       }catch(e){}
     }, 240);
   };
-  window.__nnJnSetView = function(v){ view = v || 'diary'; render(); };
+  /* 옛 이름 diary 로 불러도 매매 기록으로 (일기는 NOTES 로 갔다) */
+  window.__nnJnSetView = function(v){ view = (v === 'review') ? 'review' : 'log'; render(); };
 })();
 
 /* ══════════════════════════════════════════════════════════════════════

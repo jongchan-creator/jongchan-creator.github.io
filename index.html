@@ -84,7 +84,6 @@
       <div class="nav-dropdown">
         <button class="nbtn assets-btn" id="nav-assets" onclick="switchPage('assets')">ASSETS<div class="sh"></div></button>
         <button class="nbtn conviction-btn" id="nav-conviction" onclick="switchPage('conviction')">CONVICTION<div class="sh"></div></button>
-        <button class="nbtn journal-btn" id="nav-journal" onclick="switchPage('journal')">JOURNAL<div class="sh"></div></button>
         <button class="nbtn flow-btn" id="nav-flow" onclick="switchPage('flow')">FLOW<div class="sh"></div></button>
       </div>
     </div>
@@ -463,6 +462,7 @@
         <button type="button" class="kn-tab" data-k="lexicon">용어<i>LEXICON</i></button>
         <button type="button" class="kn-tab" data-k="media">미디어<i>MEDIA</i></button>
         <button type="button" class="kn-tab" data-k="economics">경제<i>ECONOMICS</i></button>
+        <button type="button" class="kn-tab" data-k="daily">일기<i>DAILY</i></button>
       </div>
 <div class="kn-pane" id="page-books">
     <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto; position:relative;">
@@ -550,6 +550,31 @@
     </div>
   </div>
   
+</div>
+  </div>
+</div>
+<div class="kn-pane" id="page-daily">
+    <div style="padding:30px 2.5rem 4rem; max-width:1200px; margin:0 auto;">
+    <div style="font-size:9px;letter-spacing:.26em;color:#c2a0e8;margin-bottom:1.2rem;font-family:'Bebas Neue',sans-serif;text-shadow:0 0 10px rgba(194,160,232,.6),0 0 22px rgba(194,160,232,.25)">DAILY</div>
+    <h1 style="font-family:'Pretendard',sans-serif;font-weight:700;font-size:3.2rem;color:#f0ede6;margin-bottom:.5rem;letter-spacing:-.02em;text-shadow:0 0 22px rgba(194,160,232,.3)">투자 일기</h1>
+    <p style="font-size:11px;letter-spacing:.16em;color:rgba(194,160,232,.6);font-weight:300">Today I Learned</p>
+    <div class="cove-line" style="max-width:520px;margin-top:18px;margin-bottom:8px;background:linear-gradient(90deg,#c2a0e8,transparent)"></div>
+    <p class="hold-desc">오늘 배운 이론, 눈에 띈 경제 이슈, 어떤 기업에 대한 생각 — 형식 없이 적습니다.<br/>달력에서 날짜를 누르면 그날 글이 열리고, 없으면 새로 만들어집니다.</p>
+
+    <div class="dl-cal" id="dlCal"></div>
+
+    <div class="editor-layout" id="daily-editor-layout">
+      <div class="editor-sidebar">
+        <button class="add-page-btn" onclick="KnowledgeNotes.create('daily')">+ 새 페이지 추가</button>
+        <button class="add-group-btn" onclick="KnowledgeNotes.createGroup('daily')">+ 새 그룹(토글)</button>
+        <div id="daily-sidebar-list" class="editor-sidebar-list"></div>
+      </div>
+      <div class="editor-main" id="daily-editor-main">
+        <button class="editor-back-btn" onclick="KnowledgeNotes.closeEditor('daily')">← 목록으로</button>
+        <div class="editor-placeholder">위 달력에서 날짜를 누르거나<br/>좌측에서 새 페이지를 만들어 오늘을 기록하세요.</div>
+      </div>
+    </div>
+  </div>
 </div>
   </div>
 </div>
@@ -1074,7 +1099,7 @@
           <div class="as-navgrp">직접 입력 <span>여기 넣은 값이 자산 현황으로 모입니다</span></div>
           <button class="as-navbtn active" data-sec="networth"><span class="as-navi">💎</span> 자산 현황</button>
           <button class="as-navbtn" data-sec="stocks"><span class="as-navi">📈</span> 주식 · 평가액</button>
-          <button class="as-navbtn as-nav-hold" data-sec="holdings"><span class="as-navi">🪙</span> 종목 분석</button>
+          <button class="as-navbtn" data-sec="holdings"><span class="as-navi">🪙</span> 종목 분석</button>
           <button class="as-navbtn" data-sec="realty"><span class="as-navi">🏠</span> 부동산</button>
           <button class="as-navbtn" data-sec="income"><span class="as-navi">💰</span> 소득</button>
 
@@ -1108,7 +1133,7 @@
       <main class="as-content" id="asContent"></main>
 <div class="pf-pane" id="page-portfolio" style="display:none">
     <div class="hold-wrap">
-    <div class="as-sec-head as-sec-hold">HOLDINGS</div>
+    <div class="as-sec-head">HOLDINGS</div>
     <div class="as-sec-sub">종목 하나를 고르면 차트·재무·프로필·뉴스를 한 화면에 모아 봅니다. 수량·평단 같은 <b>금액은 '주식 · 평가액'</b> 칸에서 관리합니다.</div>
     <div class="hold-link" id="asHoldLink" style="display:none"></div>
     <div class="hold-layout">
@@ -2127,7 +2152,7 @@
     assets:   ['nn_assets_v1'],
     holdings: ['nn_hold_v2','nn_hold_order'],
     watch:    ['nn_tb_watch'],
-    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1','nn_diary_v1'],
+    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1','nn_diary_v1','nn_daily_mig_v1'],
     hub:      ['nn_hub_v1','nn_refdesk_v1','nn_masters_v1']
   };
   const KEY2DOC = {};
@@ -3556,6 +3581,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=4"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-diary.js?v=2"></script><script src="nn-backup.js?v=1"></script><script src="nn-wealth.js?v=4"></script><script src="nn-notes.js?v=4"></script>
+<script src="nn-relations.js?v=28"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=5"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=5"></script><script src="nn-mobilenav.js?v=1"></script><script src="nn-review.js?v=1"></script><script src="nn-fonts.js?v=1"></script><script src="nn-backup.js?v=1"></script><script src="nn-wealth.js?v=5"></script><script src="nn-daily.js?v=1"></script><script src="nn-tradelog.js?v=1"></script><script src="nn-notes.js?v=5"></script>
 </body>
 </html>
