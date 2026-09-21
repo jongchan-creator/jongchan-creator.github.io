@@ -317,9 +317,13 @@
   '  letter-spacing:.35em!important;margin-bottom:.2rem!important;opacity:1!important;',
   '  color:#ddc6f5!important;',
   '  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(' + C + ',.5)!important}',
+  /* 영문 부제목 — 복제본이 ECONOMICS 초록을 들고 오므로 일기 보라로 덮는다 */
+  '#page-daily > div:first-child > p:first-of-type:not(.hold-desc){color:#d8c4f0!important;font-weight:600!important;',
+  '  text-shadow:0 1px 5px rgba(0,0,0,.9)!important;opacity:1!important}',
 
   /* ══ ② 달력 ══ */
-  '.dl-cal{max-width:760px;margin:26px 0 30px;font-family:\'Pretendard\',sans-serif;',
+  /* 폭은 아래 패널과 똑같이 — 양 끝이 한 줄로 떨어져야 정돈돼 보인다 */
+  '.dl-cal{max-width:none;margin:26px 0 30px;font-family:\'Pretendard\',sans-serif;',
   '  border-radius:16px;padding:18px 20px 20px;',
   '  background:linear-gradient(180deg,rgba(' + C + ',.07),rgba(10,8,14,.5));',
   '  border:1px solid rgba(' + C + ',.26);',
@@ -353,9 +357,9 @@
   '  color:rgba(255,255,255,.3);padding-bottom:5px}',
   '.dl-wd.sun{color:rgba(255,140,140,.5)}',
   '.dl-wd.sat{color:rgba(140,180,255,.5)}',
-  '.dl-pad{min-height:58px}',
+  '.dl-pad{min-height:66px}',
 
-  '.dl-day{position:relative;min-height:58px;display:flex;flex-direction:column;',
+  '.dl-day{position:relative;min-height:66px;display:flex;flex-direction:column;',
   '  align-items:flex-start;gap:3px;cursor:pointer;border-radius:10px;padding:7px 8px;',
   '  background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.06);',
   '  font-family:inherit;text-align:left;overflow:hidden;transition:.15s}',
@@ -375,7 +379,7 @@
   '.dl-day.has .dl-n{color:#fff;font-weight:600}',
   '.dl-day.has::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;',
   '  border-radius:0 3px 3px 0;background:' + H + ';box-shadow:0 0 9px rgba(' + C + ',.9)}',
-  '.dl-t{font-size:10px;line-height:1.3;color:rgba(255,255,255,.62);',
+  '.dl-t{font-size:11px;line-height:1.3;color:rgba(255,255,255,.62);',
   '  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;',
   '  word-break:break-all}',
   '.dl-day.has:hover .dl-t{color:rgba(255,255,255,.92)}',
@@ -432,6 +436,54 @@
   '  .dl-today{margin-left:0;width:100%;text-align:center;margin-top:4px}',
   '}'
   ].join('');
+  /* ══ ECONOMICS 칸의 모양을 통째로 물려받는다 ══
+     nn-style.css 는 #economics-editor-layout · #page-economics 를 20여 군데에서 따로 꾸민다
+     (흰 패널 기둥 · 목록 스크롤 · 그룹 머리 · 부제목 색 · 모바일 …).
+     #page-daily 는 그 어느 목록에도 없어서 패널 폭·여백이 혼자 달랐다.
+     그래서 불러온 스타일시트를 훑어 economics 규칙을 daily 로 바꿔 한 벌 더 만든다.
+     ECONOMICS 쪽 디자인을 나중에 고쳐도 일기가 저절로 따라간다.
+     ⚠ 이 복제본을 먼저 넣고, 위의 일기 전용 규칙(보라 색 등)을 **뒤에** 넣어야 색이 안 섞인다. */
+  function splitSel(t){
+    var out = [], depth = 0, cur = '';
+    for(var i = 0; i < t.length; i++){
+      var ch = t.charAt(i);
+      if(ch === '(') depth++;
+      else if(ch === ')') depth--;
+      if(ch === ',' && depth === 0){ out.push(cur); cur = ''; } else cur += ch;
+    }
+    if(cur) out.push(cur);
+    return out;
+  }
+  var RX = /#economics-editor-layout|#page-economics/;
+  function swap(sel){
+    return sel.replace(/#economics-editor-layout/g, '#daily-editor-layout')
+              .replace(/#page-economics/g, '#page-daily');
+  }
+  function walk(rules, acc){
+    for(var i = 0; i < rules.length; i++){
+      var r = rules[i];
+      if(r.type === 1 && r.selectorText && RX.test(r.selectorText)){
+        var keep = splitSel(r.selectorText).filter(function(x){ return RX.test(x); });
+        if(keep.length) acc.push(keep.map(function(x){ return swap(x.trim()); }).join(',') + '{' + r.style.cssText + '}');
+      } else if(r.type === 4 && r.cssRules){
+        var inner = [];
+        walk(r.cssRules, inner);
+        if(inner.length) acc.push('@media ' + r.conditionText + '{' + inner.join('') + '}');
+      }
+    }
+  }
+  var clone = [];
+  for(var si = 0; si < document.styleSheets.length; si++){
+    var sh = document.styleSheets[si], rs = null;
+    try{ rs = sh.cssRules; }catch(e){ rs = null; }   /* 다른 도메인(구글 폰트)은 읽을 수 없다 */
+    if(rs) walk(rs, clone);
+  }
+  if(clone.length){
+    var c = document.createElement('style');
+    c.id = 'nnDailyClone'; c.textContent = clone.join('\n');
+    document.head.appendChild(c);
+  }
+
   var s = document.createElement('style');
   s.id = 'nnDailyCss'; s.textContent = CSS;
   document.head.appendChild(s);

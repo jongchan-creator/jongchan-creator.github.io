@@ -124,7 +124,8 @@
   '  max-width:1200px;margin:0 auto;padding:80px 2.5rem 0;font-family:\'Pretendard\',sans-serif}',
   '.kn-tab{display:inline-flex;align-items:baseline;gap:7px;cursor:pointer;',
   '  font-size:13.5px;font-weight:600;color:rgba(255,255,255,.5);',
-  '  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);',
+  /* 평소 배경도 흰 막 대신 어두운 유리 — 허옇게 뜨지 않게 */
+  '  background:rgba(10,10,14,.32);border:1px solid rgba(255,255,255,.12);',
   '  border-radius:10px;padding:9px 16px;transition:.16s;font-family:\'Pretendard\',sans-serif}',
   '.kn-tab i{font-style:normal;font-family:\'Bebas Neue\',sans-serif;font-size:9.5px;',
   '  letter-spacing:.16em;color:rgba(255,255,255,.28)}',
@@ -143,28 +144,33 @@
   '.kn-tab[data-k="economics"]{--kc:#7fd58c;--kg:122,158,126}',
   /* 일기 — HOLDINGS 가 ASSETS 빨강으로 옮겨가며 비운 보라를 물려받았다 */
   '.kn-tab[data-k="daily"]   {--kc:#c2a0e8;--kg:194,160,232}',
-  '.kn-tab:hover{color:var(--kc);border-color:rgba(var(--kg),.55);',
-  '  background:rgba(var(--kg),.10);transform:translateY(-1px);',
-  '  text-shadow:0 0 9px rgba(var(--kg),.55),0 0 20px rgba(var(--kg),.3);',
-  '  box-shadow:0 6px 18px -8px rgba(var(--kg),.65)}',
-  '.kn-tab:hover i{color:rgba(var(--kg),.8)}',
-  '.kn-tab.on{color:var(--kc);border-color:rgba(var(--kg),.55);background:rgba(var(--kg),.14);',
-  '  text-shadow:0 0 8px rgba(var(--kg),.45)}',
-  '.kn-tab.on i{color:rgba(var(--kg),.7)}',
+  /* ⚠ 호버·선택 때 배경을 칠하지 않는다 (2026-09-21)
+     색을 옅게 깐 배경이 사진 배경 위에서 허연 막처럼 보여 상징색을 오히려 죽였다.
+     배경은 그대로 두고 글자·테두리·글로우만 제 색으로 쨍하게 켠다. */
+  '.kn-tab:hover{color:var(--kc);border-color:var(--kc);',
+  '  background:transparent;transform:translateY(-1px);',
+  '  text-shadow:0 0 3px rgba(0,0,0,.9),0 0 8px rgba(var(--kg),.95),0 0 18px rgba(var(--kg),.7),0 0 34px rgba(var(--kg),.4);',
+  '  box-shadow:0 0 0 1px rgba(var(--kg),.35),0 0 18px -4px rgba(var(--kg),.85)}',
+  '.kn-tab:hover i{color:var(--kc)}',
+  '.kn-tab.on{color:var(--kc);border-color:var(--kc);background:transparent;',
+  '  text-shadow:0 0 3px rgba(0,0,0,.9),0 0 8px rgba(var(--kg),.85),0 0 18px rgba(var(--kg),.5)}',
+  '.kn-tab.on i{color:var(--kc)}',
   /* 고른 탭 밑에 색 띠 하나 — 어느 칸을 보고 있는지 눈에 박히게 */
   '.kn-tab{position:relative;overflow:hidden}',
   '.kn-tab::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;',
   '  background:var(--kc);border-radius:2px 2px 0 0;opacity:0;transform:translateY(2px);transition:.18s}',
   '.kn-tab.on::after{opacity:1;transform:none}',
-  /* ── NOTES 네비 버튼 = 형광 주황 ──
-     처음엔 사이트 기본 금색(#e8c47e)을 썼는데 BOOKS(#e8c47e)와 같은 값이라
-     상위 탭과 하위 탭이 구분되지 않았다. 아무도 안 쓰는 형광 주황으로 옮겼다.
-     MACRO 의 주황(#ff8252)은 채도가 낮은 살구색이라 나란히 놓아도 갈린다.
-     RESEARCH 의 형광 연두(#ccff00)와 같은 네온 계열이라 사이트 톤에도 맞는다. */
-  '#nav-notes:hover,#nav-notes.active{color:#ff7a00!important;',
+  /* ── NOTES 네비 버튼 = 카푸치노 (2026-09-21) ──
+     금색(#e8c47e) → BOOKS 와 겹침 → 형광 주황(#ff7a00) → MACRO(#ff8252)와 겹침.
+     그래서 커피에 우유를 탄 카푸치노 갈색으로 옮겼다.
+     노랑(BOOKS)·빨강기 주황(MACRO) 어느 쪽과도 색상 각도가 떨어져 있다. */
+  '#nav-notes:hover,#nav-notes.active{color:#dcae84!important;',
   '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),',
-  '  0 0 7px rgba(255,122,0,.95),0 0 18px rgba(255,122,0,.72),0 0 36px rgba(255,122,0,.42)!important}',
-  '#nav-notes .sh{background:linear-gradient(90deg,transparent,#ff9a3c,transparent)!important}',
+  '  0 0 7px rgba(196,146,104,.95),0 0 18px rgba(196,146,104,.72),0 0 36px rgba(196,146,104,.42)!important}',
+  '#nav-notes .sh{background:linear-gradient(90deg,transparent,#dcae84,transparent)!important}',
+  /* ── 네비 드롭다운 호버의 허연 배경 제거 ──
+     nn-style.css L471 이 hover 에 rgba(255,255,255,.05) 를 깔아 상징색 글자 뒤에 허연 막이 떴다. */
+  '.nav-dropdown .nbtn:hover,.nav-dropdown .nbtn.active{background:transparent!important}',
   /* 합쳐진 칸은 원래 페이지처럼 보이게 — 위 여백만 줄인다 */
   '.kn-pane > div:first-child{padding-top:18px!important}',
   /* 첫 화면만 흰색 모드 */
@@ -173,8 +179,9 @@
   '  color:var(--lp-ink3)!important}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab:hover,',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .kn-tab.on{',
-  '  color:var(--kc)!important;border-color:rgba(var(--kg),.65)!important;',
-  '  background:rgba(var(--kg),.12)!important;text-shadow:none!important}',
+  '  color:var(--kc)!important;border-color:var(--kc)!important;',
+  '  background:transparent!important;',
+  '  text-shadow:0 0 3px rgba(0,0,0,.85),0 0 10px rgba(var(--kg),.9)!important}',
   '@media (max-width:760px){',
   '  .kn-tabs{padding:66px 1.2rem 0;gap:5px}',
   '  .kn-tab{font-size:12.5px;padding:8px 12px}',
