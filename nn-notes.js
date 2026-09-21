@@ -168,6 +168,16 @@
   '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),',
   '  0 0 7px rgba(196,146,104,.95),0 0 18px rgba(196,146,104,.72),0 0 36px rgba(196,146,104,.42)!important}',
   '#nav-notes .sh{background:linear-gradient(90deg,transparent,#dcae84,transparent)!important}',
+  /* ── MACRO = 쨍한 형광 주황 (2026-09-21) ──
+     원래 #ff8252 는 살구빛이 돌아 흐릿했다. 채도를 끝까지 올린 네온 주황으로.
+     네비 버튼과 MACRO 페이지 머리글(아이브로우·영문 부제목)을 같이 바꾼다. */
+  '.nbtn.macro-btn:hover,.nbtn.macro-btn.active,#nav-macro:hover,#nav-macro.active{color:#ff6a00!important;',
+  '  text-shadow:0 0 3px rgba(0,0,0,.85),0 1px 4px rgba(0,0,0,.6),',
+  '  0 0 7px rgba(255,106,0,1),0 0 18px rgba(255,106,0,.8),0 0 38px rgba(255,106,0,.5)!important}',
+  '#nav-macro .sh{background:linear-gradient(90deg,transparent,#ff6a00,transparent)!important}',
+  '.macro-header > div:first-child{color:#ff8a2a!important;',
+  '  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(255,106,0,.7)!important}',
+  '.macro-header > p:first-of-type{color:#ff7a1a!important}',
   /* ── 네비 드롭다운 호버의 허연 배경 제거 ──
      nn-style.css L471 이 hover 에 rgba(255,255,255,.05) 를 깔아 상징색 글자 뒤에 허연 막이 떴다. */
   '.nav-dropdown .nbtn:hover,.nav-dropdown .nbtn.active{background:transparent!important}',

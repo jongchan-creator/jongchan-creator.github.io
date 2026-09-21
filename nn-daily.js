@@ -323,7 +323,7 @@
 
   /* ══ ② 달력 ══ */
   /* 폭은 아래 패널과 똑같이 — 양 끝이 한 줄로 떨어져야 정돈돼 보인다 */
-  '.dl-cal{max-width:none;margin:26px 0 30px;font-family:\'Pretendard\',sans-serif;',
+  '.dl-cal{max-width:none;margin:48px 0 30px;font-family:\'Pretendard\',sans-serif;',
   '  border-radius:16px;padding:18px 20px 20px;',
   '  background:linear-gradient(180deg,rgba(' + C + ',.07),rgba(10,8,14,.5));',
   '  border:1px solid rgba(' + C + ',.26);',
@@ -486,5 +486,305 @@
 
   var s = document.createElement('style');
   s.id = 'nnDailyCss'; s.textContent = CSS;
+  document.head.appendChild(s);
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   그날의 시장 — 일기 본문 위에 붙는 매크로 지표 카드 (2026-09-21)
+
+   무엇을 보여 주나
+     나스닥 · S&P500 · 코스피 · 미 10년물 · 원/달러 · WTI 유가 · 금 · 비트코인
+     8개를 제목 바로 밑에 카드로 띄운다.
+
+   ⚠ '박제'가 핵심이다
+     오늘 글을 열면 실시간으로 받아 note.market 에 저장한다(5분마다 새로).
+     날짜가 지나면 더 이상 받지 않고 **그때 저장한 값을 그대로** 보여 준다.
+     지난 날의 시세를 나중에 소급해 만들 수는 없으므로(무료 API 한계),
+     그날 일기를 한 번도 안 열었으면 그날 시세는 비어 있다 — 그렇다고 솔직히 표시한다.
+     note.market 은 nn_knowledge_vault_v2 안에 들어가므로 클라우드 동기화도 된다.
+
+   어디서 받나 — 사이트가 이미 쓰는 경로만 쓴다
+     ① 프록시(Worker, 매크로 탭에서 설정) /quote?us=…&crypto=btc  +  /kr
+        ^IXIC ^GSPC ^TNX KRW=X CL=F GC=F 를 한 번에
+     ② 못 받은 칸만 보충
+        비트코인 → CoinGecko  /  금 → CoinGecko PAXG(금 1온스 토큰)  /  환율 → open.er-api
+        나머지 → FMP 키가 있으면 FMP
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  if(window.__nnDailyMarket) return;
+
+  var T = 'daily', FRESH = 5 * 60 * 1000;
+  var ITEMS = [
+    {k:'ixic', lb:'나스닥',     en:'NASDAQ',   sym:'^IXIC', dec:2},
+    {k:'spx',  lb:'S&P 500',   en:'S&P500',   sym:'^GSPC', dec:2},
+    {k:'kospi',lb:'코스피',     en:'KOSPI',    kr:true,     dec:2},
+    {k:'tnx',  lb:'미 10년물',  en:'US 10Y',   sym:'^TNX',  dec:3, suf:'%'},
+    {k:'krw',  lb:'원/달러',    en:'USD/KRW',  sym:'KRW=X', dec:1, suf:'원'},
+    {k:'wti',  lb:'WTI 유가',   en:'CRUDE',    sym:'CL=F',  dec:2, pre:'$'},
+    {k:'gold', lb:'금',         en:'GOLD',     sym:'GC=F',  dec:1, pre:'$'},
+    {k:'btc',  lb:'비트코인',   en:'BITCOIN',  btc:true,    dec:0, pre:'$'}
+  ];
+  var FMP = {ixic:'^IXIC', spx:'^GSPC', tnx:'^TNX', wti:'CLUSD', gold:'GCUSD'};
+
+  function KN(){ return window.KnowledgeNotes; }
+  function ls(k){ try{ return (localStorage.getItem(k) || '').trim(); }catch(e){ return ''; } }
+  function worker(){ return ls('nn_worker_url').replace(/\/+$/, ''); }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function ymd(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function num(v){ v = (typeof v === 'string') ? parseFloat(v) : v; return (v == null || isNaN(v)) ? null : Number(v); }
+
+  function get(url, ms){
+    return new Promise(function(res){
+      var done = false, t = setTimeout(function(){ if(!done){ done = true; res(null); } }, ms || 7000);
+      fetch(url).then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(j){ if(!done){ done = true; clearTimeout(t); res(j); } })
+        .catch(function(){ if(!done){ done = true; clearTimeout(t); res(null); } });
+    });
+  }
+
+  /* ── 실시간으로 받기 ── */
+  function fetchLive(){
+    var out = {}, W = worker(), jobs = [];
+    function put(k, p, c){
+      p = num(p); c = num(c);
+      if(p == null || p <= 0) return;
+      if(k === 'tnx' && p > 20) p = p / 10;        /* 일부 소스는 42.5 처럼 10배로 준다 */
+      out[k] = {p: p, c: c};
+    }
+
+    if(W){
+      var syms = ITEMS.filter(function(x){ return x.sym; }).map(function(x){ return x.sym; });
+      jobs.push(get(W + '/quote?us=' + encodeURIComponent(syms.join(',')) + '&crypto=btc').then(function(d){
+        if(!d) return;
+        var us = d.us || {}, cr = d.crypto || {};
+        ITEMS.forEach(function(x){ if(x.sym && us[x.sym]) put(x.k, us[x.sym].price, us[x.sym].chg); });
+        if(cr.btc) put('btc', cr.btc.price, cr.btc.chg);
+      }));
+      jobs.push(get(W + '/kr').then(function(d){
+        if(d && d.kospi) put('kospi', d.kospi.price, d.kospi.chg);
+      }));
+    }
+
+    return Promise.all(jobs).then(function(){
+      var more = [];
+      if(!out.btc || !out.gold){
+        more.push(get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,pax-gold&vs_currencies=usd&include_24hr_change=true').then(function(d){
+          if(!d) return;
+          if(!out.btc && d.bitcoin) put('btc', d.bitcoin.usd, d.bitcoin.usd_24h_change);
+          if(!out.gold && d['pax-gold']){ put('gold', d['pax-gold'].usd, d['pax-gold'].usd_24h_change); if(out.gold) out.gold.via = 'PAXG'; }
+        }));
+      }
+      if(!out.krw){
+        more.push(get('https://open.er-api.com/v6/latest/USD').then(function(d){
+          if(d && d.rates && d.rates.KRW) put('krw', d.rates.KRW, null);
+        }));
+      }
+      var key = ls('nn_fmp_key');
+      if(key){
+        Object.keys(FMP).forEach(function(k){
+          if(out[k]) return;
+          more.push(get('https://financialmodelingprep.com/stable/quote?symbol=' + encodeURIComponent(FMP[k]) + '&apikey=' + encodeURIComponent(key)).then(function(d){
+            var o = Array.isArray(d) ? d[0] : d;
+            if(!o) return;
+            var c = (o.changePercentage != null) ? o.changePercentage : o.changesPercentage;
+            put(k, (o.price != null ? o.price : o.close), c);
+          }));
+        });
+      }
+      return Promise.all(more);
+    }).then(function(){ return out; });
+  }
+
+  /* ── 그리기 ── */
+  function fmt(x, v){
+    if(!v || v.p == null) return '—';
+    var s = v.p.toLocaleString('en-US', {minimumFractionDigits: x.dec, maximumFractionDigits: x.dec});
+    return (x.pre || '') + s + (x.suf ? '<small>' + x.suf + '</small>' : '');
+  }
+  function chg(v){
+    if(!v || v.c == null) return '<span class="dm-c dm-flat">&nbsp;</span>';
+    var up = v.c > 0, dn = v.c < 0;
+    return '<span class="dm-c ' + (up ? 'dm-up' : (dn ? 'dm-dn' : 'dm-flat')) + '">'
+      + (up ? '▲ ' : (dn ? '▼ ' : '')) + (v.c > 0 ? '+' : '') + v.c.toFixed(2) + '%</span>';
+  }
+  function when(ms){
+    var d = new Date(ms), wd = ['일','월','화','수','목','금','토'][d.getDay()];
+    return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + ' (' + wd + ') '
+      + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function html(note, state){
+    var m = note.market, today = ymd(new Date()), day = note.day || today;
+    var h = '<div class="dm-h"><span class="dm-t">MARKET SNAPSHOT</span>';
+    if(m && m.at) h += '<span class="dm-at">' + (day === today ? '' : '그날 박제된 시세 · ') + when(m.at) + ' 기준</span>';
+    if(day === today){
+      h += '<button type="button" class="dm-rf" title="지금 시세로 다시 받기">'
+         + (state === 'busy' ? '받는 중…' : '↻ 새로 받기') + '</button>';
+    }
+    h += '</div>';
+
+    if(!m || !m.items){
+      var msg = day > today ? '아직 오지 않은 날입니다. 그날 이 글을 열면 시세가 자동으로 기록됩니다.'
+              : (day < today ? '이 날은 시세가 기록되지 않았습니다. 시세는 <b>그날 일기를 열 때</b> 자동으로 박제됩니다.'
+              : (state === 'busy' ? '오늘 시세를 받아오는 중입니다…' : '시세를 받지 못했습니다. ↻ 를 눌러 다시 시도해 보세요.'));
+      return h + '<div class="dm-empty">' + msg + '</div>';
+    }
+
+    h += '<div class="dm-g">';
+    ITEMS.forEach(function(x){
+      var v = m.items[x.k];
+      h += '<div class="dm-k' + (v && (v.p != null || v.c != null) ? '' : ' dm-none') + '">'
+        + '<div class="dm-l"><span>' + x.lb + '</span><i>' + (v && v.via ? v.via : x.en) + '</i></div>'
+        + '<div class="dm-v">' + fmt(x, v) + '</div>' + chg(v) + '</div>';
+    });
+    h += '</div>';
+    var miss = ITEMS.filter(function(x){ return !(m.items[x.k] && m.items[x.k].p != null); });
+    if(miss.length && day === today && !worker()){
+      h += '<div class="dm-hint">' + miss.map(function(x){ return x.lb; }).join(' · ')
+         + ' 는 <b>매크로 탭에서 프록시(Worker)</b>를 연결하면 채워집니다.</div>';
+    }
+    return h;
+  }
+
+  /* ── 편집기에 붙이기 ── */
+  var busy = false;
+  function mount(){
+    var k = KN();
+    if(!k || !k.activeIds) return;
+    backfill();
+    var id = k.activeIds[T];
+    var note = id ? (k.data[T] || []).filter(function(n){ return n.id === id; })[0] : null;
+    var area = document.querySelector('#daily-editor-main .editor-scroll-area');
+    if(!note || !area) return;
+
+    var box = area.querySelector('.dl-mkt');
+    if(!box){
+      box = document.createElement('div');
+      box.className = 'dl-mkt';
+      var title = area.querySelector('.note-title-input');
+      area.insertBefore(box, title ? title.nextSibling : area.firstChild);
+      box.addEventListener('click', function(e){
+        var t = e.target;
+        if(t && t.classList && t.classList.contains('dm-rf')) refresh(true);
+      });
+    }
+    box.setAttribute('data-note', note.id);
+    box.innerHTML = html(note, busy ? 'busy' : '');
+
+    var today = ymd(new Date());
+    if((note.day || today) === today && (!note.market || !note.market.at || Date.now() - note.market.at > FRESH)) refresh(false);
+  }
+
+  function refresh(force){
+    if(busy) return;
+    var k = KN(), id = k && k.activeIds && k.activeIds[T];
+    if(!id) return;
+    busy = true;
+    var box = document.querySelector('#daily-editor-main .dl-mkt');
+    if(box){ var b = box.querySelector('.dm-rf'); if(b) b.textContent = '받는 중…'; }
+    fetchLive().then(function(items){
+      busy = false;
+      var note = (k.data[T] || []).filter(function(n){ return n.id === id; })[0];
+      if(!note) return;
+      var got = Object.keys(items).length;
+      if(got){
+        /* 이번에 못 받은 칸은 먼저 받아 둔 값을 남긴다 */
+        var prev = (note.market && note.market.items) || {};
+        Object.keys(prev).forEach(function(x){ if(!items[x]) items[x] = prev[x]; });
+        note.market = {at: Date.now(), items: items};
+        try{ k.save(); }catch(e){}
+      }
+      var b2 = document.querySelector('#daily-editor-main .dl-mkt');
+      if(b2 && b2.getAttribute('data-note') === id) b2.innerHTML = html(note, '');
+    });
+  }
+
+  /* 옛 구조화 일기(nn_diary_v1)가 잡아 둔 등락률을 옮겨 온 글에 붙인다 — 한 번만 */
+  function backfill(){
+    try{
+      if(localStorage.getItem('nn_daily_mkt_mig_v1')) return;
+      var k = KN(), raw = localStorage.getItem('nn_diary_v1');
+      /* 옛 일기를 옮겨 오는 쪽(위 migrate)이 아직 안 끝났으면 다음 기회에 — 순서가 보장되지 않는다 */
+      if(!k || !k.data[T] || !k.data[T].length) return;
+      localStorage.setItem('nn_daily_mkt_mig_v1', '1');
+      if(!raw) return;
+      var o = JSON.parse(raw), n = 0;
+      k.data[T].forEach(function(note){
+        var r = o && note.day && o[note.day], m = r && r.market;
+        if(!m || note.market || typeof m !== 'object') return;
+        var items = {};
+        ['kospi','spx','ixic'].forEach(function(x){ var c = num(m[x]); if(c != null) items[x] = {p: null, c: c}; });
+        if(Object.keys(items).length){ note.market = {at: m.at || Date.parse(note.day + 'T16:00:00'), items: items}; n++; }
+      });
+      if(n) k.save();
+    }catch(e){}
+  }
+
+  function hook(){
+    var k = KN();
+    if(!k || !k.renderEditor || k.renderEditor.__nnMktWrapped) return !!(k && k.renderEditor);
+    var orig = k.renderEditor;
+    var wrapped = function(type){
+      var r = orig.apply(this, arguments);
+      if(type === T) setTimeout(mount, 0);
+      return r;
+    };
+    wrapped.__nnMktWrapped = true;
+    k.renderEditor = wrapped;
+    return true;
+  }
+
+  (function wait(n){
+    if(hook()){ backfill(); return; }
+    if(n > 60) return;
+    setTimeout(function(){ wait(n + 1); }, 200);
+  })(0);
+
+  window.__nnDailyMarket = { mount: mount, refresh: refresh, fetch: fetchLive, items: ITEMS };
+})();
+
+(function(){
+  'use strict';
+  if(document.getElementById('nnDailyMktCss')) return;
+  var CSS = [
+  /* 편집기 바탕이 흰색이라 카드는 어둡게 — 숫자가 한눈에 튀어 보이게 */
+  '.dl-mkt{margin:14px 0 18px;border-radius:14px;padding:14px 16px 13px;',
+  '  background:linear-gradient(135deg,#17131f 0%,#0d0c12 100%);',
+  '  border:1px solid rgba(194,160,232,.38);font-family:\'Pretendard\',sans-serif;',
+  '  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px -16px rgba(30,15,60,.75)}',
+  '.dm-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px}',
+  '.dm-t{font-family:\'Bebas Neue\',sans-serif;font-size:14px;letter-spacing:.24em;',
+  '  color:#c2a0e8;text-shadow:0 0 10px rgba(194,160,232,.55)}',
+  '.dm-at{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.02em}',
+  '.dm-rf{margin-left:auto;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;',
+  '  padding:5px 11px;border-radius:999px;color:#d8c4f0;background:rgba(194,160,232,.12);',
+  '  border:1px solid rgba(194,160,232,.45);transition:.15s}',
+  '.dm-rf:hover{background:rgba(194,160,232,.26);color:#fff}',
+  '.dm-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}',
+  '.dm-k{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);',
+  '  border-radius:10px;padding:9px 11px 8px;min-width:0}',
+  '.dm-k.dm-none{opacity:.45}',
+  '.dm-l{display:flex;align-items:baseline;justify-content:space-between;gap:6px}',
+  '.dm-l span{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.72);white-space:nowrap}',
+  '.dm-l i{font-style:normal;font-family:\'Bebas Neue\',sans-serif;font-size:10px;',
+  '  letter-spacing:.12em;color:rgba(255,255,255,.3);white-space:nowrap}',
+  '.dm-v{font-family:\'Bebas Neue\',sans-serif;font-size:24px;letter-spacing:.03em;',
+  '  color:#fff;line-height:1.1;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+  '.dm-v small{font-size:13px;margin-left:2px;color:rgba(255,255,255,.55)}',
+  '.dm-c{display:block;font-size:11.5px;font-weight:700;margin-top:1px;font-variant-numeric:tabular-nums}',
+  '.dm-up{color:#4ade80}',
+  '.dm-dn{color:#ff5b5b}',
+  '.dm-flat{color:rgba(255,255,255,.4)}',
+  '.dm-empty{font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.62);padding:6px 2px}',
+  '.dm-empty b,.dm-hint b{color:#d8c4f0}',
+  '.dm-hint{margin-top:9px;font-size:11px;color:rgba(255,255,255,.45)}',
+  '@media (max-width:760px){',
+  '  .dm-g{grid-template-columns:repeat(2,1fr)}',
+  '  .dm-v{font-size:21px}',
+  '}'
+  ].join('');
+  var s = document.createElement('style');
+  s.id = 'nnDailyMktCss'; s.textContent = CSS;
   document.head.appendChild(s);
 })();
