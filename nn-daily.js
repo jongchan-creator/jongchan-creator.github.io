@@ -788,3 +788,334 @@
   s.id = 'nnDailyMktCss'; s.textContent = CSS;
   document.head.appendChild(s);
 })();
+
+/* ══════════════════════════════════════════════════════════════════════
+   일기 목록 — 카드 갤러리 (2026-09-21)
+
+   달력 밑 흰 패널을 글 목록 대신 **카드 격자**로 보여 준다.
+     전체 · N   [최신순] [월별 보기 ▾] [필터 ▾]            🔍
+     ┌ 표지 ┐ ┌ 표지 ┐ ┌ 표지 ┐ ┌ 표지 ┐
+     제목 두 줄 / 날짜 · 글자 수 · 나스닥 등락
+
+   표지 — 본문에 이미지가 있으면 첫 이미지를, 없으면 날짜로 만든 표지를 쓴다.
+          (그날 시세가 박제돼 있으면 표지 위에 나스닥 등락 배지)
+
+   ⚠ 글을 편집 중일 때(activeIds.daily 가 있을 때)는 원래 목록을 그대로 둔다.
+     편집 화면 왼쪽의 좁은 목록 자리에 카드 격자는 맞지 않는다.
+     KnowledgeNotes.renderSidebar 가 원래 목록을 그린 **뒤에** 갈아 끼우므로
+     엔진 쪽 코드는 건드리지 않는다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  'use strict';
+  if(window.__nnDailyGallery) return;
+
+  var T = 'daily', PAGE = 24;
+  var st = { sort: 'new', month: '', filter: '', q: '', open: false, shown: PAGE };
+  var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+  function KN(){ return window.KnowledgeNotes; }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function ymd(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function text(html){
+    return String(html || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+  }
+  function firstImg(html){
+    var m = String(html || '').match(/<img[^>]+src=["']([^"']+)["']/i);
+    return m ? m[1] : '';
+  }
+  /* 제목이 날짜뿐이면 본문 첫 문장을 제목처럼 쓴다 */
+  function heading(n){
+    var t = String(n.title || '').trim();
+    var only = /^\d{4}년\s*\d{1,2}월\s*\d{1,2}일\s*$/.test(t);
+    if(t && !only) return t;
+    var b = text(n.content);
+    return b ? (b.length > 60 ? b.slice(0, 60) + '…' : b) : (t || '제목 없음');
+  }
+  function when(day){
+    if(!day) return '';
+    var t = ymd(new Date()), y = new Date(); y.setDate(y.getDate() - 1);
+    if(day === t) return '오늘';
+    if(day === ymd(y)) return '어제';
+    var p = day.split('-'), thisYear = String(new Date().getFullYear()) === p[0];
+    return (thisYear ? '' : p[0] + '년 ') + (+p[1]) + '월 ' + (+p[2]) + '일';
+  }
+  function nasdaq(n){
+    var it = n.market && n.market.items && n.market.items.ixic;
+    return (it && it.c != null) ? Number(it.c) : null;
+  }
+
+  function list(){
+    var k = KN(), a = ((k && k.data && k.data[T]) || []).slice();
+    var q = st.q.trim().toLowerCase();
+    a = a.filter(function(n){
+      if(st.month && String(n.day || '').slice(0, 7) !== st.month) return false;
+      if(st.filter === 'img' && !firstImg(n.content)) return false;
+      if(st.filter === 'mkt' && !(n.market && n.market.items)) return false;
+      if(st.filter === 'empty' && text(n.content)) return false;
+      if(q && (String(n.title || '') + ' ' + text(n.content)).toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    a.sort(function(x, y){
+      var c = String(y.day || '').localeCompare(String(x.day || ''));
+      return st.sort === 'new' ? c : -c;
+    });
+    return a;
+  }
+
+  function months(){
+    var k = KN(), seen = {}, out = [];
+    ((k && k.data && k.data[T]) || []).forEach(function(n){
+      var m = String(n.day || '').slice(0, 7);
+      if(m && !seen[m]){ seen[m] = 1; out.push(m); }
+    });
+    return out.sort().reverse();
+  }
+
+  function cover(n){
+    var img = firstImg(n.content), d = String(n.day || '').split('-'), c = nasdaq(n);
+    var h = '<div class="dg-cv">';
+    if(img){
+      h += '<img src="' + esc(img) + '" alt="" loading="lazy">';
+    } else {
+      var dt = n.day ? new Date(+d[0], +d[1] - 1, +d[2]) : null;
+      h += '<div class="dg-gen">'
+        + '<span class="dg-gm">' + (dt ? MON[dt.getMonth()] + ' · ' + d[0] : '') + '</span>'
+        + '<span class="dg-gd">' + (dt ? +d[2] : '—') + '</span>'
+        + '<span class="dg-gw">' + (dt ? ['SUN','MON','TUE','WED','THU','FRI','SAT'][dt.getDay()] : '') + '</span>'
+        + '</div>';
+    }
+    h += '<span class="dg-badge">📔</span>';
+    if(c != null){
+      h += '<span class="dg-mk ' + (c >= 0 ? 'up' : 'dn') + '">NASDAQ ' + (c >= 0 ? '▲ +' : '▼ ') + c.toFixed(2) + '%</span>';
+    }
+    var len = text(n.content).length;
+    if(len) h += '<span class="dg-len">' + Math.max(1, Math.round(len / 500)) + '분 읽기</span>';
+    return h + '</div>';
+  }
+
+  function card(n){
+    var len = text(n.content).length;
+    return '<div class="dg-card" data-id="' + esc(n.id) + '" tabindex="0">'
+      + cover(n)
+      + '<div class="dg-t">' + esc(heading(n)) + '</div>'
+      + '<div class="dg-meta"><span>' + esc(when(n.day)) + '</span>'
+      +   '<i></i><span>' + (len ? len.toLocaleString() + '자' : '빈 글') + '</span>'
+      +   (n.market && n.market.items ? '<i></i><span class="dg-m-ok">시세 박제</span>' : '')
+      + '</div>'
+      + '<button type="button" class="dg-del" data-del="' + esc(n.id) + '" title="삭제">✕</button>'
+      + '</div>';
+  }
+
+  function render(){
+    var k = KN(), host = document.getElementById('daily-sidebar-list');
+    if(!k || !host) return;
+    if(k.activeIds && k.activeIds[T]){ document.getElementById('daily-editor-layout').classList.remove('dg-on'); return; }
+    document.getElementById('daily-editor-layout').classList.add('dg-on');
+
+    var all = ((k.data && k.data[T]) || []).length, a = list();
+    var ms = months(), mLabel = st.month ? (+st.month.slice(5)) + '월 · ' + st.month.slice(0, 4) : '월별 보기';
+    var fLabel = {img:'사진 있는 글', mkt:'시세 박제된 글', empty:'빈 글'}[st.filter] || '필터';
+
+    var h = '<div class="dg-top">'
+      + '<div class="dg-h">전체 · ' + a.length + (a.length !== all ? '<small> / ' + all + '</small>' : '') + '</div>'
+      + '<div class="dg-srch' + (st.open ? ' on' : '') + '">'
+      +   '<input type="text" class="dg-q" placeholder="제목·본문 검색" value="' + esc(st.q) + '">'
+      +   '<button type="button" class="dg-sbtn" data-act="search" aria-label="검색">'
+      +     '<svg viewBox="0 0 20 20" width="20" height="20"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      +   '</button></div></div>'
+      + '<div class="dg-bar">'
+      +   '<button type="button" class="dg-chip" data-act="sort">⇅ ' + (st.sort === 'new' ? '최신순' : '오래된순') + '</button>'
+      +   '<span class="dg-sep"></span>'
+      +   '<label class="dg-chip dg-sel' + (st.month ? ' on' : '') + '">' + mLabel + ' ▾'
+      +     '<select data-act="month"><option value="">전체 기간</option>'
+      +     ms.map(function(m){ return '<option value="' + m + '"' + (m === st.month ? ' selected' : '') + '>' + m.slice(0, 4) + '년 ' + (+m.slice(5)) + '월</option>'; }).join('')
+      +     '</select></label>'
+      +   '<label class="dg-chip dg-sel' + (st.filter ? ' on' : '') + '">' + fLabel + ' ☰'
+      +     '<select data-act="filter"><option value="">전체</option>'
+      +     '<option value="img"' + (st.filter === 'img' ? ' selected' : '') + '>사진 있는 글</option>'
+      +     '<option value="mkt"' + (st.filter === 'mkt' ? ' selected' : '') + '>시세 박제된 글</option>'
+      +     '<option value="empty"' + (st.filter === 'empty' ? ' selected' : '') + '>아직 비어 있는 글</option>'
+      +     '</select></label>'
+      +   ((st.month || st.filter || st.q) ? '<button type="button" class="dg-reset" data-act="reset">초기화</button>' : '')
+      + '</div>';
+
+    if(!a.length){
+      h += '<div class="dg-empty">' + (all ? '조건에 맞는 일기가 없습니다.'
+         : '아직 쓴 일기가 없습니다.<br>위 달력의 <b>＋ 오늘 쓰기</b>를 눌러 첫 글을 시작해 보세요.') + '</div>';
+    } else {
+      h += '<div class="dg-grid">' + a.slice(0, st.shown).map(card).join('') + '</div>';
+      if(a.length > st.shown) h += '<button type="button" class="dg-more" data-act="more">더 보기 (' + (a.length - st.shown) + ')</button>';
+    }
+    host.innerHTML = h;
+  }
+
+  function bind(){
+    var host = document.getElementById('daily-sidebar-list');
+    if(!host || host.__dgBound) return !!host;
+    host.__dgBound = true;
+    host.addEventListener('click', function(e){
+      var k = KN(); if(!k || (k.activeIds && k.activeIds[T])) return;
+      var t = e.target;
+      while(t && t !== host && !(t.getAttribute && (t.getAttribute('data-act') || t.getAttribute('data-del') || t.classList.contains('dg-card')))) t = t.parentNode;
+      if(!t || t === host) return;
+      var act = t.getAttribute('data-act');
+      if(t.getAttribute('data-del')){
+        e.stopPropagation();
+        k.delete(T, t.getAttribute('data-del'), e);
+        return;
+      }
+      if(act === 'sort'){ st.sort = st.sort === 'new' ? 'old' : 'new'; render(); return; }
+      if(act === 'more'){ st.shown += PAGE; render(); return; }
+      if(act === 'reset'){ st.month = ''; st.filter = ''; st.q = ''; st.open = false; st.shown = PAGE; render(); return; }
+      if(act === 'search'){
+        st.open = !st.open; if(!st.open) st.q = '';
+        render();
+        if(st.open){ var q = host.querySelector('.dg-q'); if(q) q.focus(); }
+        return;
+      }
+      if(t.classList.contains('dg-card')){
+        k.select(T, t.getAttribute('data-id'));
+        var ed = document.getElementById('daily-editor-layout');
+        if(ed) try{ ed.scrollIntoView({behavior:'smooth', block:'start'}); }catch(x){}
+      }
+    });
+    host.addEventListener('change', function(e){
+      var a = e.target.getAttribute && e.target.getAttribute('data-act');
+      if(a === 'month'){ st.month = e.target.value; st.shown = PAGE; render(); }
+      if(a === 'filter'){ st.filter = e.target.value; st.shown = PAGE; render(); }
+    });
+    host.addEventListener('input', function(e){
+      if(!e.target.classList.contains('dg-q')) return;
+      st.q = e.target.value;
+      var pos = e.target.selectionStart;
+      render();
+      var q = host.querySelector('.dg-q');
+      if(q){ q.focus(); try{ q.setSelectionRange(pos, pos); }catch(x){} }
+    });
+    host.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && e.target.classList && e.target.classList.contains('dg-card')){
+        e.target.click();
+      }
+    });
+    return true;
+  }
+
+  function hook(){
+    var k = KN();
+    if(!k || !k.renderSidebar) return false;
+    if(!k.renderSidebar.__dgWrapped){
+      var orig = k.renderSidebar;
+      var w = function(type){
+        var r = orig.apply(this, arguments);
+        if(type === T){ bind(); render(); }
+        return r;
+      };
+      w.__dgWrapped = true;
+      /* 앞서 감싼 표시(달력 다시 그리기)도 그대로 물려준다 */
+      w.__nnDailyWrapped = orig.__nnDailyWrapped;
+      k.renderSidebar = w;
+    }
+    bind(); render();
+    return true;
+  }
+
+  (function wait(n){
+    if(hook()) return;
+    if(n > 60) return;
+    setTimeout(function(){ wait(n + 1); }, 200);
+  })(0);
+
+  window.__nnDailyGallery = { render: render, state: st };
+})();
+
+(function(){
+  'use strict';
+  if(document.getElementById('nnDailyGalCss')) return;
+  var L = '#daily-editor-layout.dg-on';
+  var CSS = [
+  /* 흰 패널 높이를 1100px 고정에서 내용만큼으로 — 카드 수에 따라 자란다 */
+  L + '{height:auto!important;max-height:none!important}',
+  L + ' .editor-sidebar{height:auto!important;min-height:420px;padding:26px 28px 30px!important;overflow:visible!important}',
+  L + ' .editor-sidebar-list{height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important}',
+  L + ' .add-group-btn{display:none!important}',
+
+  '.dg-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}',
+  '.dg-h{font-family:\'Pretendard\',sans-serif;font-size:24px;font-weight:800;color:#141417;letter-spacing:-.02em}',
+  '.dg-h small{font-size:15px;font-weight:600;color:#9a9aa3}',
+  '.dg-srch{margin-left:auto;display:flex;align-items:center;gap:6px}',
+  '.dg-q{width:0;opacity:0;padding:0;border:1px solid transparent;border-radius:999px;',
+  '  font-family:inherit;font-size:13px;color:#141417;background:#f4f3f7;transition:.2s;outline:none}',
+  '.dg-srch.on .dg-q{width:220px;opacity:1;padding:8px 14px;border-color:rgba(0,0,0,.12)}',
+  '.dg-sbtn{width:38px;height:38px;border-radius:50%;border:none;background:transparent;cursor:pointer;',
+  '  color:#141417;display:flex;align-items:center;justify-content:center;transition:.15s}',
+  '.dg-sbtn:hover{background:#f1eff6}',
+
+  '.dg-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:22px}',
+  '.dg-chip{position:relative;display:inline-flex;align-items:center;gap:5px;cursor:pointer;',
+  '  font-family:\'Pretendard\',sans-serif;font-size:13px;font-weight:600;color:#2a2a30;',
+  '  background:#f1f0f5;border:1px solid transparent;border-radius:999px;padding:8px 14px;transition:.15s}',
+  '.dg-chip:hover{background:#e7e4ef}',
+  '.dg-chip.on{background:rgba(194,160,232,.22);border-color:rgba(124,80,176,.45);color:#5b3791}',
+  '.dg-sel select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}',
+  '.dg-sep{width:1px;height:20px;background:rgba(0,0,0,.12);margin:0 2px}',
+  '.dg-reset{border:none;background:none;cursor:pointer;font-size:12.5px;color:#7a58a8;',
+  '  text-decoration:underline;font-family:inherit}',
+
+  '.dg-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 22px}',
+  '.dg-card{position:relative;cursor:pointer;outline:none;min-width:0}',
+  '.dg-cv{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;',
+  '  background:#ece9f2;box-shadow:0 1px 0 rgba(0,0,0,.04);transition:transform .2s,box-shadow .2s}',
+  '.dg-card:hover .dg-cv,.dg-card:focus .dg-cv{transform:translateY(-3px);',
+  '  box-shadow:0 14px 26px -14px rgba(60,30,110,.55)}',
+  '.dg-cv img{width:100%;height:100%;object-fit:cover;display:block}',
+  '.dg-gen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;',
+  '  background:radial-gradient(120% 90% at 20% 10%,#3a2a58 0%,#1b1526 55%,#0f0c16 100%);color:#fff}',
+  '.dg-gm{font-family:\'Bebas Neue\',sans-serif;font-size:13px;letter-spacing:.28em;color:#c2a0e8}',
+  '.dg-gd{font-family:\'Bebas Neue\',sans-serif;font-size:58px;line-height:.95;letter-spacing:.02em;',
+  '  text-shadow:0 0 24px rgba(194,160,232,.45)}',
+  '.dg-gw{font-family:\'Bebas Neue\',sans-serif;font-size:12px;letter-spacing:.3em;color:rgba(255,255,255,.55)}',
+  '.dg-badge{position:absolute;left:10px;top:10px;width:32px;height:32px;border-radius:50%;',
+  '  background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;font-size:15px;',
+  '  box-shadow:0 2px 6px rgba(0,0,0,.18)}',
+  /* 날짜 표지 글자와 겹치지 않게 왼쪽 아래 */
+  '.dg-mk{position:absolute;left:10px;bottom:10px;font-size:10.5px;font-weight:800;letter-spacing:.02em;',
+  '  padding:3px 8px;border-radius:6px;background:rgba(10,8,14,.72);font-family:\'Pretendard\',sans-serif}',
+  '.dg-mk.up{color:#4ade80}',
+  '.dg-mk.dn{color:#ff6b6b}',
+  '.dg-len{position:absolute;right:10px;bottom:10px;font-size:11px;font-weight:700;color:#fff;',
+  '  padding:3px 8px;border-radius:6px;background:rgba(10,8,14,.72);font-family:\'Pretendard\',sans-serif}',
+  '.dg-t{margin-top:12px;font-family:\'Pretendard\',sans-serif;font-size:15.5px;font-weight:700;',
+  '  line-height:1.42;color:#16161a;letter-spacing:-.01em;display:-webkit-box;-webkit-line-clamp:2;',
+  '  -webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}',
+  '.dg-card:hover .dg-t{color:#5b3791}',
+  '.dg-meta{margin-top:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;',
+  '  font-family:\'Pretendard\',sans-serif;font-size:12.5px;color:#8b8b94}',
+  '.dg-meta i{width:1px;height:10px;background:rgba(0,0,0,.18)}',
+  '.dg-m-ok{color:#6c49a3;font-weight:600}',
+  '.dg-del{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;border:none;',
+  '  background:rgba(10,8,14,.72);color:#fff;font-size:12px;cursor:pointer;opacity:0;transition:.15s;z-index:2}',
+  '.dg-card:hover .dg-del{opacity:1}',
+  '.dg-del:hover{background:#e5484d}',
+  '.dg-more{display:block;margin:30px auto 0;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;',
+  '  padding:10px 26px;border-radius:999px;border:1px solid rgba(0,0,0,.15);background:#fff;color:#2a2a30}',
+  '.dg-more:hover{background:#f4f2f8}',
+  '.dg-empty{padding:60px 10px;text-align:center;font-family:\'Pretendard\',sans-serif;font-size:14px;',
+  '  line-height:1.8;color:#8b8b94}',
+  '.dg-empty b{color:#5b3791}',
+
+  '@media (max-width:1100px){ .dg-grid{grid-template-columns:repeat(3,minmax(0,1fr))} }',
+  '@media (max-width:820px){ .dg-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 14px}',
+  '  ' + L + ' .editor-sidebar{padding:18px 14px 22px!important}',
+  '  .dg-h{font-size:20px} .dg-srch.on .dg-q{width:150px} }',
+  '@media (max-width:480px){ .dg-grid{grid-template-columns:1fr} }'
+  ].join('');
+  var s = document.createElement('style');
+  s.id = 'nnDailyGalCss'; s.textContent = CSS;
+  document.head.appendChild(s);
+})();
