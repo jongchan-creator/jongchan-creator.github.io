@@ -895,13 +895,22 @@ async function polFetch(target, workerPath){
   var W=(typeof workerUrl==='function')?workerUrl():'';
   var tries=[];
   if(W && workerPath) tries.push(W+workerPath);
+  /* 공용 프록시는 자주 막히거나 느려진다 — 하나만 믿지 않고 차례로 시도한다 (2026-09-21) */
   tries.push('https://api.allorigins.win/raw?url='+encodeURIComponent(target));
+  tries.push('https://corsproxy.io/?url='+encodeURIComponent(target));
+  tries.push('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(target));
   var last=null;
   for(var i=0;i<tries.length;i++){
     try{
-      var r=await fetch(tries[i]);
+      var ctl=(typeof AbortController==='function')?new AbortController():null;
+      var tm=ctl?setTimeout(function(){ try{ctl.abort();}catch(x){} },9000):null;
+      var r=await fetch(tries[i], ctl?{signal:ctl.signal}:undefined);
+      if(tm) clearTimeout(tm);
       if(!r.ok) throw new Error('HTTP '+r.status);
-      return await r.text();
+      var body=await r.text();
+      /* 프록시가 오류 페이지(HTML)를 200 으로 돌려주는 경우를 걸러 낸다 */
+      if(/^\s*<(!doctype|html)/i.test(body)) throw new Error('proxy html');
+      return body;
     }catch(e){ last=e; }
   }
   throw last||new Error('fail');
@@ -919,6 +928,17 @@ async function polUS(){
     if(!isNaN(lo)&&!isNaN(hi)) return { lo:lo, hi:hi, date:(c[0]||'').trim(), src:'FRED' };
   }
   throw new Error('no valid row');
+}
+
+/* 미국 — FMP 실효 연방기금금리 (FRED 가 막혔을 때의 대안) */
+async function polUSfmp(){
+  var K=(typeof fmpKey==='function')?fmpKey():''; if(!K) return null;
+  var r=await fetch('https://financialmodelingprep.com/stable/economic-indicators?name=federalFunds&apikey='+encodeURIComponent(K));
+  if(!r.ok) return null;
+  var a=await r.json(); if(!Array.isArray(a)||!a.length) return null;
+  a.sort(function(x,y){ return String(y.date||'').localeCompare(String(x.date||'')); });
+  var v=parseFloat(a[0].value); if(isNaN(v)) return null;
+  return { v:v, date:String(a[0].date||'') };
 }
 
 /* 한국 — 한국은행 ECOS (무료 키 필요). 722Y001 / 0101000 = 한국은행 기준금리 */
@@ -1001,7 +1021,13 @@ async function polRefresh(manual){
      한국 키를 넣었는데 '미국'만 보이는 혼란이 있었다. */
   var usErr='', krErr='';
   try{ var u=await polUS(); P.us={lo:u.lo, hi:u.hi, date:u.date, src:u.src, at:Date.now()}; okN++; }
-  catch(e){ usErr = (e && e.message) || '연결 실패'; errs.push('미국'); }
+  catch(e){
+    /* FRED 가 막히면 FMP 의 실효 연방기금금리로 대신한다 (키가 있을 때) */
+    var eff=null;
+    try{ eff=await polUSfmp(); }catch(e2){}
+    if(eff){ P.us={eff:eff.v, date:eff.date, src:'FMP', at:Date.now()}; okN++; }
+    else { usErr = (e && e.message) || '연결 실패'; errs.push('미국'); }
+  }
   if(polEcosKey()){
     try{ var k2=await polKR(); P.kr={v:k2.v, date:k2.date, src:k2.src, at:Date.now()}; okN++; }
     catch(e){ krErr = (e && e.message) || '연결 실패'; errs.push('한국'); }
@@ -1040,6 +1066,7 @@ function polMaybeRefresh(){
 function polUSTxt(){
   var P=polLoad();
   if(P.us && P.us.hi!=null) return { txt:P.us.lo.toFixed(2)+'–'+P.us.hi.toFixed(2)+'%', sub:'Fed Funds · '+polAgo(P.us.at), live:true };
+  if(P.us && P.us.eff!=null) return { txt:P.us.eff.toFixed(2)+'%', sub:'Fed Funds 실효 · '+polAgo(P.us.at), live:true };
   var m=(P.manual&&P.manual.us||'').trim();
   if(m) return { txt:m, sub:'Fed Funds · 직접 입력', live:false };
   return { txt:'3.50–3.75%', sub:'Fed Funds · 참고값', live:false };
@@ -1059,35 +1086,110 @@ function polAgo(ts){
   return Math.floor(s/86400)+'일 전 갱신';
 }
 
-function renderRates(){
+/* ══════════ 미국 국채 금리 (2026-09-21 재작성) ══════════
+   예전에는 프록시에 /rates 가 없으면 4.44% · 4.18% · 4.62% 라는 **고정값**이
+   실시간처럼 계속 떠 있었다. 이제는 실제 값을 여러 경로로 찾고, 못 찾으면 솔직히 '—'.
+     ① 프록시 /rates                (있으면 가장 정확)
+     ② 프록시 /quote  ^TNX ^TYX 2YY=F  (지수가 뜨는 프록시면 거의 확실히 된다)
+     ③ FMP treasury-rates           (FMP 키가 있을 때 · 일별)
+     ④ FRED DGS2·DGS10·DGS30         (공용 프록시 경유 · 일별 종가)
+   받은 값은 nn_yields_v1 에 남겨, 다음에 열 때 먼저 보여 주고 뒤에서 새로 받는다. */
+var YLD_KEY='nn_yields_v1', yldBusy=false;
+function yldLoad(){ try{ var o=JSON.parse(localStorage.getItem(YLD_KEY)||'null'); return (o&&o.y10!=null)?o:null; }catch(e){ return null; } }
+function yldSave(o){ try{ localStorage.setItem(YLD_KEY, JSON.stringify(o)); }catch(e){} }
+function yNum(v){ v=parseFloat(v); if(isNaN(v)||v<=0) return null; if(v>20) v=v/10; return v; }
+
+async function fetchYields(){
+  var W=(typeof workerUrl==='function')?workerUrl():'';
+  function tj(u){ return fetch(u).then(function(r){ return r.ok?r.json():null; }).catch(function(){ return null; }); }
+  if(W){
+    var d=await tj(W+'/rates');
+    if(d && yNum(d.y10)!=null) return { y2:yNum(d.y2), y10:yNum(d.y10), y30:yNum(d.y30), src:'live', via:'프록시' };
+    var q=await tj(W+'/quote?us='+encodeURIComponent('^TNX,^TYX,2YY=F,^FVX'));
+    var u=(q&&q.us)||{};
+    function yq(s){ return u[s]?yNum(u[s].price):null; }
+    if(yq('^TNX')!=null) return { y2:yq('2YY=F'), y5:yq('^FVX'), y10:yq('^TNX'), y30:yq('^TYX'), src:'live', via:'Yahoo' };
+  }
+  var K=(typeof fmpKey==='function')?fmpKey():'';
+  if(K){
+    var a=await tj('https://financialmodelingprep.com/stable/treasury-rates?apikey='+encodeURIComponent(K));
+    if(Array.isArray(a)&&a.length){
+      a.sort(function(x,y){ return String(y.date||'').localeCompare(String(x.date||'')); });
+      var t=a[0];
+      if(yNum(t.year10)!=null) return { y2:yNum(t.year2), y10:yNum(t.year10), y30:yNum(t.year30), src:'daily', via:'FMP', date:String(t.date||'') };
+    }
+  }
+  try{
+    var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2,DGS10,DGS30', '/fred?id=DGS2,DGS10,DGS30');
+    var lines=String(txt||'').trim().split(/\r?\n/);
+    for(var i=lines.length-1;i>=1;i--){
+      var c=lines[i].split(',');
+      if(c.length<4) continue;
+      var y10=yNum(c[2]);
+      if(y10!=null) return { y2:yNum(c[1]), y10:y10, y30:yNum(c[3]), src:'daily', via:'FRED', date:(c[0]||'').trim() };
+    }
+  }catch(e){}
+  return null;
+}
+
+function yldSub(tag, o){
+  if(!o) return tag+(yldBusy?' · 불러오는 중':' · 연결 필요');
+  if(o.src==='live'){
+    var s=Math.floor((Date.now()-(o.at||0))/60000);
+    return tag+' · '+(s<2?'실시간':s<60?s+'분 전':Math.floor(s/60)+'시간 전')+' ('+o.via+')';
+  }
+  return tag+' · '+(o.date?o.date.slice(5).replace('-','/')+' 종가':'일별')+' ('+o.via+')';
+}
+function yRow(label, tag, v, o){
+  return tRow(label, yldSub(tag,o), 0, null, {raw: v!=null ? v.toFixed(2)+'%' : '—'});
+}
+function paintRates(o){
   var host=document.getElementById('ratesRows'); if(!host) return;
   var pu=polUSTxt(), pk=polKRTxt();
+  var sp=(o && o.y10!=null && o.y2!=null) ? (o.y10-o.y2) : null;
   host.innerHTML=
     tRow('미국 기준금리',pu.sub,0,null,{raw:pu.txt})+
     tRow('한국 기준금리',pk.sub,0,null,{raw:pk.txt})+
-    tRow('미국 10년물','US 10Y',0,null,{raw:'4.44%'})+
-    tRow('미국 2년물','US 2Y',0,null,{raw:'4.18%'})+
-    tRow('미국 30년물','US 30Y',0,null,{raw:'4.62%'})+
-    tRow('장단기 스프레드','10Y-2Y',0,null,{raw:'+0.26%p'});
-  renderRatesWorker();
+    yRow('미국 2년물','US 2Y', o&&o.y2, o)+
+    yRow('미국 10년물','US 10Y', o&&o.y10, o)+
+    yRow('미국 30년물','US 30Y', o&&o.y30, o)+
+    tRow('장단기 스프레드','10Y−2Y'+(sp!=null?(sp<0?' · 역전':''):' · 계산 불가'),0,null,{raw: sp!=null ? (sp>=0?'+':'')+sp.toFixed(2)+'%p' : '—'});
+  var tag=document.getElementById('ratesTag');
+  if(tag){
+    var polLive = pu.live || pk.live;
+    if(o && o.src==='live'){ tag.textContent='실시간'; tag.className='live-tag'; }
+    else if(o){ tag.textContent='일별 종가'; tag.className='live-tag'; }
+    else if(yldBusy){ tag.textContent='불러오는 중'; tag.className='sim-tag'; }
+    else { tag.textContent=polLive?'국채 금리 연결 필요':'연결 필요'; tag.className='sim-tag'; }
+  }
+  if(polMsg){ host.insertAdjacentHTML('beforeend','<div class="t-err" style="margin-top:6px">'+polMsg+'</div>'); }
 }
-async function renderRatesWorker(){
-  var W=(typeof workerUrl==='function')?workerUrl():''; if(!W) return;
-  try{
-    var r=await fetch(W+'/rates'); if(!r.ok) return;
-    var d=await r.json();
-    if(!d || d.y10==null) return;
-    var sp = (d.y10!=null && d.y2!=null) ? (d.y10-d.y2) : null;
-    var host=$id('ratesRows'); if(!host) return;
-    host.innerHTML=
-      (function(){ var pu=polUSTxt(); return tRow('미국 기준금리',pu.sub,0,null,{raw:pu.txt}); })()+
-      (function(){ var pk=polKRTxt(); return tRow('한국 기준금리',pk.sub,0,null,{raw:pk.txt}); })()+
-      (d.y10!=null?tRow('미국 10년물','US 10Y · 실시간',0,null,{raw:d.y10.toFixed(2)+'%'}):'')+
-      (d.y2!=null?tRow('미국 2년물','US 2Y · 실시간',0,null,{raw:d.y2.toFixed(2)+'%'}):'')+
-      (d.y30!=null?tRow('미국 30년물','US 30Y · 실시간',0,null,{raw:d.y30.toFixed(2)+'%'}):'')+
-      (sp!=null?tRow('장단기 스프레드','10Y-2Y',0,null,{raw:(sp>=0?'+':'')+sp.toFixed(2)+'%p'}):'');
-    var tg=document.querySelector('#ratesRows'); 
-  }catch(e){}
+function renderRates(){
+  var cached=yldLoad();
+  paintRates(cached);
+  if(yldBusy) return;
+  /* 실시간 값은 2분, 일별 값은 30분 안이면 다시 받지 않는다 */
+  if(cached && Date.now()-(cached.at||0) < (cached.src==='live'?120000:1800000)) return;
+  yldBusy=true;
+  fetchYields().then(function(o){
+    yldBusy=false;
+    if(o){ o.at=Date.now(); yldSave(o); }
+    paintRates(o||cached);
+    if(typeof renderSummary==='function'){ try{ var e=document.getElementById('sm-us10'); if(e){ var y=o||cached; setSmYield(y); } }catch(x){} }
+  });
+}
+/* 예전 이름 — 커맨드 팔레트 '매크로 데이터 새로고침' 이 부른다. 캐시를 무시하고 새로 받는다 */
+function renderRatesWorker(){ var c=yldLoad(); if(c){ c.at=0; yldSave(c); } renderRates(); }
+/* 매크로 탭을 보고 있는 동안 5분마다 금리를 새로 받는다 */
+setInterval(function(){
+  var pg=document.getElementById('page-macro');
+  if(pg && pg.classList.contains('active') && !document.hidden) renderRates();
+}, 300000);
+
+function setSmYield(y){
+  var a=document.getElementById('sm-us10'), b=document.getElementById('sm-us2');
+  if(a) a.innerHTML = (y&&y.y10!=null) ? y.y10.toFixed(2)+'%' : '—';
+  if(b) b.innerHTML = (y&&y.y2!=null) ? y.y2.toFixed(2)+'%' : '—';
 }
 
 function renderSummary(vix,fng,dxy){
@@ -1095,8 +1197,8 @@ function renderSummary(vix,fng,dxy){
   setSm('sm-vix', (vix||(18.4+rndChg(0,.05)*18)).toFixed(2));
   setSm('sm-fng', (fng||Math.round(50+rndChg(0,.3)*30))+' <span class="sm-chg t-neu">/100</span>');
   setSm('sm-dxy', (dxy||(105.2+rndChg(0,.004)*105)).toFixed(2));
-  setSm('sm-us10', (4.44+rndChg(0,.008)).toFixed(2)+'%');
-  setSm('sm-us2', (4.18+rndChg(0,.008)).toFixed(2)+'%');
+  /* 예전엔 4.44·4.18 에 난수를 섞은 가짜 값이었다 — 받은 금리를 쓰고, 없으면 '—' */
+  setSmYield(yldLoad());
   setSm('sm-krw', '₩'+fmt(krwRate,1));
 }
 

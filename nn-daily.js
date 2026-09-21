@@ -894,8 +894,6 @@
     if(c != null){
       h += '<span class="dg-mk ' + (c >= 0 ? 'up' : 'dn') + '">NASDAQ ' + (c >= 0 ? '▲ +' : '▼ ') + c.toFixed(2) + '%</span>';
     }
-    var len = text(n.content).length;
-    if(len) h += '<span class="dg-len">' + Math.max(1, Math.round(len / 500)) + '분 읽기</span>';
     return h + '</div>';
   }
 
@@ -906,7 +904,6 @@
       + '<div class="dg-t">' + esc(heading(n)) + '</div>'
       + '<div class="dg-meta"><span>' + esc(when(n.day)) + '</span>'
       +   '<i></i><span>' + (len ? len.toLocaleString() + '자' : '빈 글') + '</span>'
-      +   (n.market && n.market.items ? '<i></i><span class="dg-m-ok">시세 박제</span>' : '')
       + '</div>'
       + '<button type="button" class="dg-del" data-del="' + esc(n.id) + '" title="삭제">✕</button>'
       + '</div>';
