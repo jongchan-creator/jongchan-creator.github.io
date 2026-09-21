@@ -888,37 +888,50 @@ function polLoad(){
 }
 function polSave(o){ try{ localStorage.setItem(POL_KEY, JSON.stringify(o)); }catch(e){} }
 function polEcosKey(){ try{ return (localStorage.getItem('nn_ecos_key')||'').trim(); }catch(e){ return ''; } }
-var polBusy=false, polMsg='';
+var polBusy=false, polMsg='', polErr={};
 
 /* 프록시 경유 (Worker 우선 → 공용 프록시) */
-async function polFetch(target, workerPath){
+/* ⚠ check(body) — 받은 내용이 '진짜 그 자료'인지 확인한다 (2026-09-21)
+   프록시(Worker)에 /fred · /ecos 기능이 없으면 모르는 주소에도 200 과 엉뚱한 JSON 을 돌려준다.
+   예전엔 그걸 성공으로 믿고 멈춰서, 뒤의 공용 프록시는 시도조차 안 했다.
+   ('자료가 비어 있습니다' 오류가 6번 다 똑같이 뜬 원인) 이제 내용이 틀리면 다음 경로로 넘어간다. */
+var polSkip={};   /* 이번 방문에서 '엉뚱한 응답'·CORS 로 실패한 경로는 다시 두드리지 않는다 */
+async function polFetch(target, workerPath, check){
   var W=(typeof workerUrl==='function')?workerUrl():'';
   var tries=[];
-  if(W && workerPath) tries.push(W+workerPath);
-  /* 공용 프록시는 자주 막히거나 느려진다 — 하나만 믿지 않고 차례로 시도한다 (2026-09-21) */
-  tries.push('https://api.allorigins.win/raw?url='+encodeURIComponent(target));
-  tries.push('https://corsproxy.io/?url='+encodeURIComponent(target));
-  tries.push('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(target));
+  if(W && workerPath) tries.push({k:'worker', u:W+workerPath});
+  tries.push({k:'direct', u:target});   /* 자료 쪽이 브라우저 직접 호출(CORS)을 허용하면 이게 가장 빠르다 */
+  /* 공용 프록시는 자주 막히거나 느려진다 — 하나만 믿지 않고 차례로 시도한다 */
+  tries.push({k:'allorigins', u:'https://api.allorigins.win/raw?url='+encodeURIComponent(target)});
+  tries.push({k:'corsproxy',  u:'https://corsproxy.io/?url='+encodeURIComponent(target)});
+  tries.push({k:'codetabs',   u:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(target)});
+  var host=String(target).replace(/^https?:\/\//,'').split('/')[0];
   var last=null;
   for(var i=0;i<tries.length;i++){
+    var key=host+'|'+tries[i].k;
+    if(polSkip[key]) continue;
     try{
       var ctl=(typeof AbortController==='function')?new AbortController():null;
       var tm=ctl?setTimeout(function(){ try{ctl.abort();}catch(x){} },9000):null;
-      var r=await fetch(tries[i], ctl?{signal:ctl.signal}:undefined);
+      var r=await fetch(tries[i].u, ctl?{signal:ctl.signal}:undefined);
       if(tm) clearTimeout(tm);
       if(!r.ok) throw new Error('HTTP '+r.status);
       var body=await r.text();
       /* 프록시가 오류 페이지(HTML)를 200 으로 돌려주는 경우를 걸러 낸다 */
-      if(/^\s*<(!doctype|html)/i.test(body)) throw new Error('proxy html');
+      if(/^\s*<(!doctype|html)/i.test(body)){ polSkip[key]=1; throw new Error('proxy html'); }
+      if(check && !check(body)){ polSkip[key]=1; throw new Error('엉뚱한 응답'); }
       return body;
-    }catch(e){ last=e; }
+    }catch(e){
+      last=e;
+      if(tries[i].k==='direct' && e && e.name==='TypeError') polSkip[key]=1;   /* CORS 로 막힘 */
+    }
   }
   throw last||new Error('fail');
 }
 
 /* 미국 — FRED 무료 CSV (키 불필요). 목표범위 하단·상단 */
 async function polUS(){
-  var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL,DFEDTARU', '/fred?id=DFEDTARL,DFEDTARU');
+  var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL,DFEDTARU', '/fred?id=DFEDTARL,DFEDTARU', function(b){ return /^\s*(observation_date|DATE)\s*,/i.test(b); });
   var lines=String(txt||'').trim().split(/\r?\n/);
   if(lines.length<2) throw new Error('no data');
   for(var i=lines.length-1;i>=1;i--){
@@ -977,7 +990,8 @@ async function polKR(){
     try{
       var txt = await polFetch(url, '/ecos?key=' + encodeURIComponent(k)
               + '&code=' + C.code + '&cycle=' + C.cycle + '&item=' + C.item
-              + '&from=' + f8 + '&to=' + t8);
+              + '&from=' + f8 + '&to=' + t8,
+              function(b){ return /"(StatisticSearch|RESULT)"/.test(b); });
       var jj = JSON.parse(txt);
 
       if(jj && jj.RESULT && jj.RESULT.CODE){
@@ -1034,6 +1048,7 @@ async function polRefresh(manual){
   }
   polSave(P);
   polBusy=false;
+  polErr = { us: usErr, kr: krErr, at: Date.now() };
   polMsg = errs.length ? (errs.join(' · ')+' 조회 실패') : '';
   renderRates();
   if(manual && typeof fmpToast==='function'){
@@ -1044,11 +1059,13 @@ async function polRefresh(manual){
       msg = '✅ 한국 기준금리 ' + P.kr.v + '% (' + (P.kr.date||'') + ') 반영됨'
           + (usErr ? ' · 미국은 실패' : '');
     } else if(hasKey && krErr){
-      msg = '한국 기준금리 실패 — ' + String(krErr).slice(0,80);
+      /* 긴 기술 메시지는 화면 위에 띄우지 않는다 — 자세한 이유는 금리 카드 아래에 */
+      msg = /인증키/.test(krErr) ? '한국 기준금리 — 인증키를 다시 확인해 주세요'
+                                  : '한국 기준금리를 아직 받지 못했습니다 · 이유는 금리 카드 아래에';
     } else if(okN){
       msg = '✅ 기준금리를 갱신했습니다' + (errs.length ? ' (' + errs.join('·') + ' 실패)' : '');
     } else {
-      msg = '기준금리를 불러오지 못했습니다 — ' + String(usErr || '연결 실패').slice(0,80);
+      msg = '기준금리를 불러오지 못했습니다 · 이유는 금리 카드 아래에';
     }
     fmpToast(msg, (hasKey ? !krErr : okN) ? 'ok' : 'out');
   }
@@ -1120,7 +1137,7 @@ async function fetchYields(){
     }
   }
   try{
-    var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2,DGS10,DGS30', '/fred?id=DGS2,DGS10,DGS30');
+    var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2,DGS10,DGS30', '/fred?id=DGS2,DGS10,DGS30', function(b){ return /^\s*(observation_date|DATE)\s*,/i.test(b); });
     var lines=String(txt||'').trim().split(/\r?\n/);
     for(var i=lines.length-1;i>=1;i--){
       var c=lines[i].split(',');
@@ -1162,8 +1179,48 @@ function paintRates(o){
     else if(yldBusy){ tag.textContent='불러오는 중'; tag.className='sim-tag'; }
     else { tag.textContent=polLive?'국채 금리 연결 필요':'연결 필요'; tag.className='sim-tag'; }
   }
-  if(polMsg){ host.insertAdjacentHTML('beforeend','<div class="t-err" style="margin-top:6px">'+polMsg+'</div>'); }
+  host.insertAdjacentHTML('beforeend', polWarnHTML());
 }
+/* 기준금리를 못 받았을 때 카드 아래에 붙는 안내 — 예전엔 10px·흐린 빨강이라 안 보였다 */
+function polWarnHTML(){
+  if(polBusy) return '<div class="rt-warn rt-busy"><b>기준금리를 받는 중…</b></div>';
+  var e=polErr||{}, lines=[];
+  if(e.us){
+    lines.push('<li><b>미국</b> — FRED(미 연준 자료)에 닿지 못했습니다. '
+      + '<span>프록시(Worker)에 <code>/fred</code> 를 추가하거나 FMP 키를 넣으면 해결됩니다.</span></li>');
+  }
+  if(e.kr){
+    var why = /인증키/.test(e.kr) ? '인증키가 올바르지 않다고 합니다. 한국은행에서 받은 키를 다시 확인해 주세요.'
+            : /ECOS INFO|자료가 비어/.test(e.kr) ? '한국은행 서버에는 닿았지만 기준금리 자료가 돌아오지 않았습니다.'
+            : '한국은행 서버에 닿지 못했습니다(중간 프록시가 막힘).';
+    lines.push('<li><b>한국</b> — ' + why
+      + (/인증키/.test(e.kr) ? '' : ' <span>프록시(Worker)에 <code>/ecos</code> 를 추가하면 가장 확실합니다.</span>') + '</li>');
+  }
+  if(!lines.length) return '';
+  return '<div class="rt-warn"><div class="rt-warn-h">⚠ 기준금리를 실제 값으로 받지 못했습니다 — 지금 보이는 건 <b>참고값</b>입니다'
+    + '<button type="button" class="rt-retry" onclick="window.__polRefresh&&window.__polRefresh(true)">다시 시도</button></div>'
+    + '<ul>' + lines.join('') + '</ul></div>';
+}
+(function(){
+  if(document.getElementById('nnRtWarnCss')) return;
+  var st=document.createElement('style'); st.id='nnRtWarnCss';
+  st.textContent=[
+    '.rt-warn{margin:14px 0 4px;padding:12px 14px;border-radius:10px;font-family:Pretendard,sans-serif;',
+    '  background:rgba(255,140,40,.10);border:1px solid rgba(255,150,60,.45);color:rgba(255,236,215,.95)}',
+    '.rt-warn-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;font-weight:700;line-height:1.5}',
+    '.rt-warn-h b{color:#ffb347}',
+    '.rt-retry{margin-left:auto;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 12px;',
+    '  border-radius:999px;border:1px solid rgba(255,160,70,.7);background:rgba(255,140,40,.18);color:#ffd4a3}',
+    '.rt-retry:hover{background:rgba(255,140,40,.32);color:#fff}',
+    '.rt-warn ul{margin:8px 0 0;padding-left:18px}',
+    '.rt-warn li{font-size:12px;line-height:1.65;color:rgba(255,236,215,.9);margin-top:3px}',
+    '.rt-warn li b{color:#fff}',
+    '.rt-warn li span{color:rgba(255,236,215,.62)}',
+    '.rt-warn code{font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(0,0,0,.35);color:#ffd4a3}',
+    '.rt-busy{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}'
+  ].join('');
+  document.head.appendChild(st);
+})();
 function renderRates(){
   var cached=yldLoad();
   paintRates(cached);
