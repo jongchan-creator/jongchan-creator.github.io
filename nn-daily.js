@@ -158,37 +158,88 @@
     if(touched){ var k = KN(); if(k){ a.sort(byDayDesc); k.save(); } }
   }
 
-  /* ── 달력 ── */
+  /* ── 달력 ──
+     예전 것은 정사각형 칸에 숫자와 점만 찍는 수준이라 너무 단조로웠다.
+     지금은 한 장의 카드로 묶고, 칸 안에 그날 글 제목까지 보여 준다. */
+  var MON = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
+             'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+
+  /* 오늘(또는 어제)부터 거꾸로 며칠 연달아 썼나 */
+  function streak(map){
+    var d = new Date(), n = 0;
+    if(!map[ymd(d)]) d.setDate(d.getDate() - 1);   /* 오늘 아직 안 썼으면 어제부터 */
+    while(map[ymd(d)]){ n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
   function paint(){
     var box = document.getElementById('dlCal');
     if(!box) return;
     stampNew();
 
     var y = cur.getFullYear(), m = cur.getMonth();
-    var first = new Date(y, m, 1), lead = first.getDay();
+    var lead = new Date(y, m, 1).getDay();
     var days = new Date(y, m + 1, 0).getDate();
     var map = byDay(), t = todayStr(), i;
+    var st = streak(map), total = notes().length;
 
-    var h = '<div class="dl-cal-top">'
-      + '<button type="button" class="dl-nav" data-go="-1">‹</button>'
-      + '<span class="dl-mon">' + y + '. ' + pad(m + 1) + '</span>'
-      + '<button type="button" class="dl-nav" data-go="1">›</button>'
-      + '<button type="button" class="dl-today" data-d="' + t + '">오늘 쓰기</button>'
-      + '<span class="dl-count">이 달 ' + monthCount(y, m, map) + '일 기록</span>'
-      + '</div><div class="dl-grid">';
+    var h = '<div class="dl-head">'
+      + '<div class="dl-mrow">'
+      +   '<button type="button" class="dl-nav" data-go="-1" aria-label="이전 달">‹</button>'
+      +   '<span class="dl-y">' + y + '</span>'
+      +   '<span class="dl-mon">' + MON[m] + '</span>'
+      +   '<button type="button" class="dl-nav" data-go="1" aria-label="다음 달">›</button>'
+      +   '<button type="button" class="dl-today" data-d="' + t + '">'
+      +     (map[t] ? '오늘 글 열기' : '＋ 오늘 쓰기') + '</button>'
+      + '</div>'
+      + '<div class="dl-stats">'
+      +   '<span class="dl-st"><b>' + monthCount(y, m, map) + '</b>일 이 달</span>'
+      +   (st ? '<span class="dl-st dl-fire"><b>' + st + '</b>일 연속</span>' : '')
+      +   '<span class="dl-st"><b>' + total + '</b>편 전체</span>'
+      + '</div></div>';
 
+    h += '<div class="dl-grid">';
     var wd = ['일','월','화','수','목','금','토'];
-    for(i = 0; i < 7; i++) h += '<div class="dl-wd">' + wd[i] + '</div>';
+    for(i = 0; i < 7; i++){
+      h += '<div class="dl-wd' + (i === 0 ? ' sun' : (i === 6 ? ' sat' : '')) + '">' + wd[i] + '</div>';
+    }
     for(i = 0; i < lead; i++) h += '<div class="dl-pad"></div>';
     for(i = 1; i <= days; i++){
       var d = y + '-' + pad(m + 1) + '-' + pad(i);
-      var cls = 'dl-day' + (map[d] ? ' has' : '') + (d === t ? ' today' : '');
-      h += '<button type="button" class="' + cls + '" data-d="' + d + '">'
+      var note = map[d], dow = (lead + i - 1) % 7;
+      var cls = 'dl-day';
+      if(note) cls += ' has';
+      if(d === t) cls += ' today';
+      if(d > t)  cls += ' future';
+      if(dow === 0) cls += ' sun';
+      if(dow === 6) cls += ' sat';
+      h += '<button type="button" class="' + cls + '" data-d="' + d + '"'
+         + (note ? ' title="' + escAttr(note.title || '') + '"' : '') + '>'
          + '<span class="dl-n">' + i + '</span>'
-         + (map[d] ? '<span class="dl-dot"></span>' : '') + '</button>';
+         + (note && preview(note) ? '<span class="dl-t">' + esc(preview(note)) + '</span>' : '')
+         + (d === t ? '<span class="dl-badge">오늘</span>' : '')
+         + '</button>';
     }
     box.innerHTML = h + '</div>';
   }
+
+  /* 칸 안에 보여 줄 한 줄.
+     제목이 '2026년 9월 12일' 뿐이면 날짜가 이미 칸에 적혀 있으니 군더더기다.
+     그럴 땐 본문 첫 글자들을 대신 보여 준다. 그것도 없으면 왼쪽 색 띠만 남긴다. */
+  function preview(note){
+    var t = String(note.title || '');
+    var m = t.match(/^\d{4}년\s*\d{1,2}월\s*\d{1,2}일\s*(.*)$/);
+    var rest = m ? (m[1] || '') : t;
+    if(rest.trim()) return cut(rest, 26);
+    var body = String(note.content || '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+      .replace(/\s+/g, ' ').trim();
+    return body ? cut(body, 26) : '';
+  }
+  function cut(s, n){ return s.length > n ? s.slice(0, n) + '…' : s; }
+  function escAttr(s){ return esc(s).replace(/"/g, '&quot;'); }
 
   function monthCount(y, m, map){
     var p = y + '-' + pad(m + 1) + '-', n = 0;
@@ -254,42 +305,132 @@
 (function(){
   'use strict';
   if(document.getElementById('nnDailyCss')) return;
-  var C = '194,160,232', H = '#c2a0e8';      /* 일기 색 — HOLDINGS 가 비운 보라를 물려받았다 */
+  var C = '194,160,232', H = '#c2a0e8';   /* 일기 색 — HOLDINGS 가 비운 보라 */
   var CSS = [
-  '.dl-cal{max-width:520px;margin:22px 0 26px;font-family:\'Pretendard\',sans-serif}',
-  '.dl-cal-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}',
-  '.dl-nav{width:26px;height:26px;border-radius:7px;cursor:pointer;line-height:1;',
+  /* ══ ① 머리글을 다른 칸과 똑같이 ══
+     nn-style.css 에 #page-books·#page-economics… 를 줄줄이 적어 놓은 규칙이 둘 있는데
+     (L3214 아이브로우 / L3299 위 여백) 나중에 만든 #page-daily 는 거기 없어서
+     혼자 위로 붙고 영문 글자도 작고 얇았다. 같은 값을 여기서 그대로 준다.
+     ⚠ nn-style.css 를 고치지 않는다 — 규칙 순서가 바뀌면 안 되는 파일이다. */
+  '#page-daily > div:first-child{padding-top:94px!important}',
+  '#page-daily > div > div:first-child{font-size:13.5px!important;font-weight:700!important;',
+  '  letter-spacing:.35em!important;margin-bottom:.2rem!important;opacity:1!important;',
+  '  color:#ddc6f5!important;',
+  '  text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(' + C + ',.5)!important}',
+
+  /* ══ ② 달력 ══ */
+  '.dl-cal{max-width:760px;margin:26px 0 30px;font-family:\'Pretendard\',sans-serif;',
+  '  border-radius:16px;padding:18px 20px 20px;',
+  '  background:linear-gradient(180deg,rgba(' + C + ',.07),rgba(10,8,14,.5));',
+  '  border:1px solid rgba(' + C + ',.26);',
+  '  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 18px 40px -26px rgba(' + C + ',.8)}',
+
+  '.dl-head{margin-bottom:16px}',
+  '.dl-mrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap}',
+  '.dl-nav{width:28px;height:28px;border-radius:9px;cursor:pointer;line-height:1;',
   '  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);',
-  '  color:rgba(255,255,255,.75);font-size:15px;transition:.15s}',
-  '.dl-nav:hover{background:rgba(' + C + ',.18);border-color:rgba(' + C + ',.5);color:' + H + '}',
-  '.dl-mon{font-family:\'Bebas Neue\',sans-serif;font-size:17px;letter-spacing:.1em;',
-  '  color:rgba(255,255,255,.9);min-width:74px}',
-  '.dl-today{margin-left:4px;cursor:pointer;font-size:12px;font-weight:600;padding:5px 12px;',
-  '  border-radius:999px;color:' + H + ';background:rgba(' + C + ',.13);',
-  '  border:1px solid rgba(' + C + ',.45);transition:.16s;font-family:inherit}',
-  '.dl-today:hover{background:rgba(' + C + ',.26);border-color:' + H + ';',
-  '  box-shadow:0 0 16px -4px ' + H + '}',
-  '.dl-count{margin-left:auto;font-size:11.5px;color:rgba(255,255,255,.42)}',
-  '.dl-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}',
-  '.dl-wd{text-align:center;font-size:10.5px;color:rgba(255,255,255,.32);padding-bottom:3px}',
-  '.dl-pad{aspect-ratio:1}',
-  '.dl-day{position:relative;aspect-ratio:1;display:flex;flex-direction:column;',
-  '  align-items:center;justify-content:center;gap:2px;cursor:pointer;border-radius:8px;',
-  '  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);',
-  '  color:rgba(255,255,255,.55);font-size:12.5px;font-family:inherit;transition:.14s}',
-  '.dl-day:hover{background:rgba(' + C + ',.16);border-color:rgba(' + C + ',.5);color:#fff;',
-  '  transform:translateY(-1px)}',
-  '.dl-day.has{color:#fff;background:rgba(' + C + ',.1);border-color:rgba(' + C + ',.32)}',
-  '.dl-day.today{border-color:rgba(255,255,255,.45)}',
-  '.dl-day.today .dl-n{font-weight:700}',
-  '.dl-dot{width:4px;height:4px;border-radius:50%;background:' + H + ';',
-  '  box-shadow:0 0 6px ' + H + '}',
-  /* 첫 화면(흰 배경) 모드 */
-  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-day{background:rgba(0,0,0,.03);',
-  '  border-color:rgba(138,106,36,.2);color:var(--lp-ink3)}',
-  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-mon,',
+  '  color:rgba(255,255,255,.7);font-size:16px;transition:.15s;flex-shrink:0}',
+  '.dl-nav:hover{background:rgba(' + C + ',.2);border-color:rgba(' + C + ',.6);color:' + H + ';',
+  '  box-shadow:0 0 14px -4px ' + H + '}',
+  '.dl-y{font-family:\'Bebas Neue\',sans-serif;font-size:25px;letter-spacing:.06em;',
+  '  color:#fff;line-height:1}',
+  '.dl-mon{font-family:\'Bebas Neue\',sans-serif;font-size:14px;letter-spacing:.22em;',
+  '  color:' + H + ';text-shadow:0 0 12px rgba(' + C + ',.55);line-height:1;padding-top:3px}',
+  '.dl-today{margin-left:auto;cursor:pointer;font-size:12px;font-weight:700;padding:7px 15px;',
+  '  border-radius:999px;color:' + H + ';background:rgba(' + C + ',.14);',
+  '  border:1px solid rgba(' + C + ',.5);transition:.16s;font-family:inherit;white-space:nowrap}',
+  '.dl-today:hover{background:rgba(' + C + ',.3);border-color:' + H + ';color:#fff;',
+  '  box-shadow:0 0 20px -5px ' + H + '}',
+  '.dl-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;',
+  '  padding-top:11px;border-top:1px solid rgba(255,255,255,.08)}',
+  '.dl-st{font-size:11.5px;color:rgba(255,255,255,.45);letter-spacing:.01em}',
+  '.dl-st b{font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:.04em;',
+  '  color:rgba(255,255,255,.92);margin-right:3px}',
+  '.dl-fire b{color:' + H + ';text-shadow:0 0 10px rgba(' + C + ',.6)}',
+
+  '.dl-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}',
+  '.dl-wd{text-align:center;font-size:10.5px;font-weight:600;letter-spacing:.06em;',
+  '  color:rgba(255,255,255,.3);padding-bottom:5px}',
+  '.dl-wd.sun{color:rgba(255,140,140,.5)}',
+  '.dl-wd.sat{color:rgba(140,180,255,.5)}',
+  '.dl-pad{min-height:58px}',
+
+  '.dl-day{position:relative;min-height:58px;display:flex;flex-direction:column;',
+  '  align-items:flex-start;gap:3px;cursor:pointer;border-radius:10px;padding:7px 8px;',
+  '  background:rgba(255,255,255,.028);border:1px solid rgba(255,255,255,.06);',
+  '  font-family:inherit;text-align:left;overflow:hidden;transition:.15s}',
+  '.dl-n{font-family:\'Bebas Neue\',sans-serif;font-size:14px;letter-spacing:.04em;',
+  '  color:rgba(255,255,255,.5);line-height:1}',
+  '.dl-day.sun .dl-n{color:rgba(255,150,150,.62)}',
+  '.dl-day.sat .dl-n{color:rgba(150,185,255,.62)}',
+  '.dl-day.future{opacity:.55}',
+  '.dl-day.future:hover{opacity:1}',
+  '.dl-day:hover{background:rgba(' + C + ',.15);border-color:rgba(' + C + ',.55);',
+  '  transform:translateY(-2px);opacity:1;',
+  '  box-shadow:0 10px 22px -12px ' + H + '}',
+  '.dl-day:hover .dl-n{color:#fff}',
+
+  /* 글이 있는 날 — 왼쪽에 색 띠 + 제목 미리보기 */
+  '.dl-day.has{background:rgba(' + C + ',.12);border-color:rgba(' + C + ',.34)}',
+  '.dl-day.has .dl-n{color:#fff;font-weight:600}',
+  '.dl-day.has::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:3px;',
+  '  border-radius:0 3px 3px 0;background:' + H + ';box-shadow:0 0 9px rgba(' + C + ',.9)}',
+  '.dl-t{font-size:10px;line-height:1.3;color:rgba(255,255,255,.62);',
+  '  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;',
+  '  word-break:break-all}',
+  '.dl-day.has:hover .dl-t{color:rgba(255,255,255,.92)}',
+
+  /* 오늘 */
+  '.dl-day.today{border-color:rgba(255,255,255,.5)}',
+  '.dl-day.today .dl-n{color:#fff;font-weight:700}',
+  '.dl-badge{position:absolute;right:6px;top:6px;font-size:8.5px;font-weight:700;',
+  '  letter-spacing:.06em;color:rgba(10,8,14,.9);background:rgba(255,255,255,.88);',
+  '  border-radius:4px;padding:1px 5px;line-height:1.4}',
+
+  /* ══ ③ 첫 화면(흰 배경) 모드 ══ */
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-cal{',
+  '  background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.62));',
+  '  border-color:rgba(138,106,36,.34);',
+  '  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 16px 34px -26px rgba(60,45,20,.6)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-mon{color:#7b4fb0;text-shadow:none}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-nav{color:var(--lp-ink2);',
+  '  background:rgba(0,0,0,.04);border-color:rgba(138,106,36,.3)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-today{color:#6c41a0;',
+  '  background:rgba(' + C + ',.22);border-color:rgba(124,80,176,.55)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-fire b{color:#7b4fb0;text-shadow:none}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-stats{border-top-color:rgba(138,106,36,.25)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-y{color:var(--lp-ink)}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-wd{color:var(--lp-ink3)}',
-  '@media (max-width:760px){ .dl-cal{max-width:none} }'
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-st{color:var(--lp-ink3)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-st b{color:var(--lp-ink)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-day{background:rgba(0,0,0,.035);',
+  '  border-color:rgba(138,106,36,.2)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-day .dl-n{color:var(--lp-ink2)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-day.has{background:rgba(' + C + ',.22);',
+  '  border-color:rgba(' + C + ',.6)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-day.has .dl-n,',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-t{color:var(--lp-ink)}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .dl-badge{color:#fff;background:rgba(40,30,20,.85)}',
+
+  /* ══ ④ '새 페이지 추가' 가 안 보이던 문제 ══
+     nn-style.css L2559 가 흰 패널용 색(#333·12px·500)을 !important 로 전역에 박아
+     큰 흰 패널 위에서 글씨가 묻혔다. 지식 칸 안에서만 또렷하게 올린다. */
+  '.kn-pane .add-page-btn{font-size:13px!important;font-weight:700!important;',
+  '  color:#1b1b1f!important;background:rgba(0,0,0,.055)!important;',
+  '  border:1px dashed rgba(0,0,0,.36)!important;padding:12px 13px!important;',
+  '  letter-spacing:.01em!important}',
+  '.kn-pane .add-page-btn:hover{background:rgba(0,0,0,.1)!important;color:#000!important;',
+  '  border-color:rgba(0,0,0,.6)!important}',
+  '.kn-pane .add-group-btn{font-size:12.5px!important;font-weight:700!important;',
+  '  color:#8a6a24!important;border-color:rgba(138,106,36,.75)!important}',
+
+  '@media (max-width:760px){',
+  '  .dl-cal{max-width:none;padding:14px 13px 15px}',
+  '  .dl-grid{gap:3px}',
+  '  .dl-day,.dl-pad{min-height:46px}',
+  '  .dl-t{display:none}',
+  '  .dl-today{margin-left:0;width:100%;text-align:center;margin-top:4px}',
+  '}'
   ].join('');
   var s = document.createElement('style');
   s.id = 'nnDailyCss'; s.textContent = CSS;
