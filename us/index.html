@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>우리 둘</title>
+<meta name="description" content="둘이 같이 쓰는 캘린더 · 할 일 · 메모">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="우리 둘">
+<meta property="og:description" content="둘이 같이 쓰는 캘린더 · 할 일 · 메모">
+<meta property="og:image" content="https://jongchan-creator.github.io/us/icon-512.png">
+<meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F0E0D" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="우리 둘">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://script.google.com">
+<script>
+/* 지난번 앱 배경색으로 먼저 칠해 두기 — 열 때 하얗게 번쩍이지 않게 */
+(function(){
+  var c='', d='';
+  try{ c=localStorage.getItem('ourtwo:bg')||''; d=localStorage.getItem('ourtwo:dark')||''; }catch(e){}
+  if(!/^#[0-9a-f]{3,8}$/i.test(c)) return;
+  var r=document.documentElement, m=document.querySelectorAll('meta[name="theme-color"]');
+  r.style.background=c; r.setAttribute('data-dark', d==='1'?'1':'0');
+  for(var i=0;i<m.length;i++) m[i].setAttribute('content', c);
+})();
+</script>
+<style>
+:root{
+  --bg:#F5F2EC; --surface:#FFFFFF; --soft:#F0ECE5;
+  --ink:#1C1B19; --ink2:#736C63; --ink3:#ADA59B;
+  --line2:#D7CFC2; --hair:rgba(40,32,20,.075);
+  --gold:#A3825A; --gold-soft:#F3ECE1;
+  --ok:#4C7A57; --err:#B4483F;
+  --e2:0 1px 2px rgba(40,32,20,.04),0 14px 30px -14px rgba(40,32,20,.22);
+  --ring:0 0 0 3px rgba(163,130,90,.20);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --serif:"Noto Serif KR","Nanum Myeongjo","AppleMyungjo",serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-dark="0"]){
+    --bg:#0F0E0D; --surface:#181715; --soft:#201E1B;
+    --ink:#EEEAE3; --ink2:#A29B91; --ink3:#5F5A53;
+    --line2:#3A3631; --hair:rgba(255,255,255,.065);
+    --gold:#CDAE7E; --gold-soft:rgba(205,174,126,.12);
+    --ok:#8DBB97; --err:#E58A80;
+    --e2:inset 0 1px 0 rgba(255,255,255,.04),0 18px 40px -16px rgba(0,0,0,.8);
+    --ring:0 0 0 3px rgba(205,174,126,.22);
+    color-scheme:dark;
+  }
+}
+:root[data-dark="1"]{
+  --bg:#0F0E0D; --surface:#181715; --soft:#201E1B;
+  --ink:#EEEAE3; --ink2:#A29B91; --ink3:#5F5A53;
+  --line2:#3A3631; --hair:rgba(255,255,255,.065);
+  --gold:#CDAE7E; --gold-soft:rgba(205,174,126,.12);
+  --ok:#8DBB97; --err:#E58A80;
+  --e2:inset 0 1px 0 rgba(255,255,255,.04),0 18px 40px -16px rgba(0,0,0,.8);
+  --ring:0 0 0 3px rgba(205,174,126,.22);
+  color-scheme:dark;
+}
+html{background:var(--bg)}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:var(--sans);color:var(--ink);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+
+/* 앱 — 화면 가득, 노치·홈 바 자리는 비워 둠 */
+#frame{position:fixed;top:env(safe-area-inset-top,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);visibility:hidden;opacity:0;transition:opacity .32s var(--ease)}
+#frame iframe{display:block;width:100%;height:100%;border:0;background:transparent}
+.on #frame{visibility:visible}
+.ready #frame{opacity:1}
+
+/* 여는 동안: 앱의 반지 로딩과 같은 모양 */
+#splash{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;transition:opacity .3s var(--ease)}
+#splash .ld{opacity:0;animation:fadein .4s var(--ease) .35s forwards}
+.ready #splash{opacity:0}
+.setup #splash{display:none}
+@keyframes fadein{to{opacity:1}}
+.ld-rings{position:relative;width:35px;height:23px;display:block;margin:0 auto}
+.ld-rings i{position:absolute;top:2px;width:18px;height:18px;background:no-repeat center/100% 100%}
+.ld-rings i:first-child{left:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='p' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23DCE0E5'/%3E%3Cstop offset='.5' stop-color='%23AEB4BC'/%3E%3Cstop offset='1' stop-color='%23848B94'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='12' cy='12' r='10.4' fill='none' stroke='url%28%23p%29' stroke-width='2.6'/%3E%3C/svg%3E");animation:ringL 1.6s var(--ease) infinite}
+.ld-rings i:last-child{right:2px;top:-4px;height:24px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -8 24 32'%3E%3Cdefs%3E%3ClinearGradient id='p' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23DCE0E5'/%3E%3Cstop offset='.5' stop-color='%23AEB4BC'/%3E%3Cstop offset='1' stop-color='%23848B94'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='12' cy='12' r='10.6' fill='none' stroke='url%28%23p%29' stroke-width='2.2'/%3E%3Cpath d='M8.8 -5.6H15.2L17.4 -2.8L12 2.2L6.6 -2.8Z' fill='%23F3F6FA' stroke='%2397A3B2' stroke-width='.9' stroke-linejoin='round'/%3E%3Cpath d='M6.9 -2.8H17.1' stroke='%2397A3B2' stroke-width='.8'/%3E%3C/svg%3E");animation:ringR 1.6s var(--ease) infinite}
+.ld-rings.still i{animation:none}
+@keyframes ringL{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes ringR{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}
+
+/* 처음 한 번: 앱 주소 연결 */
+#setup{display:none;position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+.setup #setup{display:block}
+.card{max-width:400px;margin:8vh auto 0;background:var(--surface);border-radius:26px;padding:30px 22px 22px;box-shadow:var(--e2),inset 0 0 0 1px var(--hair);animation:rise .5s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.mark{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:var(--gold-soft);display:grid;place-items:center}
+.mark .ld-rings{transform:scale(.92) translateY(2px)}
+.mark.okm{color:var(--gold)}
+.mark.okm svg{width:24px;height:24px}
+h1,h2{font-family:var(--serif);font-weight:600;letter-spacing:-.03em;text-align:center;margin:0}
+h1{font-size:27px;line-height:1.25}
+h2{font-size:23px;line-height:1.3}
+.lead{color:var(--ink2);font-size:14px;text-align:center;margin:6px 0 22px;word-break:keep-all}
+.in{display:block;width:100%;height:52px;padding:0 14px;border:1px solid var(--line2);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px;letter-spacing:-.01em;outline:0;transition:border-color .18s,box-shadow .18s;-webkit-appearance:none;appearance:none}
+.in::placeholder{color:var(--ink3)}
+.in:focus{border-color:var(--gold);box-shadow:var(--ring)}
+.in.bad{border-color:var(--err)}
+.msg{min-height:20px;margin:8px 2px 14px;font-size:13px;line-height:1.5;color:var(--ink2);word-break:keep-all}
+.msg.err{color:var(--err)}
+.msg.ok{color:var(--ok)}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:50px;border:1px solid var(--line2);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:600;letter-spacing:-.01em;cursor:pointer;transition:transform .12s,opacity .18s,background .18s;-webkit-user-select:none;user-select:none}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn svg{width:17px;height:17px;flex:none}
+.btn.gold{border-color:transparent;background:var(--gold-soft);color:var(--gold)}
+.row{display:flex;gap:8px;margin:12px 0 8px}
+.row .btn{flex:1}
+.help{margin-top:16px;border-top:1px solid var(--hair);padding-top:12px;font-size:13px;color:var(--ink2)}
+.help summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:600;color:var(--ink2);padding:4px 0}
+.help summary::-webkit-details-marker{display:none}
+.help summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+.help[open] summary::after{transform:rotate(-135deg) translateY(-1px)}
+.help ol{margin:10px 0 2px;padding-left:20px;line-height:1.75;word-break:keep-all}
+.help b{color:var(--ink);font-weight:600}
+.help code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:var(--soft);padding:1px 5px;border-radius:5px}
+.link{margin:0 0 4px;padding:12px 14px;border-radius:13px;background:var(--soft);color:var(--ink2);font-size:13px;line-height:1.5;text-align:center;word-break:break-all;-webkit-user-select:all;user-select:all}
+.tip{margin:14px 2px 0;font-size:12.5px;line-height:1.65;color:var(--ink2);text-align:center;word-break:keep-all}
+.tip b{color:var(--ink);font-weight:600}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (min-width:760px){ .card{margin-top:14vh;padding:36px 30px 26px} }
+@media (prefers-reduced-motion: reduce){ .ld-rings i,.card{animation:none} #splash .ld{animation-duration:.01s} }
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div class="ld"><span class="ld-rings"><i></i><i></i></span></div></div>
+<div id="frame"></div>
+
+<main id="setup">
+  <section class="card" id="cardConnect">
+    <div class="mark"><span class="ld-rings still"><i></i><i></i></span></div>
+    <h1>우리 둘</h1>
+    <p class="lead">처음 한 번만 앱 주소를 연결해 주세요.</p>
+    <form id="form" novalidate autocomplete="off">
+      <label class="sr" for="u">Apps Script 웹 앱 주소</label>
+      <input class="in" id="u" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec">
+      <p class="msg" id="msg" role="status"></p>
+      <button class="btn primary" id="go" type="submit">연결하기</button>
+    </form>
+    <details class="help">
+      <summary>주소는 어디서 복사하나요?</summary>
+      <ol>
+        <li>구글 시트에서 <b>확장 프로그램</b> → <b>Apps Script</b></li>
+        <li>오른쪽 위 <b>배포</b> → <b>배포 관리</b></li>
+        <li>‘웹 앱’의 <b>URL</b> 옆 복사 버튼 — 끝이 <code>/exec</code>인 주소예요</li>
+      </ol>
+    </details>
+  </section>
+
+  <section class="card" id="cardDone" hidden>
+    <div class="mark okm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg></div>
+    <h2>연결됐어요</h2>
+    <p class="lead">다른 휴대폰에서는 아래 링크를 한 번만 열면<br>바로 연결돼요.</p>
+    <div class="link" id="link"></div>
+    <div class="row">
+      <button class="btn" id="share" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3.5M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5v6A2 2 0 0 0 7 20.5h10a2 2 0 0 0 2-2v-6"/></svg>링크 보내기</button>
+      <button class="btn" id="copy" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 8.5V6.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></svg><span>복사</span></button>
+    </div>
+    <button class="btn primary" id="open" type="button">앱 열기</button>
+    <button class="btn gold" id="install" type="button" hidden style="margin-top:8px">홈 화면에 앱 추가</button>
+    <p class="tip" id="tip"></p>
+  </section>
+</main>
+
+<script>
+(function(){
+  var K='ourtwo:', R=document.documentElement, shown=false, bip=null, frame=null, later=null;
+  function $(id){ return document.getElementById(id); }
+  function get(k){ try{ return localStorage.getItem(K+k)||''; }catch(e){ return ''; } }
+  function put(k, v){ try{ if(v) localStorage.setItem(K+k, v); else localStorage.removeItem(K+k); }catch(e){} }
+
+  /* 붙여 넣은 주소 검사 — Apps Script 웹 앱(/exec)만 받음 */
+  function made(base, id){
+    var url='https://script.google.com/'+base+'/s/'+id+'/exec';
+    return {url:url, tag: base==='macros' ? id : encodeURIComponent(url)};
+  }
+  function parse(raw){
+    raw=String(raw||'').trim();
+    if(!raw) return {};
+    try{ raw=decodeURIComponent(raw).trim(); }catch(e){}
+    var g=raw.match(/(?:https?:\/\/)?script\.google\.com\/[^\s"'<>]+/i), t;
+    if(g) raw=g[0].replace(/[).,;:!?\]}”’」』]+$/, '');             // 글 속에 섞인 웹 앱 주소
+    else if((t=raw.match(/#([\w.%-]{20,})/))) return parse(t[1]);    // 이 페이지 링크(…/us/#…)를 붙여 넣은 경우
+    raw=raw.replace(/^#/, '');
+    if(/^[\w-]{30,}$/.test(raw)) return made('macros', raw);   // 배포 ID만 있을 때
+    var u;
+    try{ u=new URL(/^https?:\/\//i.test(raw) ? raw : 'https://'+raw); }catch(e){ return {err:'bad'}; }
+    var host=u.hostname.toLowerCase();
+    if(host==='docs.google.com' || host==='drive.google.com') return {err:'sheet'};
+    if(host!=='script.google.com') return {err:'bad'};
+    var m=u.pathname.match(/^\/(macros|a\/macros\/[\w.-]+)\/s\/([\w-]{20,})\/(exec|dev)\/?$/);
+    if(!m) return {err:'editor'};
+    if(m[3]==='dev') return {err:'dev'};
+    return made(m[1], m[2]);
+  }
+  var MSG={
+    editor:'편집기 주소예요. [배포] → [배포 관리]에서 ‘웹 앱’ URL(끝이 /exec)을 복사해 주세요.',
+    dev:'끝이 /dev인 주소는 만든 사람만 열려요. [배포 관리]의 /exec 주소를 넣어 주세요.',
+    sheet:'구글 시트 주소예요. Apps Script의 [배포 관리]에서 웹 앱 URL을 복사해 주세요.',
+    bad:'Apps Script 웹 앱 주소가 아니에요. https://script.google.com/macros/s/…/exec 모양이에요.',
+    cut:'링크가 잘린 것 같아요. 웹 앱 주소를 다시 붙여 넣어 주세요.'
+  };
+
+  /* 앱 열기 */
+  function mount(url){
+    if(frame) return;
+    frame=document.createElement('iframe');
+    frame.title='우리 둘';
+    frame.src=url;
+    frame.addEventListener('load', function(){ setTimeout(reveal, 1200); });   // 앱이 신호를 못 보내는 예전 버전일 때
+    $('frame').appendChild(frame);
+  }
+  function start(url){
+    mount(url);
+    R.classList.remove('setup'); R.classList.add('on');
+    if(later){ paint(later.bg, later.dark); later=null; }
+    setTimeout(reveal, 10000);
+  }
+  function reveal(){ if(shown) return; shown=true; R.classList.add('ready'); }
+
+  /* 앱이 보내는 배경색 — 상태 표시줄 · 가장자리 색을 앱과 맞춤 */
+  function paint(c, dark){
+    c=String(c||'').trim();
+    if(!/^#[0-9a-f]{3,8}$/i.test(c) && !/^rgba?\([\d\s.,%]+\)$/i.test(c)) return;
+    var m=document.querySelectorAll('meta[name="theme-color"]');
+    R.style.background=c; R.setAttribute('data-dark', dark ? '1' : '0');
+    for(var i=0;i<m.length;i++) m[i].setAttribute('content', c);
+    put('bg', /^#/.test(c) ? c : ''); put('dark', dark ? '1' : '0');
+  }
+  window.addEventListener('message', function(e){
+    var d=e.data, host='';
+    if(!d || typeof d!=='object' || d.ourtwo!==1) return;
+    try{ host=new URL(e.origin).hostname; }catch(er){}
+    if(!/(^|\.)googleusercontent\.com$/.test(host) && host!=='script.google.com') return;
+    if(typeof d.t==='string' && d.t.trim()) document.title=d.t.trim().slice(0, 40);   // 앱 이름(설정)을 창 제목으로
+    if(R.classList.contains('setup')) later={bg:d.bg, dark:d.dark===true};   // 연결 화면을 보는 동안엔 색을 바꾸지 않음
+    else paint(d.bg, d.dark===true);
+    reveal();
+  });
+
+  /* 처음 연결 화면 */
+  function say(kind, text){ var m=$('msg'); m.className='msg'+(kind ? ' '+kind : ''); m.textContent=text||''; $('u').classList.toggle('bad', kind==='err'); }
+  function showSetup(err){
+    R.classList.add('setup');
+    var f=document.createElement('link');   // 제목 글꼴(명조) — 이 화면에 쓰는 글자만 조금 받아 옴
+    f.rel='stylesheet'; f.href='https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap&text='+encodeURIComponent('우리 둘연결됐어요');
+    document.head.appendChild(f);
+    if(err) say('err', MSG[err]||MSG.bad);
+    var u=$('u');
+    u.addEventListener('input', function(e){
+      var p=parse(u.value);
+      if(p.url) say('ok', '✓ 올바른 주소예요');
+      else if(e.inputType==='insertFromPaste' && p.err) say('err', MSG[p.err]);
+      else say('', '');
+    });
+    $('form').addEventListener('submit', function(e){
+      e.preventDefault();
+      var p=parse(u.value);
+      if(!p.url){ say('err', u.value.trim() ? (MSG[p.err]||MSG.bad) : '웹 앱 주소를 붙여 넣어 주세요.'); u.focus(); return; }
+      put('url', p.url);
+      history.replaceState(null, '', '#'+p.tag);
+      u.blur(); done(p);
+    });
+  }
+  function hint(){
+    var ua=navigator.userAgent||'';
+    if(/KAKAOTALK/i.test(ua)) return '카카오톡 안에서는 홈 화면에 추가할 수 없어요. 메뉴에서 <b>다른 브라우저로 열기</b>를 누른 뒤 추가해 주세요.';
+    if(/SamsungBrowser/i.test(ua)) return '삼성 인터넷: 아래 <b>≡ 메뉴</b> → <b>현재 페이지 추가</b> → <b>홈 화면</b>을 누르면 앱처럼 열려요.';
+    if(/iPhone|iPad|iPod/i.test(ua)) return 'Safari 아래 <b>공유 버튼</b> → <b>홈 화면에 추가</b>를 누르면 앱처럼 열려요.';
+    if(/Android/i.test(ua)) return '크롬 오른쪽 위 <b>⋮</b> → <b>홈 화면에 추가</b>(또는 <b>앱 설치</b>)를 누르면 앱처럼 열려요.';
+    return '주소창 오른쪽의 <b>설치</b> 아이콘을 누르면 창 하나짜리 앱처럼 열려요.';
+  }
+  function copyText(t){
+    function old(){ var a=document.createElement('textarea'), ok=false; a.value=t; a.setAttribute('readonly',''); a.style.cssText='position:fixed;top:-200px;opacity:0'; document.body.appendChild(a); a.select(); try{ ok=document.execCommand('copy'); }catch(e){} document.body.removeChild(a); return ok; }
+    if(navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t).then(function(){ return true; }, old);
+    return Promise.resolve(old());
+  }
+  function done(p){
+    var link=location.origin+location.pathname+'#'+p.tag, s=link.replace(/^https?:\/\//, '');
+    $('cardConnect').hidden=true; $('cardDone').hidden=false;
+    $('link').textContent=s.length>60 ? s.slice(0, 44)+'…'+s.slice(-8) : s; $('link').title=link;
+    $('tip').innerHTML=hint();
+    if(navigator.share) $('share').onclick=function(){ navigator.share({title:'우리 둘', text:'우리 둘 — 이 링크를 한 번 열면 바로 연결돼요', url:link}).catch(function(){}); };
+    else $('share').hidden=true;
+    $('copy').onclick=function(){ var b=$('copy').querySelector('span'); copyText(link).then(function(ok){ b.textContent=ok ? '복사했어요' : '길게 눌러 복사'; setTimeout(function(){ b.textContent='복사'; }, 1800); }); };
+    $('open').onclick=function(){ start(p.url); };
+    if(bip) $('install').hidden=false;
+    mount(p.url);   // 보는 동안 미리 불러 둠 — [앱 열기]가 바로 열리게
+  }
+  window.addEventListener('beforeinstallprompt', function(e){
+    if(!R.classList.contains('setup')) return;   // 앱을 쓰는 중이면 브라우저에 맡김
+    e.preventDefault(); bip=e;
+    if(!$('cardDone').hidden) $('install').hidden=false;
+  });
+  $('install').onclick=function(){
+    if(!bip) return;
+    bip.prompt();
+    var fin=function(){ bip=null; $('install').hidden=true; };
+    if(bip.userChoice) bip.userChoice.then(fin, fin); else fin();
+  };
+
+  /* 시작: #링크 → 이 기기에 기억 → 없으면 연결 화면 */
+  window.addEventListener('hashchange', function(){ location.reload(); });   // 열어 둔 채로 새 #링크·#reset을 열었을 때
+  var h=location.hash.replace(/^#/, '');
+  if(h==='reset'){ put('url', ''); history.replaceState(null, '', location.pathname); showSetup(); return; }
+  var p=h ? parse(h) : {}, url='';
+  if(p.url){ put('url', p.url); url=p.url; if(h!==p.tag) history.replaceState(null, '', '#'+p.tag); }
+  else url=get('url');
+  if(url) start(url); else showSetup(h ? 'cut' : '');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#34302A"/><stop offset=".5" stop-color="#1F1D1A"/><stop offset="1" stop-color="#131211"/>
+  </linearGradient>
+  <radialGradient id="glow" cx=".28" cy=".16" r=".75">
+    <stop offset="0" stop-color="#D9BE90" stop-opacity=".20"/><stop offset=".55" stop-color="#D9BE90" stop-opacity=".04"/><stop offset="1" stop-color="#D9BE90" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="76.0" y1="157.2" x2="436.0" y2="409.2">
+    <stop offset="0" stop-color="#F6E9CC"/><stop offset=".42" stop-color="#DCC092"/><stop offset=".78" stop-color="#B8955F"/><stop offset="1" stop-color="#9A774A"/>
+  </linearGradient>
+  <linearGradient id="gemf" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E7E2D8"/>
+  </linearGradient>
+  <clipPath id="cA"><circle cx="244.22" cy="218.42" r="41.8"/></clipPath>
+  <clipPath id="cB"><circle cx="267.78" cy="348.00" r="41.8"/></clipPath>
+  <mask id="m1" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+    <rect width="512" height="512" fill="#fff"/>
+    <circle cx="322.00" cy="271.21" r="94" fill="none" stroke="#000" stroke-width="46" clip-path="url(#cA)"/>
+  </mask>
+  <mask id="m2" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+    <rect width="512" height="512" fill="#fff"/>
+    <circle cx="190.00" cy="295.21" r="94" fill="none" stroke="#000" stroke-width="46" clip-path="url(#cB)"/>
+  </mask>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="10" stdDeviation="11" flood-color="#000" flood-opacity=".5"/>
+  </filter>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<rect width="512" height="512" fill="url(#glow)"/>
+<g filter="url(#sh)">
+  <circle cx="190.00" cy="295.21" r="94" fill="none" stroke="url(#gold)" stroke-width="22" mask="url(#m1)"/>
+  <circle cx="322.00" cy="271.21" r="94" fill="none" stroke="url(#gold)" stroke-width="22" mask="url(#m2)"/>
+  <path d="M298.73,123.79 L345.27,123.79 L361.27,144.15 L322.00,180.51 L282.73,144.15 Z" fill="url(#gemf)" stroke="#C8B48E" stroke-width="3.2" stroke-linejoin="round"/>
+  <path d="M284.91,144.15 L359.09,144.15" stroke="#C8B48E" stroke-width="2.6"/>
+  <path d="M298.73,123.79 L322.00,144.15 L345.27,123.79 M322.00,144.15 L322.00,180.51" fill="none" stroke="#D8CCB4" stroke-width="1.8" stroke-linejoin="round" opacity=".9"/>
+</g>
+</svg>
