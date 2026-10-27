@@ -3,18 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>우리 둘</title>
+<script>/* 지난번 앱 이름(앱 설정 → 앱 이름)을 기본 제목보다 먼저 — 열 때 기본 이름이 뜨지 않게 */
+(function(){ var t=''; try{ t=(localStorage.getItem('ourtwo:title')||'').trim().slice(0, 40); }catch(e){} if(t==='우리 둘') t=''; if(t) document.title=t; })();
+</script>
+<title>J들의 시트</title>
 <meta name="description" content="둘이 같이 쓰는 캘린더 · 할 일 · 메모">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:type" content="website">
-<meta property="og:title" content="우리 둘">
+<meta property="og:title" content="J들의 시트">
 <meta property="og:description" content="둘이 같이 쓰는 캘린더 · 할 일 · 메모">
 <meta property="og:image" content="https://jongchan-creator.github.io/us/icon-512.png">
 <meta name="theme-color" content="#F5F2EC" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F0E0D" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="우리 둘">
+<meta name="apple-mobile-web-app-title" content="J들의 시트">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
@@ -31,6 +34,11 @@
   var r=document.documentElement, m=document.querySelectorAll('meta[name="theme-color"]');
   r.style.background=c; r.setAttribute('data-dark', d==='1'?'1':'0');
   for(var i=0;i<m.length;i++) m[i].setAttribute('content', c);
+})();
+/* 아이폰 '홈 화면에 추가'의 기본 이름도 지난번 앱 이름으로 */
+(function(){
+  var t=''; try{ t=(localStorage.getItem('ourtwo:title')||'').trim().slice(0, 40); }catch(e){}
+  var a=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(t && t!=='우리 둘' && a) a.setAttribute('content', t);
 })();
 </script>
 <style>
@@ -145,7 +153,7 @@ h2{font-size:23px;line-height:1.3}
 <main id="setup">
   <section class="card" id="cardConnect">
     <div class="mark"><span class="ld-rings still"><i></i><i></i></span></div>
-    <h1>우리 둘</h1>
+    <h1>J들의 시트</h1>
     <p class="lead">처음 한 번만 앱 주소를 연결해 주세요.</p>
     <form id="form" novalidate autocomplete="off">
       <label class="sr" for="u">Apps Script 웹 앱 주소</label>
@@ -221,7 +229,7 @@ h2{font-size:23px;line-height:1.3}
   function mount(url){
     if(frame) return;
     frame=document.createElement('iframe');
-    frame.title='우리 둘';
+    frame.title=document.title;
     frame.src=url;
     frame.addEventListener('load', function(){ setTimeout(reveal, 1200); });   // 앱이 신호를 못 보내는 예전 버전일 때
     $('frame').appendChild(frame);
@@ -233,6 +241,14 @@ h2{font-size:23px;line-height:1.3}
     setTimeout(reveal, 10000);
   }
   function reveal(){ if(shown) return; shown=true; R.classList.add('ready'); }
+  function setName(t){
+    t=String(t||'').trim().slice(0, 40); if(!t) return;
+    document.title=t;
+    var a=document.querySelector('meta[name="apple-mobile-web-app-title"]'); if(a) a.setAttribute('content', t);
+    var h=document.querySelector('#cardConnect h1'); if(h) h.textContent=t;
+    if(frame) frame.title=t;
+    put('title', t);
+  }
 
   /* 앱이 보내는 배경색 — 상태 표시줄 · 가장자리 색을 앱과 맞춤 */
   function paint(c, dark){
@@ -243,12 +259,19 @@ h2{font-size:23px;line-height:1.3}
     for(var i=0;i<m.length;i++) m[i].setAttribute('content', c);
     put('bg', /^#/.test(c) ? c : ''); put('dark', dark ? '1' : '0');
   }
+  var lastBuzz=0;
   window.addEventListener('message', function(e){
     var d=e.data, host='';
     if(!d || typeof d!=='object' || d.ourtwo!==1) return;
     try{ host=new URL(e.origin).hostname; }catch(er){}
     if(!/(^|\.)googleusercontent\.com$/.test(host) && host!=='script.google.com') return;
-    if(typeof d.t==='string' && d.t.trim()) document.title=d.t.trim().slice(0, 40);   // 앱 이름(설정)을 창 제목으로
+    if(d.buzz!==undefined){   // 앱 안에서 체크할 때 등 짧은 진동 (안드로이드) — 앱 화면이 직접 못 울릴 때 여기서 대신
+      var p=d.buzz, okp=(typeof p==='number' && p>0 && p<=120) || (Array.isArray(p) && p.length>0 && p.length<=6 && p.every(function(x){ return typeof x==='number' && x>=0 && x<=120; }));
+      var now=Date.now();
+      if(okp && navigator.vibrate && now-lastBuzz>60){ lastBuzz=now; try{ navigator.vibrate(p); }catch(er){} }
+      return;
+    }
+    if(typeof d.t==='string' && d.t.trim()) setName(d.t);   // 앱 이름(설정)을 창 제목으로 — 다음에 열 때도 이 이름부터
     if(R.classList.contains('setup')) later={bg:d.bg, dark:d.dark===true};   // 연결 화면을 보는 동안엔 색을 바꾸지 않음
     else paint(d.bg, d.dark===true);
     reveal();
@@ -258,8 +281,9 @@ h2{font-size:23px;line-height:1.3}
   function say(kind, text){ var m=$('msg'); m.className='msg'+(kind ? ' '+kind : ''); m.textContent=text||''; $('u').classList.toggle('bad', kind==='err'); }
   function showSetup(err){
     R.classList.add('setup');
+    var nm=get('title'); if(nm) document.querySelector('#cardConnect h1').textContent=nm;
     var f=document.createElement('link');   // 제목 글꼴(명조) — 이 화면에 쓰는 글자만 조금 받아 옴
-    f.rel='stylesheet'; f.href='https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap&text='+encodeURIComponent('우리 둘연결됐어요');
+    f.rel='stylesheet'; f.href='https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap&text='+encodeURIComponent('J들의 시트연결됐어요'+(nm||''));
     document.head.appendChild(f);
     if(err) say('err', MSG[err]||MSG.bad);
     var u=$('u');
@@ -296,7 +320,7 @@ h2{font-size:23px;line-height:1.3}
     $('cardConnect').hidden=true; $('cardDone').hidden=false;
     $('link').textContent=s.length>60 ? s.slice(0, 44)+'…'+s.slice(-8) : s; $('link').title=link;
     $('tip').innerHTML=hint();
-    if(navigator.share) $('share').onclick=function(){ navigator.share({title:'우리 둘', text:'우리 둘 — 이 링크를 한 번 열면 바로 연결돼요', url:link}).catch(function(){}); };
+    if(navigator.share) $('share').onclick=function(){ navigator.share({title:document.title, text:document.title+' — 이 링크를 한 번 열면 바로 연결돼요', url:link}).catch(function(){}); };
     else $('share').hidden=true;
     $('copy').onclick=function(){ var b=$('copy').querySelector('span'); copyText(link).then(function(ok){ b.textContent=ok ? '복사했어요' : '길게 눌러 복사'; setTimeout(function(){ b.textContent='복사'; }, 1800); }); };
     $('open').onclick=function(){ start(p.url); };
@@ -318,7 +342,7 @@ h2{font-size:23px;line-height:1.3}
   /* 시작: #링크 → 이 기기에 기억 → 없으면 연결 화면 */
   window.addEventListener('hashchange', function(){ location.reload(); });   // 열어 둔 채로 새 #링크·#reset을 열었을 때
   var h=location.hash.replace(/^#/, '');
-  if(h==='reset'){ put('url', ''); history.replaceState(null, '', location.pathname); showSetup(); return; }
+  if(h==='reset'){ put('url', ''); put('title', ''); document.title='J들의 시트'; history.replaceState(null, '', location.pathname); showSetup(); return; }
   var p=h ? parse(h) : {}, url='';
   if(p.url){ put('url', p.url); url=p.url; if(h!==p.tag) history.replaceState(null, '', '#'+p.tag); }
   else url=get('url');
