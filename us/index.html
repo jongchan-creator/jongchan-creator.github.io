@@ -144,6 +144,25 @@ h2{font-size:23px;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (min-width:760px){ .card{margin-top:14vh;padding:36px 30px 26px} }
 @media (prefers-reduced-motion: reduce){ .ld-rings i,.card{animation:none} #splash .ld{animation-duration:.01s} }
+
+/* 알림 허용 — 아이폰은 이 페이지에서 직접 눌러야 알림을 허용할 수 있어서, 앱 위에 잠깐 띄우는 시트 */
+#psh{position:fixed;inset:0;z-index:30}
+#psh .psh-dim{position:absolute;inset:0;background:rgba(20,16,10,.34);opacity:0;transition:opacity .26s var(--ease)}
+#psh .psh-card{position:absolute;left:0;right:0;bottom:0;max-width:440px;margin:0 auto;padding:26px 22px calc(16px + env(safe-area-inset-bottom,0px));border-radius:26px 26px 0 0;background:var(--surface);box-shadow:0 -18px 40px -18px rgba(20,16,10,.45),inset 0 0 0 1px var(--hair);transform:translate3d(0,105%,0);transition:transform .34s var(--ease)}
+#psh.is-in .psh-dim{opacity:1}
+#psh.is-in .psh-card{transform:none}
+#psh .mark{color:var(--gold)}
+#psh .mark svg{width:25px;height:25px}
+#psh .lead{margin-bottom:20px;line-height:1.6}
+#psh .lead b{color:var(--ink);font-weight:600}
+#psh .btn.ghost{margin-top:6px;border-color:transparent;background:transparent;color:var(--ink2);font-weight:500}
+#psh .btn:focus{outline:none}
+#psh .btn:focus-visible{box-shadow:var(--ring)}
+@media (min-width:760px){
+  #psh .psh-card{bottom:auto;top:50%;border-radius:26px;padding-bottom:20px;opacity:0;transform:translate3d(0,-46%,0) scale(.97);transition:transform .3s var(--ease),opacity .22s var(--ease)}
+  #psh.is-in .psh-card{opacity:1;transform:translate3d(0,-50%,0)}
+}
+@media (prefers-reduced-motion: reduce){ #psh .psh-dim,#psh .psh-card{transition:none} }
 </style>
 </head>
 <body>
@@ -185,6 +204,17 @@ h2{font-size:23px;line-height:1.3}
     <p class="tip" id="tip"></p>
   </section>
 </main>
+
+<div id="psh" hidden>
+  <div class="psh-dim"></div>
+  <section class="psh-card" role="dialog" aria-modal="true" aria-labelledby="pshT">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2.1H4.4z"/><path d="M10 20.6a2.2 2.2 0 0 0 4 0"/></svg></div>
+    <h2 id="pshT">내일 일정 알림</h2>
+    <p class="lead">일정이 있는 날, 전날 저녁 7시쯤<br>이 휴대폰으로 알려 드려요.<br>다음 화면에서 <b>허용</b>을 눌러 주세요.</p>
+    <button class="btn primary" id="pshGo" type="button">계속</button>
+    <button class="btn ghost" id="pshNo" type="button">나중에</button>
+  </section>
+</div>
 
 <script>
 (function(){
@@ -259,6 +289,118 @@ h2{font-size:23px;line-height:1.3}
     for(var i=0;i<m.length;i++) m[i].setAttribute('content', c);
     put('bg', /^#/.test(c) ? c : ''); put('dark', dark ? '1' : '0');
   }
+
+  /* ---------- 내일 일정 알림 ----------
+     앱(구글 쪽 화면)은 알림 권한을 직접 물을 수 없어서, 이 페이지가 대신 묻고 구독 정보를 앱에 돌려줘요.
+     앱이 서버에 저장하면, 서버가 매일 저녁 내일 일정을 이 휴대폰으로 보내고 sw.js가 알림으로 띄워요. */
+  var UA=navigator.userAgent||'', IOS=/iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints>1);
+  var PUSH_OK=!!(window.isSecureContext && ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window));
+  var appWin=null, appOrg='', openWant='', swP=null;
+  function standalone(){ try{ return matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone===true; }catch(e){ return false; } }
+  function tell(w, org, o){ o.ourtwo=1; try{ w.postMessage(o, org); }catch(e){} }
+  function b64u(buf){ var b=new Uint8Array(buf), s=''; for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64u(s){ s=String(s).replace(/-/g, '+').replace(/_/g, '/'); while(s.length%4) s+='='; var r=atob(s), o=new Uint8Array(r.length); for(var i=0;i<r.length;i++) o[i]=r.charCodeAt(i); return o; }
+  function swReady(){
+    if(!swP){ swP=navigator.serviceWorker.register('sw.js', {scope:'./', updateViaCache:'none'}).then(function(){ return navigator.serviceWorker.ready; }); swP.catch(function(){ swP=null; }); }
+    return swP;
+  }
+  function curSub(){   // 이미 있는 것만 봄 — 알림을 안 쓰는 기기엔 아무것도 설치하지 않음
+    return navigator.serviceWorker.getRegistration('./').then(function(r){ return r ? r.pushManager.getSubscription() : null; }).catch(function(){ return null; });
+  }
+  function subscribe(key){
+    return swReady().then(function(reg){
+      return reg.pushManager.getSubscription().then(function(s){
+        var k=s && s.options && s.options.applicationServerKey;
+        if(!s || !k || b64u(k)===key) return s;
+        return s.unsubscribe().then(function(){ return null; }, function(){ return null; });   // 서버 키가 바뀌었으면 새로 구독
+      }).then(function(s){ return s || reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:unb64u(key)}); });
+    });
+  }
+  function askPerm(){
+    return new Promise(function(res){
+      try{ var r=Notification.requestPermission(res); if(r && r.then) r.then(res, function(){ res(Notification.permission); }); }
+      catch(e){ res(Notification.permission); }
+    });
+  }
+  function subJson(s){ var j=s.toJSON(); return {endpoint:j.endpoint, keys:{p256dh:(j.keys||{}).p256dh, auth:(j.keys||{}).auth}}; }
+  function gotSub(s, w, org){ put('push', '1'); tell(w, org, {push:'sub', sub:subJson(s)}); }
+  function goSub(key, w, org){
+    swReady().catch(function(){});   // 권한을 묻는 동안 알림 받을 준비를 미리 (허용하면 곧바로 구독)
+    return askPerm().then(function(p){
+      if(p!=='granted'){ tell(w, org, {push:'err', code: p==='denied' ? 'denied' : 'dismiss'}); return false; }
+      return subscribe(key).then(function(s){ gotSub(s, w, org); return true; },
+        function(e){ tell(w, org, {push:'err', code:'fail', msg:String((e && e.message) || e).slice(0, 160)}); return false; });
+    });
+  }
+  function sheet(key, w, org){
+    var el=$('psh'), go=$('pshGo'), no=$('pshNo');
+    swReady().catch(function(){});   // 읽는 동안 미리 준비 — '계속'을 누르면 권한 창만 바로 뜨게
+    el.hidden=false; go.disabled=false; go.textContent='계속';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('is-in'); }); });
+    try{ go.focus({preventScroll:true}); }catch(e){}
+    function shut(){ el.classList.remove('is-in'); setTimeout(function(){ if(!el.classList.contains('is-in')) el.hidden=true; }, 360); }
+    go.onclick=function(){ go.disabled=true; go.textContent='켜는 중…'; goSub(key, w, org).then(shut, shut); };
+    no.onclick=function(){ tell(w, org, {push:'err', code:'later'}); shut(); };
+  }
+  function pushMsg(d, w, org){
+    var st={push:'status', sup:PUSH_OK, sa:standalone(), ios:IOS, perm:PUSH_OK ? Notification.permission : '', sub:null};
+    if(d.push==='status'){
+      if(!PUSH_OK) return tell(w, org, st);
+      curSub().then(function(s){
+        if(s || st.perm!=='granted' || get('push')!=='1' || !/^[\w-]{80,100}$/.test(d.key||'')) return s;
+        return subscribe(d.key).catch(function(){ return null; });   // 켜 두었는데 구독이 사라졌으면 조용히 다시
+      }).then(function(s){ st.sub=s ? subJson(s) : null; tell(w, org, st); });
+      return;
+    }
+    if(d.push==='ask'){
+      var key=String(d.key||'');
+      if(!PUSH_OK) return tell(w, org, {push:'err', code: IOS && !standalone() ? 'tab' : 'unsupported'});
+      if(!/^[\w-]{80,100}$/.test(key)) return tell(w, org, {push:'err', code:'key'});
+      if(st.perm==='denied') return tell(w, org, {push:'err', code:'denied'});
+      if(st.perm==='granted'){ subscribe(key).then(function(s){ gotSub(s, w, org); }, function(){ sheet(key, w, org); }); return; }
+      if(!IOS && navigator.userActivation && navigator.userActivation.isActive){ goSub(key, w, org); return; }   // 안드로이드·PC: 앱에서 누른 것으로 바로 물어봄
+      sheet(key, w, org);
+      return;
+    }
+    if(d.push==='off'){
+      put('push', '');
+      if(!PUSH_OK) return tell(w, org, {push:'offed', ep:''});
+      curSub().then(function(s){
+        var ep=s ? s.endpoint : '';
+        return (s ? s.unsubscribe().catch(function(){}) : Promise.resolve()).then(function(){ tell(w, org, {push:'offed', ep:ep}); });
+      });
+    }
+  }
+  /* 알림을 누르면 그날 일정을 바로 — 앱이 다 뜬 뒤에 전해 줌 */
+  function appAt(w, org){
+    appWin=w; appOrg=org;
+    if(openWant){ var ds=openWant; openWant=''; setTimeout(function(){ tell(w, org, {open:ds}); }, 350); }
+  }
+  function openDay(ds){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(ds)) return;
+    if(appWin) tell(appWin, appOrg, {open:ds}); else openWant=ds;
+  }
+  if(PUSH_OK) navigator.serviceWorker.addEventListener('message', function(e){ var d=e.data; if(d && d.ourtwo===1 && typeof d.open==='string') openDay(d.open); });
+  /* 사이트 맨 위(루트) 주소는 뉴노멀 자리 — 예전에 J들의 시트를 거기서 열어 알림을 켰다면 그때 생긴 알림 연결을 지움
+     (뉴노멀은 알림을 쓰지 않아서 지워도 상관없고, 서버는 끊긴 연결을 다음 알림 때 저절로 정리해요) */
+  (function(){
+    try{
+      var sw=navigator.serviceWorker, root=location.origin+'/';
+      if(!sw || !sw.getRegistrations || new URL('./', location.href).href===root) return;   // 이 페이지가 루트에 있으면 하지 않음
+      sw.getRegistrations().then(function(rs){
+        rs.forEach(function(r){
+          if(!r || r.scope!==root || !r.pushManager) return;
+          r.pushManager.getSubscription().then(function(s){ if(s) return s.unsubscribe(); }).catch(function(){});
+        });
+      }).catch(function(){});
+    }catch(e){}
+  })();
+  (function(){
+    var m=/[?&]open=(\d{4}-\d{2}-\d{2})/.exec(location.search);
+    if(location.search) history.replaceState(null, '', location.pathname+location.hash);
+    if(m) openWant=m[1];
+  })();
+
   var lastBuzz=0;
   window.addEventListener('message', function(e){
     var d=e.data, host='';
@@ -271,7 +413,8 @@ h2{font-size:23px;line-height:1.3}
       if(okp && navigator.vibrate && now-lastBuzz>60){ lastBuzz=now; try{ navigator.vibrate(p); }catch(er){} }
       return;
     }
-    if(typeof d.t==='string' && d.t.trim()) setName(d.t);   // 앱 이름(설정)을 창 제목으로 — 다음에 열 때도 이 이름부터
+    if(typeof d.push==='string'){ if(e.source) pushMsg(d, e.source, e.origin); return; }   // 알림 켜기·끄기·상태
+    if(typeof d.t==='string' && d.t.trim()){ setName(d.t); if(e.source) appAt(e.source, e.origin); }   // 앱 이름(설정)을 창 제목으로 — 다음에 열 때도 이 이름부터
     if(R.classList.contains('setup')) later={bg:d.bg, dark:d.dark===true};   // 연결 화면을 보는 동안엔 색을 바꾸지 않음
     else paint(d.bg, d.dark===true);
     reveal();

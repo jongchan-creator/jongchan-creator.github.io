@@ -929,8 +929,19 @@ async function polFetch(target, workerPath, check){
   throw last||new Error('fail');
 }
 
-/* 미국 — FRED 무료 CSV (키 불필요). 목표범위 하단·상단 */
+/* 미국 — ① 뉴욕 연은 공식 API (키 불필요, 목표범위 포함) → ② FRED CSV
+   FRED 는 클라우드 서버·공용 프록시 요청을 자주 막아서 뉴욕 연은을 먼저 쓴다 (2026-09-21) */
+async function polUSnyfed(){
+  var txt=await polFetch('https://markets.newyorkfed.org/api/rates/unsecured/effr/last/5.json', null,
+    function(b){ return /targetRateFrom/.test(b); });
+  var d=JSON.parse(txt), a=(d&&d.refRates)||[];
+  a=a.filter(function(x){ return x.targetRateFrom!=null && x.targetRateTo!=null; })
+     .sort(function(x,y){ return String(y.effectiveDate).localeCompare(String(x.effectiveDate)); });
+  if(!a.length) throw new Error('no data');
+  return { lo:+a[0].targetRateFrom, hi:+a[0].targetRateTo, date:String(a[0].effectiveDate||''), src:'NY Fed' };
+}
 async function polUS(){
+  try{ return await polUSnyfed(); }catch(e){}
   var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL,DFEDTARU', '/fred?id=DFEDTARL,DFEDTARU', function(b){ return /^\s*(observation_date|DATE)\s*,/i.test(b); });
   var lines=String(txt||'').trim().split(/\r?\n/);
   if(lines.length<2) throw new Error('no data');
@@ -1186,8 +1197,8 @@ function polWarnHTML(){
   if(polBusy) return '<div class="rt-warn rt-busy"><b>기준금리를 받는 중…</b></div>';
   var e=polErr||{}, lines=[];
   if(e.us){
-    lines.push('<li><b>미국</b> — FRED(미 연준 자료)에 닿지 못했습니다. '
-      + '<span>프록시(Worker)에 <code>/fred</code> 를 추가하거나 FMP 키를 넣으면 해결됩니다.</span></li>');
+    lines.push('<li><b>미국</b> — 뉴욕 연은·FRED 어느 쪽에도 닿지 못했습니다. '
+      + '<span>worker.js 를 v12 로 바꾸거나 FMP 키를 넣으면 해결됩니다.</span></li>');
   }
   if(e.kr){
     var why = /인증키/.test(e.kr) ? '인증키가 올바르지 않다고 합니다. 한국은행에서 받은 키를 다시 확인해 주세요.'
