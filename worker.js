@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════
-   NEWNORMAL 데이터 프록시 (Cloudflare Worker) v13
+   NEWNORMAL 데이터 프록시 (Cloudflare Worker) v14
    - /kr      : 코스피·코스닥 실시간 지수 (네이버)
    - /news    : 경제 뉴스 헤드라인 (매경·한경·연합 RSS)
    - /rates   : 미국 국채 수익률 (재무부 공식 API)
@@ -10,7 +10,12 @@
    - /fred    : 🆕 미국 연준 자료 (FRED CSV)   예) /fred?id=DFEDTARL,DFEDTARU
    - /ecos    : 🆕 한국은행 기준금리 (ECOS)     예) /ecos?key=…&code=722Y001&cycle=M&item=0101000&from=202501&to=202609
    - /ecosword: 🆕 한국은행 경제용어사전         예) /ecosword?key=…&q=양적완화
+   - /stdict  : 🆕 표준국어대사전 (국립국어원)   예) /stdict?key=…&q=천착
    무료 플랜으로 충분 (하루 10만 요청)
+
+   ※ 이 파일은 비밀값이 없다(인증키는 각자 브라우저가 넘겨준다). 누구나 그대로 복사해 자기 Worker 에 붙여 쓰면 된다.
+
+   v14 변경 — /stdict 추가 (LEXICON '바로 찾기'의 한국어 낱말 뜻)
 
    v13 변경 — /ecosword 추가 (LEXICON '바로 찾기'가 경제 용어 뜻을 여기서 받는다)
 
@@ -133,6 +138,25 @@ export default {
           return json({ RESULT: { CODE: 'PROXY-502', MESSAGE: '한국은행 응답이 비정상입니다 (HTTP ' + r.status + ')' } }, 0);
         }
         return raw(t, 'application/json; charset=utf-8', 86400);   /* 용어 풀이는 하루 보관 */
+      }
+
+      /* ── 🆕 표준국어대사전 (국립국어원 Open API) ──
+         LEXICON 의 '바로 찾기'가 부른다. 국립국어원 응답(JSON)을 그대로 돌려준다. 인증키는 저장하지 않는다.
+         찾는 말이 없으면 국립국어원이 빈 내용을 주기도 해서, 그때는 빈 목록 모양으로 맞춰 준다. */
+      if (url.pathname === '/stdict') {
+        const key = (url.searchParams.get('key') || '').trim();
+        const q = (url.searchParams.get('q') || '').trim().slice(0, 40);
+        if (!/^[A-Za-z0-9]{16,64}$/.test(key)) return json({ error: { error_code: '020', message: '인증키가 비어 있거나 형식이 다릅니다' } }, 0);
+        if (!q) return json({ channel: { total: 0, item: [] } }, 0);
+        const u = 'https://stdict.korean.go.kr/api/search.do?key=' + encodeURIComponent(key)
+                + '&q=' + encodeURIComponent(q) + '&req_type=json&num=10';
+        const r = await fetch(u, UA);
+        const t = (await r.text()).trim();
+        if (!t) return json({ channel: { total: 0, item: [] } }, 3600);
+        if (!/"(channel|error)"/.test(t)) {
+          return new Response(JSON.stringify({ proxy_error: '국립국어원 응답이 비정상입니다', status: r.status }), { status: 502, headers: cors });
+        }
+        return raw(t, 'application/json; charset=utf-8', /"error"/.test(t) ? 0 : 86400);
       }
 
       /* ── 국채 수익률 ── */
@@ -329,7 +353,7 @@ export default {
           }));
         }
 
-        out._v = 13;
+        out._v = 14;
         return json(out, 30);
       }
 
@@ -357,7 +381,7 @@ export default {
       if (url.pathname !== '/' && url.pathname !== '') {
         return new Response(JSON.stringify({ error: 'unknown path', path: url.pathname }), { status: 404, headers: cors });
       }
-      return json({ ok: true, v: 13, endpoints: ['/kr', '/news', '/rates', '/comm', '/quote', '/search', '/fred', '/ecos', '/ecosword'] }, 0);
+      return json({ ok: true, v: 14, endpoints: ['/kr', '/news', '/rates', '/comm', '/quote', '/search', '/fred', '/ecos', '/ecosword', '/stdict'] }, 0);
     } catch (e) {
       return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors });
     }
