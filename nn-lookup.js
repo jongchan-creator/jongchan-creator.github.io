@@ -205,19 +205,18 @@
       }
       if(!ko.length && !defs.length) return {list: [], note: (m || r[1]) ? '' : 'unreachable'};
 
+      /* 기본은 **한글 뜻만** (2026-11-11) — 발음·영영 풀이·예문까지 한 줄에 이어 붙이니 읽기 어려웠다.
+         그것들은 '영영 풀이도 넣기'를 눌렀을 때만 들어간다. 한글 뜻을 못 받았으면 영영 풀이 첫 줄로 대신한다. */
       var parts = [];
-      if(phon) parts.push(phon);
       if(ko.length) parts.push(ko.join(', '));
-      var shortParts = parts.slice();
-      defs.forEach(function(x, i){
-        var s = (x.p ? '[' + x.p + '] ' : '') + x.t;
-        parts.push(s);
-        if(i < 2) shortParts.push(s);
-      });
-      if(ex){ parts.push('예) ' + ex); shortParts.push('예) ' + ex); }
+      if(phon) parts.push(phon);
+      defs.forEach(function(x){ parts.push((x.p ? '[' + x.p + '] ' : '') + x.t); });
+      if(ex) parts.push('예) ' + ex);
+      var simple = ko.length ? ko.join(', ') : (defs.length ? (defs[0].p ? '[' + defs[0].p + '] ' : '') + defs[0].t : '');
       return {list: [{
         src: 'en', badge: '영어 사전', kind: 'english', title: (d && d.word) || word,
-        full: parts.join(' · '), short: shortParts.join(' · '),
+        full: parts.join(' · '), short: simple, rows: 2,
+        moreLabel: '영영 풀이·예문도 넣기', lessLabel: '한글 뜻만',
         url: 'https://en.dict.naver.com/#/search?query=' + encodeURIComponent(word),
         ko: ko, phon: phon
       }]};
@@ -264,9 +263,9 @@
       +   (r.url ? '<a class="lk-src" href="' + esc(r.url) + '" target="_blank" rel="noopener">원문 ↗</a>' : '')
       + '</div>'
       + '<input type="text" class="lk-title" data-i="' + i + '" value="' + esc(r.title) + '" aria-label="단어">'
-      + '<textarea class="lk-def" data-i="' + i + '" rows="3" aria-label="뜻">' + esc(r.short) + '</textarea>'
+      + '<textarea class="lk-def" data-i="' + i + '" rows="' + (r.rows || 3) + '" aria-label="뜻">' + esc(r.short) + '</textarea>'
       + '<div class="lk-cf">'
-      +   (r.full && r.full !== r.short ? '<button type="button" class="lk-more" data-i="' + i + '" data-on="0">전문 넣기</button>' : '')
+      +   (r.full && r.full !== r.short ? '<button type="button" class="lk-more" data-i="' + i + '" data-on="0">' + (r.moreLabel || '전문 넣기') + '</button>' : '')
       +   '<span class="lk-gs">' + chips + '</span>'
       +   '<button type="button" class="lk-save" data-i="' + i + '">＋ 사전에 저장</button>'
       + '</div></div>';
@@ -296,6 +295,7 @@
     if(!q) return;
     var my = ++seq, en = isEnglish(q);
     var inp = $('lkQ'); if(inp && inp.value !== q) inp.value = q;
+    syncX(); fold(false);
     remember(q); paintRecent();
     results = []; paint(q, 'busy', {});
     var jobs = [ srcEcos(q), srcWiki(q, en ? 2 : 3), en ? srcEnglish(q) : Promise.resolve({list: []}),
@@ -364,12 +364,15 @@
     p.className = 'lk-panel'; p.id = 'lkPanel';
     p.innerHTML =
         '<div class="lk-top"><span class="lk-eyebrow">LOOK UP</span>'
-      +   '<span class="lk-sub">경제 용어 · 일반 개념 · 영어 단어 — 여기서 찾고, 고쳐서, 바로 카드로 저장합니다</span></div>'
+      +   '<span class="lk-sub">경제 용어 · 일반 개념 · 영어 단어 — 여기서 찾고, 고쳐서, 바로 카드로 저장합니다</span>'
+      +   '<button type="button" class="lk-fold" id="lkFold" title="검색 결과와 안내를 접거나 펼칩니다">접기 ▴</button></div>'
       + '<form class="lk-form" id="lkForm" autocomplete="off">'
       +   '<svg class="lk-ico" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
       +   '<input type="text" id="lkQ" class="lk-q" placeholder="예) 양적완화 · 기회비용 · duration" aria-label="찾을 말">'
+      +   '<button type="button" class="lk-x" id="lkX" aria-label="입력한 말 지우기" title="지우기" hidden>✕</button>'
       +   '<button type="submit" class="lk-go">찾기</button>'
       + '</form>'
+      + '<div class="lk-call" id="lkCall"></div>'
       + '<div class="lk-recent" id="lkRecent"></div>'
       + '<div class="lk-out" id="lkOut"></div>'
       + '<details class="lk-set" id="lkSet"><summary><span>⚙ 사전 연결 · 사용 안내</span><i>처음이라면 여기부터</i></summary>'
@@ -377,9 +380,19 @@
     quiz.parentNode.insertBefore(p, quiz);
 
     $('lkForm').addEventListener('submit', function(e){ e.preventDefault(); search($('lkQ').value); });
+    $('lkQ').addEventListener('input', syncX);
+    $('lkX').addEventListener('click', function(){
+      var q = $('lkQ'); q.value = ''; syncX(); q.focus();
+    });
+    $('lkFold').addEventListener('click', function(){ fold(!p.classList.contains('lk-folded')); });
     p.addEventListener('click', function(e){
       var t = e.target;
       if(!t || !t.classList) return;
+      if(t.classList.contains('lk-howto')){
+        var d = $('lkSet'); d.open = true; probeWorker();
+        try{ d.scrollIntoView({behavior: 'smooth', block: 'center'}); }catch(x){}
+        return;
+      }
       if(t.classList.contains('lk-r')){ search(t.getAttribute('data-q')); return; }
       var i = +t.getAttribute('data-i');
       if(t.classList.contains('lk-save')){ save(i); return; }
@@ -393,25 +406,53 @@
         var on = t.getAttribute('data-on') === '1';
         var ta = t.parentNode.parentNode.querySelector('.lk-def');
         ta.value = on ? results[i].short : results[i].full;
-        ta.rows = on ? 3 : 7;
+        ta.rows = on ? (results[i].rows || 3) : 7;
         t.setAttribute('data-on', on ? '0' : '1');
-        t.textContent = on ? '전문 넣기' : '줄여서 넣기';
+        t.textContent = on ? (results[i].moreLabel || '전문 넣기') : (results[i].lessLabel || '줄여서 넣기');
       }
     });
     paintRecent();
+    paintCall();
     paintSet();
     $('lkSet').addEventListener('toggle', function(){ if(this.open) probeWorker(); });
     p.addEventListener('submit', function(e){
-      if(!e.target || e.target.id !== 'lkStdForm') return;
+      if(!e.target || !e.target.classList || !e.target.classList.contains('lk-keyform')) return;
       e.preventDefault();
-      var v = ($('lkStdKey').value || '').replace(/\s+/g, '');
+      var v = (e.target.querySelector('.lk-key').value || '').replace(/\s+/g, '');
       if(v && !/^[A-Za-z0-9]{16,64}$/.test(v)){ toast('인증키 모양이 아닙니다 — 영문·숫자 32자리를 그대로 붙여넣어 주세요'); return; }
       try{ if(v) localStorage.setItem('nn_stdict_key', v); else localStorage.removeItem('nn_stdict_key'); }catch(x){}
       toast(v ? '✅ 표준국어대사전 인증키를 저장했습니다' : '표준국어대사전 인증키를 지웠습니다');
-      paintSet();
+      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      paintCall(); paintSet();
       if(v && lastQ) search(lastQ);
     });
     return true;
+  }
+
+  function syncX(){ var x = $('lkX'), q = $('lkQ'); if(x && q) x.hidden = !q.value; }
+  function fold(on){
+    var p = $('lkPanel'), b = $('lkFold'); if(!p || !b) return;
+    p.classList.toggle('lk-folded', !!on);
+    b.textContent = on ? '펼치기 ▾' : '접기 ▴';
+  }
+
+  /* ════════ 표준국어대사전 인증키 — 눈에 보이는 자리 ════════
+     처음엔 맨 아래 접힌 안내 속에만 입력 칸이 있어서, 키를 받아 와도 넣을 곳을 찾지 못했다.
+     키가 없는 동안에는 검색창 바로 아래에 입력 칸을 펼쳐 두고, 넣고 나면 사라진다. */
+  function paintCall(){
+    var el = $('lkCall'); if(!el) return;
+    if(ls('nn_stdict_key')){ el.innerHTML = ''; el.style.display = 'none'; return; }
+    if(el.querySelector('.lk-key') === document.activeElement) return;
+    el.style.display = '';
+    el.innerHTML =
+        '<div class="lk-call-t">📖 한국어 낱말 뜻도 여기서 찾기 <i>표준국어대사전 인증키 · 무료</i></div>'
+      + '<div class="lk-call-d">인증키를 넣으면 <b>천착 · 해태 · 소회</b> 같은 우리말 낱말을 찾았을 때 국립국어원 사전 풀이가 바로 나오고, '
+      +   '한 번 눌러 카드로 저장할 수 있습니다. 넣지 않아도 영어 사전과 위키백과는 그대로 됩니다.</div>'
+      + '<form class="lk-keyform" autocomplete="off">'
+      +   '<input type="password" class="lk-key" placeholder="발급받은 인증키 32자리를 붙여넣으세요" spellcheck="false" aria-label="표준국어대사전 인증키">'
+      +   '<button type="submit" class="lk-keysave">저장</button>'
+      + '</form>'
+      + '<button type="button" class="lk-howto">아직 키가 없다면 — 받는 법 보기 ▾</button>';
   }
 
   /* ════════ 설정 · 안내 ════════
@@ -428,7 +469,7 @@
   }
   function paintSet(){
     var el = $('lkSetBody'); if(!el) return;
-    var keyping = $('lkStdKey') && document.activeElement === $('lkStdKey');
+    var keyping = el.querySelector('.lk-key') && el.querySelector('.lk-key') === document.activeElement;
     if(keyping) return;                                  /* 키를 치는 중에는 다시 그리지 않는다 */
     var ecosKey = !!ls('nn_ecos_key'), stdKey = ls('nn_stdict_key');
     function st(ok, txt){ return '<span class="lk-st ' + (ok ? 'ok' : 'no') + '">' + (ok ? '● ' : '○ ') + txt + '</span>'; }
@@ -456,8 +497,9 @@
       +     '<li>발급된 <b>인증키</b>(영문·숫자 32자리)를 복사합니다.</li>'
       +     '<li>아래 칸에 붙여넣고 <b>저장</b>을 누릅니다.</li>'
       +   '</ol>'
-      +   '<form class="lk-keyform" id="lkStdForm" autocomplete="off">'
-      +     '<input type="password" id="lkStdKey" class="lk-key" placeholder="표준국어대사전 인증키 32자리" value="' + esc(stdKey) + '" spellcheck="false">'
+      +   '<p class="lk-why"><b>넣으면 좋은 점</b> — 우리말 낱말(천착 · 해태 · 소회 …)을 찾으면 국립국어원 풀이가 바로 나옵니다. 위키백과에는 이런 낱말이 거의 없습니다.</p>'
+      +   '<form class="lk-keyform" autocomplete="off">'
+      +     '<input type="password" class="lk-key" placeholder="표준국어대사전 인증키 32자리" value="' + esc(stdKey) + '" spellcheck="false" aria-label="표준국어대사전 인증키">'
       +     '<button type="submit" class="lk-keysave">저장</button>'
       +   '</form>'
       + '</div>'
@@ -552,6 +594,31 @@
   '.lk-links a{font-size:12px;font-weight:600;color:rgba(255,255,255,.75);text-decoration:none;',
   '  padding:5px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.16);transition:.15s}',
   '.lk-links a:hover{color:#fff;border-color:rgba(226,229,232,.6)}',
+  /* 지우기 × · 접기 */
+  '.lk-x{flex-shrink:0;width:26px;height:26px;border-radius:50%;cursor:pointer;line-height:1;font-size:12px;',
+  '  border:none;background:rgba(255,255,255,.14);color:rgba(255,255,255,.8);transition:.15s}',
+  '.lk-x:hover{background:rgba(255,255,255,.3);color:#fff}',
+  '.lk-x[hidden]{display:none}',
+  '.lk-fold{margin-left:auto;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;padding:5px 12px;',
+  '  border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);',
+  '  color:rgba(255,255,255,.75);transition:.15s;white-space:nowrap}',
+  '.lk-fold:hover{color:#fff;border-color:rgba(226,229,232,.65)}',
+  '.lk-panel.lk-folded .lk-call,.lk-panel.lk-folded .lk-recent,.lk-panel.lk-folded .lk-out,',
+  '.lk-panel.lk-folded .lk-set{display:none!important}',
+  /* 영어 사전 — 한글 뜻이 크게 */
+  '.lk-en .lk-def{font-size:16px;font-weight:600;color:#fff}',
+  /* 눈에 보이는 인증키 칸 */
+  '.lk-call{margin-top:12px;padding:13px 15px 12px;border-radius:12px;',
+  '  background:rgba(245,199,92,.09);border:1px solid rgba(245,199,92,.45)}',
+  '.lk-call-t{font-size:13.5px;font-weight:800;color:#fff}',
+  '.lk-call-t i{font-style:normal;font-size:11px;font-weight:700;color:#f7d98a;margin-left:8px}',
+  '.lk-call-d{margin-top:5px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.78)}',
+  '.lk-call-d b{color:#fff}',
+  '.lk-howto{margin-top:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;',
+  '  background:none;border:none;padding:0;color:#f7d98a;text-decoration:underline}',
+  '.lk-howto:hover{color:#fff}',
+  '.lk-why{margin:0 0 6px;font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.74)}',
+  '.lk-why b{color:#f7d98a}',
   '.lk-card.lk-std{border-left-color:#f5c75c}',
   '.lk-std .lk-badge{background:rgba(245,199,92,.16);color:#f7d98a}',
   /* 설정 · 안내 */
