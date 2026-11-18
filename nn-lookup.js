@@ -519,7 +519,38 @@
     setTimeout(function(){ wait(n + 1); }, 200);
   })(0);
 
-  window.__nnLookup = { search: search };
+  /* ── 화면 없이 찾기 · 저장 (2026-11) ──
+     글을 읽다가 낱말을 골라 그 자리에서 뜻을 볼 때(nn-capture.js) 쓴다. LOOK UP 칸의 결과는 건드리지 않는다. */
+  function lookupOnly(q){
+    q = String(q || '').replace(/\s+/g, ' ').trim();
+    if(!q) return Promise.resolve({ q:q, list:[], notes:{} });
+    var en = isEnglish(q);
+    var jobs = [ srcEcos(q), srcWiki(q, en ? 1 : 2), en ? srcEnglish(q) : Promise.resolve({list: []}),
+                 (!en && hasHangul(q)) ? srcStd(q) : Promise.resolve({list: []}) ];
+    return Promise.all(jobs.map(function(p){ return p.catch(function(){ return {list: [], note: 'unreachable'}; }); })).then(function(r){
+      var order = en ? [r[2], r[0], r[1]] : [r[0], r[3], r[1]];
+      var list = [];
+      order.forEach(function(x){ (x.list || []).forEach(function(it){ it.group = defaultGroup(it.kind); list.push(it); }); });
+      return { q:q, list:list, notes:{ ecos:r[0].note, std:r[3].note } };
+    });
+  }
+  function addTerm(title, def, groupId){
+    var k = KN(); title = clean(title); def = clean(def);
+    if(!k || !title) return null;
+    if(!k.data.lexicon) k.data.lexicon = [];
+    var note = {
+      id: 'note_' + Date.now() + Math.floor(Math.random() * 900 + 100),
+      title: title, content: def,
+      date: (typeof k._nowStr === 'function') ? k._nowStr() : '',
+      groupId: groupId || null, icon: '📇'
+    };
+    k.data.lexicon.unshift(note);
+    try{ k.save(); if(document.getElementById('lexicon-sidebar-list')) k.renderSidebar('lexicon'); }catch(e){}
+    return note;
+  }
+  /* 설정 창에서 표준국어대사전 키를 바꿨을 때 — 용어 탭의 안내 칸을 다시 그린다 */
+  function refreshKey(){ try { paintCall(); paintSet(); } catch(e) {} }
+  window.__nnLookup = { search: search, lookup: lookupOnly, add: addTerm, exists: exists, groups: groups, defaultGroup: defaultGroup, refreshKey: refreshKey };
 })();
 
 /* ── 스타일 — 파일이 직접 주입 (nn-style.css 순서 불변) ── */

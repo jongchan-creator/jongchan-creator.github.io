@@ -625,7 +625,7 @@
       function __num(el){ var v=(el&&el.value||'').trim(); if(v==='') return null; var n=parseFloat(v); return isNaN(n)?null:Math.max(0,Math.min(100,n)); }
       var nc={ name:ov.querySelector('#hmName').value.trim(), tag:ov.querySelector('#hmTag').value.trim(), desc:ov.querySelector('#hmDesc').value.trim(), url:ov.querySelector('#hmUrl').value.trim(), dom:ov.querySelector('#hmDom').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,''), bg:__bg, color:selColor,
         px:__num(ov.querySelector('#hmPx')), py:__num(ov.querySelector('#hmPy')) };
-      if(!nc.name){ alert('기업명을 입력하세요.'); return; }
+      if(!nc.name){ if(window.__nnToast) window.__nnToast('기업명을 입력하세요',{kind:'del'}); else alert('기업명을 입력하세요.'); return; }
       var d=load();
       if(idx>=0) d[idx]=nc; else d.push(nc);
       save(d); close(); render();
@@ -1111,7 +1111,7 @@
     ov.onclick=function(e){ if(e.target===ov) close(); };
     ov.querySelector('.hm-save').onclick=function(){
       var nc={ name:ov.querySelector('#rcName').value.trim(), desc:ov.querySelector('#rcDesc').value.trim(), url:ov.querySelector('#rcUrl').value.trim() };
-      if(!nc.name){ alert('이름을 입력하세요.'); return; }
+      if(!nc.name){ if(window.__nnToast) window.__nnToast('이름을 입력하세요',{kind:'del'}); else alert('이름을 입력하세요.'); return; }
       var dd=load(); if(idx>=0) dd[lane].chips[idx]=nc; else dd[lane].chips.push(nc); save(dd); close(); render();
     };
     requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); ov.querySelector('#rcName').focus(); });
@@ -1980,22 +1980,29 @@
   }
   function modalOpen(){
     /* 실제로 존재하는 오버레이만 검사 — 하나라도 열려 있으면 단축키를 넘긴다 */
-    if(document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm')) return true;
+    if(document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm, #nnSetOv, #capOv.show, #tkOv')) return true;
     var c=document.getElementById('cmdkOv');
     if(c && c.classList.contains('show')) return true;
     return false;
   }
 
+  /* 숫자 키는 상단 메뉴의 왼쪽→오른쪽 순서와 같다 (2026-11 재배정 · 개선제안 S-7).
+     예전 배정은 탭 통합 이전 구성이라 4번이 사라진 PORTFOLIO 였고, 일기·논지·논거·흐름에는 번호가 없었다.
+     NOTES(2번)는 마지막으로 보던 하위 탭(책·용어·미디어·경제·일기)으로 열린다. */
   var PAGES=[
-    ['home','HOME'],['macro','MARKETS'],['assets','ASSETS'],
-    ['portfolio','PORTFOLIO'],['research','RESEARCH'],
-    ['books','BOOKS'],['lexicon','LEXICON'],['media','MEDIA'],['economics','ECONOMICS']
+    ['home','HOME'],['notes','NOTES'],['thesis','THESIS'],
+    ['macro','MACRO'],['research','RESEARCH'],
+    ['assets','ASSETS'],['conviction','CONVICTION'],['flow','FLOW'],['about','ABOUT']
   ];
 
   var KEYS=[
     { g:'\uc774\ub3d9', rows:[
-      ['1 ~ 9', '\ud398\uc774\uc9c0 \uc774\ub3d9 (HOME \u00b7 MARKETS \u00b7 ASSETS \u2026)'],
+      ['1 ~ 9', '상단 메뉴 순서대로 — HOME · NOTES · THESIS · MACRO · RESEARCH · ASSETS · CONVICTION · FLOW · ABOUT'],
       ['H', 'HOME\uc73c\ub85c'],
+      ['D', '투자 일기로'],
+      ['L', '용어 사전으로 — 단어 찾기 칸에 바로 커서'],
+      ['N', '한 줄 담기 — 오늘 일기 끝에 바로 붙이기'],
+      ['Space · 1 ~ 4', '단어 복습 — 정답 보기 · 다시 / 어려움 / 알맞음 / 쉬움 (용어 탭)'],
       ['Ctrl / \u2318 + K', '\ucee4\ub9e8\ub4dc \ud314\ub808\ud2b8 \u2014 \ubaa8\ub4e0 \uae30\ub2a5 \uac80\uc0c9'],
     ]},
     { g:'\ubc30\uacbd', rows:[
@@ -2038,6 +2045,7 @@
     requestAnimationFrame(function(){ ov.classList.add('show'); });
   }
   window.__ksOpen=open;
+  window.__ksList=KEYS;   /* 설정 창(nn-settings.js)의 '단축키' 칸이 같은 목록을 보여 준다 */
 
   document.addEventListener('keydown', function(e){
     if(e.defaultPrevented) return;
@@ -2055,9 +2063,20 @@
         if(window.__nnToast) window.__nnToast(pg[1]); }
       return;
     }
-    if(e.key==='h'||e.key==='H'){ if(typeof switchPage==='function'){ e.preventDefault(); switchPage('home'); } return; }
-    if(e.key==='b'){ if(window.__bgNext){ e.preventDefault(); window.__bgNext(); } return; }
-    if(e.key==='B'){ if(window.__bgPrev){ e.preventDefault(); window.__bgPrev(); } return; }
+    /* 글쇠 위치(e.code)로도 받는다 — 한글 입력 상태에서는 e.key 가 'ㅗ' · 'ㅠ' 처럼 들어온다 */
+    var code=e.code||'';
+    if(e.key==='h'||e.key==='H'||code==='KeyH'){ if(typeof switchPage==='function'){ e.preventDefault(); switchPage('home'); } return; }
+    if(code==='KeyD'){ if(typeof switchPage==='function'){ e.preventDefault(); switchPage('daily'); if(window.__nnToast) window.__nnToast('투자 일기'); } return; }
+    if(code==='KeyL'){
+      if(typeof switchPage==='function'){
+        e.preventDefault(); switchPage('lexicon');
+        if(window.__nnToast) window.__nnToast('용어 사전');
+        setTimeout(function(){ var q=document.getElementById('lkQ'); if(q){ try{ q.focus(); }catch(x){} } }, 350);
+      }
+      return;
+    }
+    if(e.key==='b'||(code==='KeyB'&&!e.shiftKey)){ if(window.__bgNext){ e.preventDefault(); window.__bgNext(); } return; }
+    if(e.key==='B'||(code==='KeyB'&&e.shiftKey)){ if(window.__bgPrev){ e.preventDefault(); window.__bgPrev(); } return; }
   });
 })();
 
@@ -2499,9 +2518,9 @@
       var sym=(inp.value||'').trim();
       if(market!=='crypto') sym=sym.toUpperCase();
       else sym=sym.toLowerCase();
-      if(!sym){ alert('티커/코드를 입력하세요.'); return; }
+      if(!sym){ if(window.__nnToast) window.__nnToast('티커 · 코드를 입력하세요',{kind:'del'}); else alert('티커/코드를 입력하세요.'); return; }
       var d=load();
-      if(d.some(function(x){return x.market===market && x.sym.toLowerCase()===sym.toLowerCase();})){ alert('이미 추가된 종목입니다.'); close(); return; }
+      if(d.some(function(x){return x.market===market && x.sym.toLowerCase()===sym.toLowerCase();})){ if(window.__nnToast) window.__nnToast('이미 추가된 종목입니다',{kind:'del'}); else alert('이미 추가된 종목입니다.'); close(); return; }
       d.push({market:market, sym:sym}); save(d); close(); render();
       if(window.__nnToast) window.__nnToast('✓ "'+sym.toUpperCase()+'" 추가됨');
     };

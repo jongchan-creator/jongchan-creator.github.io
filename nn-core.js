@@ -63,26 +63,54 @@ window.switchPage = function(name) {
 };
 
 /* ── 🔒 데이터 내보내기/가져오기 PIN 잠금 (최초 1회 PIN 설정 → 이후 입력 요구) ── */
+/* 사이트 창으로 묻기 — 사이트 창이 없을 때만 브라우저 기본 창 (2026-11 · 개선제안 V-8) */
+window.__nnAskSecret = function(o, cb){
+  if(window.__nnPrompt){
+    window.__nnPrompt({ icon:'🔒', title:o.title, sub:o.sub, label:o.label||'PIN', ok:o.ok||'확인', required:true, onOk:cb });
+    var inp=document.getElementById('nndIn');
+    if(inp){ try{ inp.type='password'; inp.setAttribute('autocomplete','off'); }catch(e){} }
+    return;
+  }
+  var v=prompt((o.title||'')+(o.sub?'\n'+o.sub:''));
+  if(v!==null && String(v).trim()) cb(String(v).trim());
+};
+function __nnTell(msg, bad){ if(window.__nnToast) window.__nnToast(msg, bad?{kind:'del'}:{}); else { try{ alert(String(msg).replace(/<[^>]+>/g,'')); }catch(e){} } }
+
 window.dbLock = function(action){
   var run=function(){
-    if(!window.KnowledgeNotes){ alert('데이터 모듈을 불러오지 못했습니다.'); return; }
+    if(!window.KnowledgeNotes){ __nnTell('데이터 모듈을 불러오지 못했습니다.', true); return; }
     if(action==='export') KnowledgeNotes.exportData(); else KnowledgeNotes.importData();
   };
   var label = (action==='export' ? '내보내기' : '가져오기');
   var stored = localStorage.getItem('nn_db_pin');
   if(!stored){
-    var np = prompt('🔒 데이터 보호 PIN을 설정하세요 (최초 1회 · 숫자나 문자).\n이후 내보내기/가져오기 시 이 PIN을 입력해야 합니다:');
-    if(np===null || !np.trim()) return;
-    localStorage.setItem('nn_db_pin', np.trim());
-    alert('✅ 보호 PIN이 설정되었습니다. 잠금이 적용됩니다.');
-    run(); return;
+    window.__nnAskSecret({ title:'데이터 보호 PIN 정하기', sub:'처음 한 번만 정합니다. 이후 백업 내보내기 · 가져오기 때 이 PIN을 묻습니다.', label:'새 PIN (숫자나 문자)', ok:'정하기' }, function(np){
+      try{ localStorage.setItem('nn_db_pin', np); }catch(e){}
+      __nnTell('🔒 보호 PIN을 정했습니다');
+      run();
+    });
+    return;
   }
-  var pin = prompt('🔒 데이터 '+label+' — PIN을 입력하세요:');
-  if(pin===null) return;
-  if(pin.trim() !== stored){ alert('❌ PIN이 올바르지 않습니다.'); return; }
-  run();
+  window.__nnAskSecret({ title:'데이터 '+label, sub:'보호 PIN을 입력하세요.', label:'PIN', ok:label }, function(pin){
+    if(pin !== stored){ __nnTell('PIN이 올바르지 않습니다', true); return; }
+    run();
+  });
 };
-/* PIN 변경: 콘솔에서 localStorage.removeItem('nn_db_pin') 후 재설정 */
+/* PIN 바꾸기 — 설정 창(데이터)에서 부른다. 지금 PIN 을 맞혀야 바꿀 수 있다. */
+window.dbChangePin = function(){
+  var stored = localStorage.getItem('nn_db_pin');
+  var setNew = function(){
+    window.__nnAskSecret({ title:'새 PIN 정하기', label:'새 PIN', ok:'바꾸기' }, function(np){
+      try{ localStorage.setItem('nn_db_pin', np); }catch(e){}
+      __nnTell('🔒 PIN을 바꿨습니다');
+    });
+  };
+  if(!stored){ setNew(); return; }
+  window.__nnAskSecret({ title:'PIN 바꾸기', sub:'먼저 지금 PIN을 입력하세요.', label:'지금 PIN', ok:'다음' }, function(pin){
+    if(pin !== stored){ __nnTell('PIN이 올바르지 않습니다', true); return; }
+    setTimeout(setNew, 260);
+  });
+};
 
 /* ══ LETTER FLY-IN ANIMATION ══ */
 var letterColors=['#f0ede6','#f0ede6','#eeead8','#ecddc0','#e8cf9e','#e0c082','#d8b468','#cfac58','#c9a96e'];
@@ -693,7 +721,7 @@ function holdLoadOrder(){
     var next=[];
     order.forEach(function(s){ if(map[s]){ next.push(map[s]); delete map[s]; } });
     HOLDINGS.forEach(function(h){ if(map[h.sym]) next.push(h); });
-    if(next.length===HOLDINGS.length) HOLDINGS=next;
+    if(next.length===HOLDINGS.length){ HOLDINGS=next; try{ window.HOLDINGS=HOLDINGS; }catch(e2){} }
   }catch(e){}
 }
 /* 현재 DOM 순서를 저장 + HOLDINGS 배열 동기화 */
@@ -719,11 +747,20 @@ function holdDragAfter(container, y){
 }
 
 /* ── 종목 추가/삭제 (홈에서 자유롭게 편집, localStorage 영속) ── */
-function holdSaveAll(){ try{ localStorage.setItem('nn_hold_v2', JSON.stringify(HOLDINGS)); }catch(e){} }
+function holdSaveAll(){
+  /* window.HOLDINGS 는 다른 모듈(맥락 · FLOW · 검색창)이 읽는다. 목록을 새 배열로 바꿀 때마다 같이 맞춘다
+     — 예전에는 처음 배열만 가리키고 있어서, 지우거나 더한 뒤에도 새로고침 전까지 옛 목록을 보여 줬다 */
+  try{ window.HOLDINGS = HOLDINGS; }catch(e){}
+  try{ localStorage.setItem('nn_hold_v2', JSON.stringify(HOLDINGS)); }catch(e){}
+}
 function holdLoadAll(){
-  try{ var raw=localStorage.getItem('nn_hold_v2'); if(raw){ var arr=JSON.parse(raw); if(Array.isArray(arr)&&arr.length){ HOLDINGS=arr; return true; } } }catch(e){}
+  try{ var raw=localStorage.getItem('nn_hold_v2'); if(raw){ var arr=JSON.parse(raw); if(Array.isArray(arr)&&arr.length){ HOLDINGS=arr; try{ window.HOLDINGS=HOLDINGS; }catch(e2){} return true; } } }catch(e){}
   return false;
 }
+/* 다른 창에서 종목 목록이 바뀌면 이 창의 목록도 다시 읽는다 (옛 목록으로 덮어쓰지 않게) */
+window.addEventListener('storage', function(e){
+  try{ if(e && e.key==='nn_hold_v2' && holdLoadAll()) holdRenderSidebar(); }catch(err){}
+});
 function holdRenderSidebar(){
   var side=document.getElementById('holdSide'); if(!side) return;
   var html='',i;
@@ -741,15 +778,24 @@ function holdRenderSidebar(){
   }
 }
 window.holdDelete=function(sym){
-  if(HOLDINGS.length<=1){ alert('최소 1개 종목은 유지해야 합니다.'); return; }
-  var item=null; HOLDINGS.forEach(function(h){ if(h.sym===sym) item=h; });
-  if(!item) return;
-  if(!confirm('"'+item.tk+' · '+item.nm+'" 종목을 목록에서 삭제할까요?')) return;
+  if(HOLDINGS.length<=1){ __nnTell('최소 1개 종목은 남겨 두어야 합니다', true); return; }
+  var idx=-1; HOLDINGS.forEach(function(h,i){ if(h.sym===sym) idx=i; });
+  if(idx<0) return;
+  var item=HOLDINGS[idx];
   HOLDINGS=HOLDINGS.filter(function(h){ return h.sym!==sym; });
   holdSaveAll();
   if(__holdCur===sym) __holdCur=null;
   holdRenderSidebar();
   loadHolding(__holdCur || HOLDINGS[0].sym);
+  /* 묻는 창 대신 5초 되돌리기 (2026-11 · 개선제안 M-2) */
+  var lb=String(item.tk||'')+' · '+String(item.nm||'');
+  lb=lb.replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+  if(window.__nnToast) window.__nnToast('🗑 종목 "'+lb+'" 삭제됨', {kind:'del', undo:function(){
+    if(HOLDINGS.some(function(h){ return h.sym===item.sym; })) return;
+    HOLDINGS.splice(Math.min(idx, HOLDINGS.length), 0, item);
+    holdSaveAll(); holdRenderSidebar(); loadHolding(item.sym);
+    if(window.__nnToast) window.__nnToast('↩ 복원되었습니다');
+  }});
 };
 window.haPick=function(c){
   var ci=document.getElementById('haColor'); if(ci) ci.value=c;
@@ -788,10 +834,10 @@ window.holdSubmitAdd=function(){
   var nm=(m.querySelector('#haNm').value||'').trim();
   var ex=m.querySelector('#haEx').value;
   var c=m.querySelector('#haColor').value || '#b28ad4';
-  if(!tk){ alert('티커를 입력하세요'); return; }
+  if(!tk){ __nnTell('티커를 입력하세요', true); return; }
   if(!nm) nm=tk;
   var sym=ex+':'+tk;
-  for(var i=0;i<HOLDINGS.length;i++){ if(HOLDINGS[i].sym===sym){ alert('이미 추가된 종목입니다: '+sym); return; } }
+  for(var i=0;i<HOLDINGS.length;i++){ if(HOLDINGS[i].sym===sym){ __nnTell('이미 추가된 종목입니다: '+sym, true); return; } }
   HOLDINGS.push({sym:sym, tk:tk, nm:nm, c:c});
   holdSaveAll();
   holdRenderSidebar();
@@ -2088,9 +2134,60 @@ var runParallax = function(){
 /* ══ 노션 스타일 서식 지정, 이미지 클릭 크기 조절 및 자동 정렬 통합 엔진 (문법 완전 교정본) ══ */
 var ECON_SEED_CONTENT = '<div class="np-note" contenteditable="false" style="border-left-color:rgba(204,255,0,.5)">📝 <b>예시 페이지입니다.</b> ECONOMICS 탭 사용법을 보여드리는 샘플이에요. 자유롭게 수정하거나 카드의 ✕로 삭제하세요.</div><h2>72의 법칙 (Rule of 72)</h2><p>복리 수익률로 <b>원금이 두 배</b>가 되는 데 걸리는 시간을 빠르게 어림하는 방법. <b>72 ÷ 연이율(%)</b> = 대략적인 소요 연수.</p><ul><li>연 6% → 72 ÷ 6 = <b>약 12년</b>이면 자산이 2배</li><li>연 9% → 72 ÷ 9 = <b>약 8년</b></li><li>인플레이션에도 적용 — 물가가 연 3%씩 오르면 24년 뒤 화폐가치는 절반</li></ul><blockquote>작은 수익률 차이가 장기적으로 자산 규모를 완전히 바꾼다 — 복리는 시간의 함수다.</blockquote><p><br></p>';
 var MEDIA_SEED_CONTENT = '<div class="np-note" contenteditable="false" style="border-left-color:rgba(178,138,212,.6)">📝 <b>예시 페이지입니다.</b> MEDIA 탭 사용법을 보여드리는 샘플이에요. 다큐·영상·팟캐스트에서 얻은 인사이트를 이렇게 정리하세요. 자유롭게 수정하거나 ✕로 삭제하세요.</div><h2>다큐멘터리 · Inside Job (2010)</h2><div class="nn-props" contenteditable="false"><div class="nn-prop"><span class="np-k">🎬 유형</span><span class="np-v" contenteditable="true">다큐멘터리</span></div><div class="nn-prop"><span class="np-k">⭐ 추천도</span><span class="np-v" contenteditable="true">★★★★★</span></div></div><p>2008 금융위기의 구조적 원인을 추적한 다큐. 파생상품·신용평가사·규제 실패가 어떻게 맞물렸는지 보여준다.</p><div style="font-weight:700;margin-top:12px">📌 핵심 메모</div><ul><li>위기는 예측 불가능한 사고가 아니라 <b>인센티브 구조가 만든 필연</b>이었다.</li><li>리스크를 감춘 금융상품일수록 등급은 높았다 — 복잡성은 종종 위험의 위장막이다.</li></ul><p><br></p>';
+/* ── 기기에만 두는 살림살이 칸 ──
+   동기화 · 백업이 "이 기기에서 무슨 일이 있었는지" 적어 두는 장부다. 기록(데이터)이 아니다.
+   백업 파일이나 자동 백업에는 같이 담기지만, 되돌릴 때 이것까지 옛 값으로 바꾸면 안 된다.
+   특히 nn_local_touch_v1 / nn_last_push_v1 을 옛 값으로 되돌리면 "방금 되돌린 기록"이
+   '아직 안 올라간 변경'으로 표시되지 않아서, 다음 접속 때 클라우드의 (망가진) 내용이
+   되돌린 것을 다시 덮어쓴다. 그래서 파일 복구 · 백업 되돌리기는 이 칸들을 건너뛴다. */
+window.__nnLocalOnlyKeys = {
+  nn_local_touch_v1:1, nn_last_push_v1:1, nn_push_size_v1:1, nn_cloud_snap_idx_v1:1, nn_cloud_seen_v1:1,
+  nn_last_sync:1, nn_auto_snap_v1:1, nn_export_hide_v1:1, nn_last_export_v1:1, nn_vault_rescue_v1:1,
+  nn_restore_mark_v1:1, nn_sync_uid_v1:1, nn_sync_nomerge_v1:1
+};
+
+/* ── 되돌렸다는 표시 ──
+   파일 복구 · 백업 되돌리기로 어떤 칸을 바꿔 넣었는지 적어 둔다 (nn_restore_mark_v1).
+   동기화 블록이 다음에 클라우드와 맞출 때 이 표시를 읽어 "되돌린 내용이 기준"으로 처리한다.
+   이 표시가 없으면, 로그인하지 않은 채 되돌린 뒤 로그인했을 때 클라우드의 옛 내용이
+   방금 되돌린 것을 다시 덮어쓸 수 있다. */
+window.__nnMarkRestored = function(keys){
+  try{
+    var prev = null;
+    try{ prev = JSON.parse(localStorage.getItem('nn_restore_mark_v1') || 'null'); }catch(e){}
+    var set = {};
+    ((prev && prev.keys) || []).concat(keys || []).forEach(function(k){ if (k) set[k] = 1; });
+    localStorage.setItem('nn_restore_mark_v1', JSON.stringify({ at: Date.now(), keys: Object.keys(set) }));
+  }catch(e){}
+};
+
+/* ── 얼리기 ──
+   저장소의 어떤 칸을 이 창 밖의 내용으로 통째로 바꿔 넣었을 때(클라우드 내려받기 · 백업 되돌리기 ·
+   파일 복구) 부른다. 얼린 칸은 새로고침 전까지 어떤 저장도 받지 않는다 — 이 창의 메모리는
+   바꿔 넣기 전 내용이라, 저장을 받아 주면 옛 내용이 새 내용을 덮는다.
+   새로고침은 부른 쪽이 하지만, 어떤 이유로든 안 일어나면 8초 뒤 여기서 한다
+   (얼린 채로 남으면 그 뒤의 기록이 조용히 저장되지 않기 때문이다). */
+window.__nnFreeze = function(keys){
+  window.__nnFrozenKeys = window.__nnFrozenKeys || {};
+  (keys || []).forEach(function(k){ if (k) window.__nnFrozenKeys[k] = 1; });
+  if (!window.__nnFreezeTimer) {
+    window.__nnFreezeTimer = setTimeout(function(){ try{ location.reload(); }catch(e){} }, 8000);
+  }
+};
+
 window.KnowledgeNotes = {
   data: { books: [], lexicon: [], economics: [], media: [], thesis: [] },
   activeIds: { books: null, lexicon: null, economics: null, media: null, thesis: null },
+
+  /* ── 기록 보호 (2026-11) ──────────────────────────────────────────
+     _ready       저장본을 다 읽기 전에는 false. 그동안 save() 는 아무것도 쓰지 않는다.
+                  (읽기 전의 빈 data 가 저장본을 덮어쓰는 사고를 막는다 — 개선제안 F-1)
+     _lastRaw     이 창이 마지막으로 읽었거나 쓴 저장본 그대로.
+                  save() 직전에 저장소와 다르면 "다른 곳에서 바뀌었다"는 뜻이므로
+                  덮어쓰지 않고 저장소 쪽을 다시 읽는다. */
+  _ready: false,
+  _lastRaw: null,
+  _lastGroupsRaw: null,
 
   init: function() {
     var self = this;
@@ -2102,11 +2199,26 @@ window.KnowledgeNotes = {
         if(!inPopup && !inCell) self.hideTablePopup();
       }, true);
     }
-    
+
+    this._loadStore();          /* 이미 읽었으면 아무 일도 하지 않는다 */
+
+    this.renderSidebar('books');
+    this.renderSidebar('lexicon');
+    this.renderSidebar('economics');
+    this.renderSidebar('media');
+  },
+
+  /* 저장본 읽기 — 스크립트가 실행되는 즉시 한 번 (파일 맨 아래에서 호출).
+     예전에는 init() 안에 있어서 그림까지 다 내려받은 뒤(window load)에야 읽었고,
+     그 전에 다른 모듈이 save() 하면 빈 data 가 저장본을 덮어썼다. */
+  _loadStore: function() {
+    if (this._ready) return;
+    var saved = null;
     try {
-      var saved = localStorage.getItem('nn_knowledge_vault_v2');
+      saved = localStorage.getItem('nn_knowledge_vault_v2');
       if (saved) {
         this.data = JSON.parse(saved);
+        if (!this.data || typeof this.data !== 'object' || Array.isArray(this.data)) throw new Error('vault shape');
 // 📡 인텔리전스 리서치 전용 다차원 서브 메모리 할당
       this.data.holdIntel = this.data.holdIntel || {};
       this.data.thesis = this.data.thesis || [];
@@ -2139,9 +2251,12 @@ window.KnowledgeNotes = {
         };
       }
     } catch(e) {
+      /* 저장본이 있는데 못 읽었다 — 버리지 않고 따로 보관해 둔다 */
+      if (saved) this._rescueCorrupt(saved);
       this.data = { books: [], lexicon: [], economics: [], media: [], thesis: [] };
     }
 
+    try {
     if(!this.groups) this.groups = {};
     var savedGroups = null;
     try { savedGroups = JSON.parse(localStorage.getItem('nn_knowledge_groups_v1')); } catch(e){}
@@ -2195,7 +2310,7 @@ window.KnowledgeNotes = {
       }
       this.data[t].forEach(function(p){ if(!p.id) p.id = 'p_' + Math.random().toString(36).substr(2,9); });
       /* 예시 책: 서재가 비어있는 방문자에게 FROM MY LIBRARY 시연용 */
-      if (t === 'books' && !this.data.books.some(function(b){ return b && b.id === 'p_seed_lynch'; })) {
+      if (t === 'books' && !this._seedGone('p_seed_lynch') && !this.data.books.some(function(b){ return b && b.id === 'p_seed_lynch'; })) {
         this.data.books.push({
           id: 'p_seed_lynch',
           title: '[예시] 전설로 떠나는 월가의 영웅',
@@ -2207,10 +2322,10 @@ window.KnowledgeNotes = {
         });
       }
       /* 예시 페이지: economics / media (사용법 시연용) */
-      if (t === 'economics' && !this.data.economics.some(function(p){ return p && p.id === 'p_seed_econ'; })) {
+      if (t === 'economics' && !this._seedGone('p_seed_econ') && !this.data.economics.some(function(p){ return p && p.id === 'p_seed_econ'; })) {
         this.data.economics.push({ id: 'p_seed_econ', title: '[예시] 72의 법칙', icon: '📈', date: this._nowStr(), groupId: 'grp_econ_main', content: ECON_SEED_CONTENT });
       }
-      if (t === 'media' && !this.data.media.some(function(p){ return p && p.id === 'p_seed_media'; })) {
+      if (t === 'media' && !this._seedGone('p_seed_media') && !this.data.media.some(function(p){ return p && p.id === 'p_seed_media'; })) {
         this.data.media.push({ id: 'p_seed_media', title: '[예시] TERAFAB — 사상 최대 반도체 팹', icon: '🎬', date: this._nowStr(), groupId: 'grp_media_main', url: 'https://www.youtube.com/watch?v=Txt3Wodav1o', content: 'Tesla·SpaceX·xAI가 로직·메모리·첨단 패키징을 한 지붕 아래 통합하는 초대형 반도체 제조 시설(TERAFAB) 구상. 수직 통합이 칩 공급망과 AI 하드웨어 경쟁에 어떤 의미인지 짚어볼 것. (예시 카드 — 링크를 붙이면 썸네일이 자동으로 뜹니다. ✕로 삭제하세요.)' });
       }
       /* 구버전 시드(예시 안내 없는)면 최신 안내 포함본으로 1회 교체 */
@@ -2222,18 +2337,194 @@ window.KnowledgeNotes = {
         }
       }
     }, this);
+    } catch(e2) { try{ console.error('[notes] 기본 그룹 보정 실패', e2); }catch(_){} }
 
-    this.renderSidebar('books');
-    this.renderSidebar('lexicon');
-    this.renderSidebar('economics');
-    this.renderSidebar('media');
+    /* 여기까지 왔으면 저장본을 읽은 것이다 — 이제부터 save() 를 허용한다 */
+    try {
+      this._lastRaw = localStorage.getItem('nn_knowledge_vault_v2');
+      this._lastGroupsRaw = localStorage.getItem('nn_knowledge_groups_v1');
+    } catch(e3) { this._lastRaw = null; this._lastGroupsRaw = null; }
+    this._ready = true;
+  },
+
+  /* 예시 글(p_seed_*)을 사용자가 지웠는지 — 지운 것은 다음에 열어도 다시 넣지 않는다.
+     표시는 저장본 안(data._seedGone)에 둔다. 그래야 동기화·백업·내보내기에 같이 따라간다.
+     (예전에는 표시가 없어서, 지운 예시가 새로고침할 때마다 되살아났다) */
+  _seedGone: function(id, set) {
+    var d = this.data || {};
+    if (set === undefined) return Array.isArray(d._seedGone) && d._seedGone.indexOf(id) >= 0;
+    if (!Array.isArray(d._seedGone)) d._seedGone = [];
+    var i = d._seedGone.indexOf(id);
+    if (set && i < 0) d._seedGone.push(id);
+    if (!set && i >= 0) d._seedGone.splice(i, 1);
+  },
+
+  /* 읽지 못한 저장본을 버리지 않는다 — 한 벌은 localStorage 에, 한 벌은 IndexedDB 에 */
+  _rescueCorrupt: function(raw) {
+    try{ console.error('[notes] 저장된 노트를 읽지 못했습니다 — 원본을 nn_vault_rescue_v1 에 보관합니다'); }catch(e){}
+    try{ localStorage.setItem('nn_vault_rescue_v1', raw); }catch(e){}
+    var tries = 0;
+    (function put(){
+      try{
+        if (window.__nnBigStore && window.__nnBigStore.put) {
+          window.__nnBigStore.put('rescue_' + Date.now(), { at: new Date().toISOString(), kind: 'rescue', raw: raw });
+          return;
+        }
+      }catch(e){}
+      if (++tries < 20) setTimeout(put, 500);
+    })();
+    setTimeout(function(){
+      if (window.__nnToast) window.__nnToast('⚠ 저장된 노트를 읽지 못했습니다 — 원본은 따로 보관했습니다. 백업에서 되돌려 주세요', {kind:'del'});
+    }, 3500);
+  },
+
+  /* 배열 ov 를 nv 와 같은 내용으로 — 같은 id 의 원소는 '같은 객체'를 유지한 채 내용만 바꾼다 */
+  _syncArr: function(ov, nv) {
+    var byId = {};
+    ov.forEach(function(x){ if (x && typeof x === 'object' && x.id) byId[x.id] = x; });
+    var out = nv.map(function(x){
+      var o = (x && typeof x === 'object' && x.id) ? byId[x.id] : null;
+      if (!o) return x;
+      Object.keys(o).forEach(function(p){ if (!(p in x)) delete o[p]; });
+      Object.keys(x).forEach(function(p){ o[p] = x[p]; });
+      return o;
+    });
+    ov.length = 0;
+    Array.prototype.push.apply(ov, out);
+    return ov;
+  },
+
+  /* 새로 읽은 내용(d)을 메모리에 '제자리에서' 옮겨 담는다.
+     열려 있는 편집기들은 노트 객체를 직접 쥐고 고친다 (note.groupId = … ; save()).
+     data 를 통째로 새 객체로 갈아 끼우면 그 편집기가 쥔 객체는 어디에도 저장되지 않는
+     허공의 것이 되어, 이후의 수정이 조용히 사라진다.
+     그래서 data · 각 배열 · 같은 id 의 노트는 모두 원래 객체를 유지하고 내용만 바꾼다. */
+  _adoptStore: function(d) {
+    var self = this, cur = this.data;
+    if (!cur || typeof cur !== 'object' || Array.isArray(cur)) { this.data = d; cur = d; }
+    else {
+      Object.keys(d).forEach(function(k){
+        var nv = d[k], ov = cur[k];
+        if (Array.isArray(nv) && Array.isArray(ov)) self._syncArr(ov, nv);
+        else if (k === 'holdIntel' && nv && typeof nv === 'object' && !Array.isArray(nv)
+                 && ov && typeof ov === 'object' && !Array.isArray(ov)) {
+          Object.keys(ov).forEach(function(t){ if (!(t in nv)) delete ov[t]; });
+          Object.keys(nv).forEach(function(t){
+            if (Array.isArray(nv[t]) && Array.isArray(ov[t])) { ov[t].length = 0; Array.prototype.push.apply(ov[t], nv[t]); }
+            else ov[t] = nv[t];
+          });
+        }
+        else cur[k] = nv;
+      });
+      /* 새 내용에 없는 칸 — 배열은 비우되 칸은 남긴다(화면 코드가 배열을 기대한다), 나머지는 지운다 */
+      Object.keys(cur).forEach(function(k){
+        if (k in d) return;
+        if (Array.isArray(cur[k])) cur[k].length = 0;
+        else if (k !== 'holdIntel') delete cur[k];
+      });
+    }
+    ['books','lexicon','economics','media','thesis'].forEach(function(t){ if (!Array.isArray(cur[t])) cur[t] = []; });
+    if (!cur.holdIntel || typeof cur.holdIntel !== 'object') cur.holdIntel = {};
+  },
+
+  /* 저장소가 이 창 밖에서 바뀌었을 때(다른 창 · 클라우드 내려받기 · 백업 되돌리기)
+     메모리 쪽을 버리고 저장소를 다시 읽는다. 저장소를 덮어쓰지 않는 것이 핵심이다. */
+  _reloadFromStore: function(why) {
+    var raw = null, graw = null, d = null, g = null, self = this;
+    try { raw = localStorage.getItem('nn_knowledge_vault_v2'); graw = localStorage.getItem('nn_knowledge_groups_v1'); }
+    catch(e) { return false; }
+    try { d = raw ? JSON.parse(raw) : null; } catch(e) { d = null; }
+    if (!d || typeof d !== 'object' || Array.isArray(d)) {
+      /* 저장소가 비었거나 못 읽는 상태 — 메모리를 그대로 둔다 (다음 save 가 저장소를 되살린다) */
+      this._lastRaw = raw; this._lastGroupsRaw = graw;
+      return false;
+    }
+    this._adoptStore(d);
+    try { g = graw ? JSON.parse(graw) : null; } catch(e) { g = null; }
+    if (g && typeof g === 'object' && !Array.isArray(g)) {
+      var og = this.groups || (this.groups = {});
+      Object.keys(g).forEach(function(t){
+        if (Array.isArray(g[t]) && Array.isArray(og[t])) self._syncArr(og[t], g[t]);
+        else og[t] = g[t];
+      });
+      /* 새 내용에 없는 타입의 그룹은 그대로 둔다 (기본 그룹은 저장본에 없을 수도 있다) */
+    }
+    this._lastRaw = raw; this._lastGroupsRaw = graw;
+
+    /* 열려 있던 글이 사라졌으면 편집기를 닫는다 */
+    var gone = [];
+    Object.keys(this.activeIds || {}).forEach(function(t){
+      var id = self.activeIds[t];
+      if (id && !(self.data[t] || []).some(function(n){ return n && n.id === id; })) { self.activeIds[t] = null; gone.push(t); }
+    });
+    var paint = function(){
+      var types = ['books','lexicon','economics','media','daily'];
+      try{ (window.__nnCustomTabs ? window.__nnCustomTabs() : []).forEach(function(t){ if (t && t.id) types.push(t.id); }); }catch(e){}
+      types.forEach(function(t){
+        try{ if (document.getElementById(t + '-sidebar-list')) self.renderSidebar(t); }catch(e){}
+      });
+      gone.forEach(function(t){
+        try{
+          if (t === 'thesis') { if (window.ThesisApp && window.ThesisApp.close) window.ThesisApp.close(); }
+          else self.renderEditor(t);
+        }catch(e){}
+      });
+      /* 논지 목록 — 글을 쓰는 중이 아닐 때만 */
+      try{
+        var tl = document.getElementById('thesis-editor-layout');
+        if (window.ThesisApp && window.ThesisApp.renderList && !(tl && tl.classList.contains('editing'))) window.ThesisApp.renderList();
+      }catch(e){}
+      try{ window.dispatchEvent(new CustomEvent('nn:vault-reloaded', { detail: { why: why } })); }catch(e){}
+    };
+    /* 이 창에서 글을 쓰는 중이면 목록 다시 그리기를 잠깐 미룬다 (커서를 빼앗지 않는다) */
+    var wait = 0;
+    (function later(){
+      var a = document.activeElement, typing = false;
+      try{ typing = !!(a && a.closest && a.closest('#page-notes, .kn-pane') && (a.isContentEditable || /^(INPUT|TEXTAREA)$/.test(a.tagName))); }catch(e){}
+      if (typing && why !== 'save' && wait++ < 40) { setTimeout(later, 1500); return; }
+      paint();
+    })();
+    if (why === 'save' && window.__nnToast) {
+      window.__nnToast('다른 창에서 바뀐 기록을 먼저 불러왔습니다 — 방금 한 작업은 한 번 더 해 주세요');
+    }
+    return true;
   },
 
   save: function() {
+    /* ① 저장본을 읽기 전에는 쓰지 않는다 */
+    if (!this._ready) return false;
+    /* ② 방금 바깥에서 덮어쓴 칸(클라우드 내려받기 · 백업 되돌리기)은 새로고침 전까지 건드리지 않는다 */
+    if (window.__nnFrozenKeys && window.__nnFrozenKeys['nn_knowledge_vault_v2']) return false;
+    /* ③ 저장소가 이 창이 아는 것과 다르면 다른 곳에서 바뀐 것이다 — 덮어쓰지 않고 다시 읽는다 */
+    var cur = null, curG = null;
+    try { cur = localStorage.getItem('nn_knowledge_vault_v2'); curG = localStorage.getItem('nn_knowledge_groups_v1'); } catch(e) {}
+    if ((cur !== null && cur !== this._lastRaw) || (curG !== null && this._lastGroupsRaw !== null && curG !== this._lastGroupsRaw)) {
+      this._reloadFromStore('save');
+      return false;
+    }
+    var next;
+    try { next = JSON.stringify(this.data); } catch(e) { return false; }
+    /* ④ 한 번에 절반 넘게 줄어드는 저장이면 직전 상태를 먼저 떠 둔다 (10분에 한 번) */
     try {
-      localStorage.setItem('nn_knowledge_vault_v2', JSON.stringify(this.data));
-      if(this.groups) localStorage.setItem('nn_knowledge_groups_v1', JSON.stringify(this.groups));
+      if (cur && cur.length > 4096 && next.length < cur.length * 0.5 && window.__nnBackup && window.__nnBackup.before) {
+        var now = Date.now();
+        if (!this._shrinkSnapAt || now - this._shrinkSnapAt > 600000) { this._shrinkSnapAt = now; window.__nnBackup.before(); }
+      }
     } catch(e) {}
+    try {
+      localStorage.setItem('nn_knowledge_vault_v2', next);
+      this._lastRaw = next;
+      if (this.groups) {
+        var gs = JSON.stringify(this.groups);
+        localStorage.setItem('nn_knowledge_groups_v1', gs);
+        this._lastGroupsRaw = gs;
+      }
+    } catch(e) {
+      /* 저장 실패(용량 초과 등) — 저장소에 실제로 남은 값을 기준으로 다시 맞춘다 */
+      try { this._lastRaw = localStorage.getItem('nn_knowledge_vault_v2'); this._lastGroupsRaw = localStorage.getItem('nn_knowledge_groups_v1'); } catch(_) {}
+      return false;
+    }
+    return true;
   },
 
   createGroup: function(type, parentId) {
@@ -2362,6 +2653,7 @@ window.KnowledgeNotes = {
     if(idx<0) return;
     var removed=arr[idx];
     arr.splice(idx,1);
+    if (String(id).indexOf('p_seed_') === 0) this._seedGone(id, true);
     if (this.activeIds[type] === id) this.activeIds[type] = null;
     this.save(); this.renderSidebar(type); this.renderEditor(type);
     var lb={books:'책',media:'미디어',lexicon:'용어'}[type]||'페이지';
@@ -2370,6 +2662,7 @@ window.KnowledgeNotes = {
       window.__nnToast('🗑 '+lb+' "'+ttl+'" 삭제됨',{kind:'del',undo:function(){
         var a=self.data[type]||(self.data[type]=[]);
         a.splice(Math.min(idx,a.length),0,removed);
+        if (String(id).indexOf('p_seed_') === 0) self._seedGone(id, false);
         self.save(); self.renderSidebar(type); self.renderEditor(type);
         if(window.__nnToast) window.__nnToast('↩ 복원되었습니다');
       }});
@@ -2608,8 +2901,20 @@ window.KnowledgeNotes = {
     ov.querySelector('.lc-yes').onclick=function(e){ e.stopPropagation();
       card.classList.add('lex-removing');
       setTimeout(function(){
-        self.data.lexicon = self.data.lexicon.filter(function(n){ return n.id!==id; });
+        var arr=self.data.lexicon||[], at=-1;
+        for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ at=i; break; } }
+        if(at<0) return;
+        var removed=arr.splice(at,1)[0];
         self.save(); self.renderSidebar('lexicon');
+        var ttl=String((removed&&removed.title)||'').trim()||'제목 없음';
+        ttl=ttl.replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+        if(window.__nnToast) window.__nnToast('🗑 용어 "'+ttl+'" 삭제됨', {kind:'del', undo:function(){
+          var a=self.data.lexicon||(self.data.lexicon=[]);
+          if(a.some(function(n){ return n && n.id===id; })) return;
+          a.splice(Math.min(at,a.length),0,removed);
+          self.save(); self.renderSidebar('lexicon');
+          if(window.__nnToast) window.__nnToast('↩ 복원되었습니다');
+        }});
       }, 200);
     };
     card.appendChild(ov);
@@ -2747,7 +3052,24 @@ window.KnowledgeNotes = {
     ov.querySelector('.lc-no').onclick=function(e){ e.stopPropagation(); ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },180); };
     ov.querySelector('.lc-yes').onclick=function(e){ e.stopPropagation();
       card.classList.add('lex-removing');
-      setTimeout(function(){ self.data.media=self.data.media.filter(function(n){ return n.id!==id; }); self.save(); self.renderSidebar('media'); }, 200);
+      setTimeout(function(){
+        var arr=self.data.media||[], at=-1;
+        for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ at=i; break; } }
+        if(at<0) return;
+        var removed=arr.splice(at,1)[0];
+        if(String(id).indexOf('p_seed_')===0) self._seedGone(id, true);
+        self.save(); self.renderSidebar('media');
+        var ttl=String((removed&&removed.title)||'').trim()||'제목 없음';
+        ttl=ttl.replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+        if(window.__nnToast) window.__nnToast('🗑 미디어 "'+ttl+'" 삭제됨', {kind:'del', undo:function(){
+          var a=self.data.media||(self.data.media=[]);
+          if(a.some(function(n){ return n && n.id===id; })) return;
+          a.splice(Math.min(at,a.length),0,removed);
+          if(String(id).indexOf('p_seed_')===0) self._seedGone(id, false);
+          self.save(); self.renderSidebar('media');
+          if(window.__nnToast) window.__nnToast('↩ 복원되었습니다');
+        }});
+      }, 200);
     };
     card.appendChild(ov);
     requestAnimationFrame(function(){ ov.classList.add('show'); if(window.__nnRenderStorage) window.__nnRenderStorage(); });
@@ -3556,10 +3878,15 @@ window.KnowledgeNotes = {
         var when = backup.createdAt ? String(backup.createdAt).slice(0,10) : '날짜 미상';
         var run = function(){
           var ok=0, fail=0;
+          var done = [];
           keys.forEach(function(k){
             if(k === 'nn_db_pin') return;
-            try{ localStorage.setItem(k, map[k]); ok++; }catch(err){ fail++; }
+            if(window.__nnLocalOnlyKeys && window.__nnLocalOnlyKeys[k]) return;   /* 기기 장부는 되돌리지 않는다 */
+            try{ localStorage.setItem(k, map[k]); ok++; done.push(k); }catch(err){ fail++; }
           });
+          /* 새로고침 전까지 이 창의 옛 메모리가 복구한 칸을 다시 덮어쓰지 못하게 얼린다 */
+          window.__nnMarkRestored(done);
+          window.__nnFreeze(done);
           if(fail){
             if(window.__nnToast) window.__nnToast(ok+'개 복구 · '+fail+'개 실패 (저장 공간 부족)',{kind:'del'});
             setTimeout(function(){ location.reload(); }, 2600);
@@ -3583,6 +3910,26 @@ window.KnowledgeNotes = {
     input.click();
   }
 };
+
+/* ── 저장본은 지금 바로 읽는다 (개선제안 F-1) ──
+   화면에 붙이는 일(init)은 뒤에서 하지만, 데이터는 이 줄에서 이미 메모리에 올라와 있다.
+   그래서 뒤따라 실행되는 nn-relations · nn-daily 같은 모듈이 '빈 저장소'를 볼 일이 없다. */
+try { window.KnowledgeNotes._loadStore(); }
+catch(e) { try{ console.error('[notes] 저장본 읽기 실패', e); }catch(_){} }
+
+/* 다른 창(탭)에서 노트가 바뀌면 이 창의 메모리도 즉시 맞춘다.
+   안 그러면 이 창이 옛 내용을 통째로 다시 저장해 다른 창에서 쓴 글을 지운다. */
+window.addEventListener('storage', function(e){
+  try{
+    if (!e || (e.storageArea && e.storageArea !== window.localStorage)) return;
+    if (e.key !== 'nn_knowledge_vault_v2' && e.key !== 'nn_knowledge_groups_v1') return;
+    var k = window.KnowledgeNotes;
+    if (!k || !k._ready) return;
+    var cur = localStorage.getItem('nn_knowledge_vault_v2'), curG = localStorage.getItem('nn_knowledge_groups_v1');
+    if (cur === k._lastRaw && curG === k._lastGroupsRaw) return;   /* 이미 같은 내용 */
+    k._reloadFromStore('tab');
+  }catch(err){}
+});
 
 /* ══════════ 마퀴 종목 편집기 ══════════ */
 (function(){
@@ -3764,14 +4111,47 @@ window.KnowledgeNotes = {
   var ov=null, inp=null, listEl=null, items=[], activeIdx=0;
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+  /* ── 어디서든 부르는 바로가기 (검색창 · 홈의 빠른 실행 줄 · 단축키가 같이 쓴다) ── */
+  window.__nnGo = {
+    /* 오늘 날짜의 일기를 연다 (없으면 만든다) */
+    dailyToday: function(){
+      if(typeof switchPage==='function') switchPage('daily');
+      setTimeout(function(){ try{ var d=window.__nnDaily; if(d && d.open) d.open(d.today()); }catch(e){} }, 200);
+    },
+    /* 용어 탭의 LOOK UP 으로 — 낱말을 주면 바로 찾고, 없으면 찾기 칸에 커서만 둔다 */
+    lookup: function(q){
+      if(typeof switchPage==='function') switchPage('lexicon');
+      q=String(q||'').trim();
+      setTimeout(function(){
+        try{
+          var el=document.getElementById('lkQ');
+          if(q && window.__nnLookup && window.__nnLookup.search){ if(el) el.value=q; window.__nnLookup.search(q); }
+          else if(el) el.focus();
+        }catch(e){}
+      }, 300);
+    },
+    /* 보유 종목 하나를 종목 분석 화면에서 연다 */
+    holding: function(sym){
+      if(typeof switchPage==='function') switchPage('portfolio');
+      setTimeout(function(){
+        try{
+          var list=document.querySelectorAll('#holdSide .hold-item');
+          for(var i=0;i<list.length;i++){ if(list[i].getAttribute('data-sym')===sym){ list[i].click(); break; } }
+        }catch(e){}
+      }, 260);
+    }
+  };
+
   var TABS=[
     {t:'홈', sub:'HOME', page:'home'},
+    {t:'노트', sub:'NOTES · 책 · 용어 · 미디어 · 경제 · 일기', page:'notes'},
+    {t:'일기', sub:'DAILY · 투자 일기 · diary', page:'daily'},
     {t:'매크로', sub:'MACRO · 실시간 시장', page:'macro'},
     {t:'리서치', sub:'RESEARCH', page:'research'},
     {t:'자산', sub:'ASSETS', page:'assets'},
     {t:'북스', sub:'BOOKS', page:'books'},
     {t:'미디어', sub:'MEDIA', page:'media'},
-    {t:'렉시콘', sub:'LEXICON', page:'lexicon'},
+    {t:'렉시콘', sub:'LEXICON · 용어 사전 · 단어', page:'lexicon'},
     {t:'이코노믹스', sub:'ECONOMICS', page:'economics'},
     {t:'보유 종목', sub:'ASSETS · HOLDINGS · 종목별 심층', page:'portfolio'},
     {t:'논지', sub:'THESIS · 생각의 기록', page:'thesis'},
@@ -3780,7 +4160,8 @@ window.KnowledgeNotes = {
     {t:'흐름', sub:'FLOW · 지식에서 자본까지', page:'flow'},
     {t:'어바웃', sub:'ABOUT', page:'about'}
   ];
-  var NOTE_META={books:{lb:'BOOKS',c:'#e8c47e'},media:{lb:'MEDIA',c:'#7fbef5'},lexicon:{lb:'LEXICON',c:'#aeb1b4'},economics:{lb:'ECON',c:'#7fd58c'}};
+  var NOTE_META={books:{lb:'BOOKS',c:'#e8c47e'},media:{lb:'MEDIA',c:'#7fbef5'},lexicon:{lb:'LEXICON',c:'#aeb1b4'},economics:{lb:'ECON',c:'#7fd58c'},
+                 daily:{lb:'일기',c:'#c2a0e8'}};   /* 일기(daily)는 2026-11 에 추가 — 그 전에는 검색에 안 걸렸다 */
   /* THESIS 는 KnowledgeNotes.data.thesis 에 있지만 여는 방법이 다르다(ThesisApp.open).
      그래서 NOTE_META 에 넣지 않고 따로 수집한다. */
   var THESIS_C='#e0709c', CONV_C='#4d8bff', JN_C='#3fc4b0';
@@ -3799,6 +4180,11 @@ window.KnowledgeNotes = {
     });
   }
   var CMDS=[
+    /* 매일 쓰는 것 — 검색창을 열면 맨 위에 나온다 */
+    {t:'오늘 일기 쓰기', sub:'DAILY · 오늘 날짜의 글을 연다', run:function(){ window.__nnGo.dailyToday(); }},
+    {t:'단어 찾기', sub:'LEXICON · 사전에서 뜻을 찾아 카드로 저장', run:function(){ window.__nnGo.lookup(''); }},
+    {t:'한 줄 담기', sub:'오늘 일기 끝에 바로 붙이기 · N', run:function(){ if(window.__nnCapture) window.__nnCapture.open(); }},
+    {t:'오늘 단어 복습', sub:'LEXICON · VOCAB QUIZ', run:function(){ if(typeof switchPage==='function') switchPage('lexicon'); setTimeout(function(){ var h=document.getElementById('lexQuizHost'); if(h) try{ h.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){ h.scrollIntoView(); } }, 300); }},
     /* 배경 */
     {t:'배경화면 메뉴 열기', sub:'BACKDROP', run:function(){ var b=document.getElementById('bgSwitchBtn'); if(b) b.click(); }},
     {t:'다음 배경화면으로', sub:'즉시 전환', run:function(){ if(window.__bgNext) window.__bgNext(); }},
@@ -3841,6 +4227,11 @@ window.KnowledgeNotes = {
     {t:'레퍼런스 데스크 편집', sub:'링크 추가·수정', run:goHome(function(){ if(window.rdToggleEdit) window.rdToggleEdit(); })},
     {t:'레퍼런스 데스크 보기 전환', sub:'쇼케이스 ↔ 전체 목록', run:goHome(function(){ if(window.rdToggleView) window.rdToggleView(); })},
     /* 데이터 */
+    {t:'설정 열기', sub:'SETTINGS · 연결 키 · 화면 · 백업 · 단축키', run:function(){ if(window.__nnSettingsOpen) window.__nnSettingsOpen(); }},
+    {t:'백업 · 되돌리기', sub:'SETTINGS · 날짜별 자동 백업에서 이 날로 되돌리기', run:function(){ if(window.__nnSettingsOpen) window.__nnSettingsOpen('data'); }},
+    {t:'연결 키 설정', sub:'SETTINGS · Worker · FMP · Finnhub · ECOS · 국어사전 · 공공데이터', run:function(){ if(window.__nnSettingsOpen) window.__nnSettingsOpen('keys'); }},
+    {t:'날아다니는 지폐 끄기 · 켜기', sub:'SETTINGS · 화면', run:function(){ if(window.__nnSettingsOpen) window.__nnSettingsOpen('look'); }},
+    {t:'보호 PIN 바꾸기', sub:'백업 파일 내려받기 · 불러오기 때 묻는 번호', run:function(){ if(window.dbChangePin) window.dbChangePin(); }},
     {t:'데이터 백업 내려받기', sub:'전체 내보내기', run:function(){ if(window.dbLock) window.dbLock('export'); }},
     {t:'데이터 백업 가져오기', sub:'백업 파일 불러오기', run:function(){ if(window.dbLock) window.dbLock('import'); }},
     {t:'부동산 계산기 열기', sub:'대출 · DSR · 취득세 · 양도세', run:function(){ if(typeof switchPage==='function') switchPage('assets'); setTimeout(function(){ var b=document.querySelector('.as-navbtn[data-sec="realty"]'); if(b) b.click(); },300); }},
@@ -3880,10 +4271,16 @@ window.KnowledgeNotes = {
               var tmp=document.createElement('div'); tmp.innerHTML=String(n.content||'');
               body=(tmp.textContent||'').replace(/\s+/g,' ').trim();
             }catch(e){}
-            out.push({kind:'note', lb:NOTE_META[tp].lb, c:NOTE_META[tp].c, t:title, sub:'노트 열기', mt:n.mtime||0,
-              body:body,
-              key:(title+' '+body).toLowerCase(),
+            out.push({kind:'note', lb:NOTE_META[tp].lb, c:NOTE_META[tp].c, t:title, sub:(tp==='daily'&&n.day)?('일기 · '+n.day):'노트 열기', mt:n.mtime||0,
+              body:body, ntype:tp, nid:n.id,
+              key:(title+' '+body+(tp==='daily'?' 일기 '+(n.day||''):'')).toLowerCase(),
               run:function(){
+                /* 일기는 날짜로 연다 — 달력·갤러리와 같은 길을 타야 화면이 맞게 바뀐다 */
+                if(tp==='daily' && n.day && window.__nnDaily && window.__nnDaily.open){
+                  if(typeof switchPage==='function') switchPage('daily');
+                  setTimeout(function(){ try{ window.__nnDaily.open(n.day); }catch(e){} }, 200);
+                  return;
+                }
                 if(typeof switchPage==='function') switchPage(tp);
                 setTimeout(function(){
                   try{
@@ -4013,9 +4410,31 @@ window.KnowledgeNotes = {
       }
     }catch(e){}
 
+    /* 종목 한 장 — 종목 명부(nn-ticker.js)의 모든 종목. 티커 · 이름 일부를 쳐도 나온다 (개선제안 S-6) */
+    try{
+      var TKR=window.__nnTicker;
+      if(TKR && TKR.list){
+        TKR.list().forEach(function(en){
+          if(!en || !en.tk || (en.src && en.src.mega && Object.keys(en.src).length===1)) return;
+          var al=Object.keys(en.names||{}).map(function(k){ return en.names[k]; }).join(' ');
+          out.push({kind:'tk', lb:'한 장', c:'#e8c47e', t:en.tk+(en.name?' · '+en.name:''), sub:'종목 한 장 — 보유 · 논거 · 매매 기록 · 일기를 한 번에',
+            key:(en.tk+' '+al).toLowerCase(), run:function(){ TKR.open(en.tk); }});
+        });
+      }
+    }catch(e){}
+    /* 보유 종목 — 티커나 이름을 치면 종목 분석 화면으로 바로 */
+    try{
+      (typeof HOLDINGS!=='undefined' && Array.isArray(HOLDINGS) ? HOLDINGS : []).forEach(function(h){
+        if(!h || !h.sym) return;
+        out.push({kind:'hold', lb:'종목', c:'#ff7a7a', t:String(h.tk||'')+(h.nm?' · '+h.nm:''), sub:'종목 분석 열기',
+          key:(String(h.tk||'')+' '+String(h.nm||'')+' '+String(h.sym||'')).toLowerCase(),
+          run:function(){ window.__nnGo.holding(h.sym); }});
+      });
+    }catch(e){}
     try{
       var wl=JSON.parse(localStorage.getItem('nn_watchlist_v1')||'[]');
       wl.forEach(function(it){
+        if(!it || !it.sym) return;
         out.push({kind:'watch', lb:'WATCH', c:'#ff9e80', t:it.sym, sub:'관심종목 — 매크로 탭',
           key:String(it.sym).toLowerCase(),
           run:function(){ if(typeof switchPage==='function') switchPage('macro'); }});
@@ -4074,13 +4493,46 @@ window.KnowledgeNotes = {
     var q=(inp.value||'').trim().toLowerCase();
     var src=collect();
     if(!q){
-      var cmds=src.filter(function(x){ return x.kind==='cmd'; }).slice(0,9);
-      /* 최근에 손댄 기록 — 노트·논지·논거·일지를 함께 본다 */
-      var notes=src.filter(function(x){ return x.mt; })
-        .sort(function(a,b){ return (b.mt||0)-(a.mt||0); }).slice(0,3);
-      items=cmds.concat(notes);
+      /* 아무것도 안 쳤을 때: 최근에 연 기록 5개 + 매일 쓰는 실행 4개.
+         (예전에는 배경화면 명령 7개가 먼저 나왔다 — 그것들은 '배경'이라고 치면 나온다) */
+      var notes=[];
+      try{
+        if(window.__nnRecent && window.__nnRecent.list){
+          notes=window.__nnRecent.list(5).map(function(r){
+            return {kind:'recent', lb:r.lb, c:r.c, t:r.title, sub:r.sub||'이어서 열기', run:r.open};
+          });
+        }
+      }catch(e){ notes=[]; }
+      if(!notes.length){
+        notes=src.filter(function(x){ return x.mt; })
+          .sort(function(a,b){ return (b.mt||0)-(a.mt||0); }).slice(0,5);
+      }
+      var QUICK=['오늘 일기 쓰기','한 줄 담기','단어 찾기','오늘 단어 복습'];
+      var cmds=[];
+      QUICK.forEach(function(nm){
+        for(var qi=0;qi<src.length;qi++){ if(src[qi].kind==='cmd' && src[qi].t===nm){ cmds.push(src[qi]); break; } }
+      });
+      if(notes.length) notes[0].head='최근 기록';
+      if(cmds.length) cmds[0].head='바로 실행';
+      items=notes.concat(cmds);
     }else{
       items=src.filter(function(x){ return x.key.indexOf(q)>=0; }).slice(0,14);
+      /* 맨 아래에 '사전에서 찾기' — 결과가 없으면 이 한 줄만 남으므로 Enter 로 바로 뜻을 찾는다 */
+      var rawQ=(inp.value||'').trim();
+      /* 티커나 종목 이름을 그대로 치면 '종목 한 장'을 맨 위에 (개선제안 S-6) */
+      try{
+        var TK2=window.__nnTicker, tk0=(TK2 && TK2.resolve) ? TK2.resolve(rawQ) : '';
+        if(tk0){
+          var en0=TK2.get(tk0)||{};
+          items=items.filter(function(x){ return !(x.kind==='tk' && x.t.split(' · ')[0]===tk0); });
+          items.unshift({kind:'tk', lb:'한 장', c:'#e8c47e', t:tk0+(en0.name?' · '+en0.name:''), sub:'종목 한 장 — 보유 · 논거 · 매매 기록 · 일기를 한 번에',
+            key:'', run:function(){ TK2.open(tk0); }});
+        }
+      }catch(e){}
+      if(rawQ && rawQ.length<=40){
+        items.push({kind:'lookup', lb:'사전', c:'#aeb1b4', t:'“'+rawQ+'” 뜻 찾기', sub:'LEXICON · LOOK UP',
+          key:'', run:function(){ window.__nnGo.lookup(rawQ); }});
+      }
       /* 본문에서 매칭된 항목은 해당 문장을 미리보기로 */
       items.forEach(function(x){
         if(!x.body) return;
@@ -4100,7 +4552,8 @@ window.KnowledgeNotes = {
       return;
     }
     listEl.innerHTML=items.map(function(x,i){
-      return '<div class="cmdk-item'+(i===activeIdx?' on':'')+'" data-i="'+i+'">'
+      return (x.head ? '<div class="cmdk-sec" style="padding:9px 14px 5px;font-size:10.5px;font-weight:700;letter-spacing:.14em;color:rgba(240,237,230,.42)">'+esc(x.head)+'</div>' : '')
+        + '<div class="cmdk-item'+(i===activeIdx?' on':'')+'" data-i="'+i+'">'
         + '<span class="cmdk-badge" style="color:'+x.c+';border-color:'+x.c+'55;background:'+x.c+'12">'+x.lb+'</span>'
         + '<span class="cmdk-t">'+esc(x.t)+'</span>'
         + '<span class="cmdk-sub">'+esc(x.sub)+'</span>'
@@ -5037,7 +5490,8 @@ window.KnowledgeNotes = {
       else { f.push({lawd:ST.lawd, apt:apt, rn:regName(), si:ST.si}); if(window.__nnToast) window.__nnToast('★ "'+apt+'" 관심 단지에 추가했습니다'); }
       favSave(f); renderFav(); renderResult();
     },
-    favDel:function(i){ var f=favLoad(); f.splice(i,1); favSave(f); renderFav(); renderResult(); },
+    favDel:function(i){ var f=favLoad(); i=parseInt(i,10); if(isNaN(i)||i<0||i>=f.length) return; var rm=f.splice(i,1)[0]; favSave(f); renderFav(); renderResult();
+      if(window.__nnToast) window.__nnToast('🗑 즐겨찾기에서 뺐습니다', {kind:'del', undo:function(){ var g=favLoad(); g.splice(Math.min(i,g.length),0,rm); favSave(g); renderFav(); renderResult(); }}); },
     favGo:function(i){
       var f=favLoad()[i]; if(!f) return;
       ST.si=(typeof f.si==='number'?f.si:ST.si); ST.lawd=f.lawd; ST.q=f.apt; savePref();
@@ -6700,10 +7154,14 @@ window.__nnGoWatchlist = function(){
             try{
               if(k){ delete k.data[t.id]; if(k.groups) delete k.groups[t.id]; k.save(); }
             }catch(e){}
-            var pg=document.getElementById('page-'+t.id); if(pg) pg.remove();
+            /* 지우려는 탭이 지금 열려 있는지는 화면을 없애기 '전에' 확인해야 한다.
+               (예전에는 없앤 뒤에 확인해서 항상 '아니오'가 됐고, 빈 화면이 남았다) */
+            var pg=document.getElementById('page-'+t.id);
+            var wasOpen=!!(pg && pg.classList.contains('active'));
+            if(wasOpen && typeof switchPage==='function') switchPage('home');
+            if(pg) pg.remove();
             renderNav(); paint();
             if(window.__nnToast) window.__nnToast('"'+t.name+'" 탭을 삭제했습니다',{kind:'del'});
-            if(document.querySelector('#page-'+t.id+'.active') && typeof switchPage==='function') switchPage('home');
           };
           if(window.__nnConfirm) window.__nnConfirm({
             title:'"'+t.name+'" 탭을 삭제할까요?',
@@ -7704,6 +8162,9 @@ window.__nnGoWatchlist = function(){
   var _si=localStorage.setItem.bind(localStorage);
   try{
     localStorage.setItem=function(k,v){
+      /* 방금 바깥에서 통째로 바꿔 넣은 칸(클라우드 내려받기 · 백업 되돌리기 · 파일 복구)은
+         곧 새로고침된다. 그 사이에 이 창의 옛 메모리가 다시 덮어쓰지 못하게 막는다. */
+      if(window.__nnFrozenKeys && window.__nnFrozenKeys[k]) return;
       try{ return _si(k,v); }
       catch(err){
         if(window.__nnToast) window.__nnToast('⚠ 저장 실패 — 저장 공간이 가득 찼습니다. 항목을 정리한 뒤 다시 시도하세요.',{kind:'del'});
@@ -7716,6 +8177,20 @@ window.__nnGoWatchlist = function(){
   function boot(){ window.__nnRenderStorage(); setInterval(window.__nnRenderStorage, 20000); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 })();
+
+/* ── 노트 화면 붙이기 ──
+   예전에는 window load(그림까지 전부 내려받은 뒤)를 기다렸다. 그림 서버 한 곳이 느리면
+   노트 목록이 몇 초씩 비어 있었고, 그 사이에 F-1 사고가 날 수 있었다.
+   이제는 문서를 다 읽자마자(DOMContentLoaded) 붙인다. setTimeout 0 은 뒤따르는 모듈들의
+   DOMContentLoaded 처리(목록 그리기 감싸기 등)가 먼저 끝나게 하려는 것이다. */
+window.__nnBootNotes = function(){
+  if (window.__nnNotesBooted) return;
+  window.__nnNotesBooted = true;
+  try { window.KnowledgeNotes.init(); }
+  catch(e) { try{ console.error('[notes] 화면 붙이기 실패', e); }catch(_){} }
+};
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(window.__nnBootNotes, 0); });
+else setTimeout(window.__nnBootNotes, 0);
 
 /* ══ BOOT LAUNCHER ══ */
 window.addEventListener('load', function(){
@@ -7797,7 +8272,7 @@ window.addEventListener('load', function(){
     start();
   })();
   runParallax();
-  window.KnowledgeNotes.init();
+  window.__nnBootNotes();   /* 보통은 아래 DOMContentLoaded 에서 이미 끝나 있다 */
 
   /* ── 스크롤 리빌 (부드러운 플로팅 페이드인) ── */
   (function(){

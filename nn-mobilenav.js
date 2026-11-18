@@ -68,11 +68,14 @@
   /* 패널 */
   '#nnMnavPanel{position:fixed;top:0;right:0;bottom:0;z-index:999;width:86vw;max-width:390px;',
   '  background:rgba(11,11,14,.97);backdrop-filter:blur(18px);',
-  '  border-left:.5px solid rgba(201,169,110,.22);box-shadow:-18px 0 60px -12px rgba(0,0,0,.8);',
-  '  transform:translateX(102%);transition:transform .3s cubic-bezier(.32,.72,0,1);',
+  /* 그림자와 보임은 열렸을 때만 — 닫힌 패널은 화면 밖에 있어도 그림자가 왼쪽으로 60px 뻗어
+     데스크톱의 밝은 바탕에서 오른쪽 끝이 회색 띠로 보였다 (개선제안 F-3) */
+  '  border-left:.5px solid rgba(201,169,110,.22);box-shadow:none;visibility:hidden;',
+  '  transform:translateX(102%);transition:transform .3s cubic-bezier(.32,.72,0,1),visibility 0s linear .3s;',
   '  display:flex;flex-direction:column;overscroll-behavior:contain;',
   '  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}',
-  '#nnMnavPanel.show{transform:translateX(0)}',
+  '#nnMnavPanel.show{transform:translateX(0);visibility:visible;box-shadow:-18px 0 60px -12px rgba(0,0,0,.8);',
+  '  transition:transform .3s cubic-bezier(.32,.72,0,1),visibility 0s}',
 
   '.nnmn-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none;',
   '  padding:16px 18px 13px;border-bottom:.5px solid rgba(201,169,110,.16)}',
@@ -291,6 +294,8 @@
     var utils = [];   /* 배경화면·공유 등 부가 버튼은 맨 아래로 모은다 */
 
     Array.prototype.forEach.call(links.children, function(node){
+      /* 설정(톱니)은 휴대폰 상단에서는 숨겨 두므로 보이는지 보지 않고 '그 밖에'로 모은다 (2026-11 · 개선제안 V-9) */
+      if(node.id === 'nnSetBtn'){ utils.push({btn:node, label:'설정 · 백업'}); return; }
       if(!visible(node)) return;
 
       /* 그룹(드롭다운) */

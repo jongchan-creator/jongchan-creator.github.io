@@ -1013,7 +1013,7 @@
     try{
       if(localStorage.getItem(SEED_FLAG) === '1') return;
       var k = window.KnowledgeNotes;
-      if(!k || !k.data) return;
+      if(!k || !k.data || k._ready !== true) return;   /* 저장본을 읽기 전에는 손대지 않는다 */
       /* 구버전 예시가 남아 있으면 먼저 걷어낸다 (v1~v4 → v5 교체) */
       var hadOld = false;
       try{
@@ -1128,7 +1128,7 @@
   function refreshExamples(){
     try{
       var k = window.KnowledgeNotes;
-      if(!k || !k.data) return;
+      if(!k || !k.data || k._ready !== true) return;   /* 저장본을 읽기 전에는 손대지 않는다 */
       var touched = 0;
 
       /* ── 구버전 예시 자동 교체 ──
@@ -1137,7 +1137,10 @@
       try{
         var oldNote = findNote('thesis', 'rlx_think');
         var oldEcon = findNote('economics', 'p_seed_econ');
-        var needRebuild = !!oldNote || !findNote('thesis','rlx_judge');
+        /* 다시 만드는 조건: 옛 예시(rlx_think)가 남아 있거나, 예시 묶음의 일부(책)만 남아 있을 때.
+           예전에는 rlx_judge 가 없기만 하면 다시 만들어서, 사용자가 예시를 지워도
+           열 때마다 되살아나고 매번 save() 가 돌았다. */
+        var needRebuild = !!oldNote || (!findNote('thesis','rlx_judge') && !!findNote('books','rlx_book'));
         if(needRebuild){
           /* 옛 갈래 제거 */
           R.removeAllOf(R.makeRef('note','thesis','rlx_think'));
@@ -1251,14 +1254,23 @@
     }catch(e){}
   }
 
-  (function ready(){
-    if(window.KnowledgeNotes && window.KnowledgeNotes.data){
+  /* ⚠ KnowledgeNotes.data 는 저장본을 읽기 전에도 '빈 배열'로 존재한다.
+     예전에는 data 가 있기만 하면 통과시켰고, 그래서 저장본을 읽기 전에 예시를 만들고
+     save() 해서 진짜 기록을 덮어쓴 일이 있다 (개선제안 F-1).
+     이제는 읽기가 끝났다는 표시(_ready)를 반드시 기다린다. */
+  function storeReady(){
+    var k = window.KnowledgeNotes;
+    return !!(k && k.data && k._ready === true);
+  }
+  (function ready(n){
+    if(storeReady()){
       setTimeout(seedExample, 1500);
       setTimeout(refreshExamples, 1800);
       return;
     }
-    setTimeout(ready, 300);
-  })();
+    if(n > 400) return;                 /* 2분이 지나도 준비가 안 되면 아무것도 하지 않는다 */
+    setTimeout(function(){ ready(n + 1); }, 300);
+  })(0);
 
 
   /* ══════════════════════════════════════════════════════════

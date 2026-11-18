@@ -143,12 +143,22 @@
       if(!rec || !rec.data){ console.warn('[backup] 그런 백업이 없습니다:', key); return false; }
       /* 되돌리기 전에 지금 상태부터 뜬다 — 되돌리기 자체가 사고일 수도 있다 */
       return snapshotBefore().then(function(){
-        var n = 0;
+        var n = 0, done = [];
+        var skip = window.__nnLocalOnlyKeys || {};
         Object.keys(rec.data).forEach(function(k){
-          try{ localStorage.setItem(k, rec.data[k]); n++; }catch(e){}
+          /* 기기 장부(동기화 · 백업이 적어 두는 칸)는 되돌리지 않는다.
+             그것까지 옛 값이 되면 되돌린 기록이 '아직 안 올라간 변경'으로 표시되지 않아,
+             다음 접속 때 클라우드의 내용이 되돌린 것을 다시 덮어쓴다. */
+          if(skip[k]) return;
+          try{ localStorage.setItem(k, rec.data[k]); n++; done.push(k); }catch(e){}
         });
-        console.log('[backup] ' + rec.date + ' 상태로 되돌렸습니다 — ' + n + '개 항목. 새로고침하세요.');
-        if(window.__nnToast) window.__nnToast('✓ ' + rec.date + ' 백업으로 되돌렸습니다 — 새로고침하세요');
+        /* 되돌린 칸을 얼린다 — 이 창의 메모리는 되돌리기 전 내용이라,
+           새로고침 전에 무언가 저장되면 방금 되돌린 것을 다시 덮어쓴다. 그래서 곧바로 새로고침한다. */
+        if(window.__nnMarkRestored) window.__nnMarkRestored(done);
+        if(window.__nnFreeze) window.__nnFreeze(done);
+        console.log('[backup] ' + rec.date + ' 상태로 되돌렸습니다 — ' + n + '개 항목. 곧 새로고침됩니다.');
+        if(window.__nnToast) window.__nnToast('✓ ' + rec.date + ' 백업으로 되돌렸습니다 — 곧 새로고침됩니다');
+        setTimeout(function(){ try{ location.reload(); }catch(e){} }, 1400);
         return true;
       });
     }).catch(function(e){ console.warn('[backup] 되돌리기 실패:', e); return false; });
@@ -284,6 +294,7 @@
 
   window.__nnBackup = {
     snapshot: function(){ return snapshotToday(true); },
+    before: snapshotBefore,      /* 큰 변화 직전에 지금 상태를 한 장 (nn-core save 의 축소 감지가 쓴다) */
     list: list, restore: restore,
     daysSinceExport: daysSinceExport,
     refreshBar: renderBar

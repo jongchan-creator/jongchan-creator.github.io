@@ -418,6 +418,27 @@
     return o;
   }
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  /* 알림 · 확인 · 되돌리기 — 브라우저 기본 창 대신 사이트 창 (2026-11 · 개선제안 V-8 · M-2) */
+  function escH(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function tell(msg){ if(window.__nnToast) window.__nnToast(escH(msg),{kind:'del'}); else { try{ alert(msg); }catch(e){} } }
+  function ask(title, msg, ok, onOk){
+    if(window.__nnConfirm) window.__nnConfirm({ title:title, msg:msg, ok:ok, onOk:onOk });
+    else if(confirm(title+'\n'+msg)) onOk();
+  }
+  function undoToast(html, undo){
+    if(!window.__nnToast) return;
+    window.__nnToast(html, {kind:'del', undo:function(){ try{ undo(); }catch(e){} if(window.__nnToast) window.__nnToast('↩ 복원되었습니다'); }});
+  }
+  /* 다른 창에서 자산 기록이 바뀌면 이 창의 메모리(S)도 다시 읽는다.
+     안 그러면 이 창이 옛 S 를 통째로 저장해(환율 자동 갱신만으로도) 다른 창에서 넣은 줄을 지운다. */
+  window.addEventListener('storage', function(e){
+    try{
+      if(!e || e.key!==KEY) return;
+      S=load();
+      var pg=document.getElementById('page-assets');
+      if(pg && pg.classList.contains('active') && wired) render();
+    }catch(err){}
+  });
   var fxAutoTried=false;
   function fetchFx(auto){
     var st=document.getElementById('asFxStatus');
@@ -1133,42 +1154,65 @@
     subRefresh:function(){ subFetch(true); },
     go:function(target){ var b=document.querySelector('.as-navbtn[data-sec="'+target+'"]'); if(b) b.click(); },
     add:function(kind){ var a=S[ARR[kind]]; if(kind==='asset') a.push({id:uid(),type:'\uD604\uAE08',name:'',amount:''}); else if(kind==='debt') a.push({id:uid(),type:'담보대출',name:'',amount:''}); else if(kind==='income') a.push({id:uid(),type:'근로',name:'',annual:'',taxRate:''}); else a.push({id:uid(),ticker:'',name:'',ccy:'USD',shares:'',avgPrice:'',curPrice:'',buyFx:'',sector:'',divPerShare:''}); save(); render(); },
-    del:function(kind,id){ S[ARR[kind]]=S[ARR[kind]].filter(function(x){return x.id!==id;}); save(); render(); },
+    /* 지우면 5초 되돌리기 (2026-11 · 개선제안 M-2 — 예전에는 묻지도 되돌리지도 않고 바로 지웠다) */
+    del:function(kind,id){
+      var arr=S[ARR[kind]]||[], at=-1;
+      for(var i=0;i<arr.length;i++){ if(arr[i] && arr[i].id===id){ at=i; break; } }
+      if(at<0) return;
+      var row=arr[at];
+      S[ARR[kind]]=arr.filter(function(x){return x.id!==id;}); save(); render();
+      var kn={asset:'자산',debt:'부채',income:'소득',stock:'주식',realty:'부동산'}[kind]||'항목';
+      var nm=String(row.name||row.ticker||'').trim();
+      undoToast('🗑 '+kn+(nm?' "'+escH(nm)+'"':'')+' 삭제됨', function(){
+        var a=S[ARR[kind]]||(S[ARR[kind]]=[]);
+        if(a.some(function(x){ return x && x.id===id; })) return;
+        a.splice(Math.min(at,a.length),0,row); save(); render();
+      });
+    },
     edit:function(kind,id,field,val){ var row=S[ARR[kind]].filter(function(x){return x.id===id;})[0]; if(!row) return; row[field]=val;
       if(kind==='stock'){ if(field==='ticker'||field==='ccy'){ delete LIVE[id]; } }
       save(); render();
       if(kind==='stock' && (field==='ticker'||field==='ccy')) setTimeout(function(){ fetchLive(false); },200); },
     simTab:function(t){ simTab=t; render(); },
     addSector:function(){ var inp=document.getElementById('asNewSector'); if(!inp) return; var v=(inp.value||'').trim(); if(!v){ return; } if(S.sectors.indexOf(v)>=0){ inp.value=''; return; } S.sectors.push(v); save(); render(); },
-    delSector:function(i){ i=parseInt(i,10); if(isNaN(i)||i<0||i>=S.sectors.length) return; if(!confirm('"'+S.sectors[i]+'" 섹터를 삭제할까요?')) return; S.sectors.splice(i,1); save(); render(); },
+    delSector:function(i){ i=parseInt(i,10); if(isNaN(i)||i<0||i>=S.sectors.length) return; var nm=S.sectors[i]; S.sectors.splice(i,1); save(); render();
+      undoToast('🗑 섹터 "'+escH(nm)+'" 삭제됨', function(){ if(S.sectors.indexOf(nm)>=0) return; S.sectors.splice(Math.min(i,S.sectors.length),0,nm); save(); render(); }); },
     divGoalAdd:function(){ if(!S.divGoals) S.divGoals=[]; S.divGoals.push({id:uid(),monthly:''}); save(); render(); },
-    divGoalDel:function(id){ S.divGoals=(S.divGoals||[]).filter(function(g){return g.id!==id;}); save(); render(); },
+    divGoalDel:function(id){ var a=S.divGoals||[], at=-1; for(var i=0;i<a.length;i++){ if(a[i]&&a[i].id===id){ at=i; break; } } if(at<0) return; var g=a[at];
+      S.divGoals=a.filter(function(x){return x.id!==id;}); save(); render();
+      undoToast('🗑 배당 목표 삭제됨', function(){ var b=S.divGoals||(S.divGoals=[]); if(b.some(function(x){ return x&&x.id===id; })) return; b.splice(Math.min(at,b.length),0,g); save(); render(); }); },
     divGoalEdit:function(id,val){ var g=(S.divGoals||[]).filter(function(x){return x.id===id;})[0]; if(g){ g.monthly=val; save(); render(); } },
     snapSave:function(){ if(!S.snapshots) S.snapshots=[]; S.snapshots.push({d:Date.now(), net:netWorth()}); save(); render(); },
-    snapDel:function(d){ d=parseInt(d,10); S.snapshots=(S.snapshots||[]).filter(function(s){return s.d!==d;}); save(); render(); },
+    snapDel:function(d){ d=parseInt(d,10); var a=S.snapshots||[], at=-1; for(var i=0;i<a.length;i++){ if(a[i]&&a[i].d===d){ at=i; break; } } if(at<0) return; var sn=a[at];
+      S.snapshots=a.filter(function(s){return s.d!==d;}); save(); render();
+      undoToast('🗑 순자산 기록 삭제됨', function(){ var b=S.snapshots||(S.snapshots=[]); if(b.some(function(x){ return x&&x.d===d; })) return; b.splice(Math.min(at,b.length),0,sn); save(); render(); }); },
     setGoal:function(f,v){ if(!S.goal) S.goal={}; S.goal[f]=v; save(); render(); },
     setRebal:function(k,v){ if(!S.rebal) S.rebal={}; S.rebal[k]=v; save(); render(); },
     setScenario:function(k,v){ if(!S.scenario) S.scenario={}; S.scenario[k]=v; save(); render(); },
     scenarioPreset:function(i){ var ps=window.__asScenPresets; if(!ps||!ps[i]) return; S.scenario=Object.assign({},ps[i][1]); save(); render(); },
     scenarioPeriod:function(d){ if(!S.scenario) S.scenario={}; S.scenario.gperiod=d; save(); render(); },
     paperBuy:function(){ var p=S.paper; var tk=(v('pmBuyTk')||'').toUpperCase().trim(); var nm=(v('pmBuyNm')||'').trim(); var ccy=v('pmBuyCcy')||'USD'; var q=num(v('pmBuyQty')), px=num(v('pmBuyPx'));
-      if(!tk||q<=0||px<=0){ alert('티커·수량·단가를 올바르게 입력하세요'); return; }
+      if(!tk||q<=0||px<=0){ tell('티커·수량·단가를 올바르게 입력하세요'); return; }
       var costK=(ccy==='USD')?q*px*num(S.fx):q*px;
-      if(costK>num(p.cash)){ alert('현금이 부족합니다.\n필요 '+won(costK)+' / 보유 '+won(p.cash)); return; }
+      if(costK>num(p.cash)){ tell('현금이 부족합니다 · 필요 '+won(costK)+' / 보유 '+won(p.cash)); return; }
       var pos=p.positions.filter(function(x){return x.ticker===tk&&x.ccy===ccy;})[0];
       if(pos){ var tot=num(pos.shares)+q; pos.avgPrice=(num(pos.shares)*num(pos.avgPrice)+q*px)/tot; pos.shares=tot; if(nm) pos.name=nm; }
       else { p.positions.push({id:uid(),ticker:tk,name:nm||tk,ccy:ccy,shares:q,avgPrice:px,curPrice:px}); }
       p.cash=num(p.cash)-costK; p.log=p.log||[]; p.log.push({d:Date.now(),type:'buy',ticker:tk,shares:q,price:px,ccy:ccy,amount:costK}); save(); render();
     },
-    paperSell:function(){ var p=S.paper; var pos=p.positions.filter(function(x){return x.id===v('pmSellId');})[0]; if(!pos){ alert('매도할 종목을 선택하세요'); return; } var q=num(v('pmSellQty')), px=num(v('pmSellPx'));
-      if(q<=0||px<=0){ alert('수량·단가를 올바르게 입력하세요'); return; }
-      if(q>num(pos.shares)){ alert('보유 수량보다 많이 매도할 수 없습니다 (보유 '+num(pos.shares)+'주)'); return; }
+    paperSell:function(){ var p=S.paper; var pos=p.positions.filter(function(x){return x.id===v('pmSellId');})[0]; if(!pos){ tell('매도할 종목을 선택하세요'); return; } var q=num(v('pmSellQty')), px=num(v('pmSellPx'));
+      if(q<=0||px<=0){ tell('수량·단가를 올바르게 입력하세요'); return; }
+      if(q>num(pos.shares)){ tell('보유 수량보다 많이 매도할 수 없습니다 (보유 '+num(pos.shares)+'주)'); return; }
       var procK=(pos.ccy==='USD')?q*px*num(S.fx):q*px; p.cash=num(p.cash)+procK; pos.shares=num(pos.shares)-q; if(pos.shares<=0) p.positions=p.positions.filter(function(x){return x.id!==pos.id;});
       p.log=p.log||[]; p.log.push({d:Date.now(),type:'sell',ticker:pos.ticker,shares:q,price:px,ccy:pos.ccy,amount:procK}); save(); render();
     },
     paperPrice:function(id,val){ var pos=S.paper.positions.filter(function(x){return x.id===id;})[0]; if(pos){ pos.curPrice=val; save(); render(); } },
-    paperSeed:function(){ var val=num(v('pmSeed')); if(val<=0){ alert('시드머니를 입력하세요'); return; } if(!confirm('시드머니를 '+won(val)+'(으)로 설정하고 가상 포트폴리오를 초기화할까요?\n(보유·기록 삭제)')) return; S.paper={init:val,cash:val,positions:[],log:[{d:Date.now(),type:'reset',amount:val}]}; save(); render(); },
-    paperReset:function(){ if(!confirm('가상 포트폴리오를 초기 시드머니 상태로 리셋할까요?\n(보유·기록 삭제)')) return; var init=num(S.paper&&S.paper.init)||10000000; S.paper={init:init,cash:init,positions:[],log:[{d:Date.now(),type:'reset',amount:init}]}; save(); render(); },
+    paperSeed:function(){ var val=num(v('pmSeed')); if(val<=0){ tell('시드머니를 입력하세요'); return; }
+      ask('가상 포트폴리오를 초기화할까요?', '시드머니를 '+won(val)+'(으)로 정하고, 지금의 보유 종목과 거래 기록은 지웁니다.', '초기화', function(){
+        S.paper={init:val,cash:val,positions:[],log:[{d:Date.now(),type:'reset',amount:val}]}; save(); render(); }); },
+    paperReset:function(){
+      ask('가상 포트폴리오를 처음 상태로 되돌릴까요?', '보유 종목과 거래 기록을 지우고 처음 시드머니로 돌아갑니다.', '되돌리기', function(){
+        var init=num(S.paper&&S.paper.init)||10000000; S.paper={init:init,cash:init,positions:[],log:[{d:Date.now(),type:'reset',amount:init}]}; save(); render(); }); },
     runAvg:function(){ var st=byId('smAvgId'); if(!st){ out('smAvgOut','\uC885\uBAA9\uC744 \uC120\uD0DD\uD558\uC138\uC694.'); return; } var q=num(v('smAvgQty')), p=num(v('smAvgPx')); var sh=num(st.shares), av=num(st.avgPrice); var nsh=sh+q, nav=nsh>0?(sh*av+q*p)/nsh:0; var cur=st.ccy==='USD'?'$':'\u20a9'; var newEvalK=(st.ccy==='USD'?nav*nsh*num(S.fx):nav*nsh); out('smAvgOut','\uC0C8 \uD3C9\uB2E8 <span class="big">'+cur+fmt(nav)+'</span><br>\uBCF4\uC720\uC218\uB7C9 '+sh+' \u2192 <b>'+nsh+'</b>\uC8FC<br>\uD3C9\uADE0\uB2E8\uAC00 '+cur+fmt(av)+' \u2192 <b>'+cur+fmt(nav)+'</b><br>\uCD94\uAC00 \uD22C\uC785\uAE08 <b>'+cur+fmt(q*p)+'</b>'); },
     runRev:function(){ var st=byId('smRevId'); if(!st){ out('smRevOut','\uC885\uBAA9\uC744 \uC120\uD0DD\uD558\uC138\uC694.'); return; } var target=num(v('smRevTarget')), p=num(v('smRevPx')); var sh=num(st.shares), av=num(st.avgPrice); var cur=st.ccy==='USD'?'$':'\u20a9'; if(p>=target){ out('smRevOut','\u26A0 \uB9E4\uC218\uB2E8\uAC00\uAC00 \uBAA9\uD45C\uD3C9\uB2E8\uBCF4\uB2E4 \uB0AE\uC544\uC57C \uD3C9\uB2E8\uC744 \uB0AE\uCD9C \uC218 \uC788\uC2B5\uB2C8\uB2E4.'); return; } if(target>=av){ out('smRevOut','\u26A0 \uBAA9\uD45C \uD3C9\uB2E8\uC774 \uD604\uC7AC \uD3C9\uB2E8\uBCF4\uB2E4 \uB192\uC2B5\uB2C8\uB2E4. \uC774\uBBF8 \uB2EC\uC131 \uC0C1\uD0DC\uC785\uB2C8\uB2E4.'); return; } var q=sh*(av-target)/(target-p); var qq=Math.ceil(q); out('smRevOut','\uD544\uC694 \uCD94\uAC00\uB9E4\uC218 <span class="big">'+qq+'\uC8FC</span><br>\uB9E4\uC218 \uB2E8\uAC00 '+cur+fmt(p)+' \uAE30\uC900<br>\uD22C\uC785\uAE08 <b>'+cur+fmt(qq*p)+'</b><br>\uACB0\uACFC \uD3C9\uB2E8 \u2248 <b>'+cur+fmt((sh*av+qq*p)/(sh+qq))+'</b>'); },
     runSell:function(){ var st=byId('smSellId'); if(!st){ out('smSellOut','\uC885\uBAA9\uC744 \uC120\uD0DD\uD558\uC138\uC694.'); return; } var q=num(v('smSellQty')), p=num(v('smSellPx')); var av=num(st.avgPrice); var gain=(p-av)*q; var gainK=st.ccy==='USD'?gain*num(S.fx):gain; var ded=2500000; var taxable=Math.max(0,gainK-ded); var tax=taxable*0.22; var cur=st.ccy==='USD'?'$':'\u20a9'; out('smSellOut','\uC2E4\uD604\uC190\uC775 <span class="big" style="color:'+(gainK>=0?'#4ade80':'#ff5b5b')+'">'+won(gainK)+'</span><br>('+cur+fmt(av)+' \u2192 '+cur+fmt(p)+', '+q+'\uC8FC)<br>\uACFC\uC138\uD45C\uC900 (250\uB9CC \uACF5\uC81C \uD6C4) <b>'+won(taxable)+'</b><br>\uC608\uC0C1 \uC591\uB3C4\uC18C\uB4DD\uC138 (22%) <span class="big">'+won(tax)+'</span><br><span style="font-size:10.5px;color:rgba(255,255,255,.4)">\u26A0 \uC5F0\uAC04 \uC2E4\uD604\uC774\uC775 \uD569\uC0B0\u00B7\uC190\uC775\uD1B5\uC0B0 \uBCC4\uB3C4. \uCC38\uACE0\uC6A9 \uCD94\uC815\uCE58.</span>'); },

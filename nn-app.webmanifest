@@ -1,0 +1,43 @@
+{
+  "name": "NEWNORMAL",
+  "short_name": "NEWNORMAL",
+  "description": "읽고, 보고, 배우고, 기록하는 개인 지식 아카이브 — 경제·미디어 리서치와 자산 기록을 한 곳에.",
+  "lang": "ko",
+  "dir": "ltr",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050507",
+  "theme_color": "#050507",
+  "categories": ["finance", "productivity", "education"],
+  "icons": [
+    { "src": "nn-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "nn-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "nn-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "오늘 일기",
+      "short_name": "오늘 일기",
+      "description": "오늘 날짜의 투자 일기를 바로 엽니다",
+      "url": "./index.html#/today",
+      "icons": [{ "src": "nn-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "단어 찾기",
+      "short_name": "단어 찾기",
+      "description": "용어 사전의 찾기 칸에 바로 커서를 둡니다",
+      "url": "./index.html#/lookup",
+      "icons": [{ "src": "nn-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "MACRO",
+      "short_name": "MACRO",
+      "description": "지수 · 환율 · 금리 · 뉴스",
+      "url": "./index.html#/macro",
+      "icons": [{ "src": "nn-icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

@@ -96,6 +96,16 @@
       }
     }catch(e){}
 
+    /* 오늘 복습할 단어 (nn-srs.js · 2026-11) — 한 줄로 묶는다 */
+    try{
+      var S = window.__nnSrs;
+      var nV = (S && S.dueCount) ? S.dueCount() : 0;
+      if(nV > 0){
+        out.push({ kind:'vocab', id:'', badge:'용어', bc:'#aeb1b4',
+                   title:'오늘 복습할 단어 ' + nV + '개', sub:'LEXICON · VOCAB QUIZ 에서 뜻을 떠올려 보세요', days:0 });
+      }
+    }catch(e){}
+
     /* 오래 밀린 것부터 */
     out.sort(function(a,b){ return b.days - a.days; });
     return out;
@@ -188,11 +198,12 @@
     }
     el.classList.add('on');
 
-    var nT = 0, nJ = 0;
-    list.forEach(function(x){ if(x.kind === 'thesis') nT++; else nJ++; });
+    var nT = 0, nJ = 0, nV = 0;
+    list.forEach(function(x){ if(x.kind === 'thesis') nT++; else if(x.kind === 'vocab') nV++; else nJ++; });
     var parts = [];
     if(nT) parts.push('논거 검토 <b>' + nT + '건</b>');
     if(nJ) parts.push('일지 복기 <b>' + nJ + '건</b>');
+    if(nV) parts.push('용어 복습 <b>' + ((window.__nnSrs && window.__nnSrs.dueCount) ? window.__nnSrs.dueCount() : '') + '개</b>');
 
     var sum = el.querySelector('#ddrvSum');
     if(sum) sum.innerHTML = parts.join(' · ') + ' — 다시 볼 때가 됐습니다.';
@@ -236,6 +247,11 @@
   function go(kind, id){
     try{
       if(typeof switchPage !== 'function') return;
+      if(kind === 'vocab'){
+        switchPage('lexicon');
+        setTimeout(function(){ try{ var h = document.getElementById('lexQuizHost'); if(h) h.scrollIntoView({ behavior:'smooth', block:'center' }); }catch(e){} }, 300);
+        return;
+      }
       if(kind === 'thesis'){
         switchPage('conviction');
         setTimeout(function(){ try{ if(window.__nnConvOpen) window.__nnConvOpen(id); }catch(e){} }, 280);
