@@ -4067,6 +4067,7 @@
     var ctl='<div class="bq-ctl">'
       +(L.length>1?'<button type="button" class="bq-nav" data-d="-1" aria-label="이전 구절">‹</button><span class="bq-n">'+(i+1)+' / '+L.length+'</span><button type="button" class="bq-nav" data-d="1" aria-label="다음 구절">›</button>':'')
       +(x.kind==='quote'?'<button type="button" class="bq-hide" title="이 구절을 더는 보여 주지 않습니다">그만 보기</button>':'')
+      +'<span class="bq-ed" aria-hidden="true">'+(x.kind==='quote'?'편집 →':'열기 →')+'</span>'
       +'</div>';
     var inner='<div class="bq-row">'+coverHtml+'<div class="bq-meta">'+meta+ctl+'</div></div>';
     el.__bookId = x.kind==='quote' ? x.b.id : null;
@@ -4109,7 +4110,10 @@
         +'.bq-ctl button:hover{color:#fff;border-color:rgba(232,196,126,.55)}'
         +'.bq-ctl .bq-n{font:600 11px Pretendard,sans-serif;color:rgba(240,237,230,.5);font-variant-numeric:tabular-nums;min-width:34px;text-align:center}'
         +'.bq-ctl .bq-hide{margin-left:4px}'
-        +'@media (hover:none),(pointer:coarse){.bq-ctl{opacity:.85;pointer-events:auto}}';
+        /* 원래 오른쪽 위에 뜨던 '편집 →' 안내(nn-style.css 의 ::after)와 겹치지 않게, 안내를 조작 줄 끝으로 옮긴다 */
+        +'.bq-ctl .bq-ed{margin-left:8px;font:700 11px Pretendard,sans-serif;letter-spacing:.06em;color:rgba(201,169,110,.9);white-space:nowrap}'
+        +'.bq-card.show:hover::after,.bq-card.show:focus-within::after{opacity:0!important}'
+        +'@media (hover:none),(pointer:coarse){.bq-ctl{opacity:.85;pointer-events:auto}.bq-card::after{display:none!important}}';
       document.head.appendChild(css);
     }
     el.addEventListener('click', function(e){
