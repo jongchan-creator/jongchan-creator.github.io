@@ -286,6 +286,8 @@
             + '</div>';
         }).join('') + '</div></div>';
 
+    /* 이 종목이 나온 일기 — 날짜순 (2026-11-23 · 개선제안 R-3 마무리, 만드는 것은 nn-ticker.js) */
+    h += '<div id="cvDiary"></div>';
     /* 맥락 패널 */
     h += '<div id="cvRel"></div>';
     el.innerHTML = h;
@@ -321,6 +323,10 @@
       else run();
     };
 
+    try{
+      var dy = el.querySelector('#cvDiary');
+      if(dy && x.asset && window.__nnTicker && window.__nnTicker.diaryBlock) dy.appendChild(window.__nnTicker.diaryBlock(x.asset, id));
+    }catch(e){}
     try{
       var rel = el.querySelector('#cvRel');
       if(rel && window.__nnRelPanel) rel.appendChild(window.__nnRelPanel('thesis:' + id));

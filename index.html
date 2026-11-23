@@ -228,13 +228,12 @@
       <div class="ref-lane-wrap">
         <div class="ref-lane-header reveal-up">
           <span class="ref-lane-title">SUPER INVESTORS</span>
-          <span class="ref-lane-sub">전설적 투자자들의 최신 포트폴리오 · 13F 공시 (2026 Q1)</span>
+          <span class="ref-lane-sub" id="siSub">전설적 투자자들의 최신 포트폴리오 · 13F 공시</span>
+          <span class="si-tools" id="siTools"><button type="button" id="siRefresh" title="최신 13F 다시 받기" aria-label="최신 13F 다시 받기">⟳</button><button type="button" id="siEdit" class="hub-edit-toggle">✎ 고르기 · 편집</button></span>
         </div>
         <div class="cove-line reveal-up"></div>
-        <div class="masters-marquee reveal-up" id="mastersMarquee">
-          <div class="masters-track" id="mastersRail"></div>
-        </div>
-        <div class="master-detail" id="masterDetail"></div>
+        <div class="si-status" id="siStatus" aria-live="polite"></div>
+        <div id="siGrid"></div>
       </div>
     </section>
   </div>
@@ -1615,7 +1614,7 @@
 
     </div>
     </div></div> </div>
-<script src="nn-core.js?v=44"></script>
+<script src="nn-core.js?v=45"></script>
 
 <script>
 /* ── 날개 달린 달러(실사 SVG): 우아한 곡선 활공, 클릭 시 고급 축포 ── */
@@ -1991,146 +1990,7 @@
 })();
 </script>
 
-<script>
-/* ══ SUPER INVESTORS ══ */
-(function(){
-  var EDGAR='https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&type=13F&dateb=&owner=include&count=40&company=';
-  var PAL=['#34c77b','#4d8bf0','#28c0d8','#f2b53c','#e0584e','#a06ff0','#ec6aa6','#6fcf97','#f59e6b'];
-  var GREY='#6b6b73';
-  var MASTERS=[
-    {id:'buffett',initial:'\uc6cc',name:'\uc6cc\ub7f0 \ubc84\ud54b',fund:'\ubc84\ud06c\uc154 \ud574\uc11c\uc6e8\uc774',color:'#c0504a',
-     desc:'\uac00\uce58\ud22c\uc790\uc758 \ub300\uba85\uc0ac. \uacbd\uc81c\uc801 \ud574\uc790\ub97c \uac00\uc9c4 \uc6b0\ub7c9 \uae30\uc5c5\uc744 \uc0ac\uc11c \uc624\ub798 \ubcf4\uc720\ud569\ub2c8\ub2e4. 2026\ub144 1\ubd84\uae30\uc5d4 \uc54c\ud30c\ubcb3(\uad6c\uae00)\uc744 \ub300\uac70 \ub9e4\uc785\ud588\uc2b5\ub2c8\ub2e4.',
-     edgar:EDGAR+'berkshire+hathaway',
-     holdings:[['AAPL',22],['AXP',17],['KO',12],['BAC',10],['CVX',7],['MCO',4],['OXY',4],['\uae30\ud0c0',24]]},
-    {id:'ackman',initial:'\ube4c',name:'\ube4c \uc560\ud06c\uba3c',fund:'\ud37c\uc2f1 \uc2a4\ud018\uc5b4',color:'#3aa66f',
-     desc:'\uc18c\uc218 \uc885\ubaa9\uc5d0 \uc9d1\uc911\ud558\ub294 \ud589\ub3d9\uc8fc\uc758 \ud22c\uc790\uc790. 11\uac1c \uc548\ud314\uc758 \uace0\ud655\uc2e0 \uc885\ubaa9\uc5d0 \uc790\uc0b0\uc744 \ubab0\uc544 \ub2f4\ub294 \ucd08\uc9d1\uc911 \ud3ec\ud2b8\ud3f4\ub9ac\uc624\uac00 \ud2b9\uc9d5\uc785\ub2c8\ub2e4.',
-     edgar:EDGAR+'pershing+square',
-     holdings:[['BN',18],['AMZN',17],['UBER',16],['MSFT',15],['QSR',12],['HHH',8],['\uae30\ud0c0',14]]},
-    {id:'wood',initial:'\uce90',name:'\uce90\uc2dc \uc6b0\ub4dc',fund:'ARK Invest',color:'#8a6fd0',
-     desc:'\ud30c\uad34\uc801 \ud601\uc2e0\uc5d0 \ubca0\ud305\ud558\ub294 \uc131\uc7a5\uc8fc \ud22c\uc790\uc790. AI\u00b7\ubc18\ub3c4\uccb4\u00b7\uc720\uc804\uc790\u00b7\ud540\ud14c\ud06c \ub4f1 180\uc5ec \uc885\ubaa9\uc5d0 \ud3ed\ub113\uac8c \ubd84\uc0b0 \ud22c\uc790\ud569\ub2c8\ub2e4.',
-     edgar:EDGAR+'ark+investment',
-     holdings:[['TSLA',8],['AMD',4],['CRSP',4],['SHOP',4],['PLTR',4],['COIN',3],['HOOD',3],['\uae30\ud0c0',70]]},
-    {id:'drucken',initial:'\uc2a4',name:'\uc2a4\ud0e0\ub9ac \ub4dc\ub7ec\ucf04\ubc00\ub7ec',fund:'\ub4c0\ucf00\uc778 \ud328\ubc00\ub9ac \uc624\ud53c\uc2a4',color:'#d2972f',
-     desc:'\uac70\uc2dc \ud750\ub984\uc744 \uc77d\uc5b4 \ubd84\uae30\ub9c8\ub2e4 \ud3ec\ud2b8\ud3f4\ub9ac\uc624\ub97c \uacfc\uac10\ud788 \uac08\uc544\uc5ce\ub294 \ub9e4\ud06c\ub85c \ud2b8\ub808\uc774\ub529\uc758 \uc804\uc124\uc785\ub2c8\ub2e4.',
-     edgar:EDGAR+'duquesne+family+office',
-     holdings:[['NTRA',18],['EWZ',9],['INSM',6],['TSM',5],['RSP',5],['AVGO',4],['AMZN',3],['\uae30\ud0c0',50]]},
-    {id:'smith',initial:'\ud14c',name:'\ud14c\ub9ac \uc2a4\ubbf8\uc2a4',fund:'\ud380\ub4dc\uc2a4\ubbf8\uc2a4',color:'#b5443f',
-     desc:'\u2018\uc88b\uc740 \uae30\uc5c5\uc744 \uc0ac\uc11c, \uac00\ub9cc\ud788 \uc788\uc5b4\ub77c.\u2019 \uace0\ud488\uc9c8 \uae00\ub85c\ubc8c \uc6b0\ub7c9\uc8fc\ub97c \uc7a5\uae30 \ubcf4\uc720\ud558\ub294 \uc601\uad6d\uc758 \ud22c\uc790\uc790\uc785\ub2c8\ub2e4. (\ubbf8\uad6d \uc0c1\uc7a5\ubd84 13F \uae30\uc900)',
-     edgar:EDGAR+'fundsmith',
-     holdings:[['MAR',9],['SYK',8],['WAT',7],['V',7],['GOOGL',7],['PM',6],['IDXX',6],['\uae30\ud0c0',50]]},
-    {id:'coleman',initial:'\uccb4',name:'\uccb4\uc774\uc2a4 \ucf5c\uba3c',fund:'\ud0c0\uc774\uac70 \uae00\ub85c\ubc8c',color:'#2f9bb5',
-     desc:'\ud0c0\uc774\uac70 \ucef5\uc758 \ub300\ud45c\uc8fc\uc790. AI\u00b7\ubc18\ub3c4\uccb4\u00b7\ud50c\ub7ab\ud3fc \ub4f1 \ub9e4\uadf8\ub2c8\ud53c\uc13c\ud2b87 \uc911\uc2ec\uc758 \uae30\uc220 \uc131\uc7a5\uc8fc\uc5d0 \uc9d1\uc911 \ud22c\uc790\ud569\ub2c8\ub2e4.',
-     edgar:EDGAR+'tiger+global',
-     holdings:[['GOOGL',13],['NVDA',9],['AMZN',9],['TSM',8],['META',8],['AVGO',5],['SPOT',4],['\uae30\ud0c0',44]]}
-  ];
-  var ETC='\uae30\ud0c0';
-  for(var mi=0;mi<MASTERS.length;mi++){
-    var pi=0;
-    MASTERS[mi].holdings=MASTERS[mi].holdings.map(function(h){
-      var col=(h[0]===ETC)?GREY:PAL[pi++ % PAL.length];
-      return {t:h[0],w:h[1],c:col};
-    });
-  }
-
-  var rail=document.getElementById('mastersRail'), detail=document.getElementById('masterDetail');
-  if(!rail||!detail) return;
-  var CIRC=2*Math.PI*45;
-
-  function donutSVG(h){
-    var off=0, segs='';
-    for(var i=0;i<h.length;i++){
-      var len=h[i].w/100*CIRC;
-      segs+='<circle class="md-seg" cx="60" cy="60" r="45" fill="none" stroke="'+h[i].c+'" stroke-width="15" '
-           +'data-da="'+len.toFixed(2)+' '+(CIRC-len).toFixed(2)+'" '
-           +'stroke-dasharray="0 '+CIRC.toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"></circle>';
-      off+=len;
-    }
-    return '<svg viewBox="0 0 120 120" class="md-donut-svg"><g transform="rotate(-90 60 60)">'+segs+'</g></svg>';
-  }
-
-  function renderDetail(m){
-    var maxw=0,i;
-    for(i=0;i<m.holdings.length;i++){ if(m.holdings[i].t!==ETC && m.holdings[i].w>maxw) maxw=m.holdings[i].w; }
-    if(maxw===0) maxw=1;
-    var rows='',cnt=0;
-    for(i=0;i<m.holdings.length;i++){
-      var h=m.holdings[i], bw=Math.max(8, Math.round(h.w/maxw*100));
-      if(h.t!==ETC) cnt++;
-      rows+='<div class="md-hrow"><span class="md-dot" style="background:'+h.c+'"></span>'
-           +'<span class="md-tk">'+h.t+'</span>'
-           +'<span class="md-bar"><span style="width:'+bw+'%;background:'+h.c+'"></span></span>'
-           +'<span class="md-pct">'+h.w+'%</span></div>';
-    }
-    detail.innerHTML=
-      '<div class="md-head">'
-        +'<div class="md-avatar" style="background:'+m.color+'2e;color:'+m.color+';border-color:'+m.color+'55">'+m.initial+'</div>'
-        +'<div class="md-id"><div class="md-name">'+m.name+'</div><div class="md-sub">'+m.fund+' \u00b7 '+cnt+'\uac1c \uc8fc\uc694 \uc885\ubaa9</div></div>'
-        +'<button class="md-close" type="button" aria-label="close">\u00d7</button>'
-      +'</div>'
-      +'<p class="md-desc">'+m.desc+'</p>'
-      +'<div class="md-body"><div class="md-donut">'+donutSVG(m.holdings)+'</div><div class="md-holdings">'+rows+'</div></div>'
-      +'<div class="md-foot">'
-        +'<a class="md-13f" href="'+m.edgar+'" target="_blank" rel="noopener">\uc2e4\uc81c 13F \uacf5\uc2dc (SEC EDGAR) \u2197</a>'
-        +'<span class="md-disc">\u203b 2026\ub144 1\ubd84\uae30(3/31 \uae30\uc900) 13F \uacf5\uc2dc \ub370\uc774\ud130. 13F\ub294 \ubd84\uae30\ubcc4 \uacf5\uc2dc\ub85c \uc57d 45\uc77c \uc9c0\uc5f0\ub420 \uc218 \uc788\uc2b5\ub2c8\ub2e4.</span>'
-      +'</div>';
-    detail.classList.add('show');
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      var sg=detail.querySelectorAll('.md-seg');
-      for(var k=0;k<sg.length;k++){ sg[k].setAttribute('stroke-dasharray', sg[k].getAttribute('data-da')); }
-    });});
-    var cl=detail.querySelector('.md-close');
-    if(cl) cl.onclick=function(){
-      detail.classList.remove('show');
-      var cs=rail.querySelectorAll('.m-card'); for(var j=0;j<cs.length;j++) cs[j].classList.remove('sel');
-    };
-  }
-
-  function cardHTML(m){
-    var chips='',n=0;
-    for(var j=0;j<m.holdings.length && n<4;j++){ if(m.holdings[j].t===ETC) continue; chips+='<span class="mc-chip">'+m.holdings[j].t+'</span>'; n++; }
-    return '<button class="m-card" type="button" data-id="'+m.id+'">'
-      +'<div class="mc-top"><div class="mc-avatar" style="background:'+m.color+'2e;color:'+m.color+';border-color:'+m.color+'55">'+m.initial+'</div>'
-      +'<div class="mc-id"><div class="mc-name">'+m.name+'</div><div class="mc-fund">'+m.fund+'</div></div></div>'
-      +'<div class="mc-chips">'+chips+'</div></button>';
-  }
-
-  function selectId(id){
-    var cs=rail.querySelectorAll('.m-card');
-    for(var i=0;i<cs.length;i++){ cs[i].classList.toggle('sel', cs[i].getAttribute('data-id')===id); }
-    for(var k=0;k<MASTERS.length;k++){ if(MASTERS[k].id===id){ renderDetail(MASTERS[k]); break; } }
-  }
-
-  function renderCards(){
-    var one=''; for(var i=0;i<MASTERS.length;i++) one+=cardHTML(MASTERS[i]);
-    rail.innerHTML=one+one;
-    var cards=rail.querySelectorAll('.m-card');
-    for(var c=0;c<cards.length;c++){
-      cards[c].addEventListener('click',function(){ selectId(this.getAttribute('data-id')); });
-    }
-  }
-
-  renderCards();
-  selectId('buffett');
-
-  // 마퀴: JS requestAnimationFrame으로 직접 구동 (CSS/OS 동작줄이기 이슈 회피)
-  var marquee=document.getElementById('mastersMarquee');
-  var paused=false, offset=0, lastT=0, SPEED=38; // px/초 — 속도 조절값
-  if(marquee){
-    marquee.addEventListener('mouseenter',function(){paused=true;});
-    marquee.addEventListener('mouseleave',function(){paused=false;});
-  }
-  function step(t){
-    if(!lastT) lastT=t;
-    var dt=(t-lastT)/1000; lastT=t;
-    if(!paused){
-      /* 리스트 구조에서는 흐르지 않음 */
-      if(rail && rail.classList.contains('mi-list')){ rail.style.transform=''; }
-    }
-    requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-})();
-</script>
+<!-- SUPER INVESTORS: 예전 내장 스크립트 두 개는 nn-masters.js 로 옮겼다 (2026-11-23) -->
 
 <footer class="site-footer" contenteditable="false">
   <div class="footer-content">
@@ -2175,8 +2035,8 @@
     assets:   ['nn_assets_v1'],
     holdings: ['nn_hold_v2','nn_hold_order'],
     watch:    ['nn_tb_watch'],
-    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1','nn_diary_v1','nn_daily_mig_v1','nn_stdict_key','nn_bq_state_v1','nn_bill_off_v1','nn_type_fix_v1'],
-    hub:      ['nn_hub_v1','nn_refdesk_v1','nn_masters_v1']
+    misc:     ['nn_recent_v1','nn_fmp_key','nn_finnhub','nn_worker_url','nn_watchlist_v1','nn_dday_v1','nn_ticker_v1','nn_wl_memo_v1','nn_apt_key','nn_apt_fav_v1','nn_apt_pref_v1','nn_wl_alert_v1','nn_wl_view_v1','nn_policy_v1','nn_ecos_key','nn_macrowatch_v1','nn_panel_opacity_v1','nn_share_map_v1','nn_share_bulk_v1','nn_bg_mode_v1','nn_bg_scroll_v1','nn_custom_tabs_v1','nn_hidden_tabs_v1','nn_relations_v1','nn_rel_intro_v1','nn_rel_seed_v1','nn_rel_seed_v2','nn_rel_seed_v3','nn_rel_seed_v4','nn_rel_seed_v5','nn_autolist_v1','nn_conviction_v1','nn_bg_name_en_v1','nn_thread_meta_v1','nn_journal_v1','nn_review_v1','nn_conv_seed_v1','nn_jn_seed_v1','nn_wl_names_v1','nn_diary_v1','nn_daily_mig_v1','nn_stdict_key','nn_bq_state_v1','nn_bill_off_v1','nn_type_fix_v1','nn_srs_log_v1','nn_srs_param_v1'],
+    hub:      ['nn_hub_v1','nn_refdesk_v1','nn_masters_v1','nn_masters_v2']
   };
   const KEY2DOC = {};
   Object.keys(SYNC).forEach(g => SYNC[g].forEach(k => KEY2DOC[k]=g));
@@ -2566,6 +2426,8 @@
         await snapshotData(g, cd, '다른 기기가 올린 내용 — 이 기기가 올리기 전', 'cloud');
         let added = 0;
         if (g === 'vault') added = mergeVaultFromCloud(cd);
+        /* 단어 복습 기록(nn_srs_log_v1)은 기기마다 따로 쌓이므로 버리지 않고 합친다 (nn-srs.js) */
+        if (g === 'misc' && window.__nnSrsMergeLog){ try { window.__nnSrsMergeLog(cd['nn_srs_log_v1']); } catch(e){} }
         syncState.conflictAt = Date.now();
         cloudToast(g === 'vault'
           ? (added ? '☁️ 다른 기기에서 쓴 기록 ' + added + '개를 이 기기와 합쳤습니다'
@@ -2750,6 +2612,7 @@
           if (window.__nnFreeze) window.__nnFreeze(SYNC[g].filter(k => typeof d[k] === 'string'));
           if(window.__hubRender) try{ window.__hubRender(); }catch(e){}
           if(window.__rdRender) try{ window.__rdRender(); }catch(e){}
+          if(window.__siRender) try{ window.__siRender(); }catch(e){}
           if(window.__wlRender) try{ window.__wlRender(); }catch(e){}
         }
       } catch(e){
@@ -2976,451 +2839,7 @@
 
 
 
-<div id="masterTooltip"></div>
 
-<script>
-  setTimeout(() => {
-    const rail = document.getElementById('mastersRail');
-    const detail = document.getElementById('masterDetail');
-    const tooltip = document.getElementById('masterTooltip');
-
-    if(rail && detail) {
-      // 1. 요청하신 9인의 전설적 투자자 SEC 13F 최신 데이터 및 팩트체크 완료 명단
-      // 🚨 [사진 복구 패치] 4인의 사진 주소를 로컬 보안 정책에 걸리지 않는 초안정적 주소로 전면 교체
-      const masterData = [
-        {
-          name: '스탠리 드러켄밀러', corp: 'Duquesne Family Office',
-          img: 'https://i.postimg.cc/fLFZ0Pgj/deuleoken-milleo.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001501697',
-          port: [{ tick: 'NTRA', name: 'Natera Inc.', pct: '24.7%' }, { tick: 'TSM', name: 'Taiwan Semiconductor', pct: '6.6%' }, { tick: 'STM', name: 'STMicroelectronics', pct: '5.7%' }, { tick: 'YPF', name: 'YPF S.A.', pct: '4.5%' }, { tick: 'INSM', name: 'Insmed Inc.', pct: '3.7%' }]
-        },
-        {
-          name: '테리 스미스', corp: 'Fundsmith LLP',
-          img: 'https://i.postimg.cc/6pw737Zy/teli-seumiseu.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001569485',
-          port: [{ tick: 'MAR', name: 'Marriott International', pct: '9.0%' }, { tick: 'WAT', name: 'Waters Corp', pct: '8.5%' }, { tick: 'V', name: 'Visa Inc.', pct: '7.3%' }, { tick: 'SYK', name: 'Stryker Corp', pct: '7.2%' }, { tick: 'GOOGL', name: 'Alphabet Inc.', pct: '6.8%' }]
-        },
-        {
-          name: '체이스 콜먼', corp: 'Tiger Global Management',
-          img: 'https://i.postimg.cc/BvnXTdMJ/cheiseu-kolmeon.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001167483',
-          port: [{ tick: 'GOOGL', name: 'Alphabet Inc.', pct: '13.4%' }, { tick: 'NVDA', name: 'NVIDIA Corp.', pct: '9.2%' }, { tick: 'AMZN', name: 'Amazon.com Inc.', pct: '9.1%' }, { tick: 'TSM', name: 'Taiwan Semiconductor', pct: '8.2%' }, { tick: 'META', name: 'Meta Platforms', pct: '7.7%' }]
-        },
-        {
-          name: '워런 버핏', corp: 'Berkshire Hathaway',
-          img: 'https://i.postimg.cc/QdLtzFmb/woleon-beopis.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001067983',
-          port: [{ tick: 'AAPL', name: 'Apple Inc.', pct: '40.5%' }, { tick: 'BAC', name: 'Bank of America', pct: '11.8%' }, { tick: 'AXP', name: 'American Express', pct: '8.5%' }, { tick: 'KO', name: 'Coca-Cola', pct: '7.2%' }, { tick: 'CVX', name: 'Chevron', pct: '5.5%' }]
-        },
-        {
-          name: '빌 애크먼', corp: 'Pershing Square',
-          img: 'https://i.postimg.cc/7PGJQr4d/bil-aekeumeon.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001336528',
-          port: [{ tick: 'CMG', name: 'Chipotle Mexican Grill', pct: '18.5%' }, { tick: 'QSR', name: 'Restaurant Brands Int.', pct: '17.2%' }, { tick: 'HLT', name: 'Hilton Worldwide', pct: '16.1%' }, { tick: 'HHH', name: 'Howard Hughes', pct: '12.4%' }, { tick: 'GOOGL', name: 'Alphabet Inc.', pct: '11.2%' }]
-        },
-        {
-          name: '캐시 우드', corp: 'ARK Investment Management',
-          img: 'https://i.postimg.cc/Jhr1wZkN/kaesiudeu.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001602701',
-          port: [{ tick: 'TSLA', name: 'Tesla Inc.', pct: '11.5%' }, { tick: 'COIN', name: 'Coinbase Global', pct: '9.2%' }, { tick: 'ROKU', name: 'Roku Inc.', pct: '7.8%' }, { tick: 'SQ', name: 'Block Inc.', pct: '6.5%' }, { tick: 'ZM', name: 'Zoom Video', pct: '5.1%' }]
-        },
-        {
-          name: '조지 소로스', corp: 'Soros Fund Management',
-          img: 'https://i.postimg.cc/HxPW9njP/joji-soloseu.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001029160',
-          port: [{ tick: 'SPY', name: 'SPDR S&P 500 ETF', pct: '36.2%' }, { tick: 'QQQ', name: 'Invesco QQQ Trust', pct: '25.1%' }, { tick: 'AER', name: 'AerCap Holdings', pct: '18.5%' }, { tick: 'AMZN', name: 'Amazon.com Inc.', pct: '12.8%' }, { tick: 'IBIT', name: 'iShares Bitcoin Trust', pct: '7.4%' }]
-        },
-        {
-          name: '마이클 버리', corp: 'Scion Asset Management',
-          img: 'https://i.postimg.cc/nVgcsXyj/maikeul-beoli.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001649339',
-          port: [{ tick: 'MOH', name: 'Molina Healthcare', pct: '35.1%' }, { tick: 'LULU', name: 'Lululemon', pct: '26.1%' }, { tick: 'SLM', name: 'Sallie Mae', pct: '19.5%' }, { tick: 'BRK.B', name: 'Berkshire Hathaway', pct: '19.3%' }]
-        },
-        {
-          name: '레이 달리오', corp: 'Bridgewater Associates',
-          img: 'https://i.postimg.cc/L4cYcQ6t/lei-dallio.jpg',
-          secUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001358548',
-          port: [{ tick: 'IVV', name: 'iShares Core S&P 500 ETF', pct: '35.5%' }, { tick: 'IEMG', name: 'iShares Emerging Markets', pct: '24.8%' }, { tick: 'GOOGL', name: 'Alphabet Inc.', pct: '16.4%' }, { tick: 'META', name: 'Meta Platforms', pct: '13.1%' }, { tick: 'PG', name: 'Procter & Gamble', pct: '10.2%' }]
-        }
-      ];
-
-      // 2. 엑스박스 완벽 차단 로직 (onerror)이 적용된 마퀴 렌더링
-      // 🚨 [테두리 제거 패치] img 태그 스타일에서 border 제거
-      /* ══════════ 슈퍼 인베스터 — 저장소 기반 목록 + 편집 ══════════ */
-      const EN = {
-        '스탠리 드러켄밀러': ['Stanley Druckenmiller', 'Macro trader known for decades of double-digit returns without a losing year.'],
-        '테리 스미스'      : ['Terry Smith', 'Buy good companies, don\'t overpay, then do nothing.'],
-        '체이스 콜먼'      : ['Chase Coleman', 'Tiger cub backing global technology winners with long-term conviction.'],
-        '워런 버핏'        : ['Warren Buffett', 'Owner-minded value investing, compounded at permanent scale.'],
-        '빌 애크먼'        : ['Bill Ackman', 'Concentrated activist bets on high-quality franchises.'],
-        '캐시 우드'        : ['Cathie Wood', 'High-conviction positions in disruptive innovation themes.'],
-        '조지 소로스'      : ['George Soros', 'Reflexivity — markets shape the very reality they price.'],
-        '마이클 버리'      : ['Michael Burry', 'Deep-value contrarian who shorted the housing bubble.'],
-        '레이 달리오'      : ['Ray Dalio', 'All-weather diversification built on written principles.']
-      };
-      const MI_KEY = 'nn_masters_v1';
-      const MI_BUILTIN = masterData.map(function(x){
-        var e = EN[x.name] || [x.name, ''];
-        return { en:e[0], name:x.name, corp:x.corp, bio:e[1], img:x.img, secUrl:x.secUrl, port:(x.port||[]).slice() };
-      });
-      function miLoad(){
-        try{ var s=localStorage.getItem(MI_KEY); if(s){ var a=JSON.parse(s); if(Array.isArray(a)) return a; } }catch(e){}
-        return JSON.parse(JSON.stringify(MI_BUILTIN));
-      }
-      function miSave(list){ try{ localStorage.setItem(MI_KEY, JSON.stringify(list)); }catch(e){} }
-      function miEsc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-      var miEditMode = false;
-
-      function renderMasters(){
-        var data = miLoad();
-        rail.innerHTML = data.map(function(inv, idx){
-          var port = (inv.port||[]).map(function(p,k){
-            var pv = parseFloat(String(p.pct).replace('%','')) || 0;
-            return '<span class="mp-row">'
-              + '<span class="mp-rank">'+String(k+1).padStart(2,'0')+'</span>'
-              + '<span class="mp-tick">'+miEsc(p.tick)+'</span>'
-              + '<span class="mp-name">'+miEsc(p.name)+'</span>'
-              + '<span class="mp-pct">'+miEsc(p.pct)+'</span>'
-              + '<span class="mp-bar"><i style="width:'+Math.min(100, pv*3.2)+'%"></i></span>'
-              + '</span>';
-          }).join('');
-          return '<div class="mi-item" data-i="'+idx+'">'
-            + '<button type="button" class="mi-row" data-i="'+idx+'">'
-            +   '<span class="mi-left">'
-            +     '<span class="mi-corp">'+miEsc(inv.corp)+'</span>'
-            +     '<span class="mi-bio">'+miEsc(inv.bio)+'</span>'
-            +     '<span class="mi-idx">/0.'+(idx+1)+'</span>'
-            +   '</span>'
-            +   '<span class="mi-media"><img src="'+miEsc(inv.img)+'" alt="" loading="lazy" draggable="false" '
-            +     'onerror="this.onerror=null;this.src=\'https://ui-avatars.com/api/?name=\'+encodeURIComponent(\''+miEsc(inv.en)+'\')+\'&background=dfbe73&color=111\'"></span>'
-            +   '<span class="mi-id"><span class="mi-name">'+miEsc(inv.en)+'</span>'
-            +     '<span class="mi-kr">'+miEsc(inv.name)+'</span></span>'
-            +   '<span class="mi-arrow">→</span>'
-            + '</button>'
-            + '<div class="mi-acts"><button type="button" class="mi-act mi-edit" data-i="'+idx+'" title="수정">✎</button>'
-            +   '<button type="button" class="mi-act mi-del" data-i="'+idx+'" title="삭제">✕</button></div>'
-            + '<div class="mi-port"><div class="mi-port-in">'
-            +   '<div class="mp-head"><span class="mp-title">TOP HOLDINGS</span>'
-            +     (inv.secUrl?'<a class="mp-sec" href="'+miEsc(inv.secUrl)+'" target="_blank" rel="noopener">SEC 13F ↗</a>':'')
-            +   '</div>'+port
-            + '</div></div>'
-            + '</div>';
-        }).join('')
-        + (miEditMode ? '<button type="button" class="mi-add" id="miAddBtn">＋ 투자자 추가</button>' : '');
-
-        rail.className = 'mi-list' + (miEditMode ? ' mi-editing' : '');
-        rail.parentElement.className = 'mi-list-wrap';
-
-        rail.querySelectorAll('.mi-row').forEach(function(row){
-          row.addEventListener('click', function(){
-            var item=row.parentElement, open=item.classList.contains('on');
-            rail.querySelectorAll('.mi-item').forEach(function(x){ x.classList.remove('on'); });
-            if(!open) item.classList.add('on');
-          });
-        });
-        rail.querySelectorAll('.mi-edit').forEach(function(b){
-          b.addEventListener('click', function(e){ e.stopPropagation(); openMiModal(parseInt(b.getAttribute('data-i'),10)); });
-        });
-        rail.querySelectorAll('.mi-del').forEach(function(b){
-          b.addEventListener('click', function(e){
-            e.stopPropagation();
-            var i=parseInt(b.getAttribute('data-i'),10);
-            var list=miLoad(); if(i<0||i>=list.length) return;
-            var rm=list[i]; list.splice(i,1); miSave(list); renderMasters();
-            if(window.__nnToast) window.__nnToast('🗑 '+rm.en+' 삭제됨',{kind:'del',undo:function(){
-              var l2=miLoad(); l2.splice(Math.min(i,l2.length),0,rm); miSave(l2); renderMasters();
-            }});
-          });
-        });
-        var addB=document.getElementById('miAddBtn');
-        if(addB) addB.addEventListener('click', function(){ openMiModal(-1); });
-      }
-
-      /* 추가·수정 모달 */
-      function openMiModal(idx){
-        var list=miLoad();
-        var cur = idx>=0 ? list[idx] : {en:'',name:'',corp:'',bio:'',img:'',secUrl:'',port:[]};
-        var portTxt=(cur.port||[]).map(function(p){ return p.tick+' | '+p.name+' | '+p.pct; }).join('\n');
-        var prev=document.getElementById('miModalOv'); if(prev) prev.remove();
-        var ov=document.createElement('div');
-        ov.id='miModalOv'; ov.className='hub-modal-ov';
-        ov.innerHTML='<div class="hub-modal" style="width:460px;max-height:88vh;overflow-y:auto">'
-          + '<div class="hm-title">'+(idx>=0?'투자자 수정':'투자자 추가')+'</div>'
-          + '<label class="hm-lb">영문 이름</label><input class="hm-in" id="miEn" placeholder="Warren Buffett" value="'+miEsc(cur.en)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">한글 이름</label><input class="hm-in" id="miKr" placeholder="워런 버핏" value="'+miEsc(cur.name)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">운용사</label><input class="hm-in" id="miCorp" placeholder="Berkshire Hathaway" value="'+miEsc(cur.corp)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">한 줄 소개 <span class="hm-hint">(영문 권장)</span></label>'
-          + '<input class="hm-in" id="miBio" placeholder="Owner-minded value investing." value="'+miEsc(cur.bio)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">사진 URL</label><input class="hm-in" id="miImg" placeholder="https://i.postimg.cc/..." value="'+miEsc(cur.img)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">SEC 13F 링크 <span class="hm-hint">(선택)</span></label>'
-          + '<input class="hm-in" id="miSec" placeholder="https://www.sec.gov/edgar/browse/?CIK=..." value="'+miEsc(cur.secUrl)+'">'
-          + '<label class="hm-lb" style="margin-top:10px">보유 종목 <span class="hm-hint">(한 줄에 하나 · 티커 | 종목명 | 비중%)</span></label>'
-          + '<textarea class="hm-in mi-ta" id="miPort" rows="6" placeholder="AAPL | Apple Inc. | 25.4%&#10;KO | Coca-Cola | 10.1%">'+miEsc(portTxt)+'</textarea>'
-          + '<div class="nn-storage-bar" style="margin-top:10px"></div>'
-          + '<div class="hm-btns">'
-          +   (idx>=0?'<button type="button" class="hm-btn mi-reset-one">기본값 복원</button>':'')
-          +   '<button type="button" class="hm-btn hm-cancel">취소</button>'
-          +   '<button type="button" class="hm-btn hm-save">저장</button></div>'
-          + '</div>';
-        document.body.appendChild(ov);
-        function close(){ ov.classList.remove('show'); setTimeout(function(){ if(ov.parentNode) ov.remove(); },200); }
-        ov.querySelector('.hm-cancel').onclick=close;
-        ov.onclick=function(e){ if(e.target===ov) close(); };
-        var rs=ov.querySelector('.mi-reset-one');
-        if(rs) rs.onclick=function(){
-          var b=MI_BUILTIN.find(function(x){ return x.en===cur.en || x.name===cur.name; });
-          if(!b){ if(window.__nnToast) window.__nnToast('기본 목록에 없는 항목입니다',{kind:'del'}); return; }
-          ov.querySelector('#miEn').value=b.en; ov.querySelector('#miKr').value=b.name;
-          ov.querySelector('#miCorp').value=b.corp; ov.querySelector('#miBio').value=b.bio;
-          ov.querySelector('#miImg').value=b.img; ov.querySelector('#miSec').value=b.secUrl;
-          ov.querySelector('#miPort').value=b.port.map(function(p){ return p.tick+' | '+p.name+' | '+p.pct; }).join('\n');
-        };
-        ov.querySelector('.hm-save').onclick=function(){
-          var en=(ov.querySelector('#miEn').value||'').trim();
-          var kr=(ov.querySelector('#miKr').value||'').trim();
-          if(!en){ if(window.__nnToast) window.__nnToast('영문 이름을 입력해 주세요',{kind:'del'}); return; }
-          var img=(ov.querySelector('#miImg').value||'').trim();
-          if(img && window.__nnCheckImgUrl){ var c=window.__nnCheckImgUrl(img); if(!c.ok) return; img=c.url; }
-          var port=(ov.querySelector('#miPort').value||'').split('\n').map(function(ln){
-            var p=ln.split('|').map(function(s){ return s.trim(); });
-            if(!p[0]) return null;
-            var pct=(p[2]||'').replace(/[^0-9.]/g,'');
-            return { tick:p[0], name:p[1]||p[0], pct:(pct?pct:'0')+'%' };
-          }).filter(Boolean);
-          var obj={ en:en, name:kr||en, corp:(ov.querySelector('#miCorp').value||'').trim(),
-                    bio:(ov.querySelector('#miBio').value||'').trim(), img:img,
-                    secUrl:(ov.querySelector('#miSec').value||'').trim(), port:port };
-          var l=miLoad();
-          if(idx>=0) l[idx]=obj; else l.push(obj);
-          miSave(l); renderMasters(); close();
-          if(window.__nnToast) window.__nnToast('✓ '+(idx>=0?'수정':'추가')+'되었습니다');
-        };
-        requestAnimationFrame(function(){ ov.classList.add('show'); ov.querySelector('#miEn').focus();
-          if(window.__nnRenderStorage) window.__nnRenderStorage(); });
-      }
-
-      /* 편집 토글 버튼 */
-      (function(){
-        var head=document.querySelector('.masters-section .ref-lane-header');
-        if(head && !head.querySelector('#miEditToggle')){
-          var b=document.createElement('button');
-          b.id='miEditToggle'; b.type='button'; b.className='hub-edit-toggle';
-          b.textContent='✎ 편집';
-          b.onclick=function(){
-            miEditMode=!miEditMode;
-            b.textContent=miEditMode?'✓ 완료':'✎ 편집';
-            b.classList.toggle('on', miEditMode);
-            renderMasters();
-          };
-          head.appendChild(b);
-        }
-      })();
-
-      renderMasters();
-      window.__miRender = renderMasters;
-
-      // 📊 3. 상대 비율 보정 및 3D 돌출 호버 효과 차트 엔진 업그레이드
-      function drawPremiumPieChart(canvas, portData) {
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const colors = ['#dfbe73', '#adcde8', '#8bc34a', '#ff9800', '#e91e63'];
-        let totalPct = portData.reduce((acc, p) => acc + parseFloat(p.pct), 0);
-
-        const centerX = canvas.width / 2, centerY = canvas.height / 2;
-        const baseRadius = Math.min(centerX, centerY) - 20;   // 돌출/그림자 여유
-        const innerRadius = baseRadius * 0.55;
-
-        canvas.sliceAngles = [];
-        let sa = -Math.PI / 2;
-        portData.forEach((p, i) => {
-          const ang = (parseFloat(p.pct) / totalPct) * (Math.PI * 2);
-          canvas.sliceAngles.push({ start: sa, end: sa + ang, port: p, color: colors[i % colors.length] });
-          sa += ang;
-        });
-
-        function shade(hex, amt) {                 // amt>0 밝게, <0 어둡게
-          let c = hex.replace('#', '');
-          let r = parseInt(c.substr(0,2),16), g = parseInt(c.substr(2,2),16), b = parseInt(c.substr(4,2),16);
-          const f = amt < 0 ? 0 : 255, p = Math.abs(amt);
-          r = Math.round((f-r)*p)+r; g = Math.round((f-g)*p)+g; b = Math.round((f-b)*p)+b;
-          return 'rgb('+r+','+g+','+b+')';
-        }
-
-        function draw(growth, hoverIdx, hoverProg) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          const ease = 1 - Math.pow(1 - growth, 4);
-          let ds = -Math.PI / 2;
-          portData.forEach((p, i) => {
-            const ang = (parseFloat(p.pct) / totalPct) * (Math.PI * 2) * ease;
-            const mid = ds + ang / 2;
-            const hp  = (i === hoverIdx) ? hoverProg : 0;
-            const pop = 13 * hp;                          // 바깥으로 돌출
-            const cx  = centerX + Math.cos(mid) * pop;
-            const cy  = centerY + Math.sin(mid) * pop;
-            const rr  = baseRadius + 6 * hp;              // 살짝 커짐
-            const col = colors[i % colors.length];
-
-            // 3D 두께(아래 어두운 측면) + 떠오른 그림자
-            if (hp > 0.02) {
-              const depth = 6 * hp;
-              ctx.beginPath();
-              ctx.moveTo(cx, cy + depth);
-              ctx.arc(cx, cy + depth, rr, ds, ds + ang);
-              ctx.closePath();
-              ctx.fillStyle = shade(col, -0.5);
-              ctx.fill();
-              ctx.shadowColor  = 'rgba(0,0,0,' + (0.55 * hp) + ')';
-              ctx.shadowBlur   = 26 * hp;
-              ctx.shadowOffsetY = 10 * hp;
-            } else { ctx.shadowBlur = 0; ctx.shadowOffsetY = 0; }
-
-            // 메인 조각 (호버 시 광택 그라데이션)
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, rr, ds, ds + ang);
-            ctx.closePath();
-            if (hp > 0.02) {
-              const g = ctx.createRadialGradient(cx, cy, rr * 0.4, cx, cy, rr);
-              g.addColorStop(0,    shade(col, 0.16 * hp));
-              g.addColorStop(0.72, col);
-              g.addColorStop(1,    shade(col, 0.30 * hp));
-              ctx.fillStyle = g;
-            } else { ctx.fillStyle = col; }
-            ctx.fill();
-            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-
-            // 가장자리(호버 시 밝은 하이라이트)
-            if (hp > 0.02) { ctx.strokeStyle = 'rgba(255,255,255,' + (0.35 * hp) + ')'; ctx.lineWidth = 1.3; }
-            else           { ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1; }
-            ctx.stroke();
-
-            ds += ang;
-          });
-
-          // 도넛 구멍
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
-          ctx.closePath();
-          ctx.fillStyle = '#141419';
-          ctx.fill();
-        }
-
-        // 진입 성장 애니메이션
-        if (window.masterPieAnim) cancelAnimationFrame(window.masterPieAnim);
-        let growth = 0;
-        canvas._hoverIdx = -1; canvas._hoverProg = 0; canvas._hoverTarget = 0;
-        (function grow() {
-          growth = Math.min(1, growth + 0.04);
-          draw(growth, canvas._hoverIdx, canvas._hoverProg);
-          if (growth < 1) window.masterPieAnim = requestAnimationFrame(grow);
-        })();
-
-        // 호버 돌출 애니메이션(부드러운 이징)
-        function tickHover() {
-          const d = canvas._hoverTarget - canvas._hoverProg;
-          canvas._hoverProg += d * 0.16;
-          if (Math.abs(d) < 0.012) {
-            canvas._hoverProg = canvas._hoverTarget;
-            if (canvas._hoverTarget === 0) canvas._hoverIdx = -1;
-          }
-          draw(1, canvas._hoverIdx, canvas._hoverProg);
-          if (Math.abs(canvas._hoverTarget - canvas._hoverProg) >= 0.012) {
-            canvas._hoverPopAnim = requestAnimationFrame(tickHover);
-          }
-        }
-        function setHover(idx) {
-          if (canvas._hoverPopAnim) cancelAnimationFrame(canvas._hoverPopAnim);
-          if (idx === -1) { canvas._hoverTarget = 0; }
-          else {
-            if (idx !== canvas._hoverIdx) canvas._hoverProg = 0;   // 다른 조각으로 이동 시 리셋
-            canvas._hoverIdx = idx; canvas._hoverTarget = 1;
-          }
-          tickHover();
-        }
-
-        canvas.onmousemove = (e) => {
-          const rect = canvas.getBoundingClientRect();
-          const sx = canvas.width / rect.width, sy = canvas.height / rect.height;
-          const x = (e.clientX - rect.left) * sx - centerX;
-          const y = (e.clientY - rect.top) * sy - centerY;
-          const dist = Math.sqrt(x*x + y*y);
-          if (dist < innerRadius || dist > baseRadius + 16) {
-            tooltip.style.opacity = '0'; canvas.style.cursor = 'default';
-            if (canvas._hoverIdx !== -1) setHover(-1);
-            return;
-          }
-          let ma = Math.atan2(y, x); if (ma < -Math.PI/2) ma += 2 * Math.PI;
-          const hi = canvas.sliceAngles.findIndex(a => ma >= a.start && ma <= a.end);
-          if (hi !== -1) {
-            canvas.style.cursor = 'pointer';
-            if (hi !== canvas._hoverIdx) setHover(hi);
-            const hs = canvas.sliceAngles[hi];
-            tooltip.innerHTML = `
-              <div style="color:${hs.color}; font-size:16px; font-weight:800; margin-bottom:4px;">${hs.port.tick}</div>
-              <div style="font-weight:500; color:#e0e0e0; font-size:12px;">${hs.port.name}</div>
-              <div style="margin-top:6px; font-size:18px; color:#fff; font-weight:700;">비중: ${hs.port.pct}</div>
-            `;
-            tooltip.style.left = e.pageX + 'px'; tooltip.style.top = e.pageY + 'px';
-            tooltip.style.opacity = '1';
-          }
-        };
-        canvas.onmouseleave = () => {
-          tooltip.style.opacity = '0';
-          if (canvas._hoverIdx !== -1) setHover(-1);
-        };
-      }
-
-      // 4. 상세 화면 출력
-      // 🚨 [테두리 제거 패치] img 태그 스타일에서 border 제거
-      window.showMaster = function(idx) {
-        const inv = masterData[idx];
-        let portHTML = inv.port.map((p, i) => `
-          <div style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.08); padding:9px 0; font-size:13px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-            <div style="display:flex; gap:12px; width:75%;">
-              <span style="color:${['#dfbe73','#adcde8','#8bc34a','#ff9800','#e91e63'][i]}; font-weight:800; width:55px;">${p.tick}</span>
-              <span style="color:#ffffff; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${p.name}</span>
-            </div>
-            <span style="color:#dfbe73; font-weight:600;">${p.pct}</span>
-          </div>
-        `).join('');
-
-        detail.innerHTML = `
-          <div style="margin-top:15px; padding:24px; background:rgba(0,0,0,0.25); border-radius:16px; border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-              <div style="display:flex; align-items:center; gap:16px;">
-                <img src="${inv.img}" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${inv.name}')+'&background=dfbe73&color=111'" style="width:60px; height:60px; border-radius:50%; object-fit:cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                <div>
-                  <div style="font-family:'Gothic A1',sans-serif; color:#dfbe73; font-size:22px; font-weight:900; letter-spacing:-.02em; text-shadow:0 1px 4px rgba(0,0,0,0.9), 0 0 18px rgba(223,190,115,0.18);">${inv.name}</div>
-                  <div style="color:#ffffff; font-size:13px; opacity:0.95;">${inv.corp} Top Holdings</div>
-                </div>
-              </div>
-              <a href="${inv.secUrl}" target="_blank" style="padding:8px 16px; font-size:12px; border:1px solid #dfbe73; color:#dfbe73; border-radius:6px; text-decoration:none; font-weight:700; background:rgba(223,190,115,0.05); transition:all 0.2s;" onmouseover="this.style.background='rgba(223,190,115,0.2)'" onmouseout="this.style.background='rgba(223,190,115,0.05)'">
-                SEC 13F 원문 공시 ↗
-              </a>
-            </div>
-
-            <div style="display:flex; gap:24px; align-items:center; justify-content:space-between;">
-              <div style="width:55%;">${portHTML}</div>
-              <div style="width:40%; display:flex; justify-content:center; align-items:center; min-height:160px;">
-                <canvas id="masterPieChart" width="200" height="200"></canvas>
-              </div>
-            </div>
-            
-            <div style="margin-top:20px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.2); font-size:11.5px; color:#ffffff !important; font-weight:500; text-shadow:0 1px 4px rgba(0,0,0,0.9);">
-              ※ 최신 13F 공시(2026 Q1) 기준. 13F는 분기별 공시로 약 45일 지연될 수 있습니다.
-            </div>
-          </div>
-        `;
-
-        const canvas = document.getElementById('masterPieChart');
-        window.currentHoveredIndex = -1; // 호버 인덱스 초기화
-        drawPremiumPieChart(canvas, inv.port);
-      };
-
-      window.showMaster(0);
-    }
-  }, 400);
-</script>
 
 
 <script src="nn-assets.js?v=4"></script>
@@ -3997,13 +3416,15 @@
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   /* ── 하루 다섯 구절 · 한 번 본 구절은 한동안 쉬게 · 그만 보기 · 한 달 전 / 1년 전 오늘의 일기 (2026-11 · 개선제안 R-2) ──
      예전에는 30초마다 무작위로 뽑아서 방금 본 문장이 또 나오고, 읽고 나서 할 수 있는 일이 없었다.
-     nn_bq_state_v1 = { day, set:[구절 키], i, seen:{키:마지막으로 본 날}, hide:{키:1} }  — 클라우드 동기화(misc) 대상 */
-  var SKEY='nn_bq_state_v1', PER_DAY=5;
+     nn_bq_state_v1 = { day, set:[구절 키], i, seen:{키:마지막으로 본 날}, hide:{키:1}, keep:{키:1} }  — 클라우드 동기화(misc) 대상
+     2026-11-23: 구절마다 [☆ 계속 보기 · 그만 보기 · 이 책 열기] (제안서 R-2 그대로).
+       '계속 보기'로 표시한 구절은 열흘이 지나면 다음 날 묶음의 맨 앞에 다시 들어온다(다른 구절은 오래전에 본 것부터). */
+  var SKEY='nn_bq_state_v1', PER_DAY=5, KEEP_GAP=10;
   function pad2(n){ return (n<10?'0':'')+n; }
   function dstr(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
   function todayS(){ return dstr(new Date()); }
   function hashS(t){ var h=5381; for(var i=0;i<t.length;i++){ h=((h<<5)+h+t.charCodeAt(i))|0; } return (h>>>0).toString(36); }
-  function loadS(){ var o=null; try{ o=JSON.parse(localStorage.getItem(SKEY)||'null'); }catch(e){} if(!o||typeof o!=='object') o={}; o.seen=o.seen||{}; o.hide=o.hide||{}; o.set=Array.isArray(o.set)?o.set:[]; o.i=+o.i||0; return o; }
+  function loadS(){ var o=null; try{ o=JSON.parse(localStorage.getItem(SKEY)||'null'); }catch(e){} if(!o||typeof o!=='object') o={}; o.seen=o.seen||{}; o.hide=o.hide||{}; o.keep=o.keep||{}; o.set=Array.isArray(o.set)?o.set:[]; o.i=+o.i||0; return o; }
   function saveS(o){
     /* 오래된 '본 날' 기록은 정리 — 180일 지난 것 */
     try{ var lim=dstr(new Date(Date.now()-180*86400000)); Object.keys(o.seen).forEach(function(k){ if(o.seen[k]<lim) delete o.seen[k]; }); }catch(e){}
@@ -4031,7 +3452,9 @@
       /* 새 날 — 숨긴 것 빼고, 한 번도 안 본 것 → 오래전에 본 것 순으로 다섯 */
       var cand=all.filter(function(x){ return !st.hide[x.k]; });
       cand.forEach(function(x){ x._r=Math.random(); });
-      cand.sort(function(a,b){ var sa=st.seen[a.k]||'', sb=st.seen[b.k]||''; if(sa!==sb) return sa<sb?-1:1; return a._r-b._r; });
+      var klim=dstr(new Date(Date.now()-KEEP_GAP*86400000));
+      var kp=function(x){ return st.keep[x.k] && (st.seen[x.k]||'')<=klim ? 0 : 1; };   /* 계속 보기 · 열흘 지난 것 먼저 */
+      cand.sort(function(a,b){ var ka=kp(a), kb=kp(b); if(ka!==kb) return ka-kb; var sa=st.seen[a.k]||'', sb=st.seen[b.k]||''; if(sa!==sb) return sa<sb?-1:1; return a._r-b._r; });
       set=cand.slice(0,PER_DAY).map(function(x){ return x.k; });
       set.forEach(function(k){ st.seen[k]=t; });
       st.day=t; st.set=set; st.i=0; saveS(st);
@@ -4066,8 +3489,9 @@
     }
     var ctl='<div class="bq-ctl">'
       +(L.length>1?'<button type="button" class="bq-nav" data-d="-1" aria-label="이전 구절">‹</button><span class="bq-n">'+(i+1)+' / '+L.length+'</span><button type="button" class="bq-nav" data-d="1" aria-label="다음 구절">›</button>':'')
-      +(x.kind==='quote'?'<button type="button" class="bq-hide" title="이 구절을 더는 보여 주지 않습니다">그만 보기</button>':'')
-      +'<span class="bq-ed" aria-hidden="true">'+(x.kind==='quote'?'편집 →':'열기 →')+'</span>'
+      +(x.kind==='quote'?'<button type="button" class="bq-keep'+(S.st.keep[x.k]?' on':'')+'" aria-pressed="'+(!!S.st.keep[x.k])+'" title="열흘마다 다시 보여 줍니다">'+(S.st.keep[x.k]?'★ 계속 보는 중':'☆ 계속 보기')+'</button>'
+        +'<button type="button" class="bq-hide" title="이 구절을 더는 보여 주지 않습니다">그만 보기</button>':'')
+      +'<button type="button" class="bq-open">'+(x.kind==='quote'?'이 책 열기 →':'일기 열기 →')+'</button>'
       +'</div>';
     var inner='<div class="bq-row">'+coverHtml+'<div class="bq-meta">'+meta+ctl+'</div></div>';
     el.__bookId = x.kind==='quote' ? x.b.id : null;
@@ -4112,13 +3536,27 @@
         +'.bq-ctl .bq-hide{margin-left:4px}'
         /* 원래 오른쪽 위에 뜨던 '편집 →' 안내(nn-style.css 의 ::after)와 겹치지 않게, 안내를 조작 줄 끝으로 옮긴다 */
         +'.bq-ctl .bq-ed{margin-left:8px;font:700 11px Pretendard,sans-serif;letter-spacing:.06em;color:rgba(201,169,110,.9);white-space:nowrap}'
+        +'.bq-ctl .bq-keep.on{color:#e8c47e;border-color:rgba(232,196,126,.55);background:rgba(232,196,126,.1)}'
+        +'.bq-ctl .bq-open{color:rgba(232,196,126,.95);border-color:rgba(232,196,126,.4)}'
+        /* 조작 줄이 머리줄(FROM MY LIBRARY)을 덮을 때 글자 끝이 잘려 보이지 않게 — 그동안 머리줄은 감춘다 */
+        +'.bq-card .bq-eyebrow{transition:opacity .2s ease}'
+        +'.bq-card:hover .bq-eyebrow,.bq-card:focus-within .bq-eyebrow{opacity:0}'
         +'.bq-card.show:hover::after,.bq-card.show:focus-within::after{opacity:0!important}'
-        +'@media (hover:none),(pointer:coarse){.bq-ctl{opacity:.85;pointer-events:auto}.bq-card::after{display:none!important}}';
+        +'@media (hover:none),(pointer:coarse){.bq-ctl{opacity:.85;pointer-events:auto}.bq-card::after{display:none!important}.bq-card .bq-eyebrow{opacity:0}}';
       document.head.appendChild(css);
     }
     el.addEventListener('click', function(e){
       var nav=e.target.closest && e.target.closest('.bq-nav');
       if(nav){ e.stopPropagation(); render(parseInt(nav.getAttribute('data-d'),10)||1); return; }
+      var kb=e.target.closest && e.target.closest('.bq-keep');
+      if(kb){
+        e.stopPropagation();
+        var s3=loadS(), kk=cur&&cur.k; if(!kk) return;
+        var on=!s3.keep[kk]; if(on) s3.keep[kk]=1; else delete s3.keep[kk]; saveS(s3);
+        kb.classList.toggle('on', on); kb.setAttribute('aria-pressed', on?'true':'false'); kb.textContent=on?'★ 계속 보는 중':'☆ 계속 보기';
+        if(window.__nnToast) window.__nnToast(on?'★ 이 구절은 열흘마다 다시 보여 줍니다':'계속 보기를 껐습니다');
+        return;
+      }
       var hd=e.target.closest && e.target.closest('.bq-hide');
       if(hd){
         e.stopPropagation();
@@ -4149,6 +3587,6 @@
   else start();
 })();
 </script>
-<script src="nn-relations.js?v=29"></script><script src="nn-conviction.js?v=5"></script><script src="nn-journal.js?v=5"></script><script src="nn-flow.js?v=2"></script><script src="nn-modules.js?v=9"></script><script src="nn-mobilenav.js?v=3"></script><script src="nn-review.js?v=2"></script><script src="nn-fonts.js?v=1"></script><script src="nn-backup.js?v=2"></script><script src="nn-wealth.js?v=5"></script><script src="nn-daily.js?v=6"></script><script src="nn-tradelog.js?v=1"></script><script src="nn-lookup.js?v=5"></script><script src="nn-polish.js?v=4"></script><script src="nn-macronav.js?v=1"></script><script src="nn-quick.js?v=2"></script><script src="nn-route.js?v=2"></script><script src="nn-settings.js?v=2"></script><script src="nn-srs.js?v=2"></script><script src="nn-capture.js?v=2"></script><script src="nn-ticker.js?v=1"></script><script src="nn-notes.js?v=7"></script>
+<script src="nn-relations.js?v=29"></script><script src="nn-conviction.js?v=6"></script><script src="nn-journal.js?v=5"></script><script src="nn-flow.js?v=3"></script><script src="nn-modules.js?v=10"></script><script src="nn-mobilenav.js?v=3"></script><script src="nn-review.js?v=2"></script><script src="nn-fonts.js?v=1"></script><script src="nn-backup.js?v=2"></script><script src="nn-wealth.js?v=5"></script><script src="nn-daily.js?v=6"></script><script src="nn-tradelog.js?v=1"></script><script src="nn-lookup.js?v=5"></script><script src="nn-polish.js?v=5"></script><script src="nn-macronav.js?v=1"></script><script src="nn-quick.js?v=2"></script><script src="nn-route.js?v=2"></script><script src="nn-settings.js?v=3"></script><script src="nn-srs.js?v=3"></script><script src="nn-capture.js?v=3"></script><script src="nn-ticker.js?v=2"></script><script src="nn-masters.js?v=1"></script><script src="nn-notes.js?v=7"></script>
 </body>
 </html>

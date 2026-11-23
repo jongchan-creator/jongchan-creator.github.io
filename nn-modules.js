@@ -1980,7 +1980,7 @@
   }
   function modalOpen(){
     /* 실제로 존재하는 오버레이만 검사 — 하나라도 열려 있으면 단축키를 넘긴다 */
-    if(document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm, #nnSetOv, #capOv.show, #tkOv')) return true;
+    if(document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm, #nnSetOv, #capOv.show, #tkOv, #siEdOv')) return true;
     var c=document.getElementById('cmdkOv');
     if(c && c.classList.contains('show')) return true;
     return false;

@@ -8,9 +8,13 @@
       메뉴 띠는 일부러 투명하게 만든 것이다(nn-style.css 1011행). 맨 위에서는 그대로 둔다.
       다만 스크롤하면 본문 글자가 메뉴 글자 밑으로 지나가며 겹치고,
       홈의 밝은 구간에서는 흰 글자·흰 테두리(검색·LOGIN)가 흰 바탕에 묻혀 안 보였다.
-        html.nn-nav-solid   20px 넘게 내렸을 때 — 메뉴 띠에 반투명 바탕 + 흐림
-        html.nn-nav-light   메뉴 띠 아래가 밝은 바탕(#nnScrollBg)일 때 — 글자를 어둡게
+        html.nn-nav-solid   20px 넘게 내렸을 때 — 메뉴 띠 뒤에 바탕막이 깔린다
+        html.nn-nav-light   메뉴 띠 아래가 밝은 바탕(#nnScrollBg)일 때 — 막은 밝게, 글자는 어둡게
       판단은 스크롤·크기 변경·탭 전환·배경 방식 변경 때 한다.
+      2026-11-23 바탕막: 띠 자체가 아니라 띠 뒤의 막(.nav::before)에 그린다.
+        · 위는 짙고 아래 끝으로 갈수록 투명해진다(아래 경계가 칼같이 잘리지 않는다)
+        · 나타나고 사라질 때 투명도로 0.55초 동안 천천히 바뀐다
+          (예전에는 그라데이션 바탕을 띠에 바로 넣어서 전환 효과가 먹지 않고 툭 바뀌었다)
 
    ② 키보드 초점 표시 (V-10)
       Tab 키로 옮겨 다닐 때만 금색 테두리가 보인다(:focus-visible).
@@ -32,16 +36,17 @@
 
   var CSS = [
   /* ── ① 메뉴 띠 ── */
-  '.nav{transition:background-color .28s ease,box-shadow .28s ease}',
-  'html.nn-nav-solid .nav{',
-  '  background:linear-gradient(180deg,rgba(7,7,9,.88),rgba(7,7,9,.70))!important;',
-  '  -webkit-backdrop-filter:blur(14px) saturate(1.15)!important;backdrop-filter:blur(14px) saturate(1.15)!important;',
-  '  box-shadow:0 1px 0 rgba(255,255,255,.06),0 12px 30px -20px rgba(0,0,0,.85)!important}',
-
-  /* 밝은 바탕 위 — 띠도 밝게, 글자는 어둡게 */
-  'html.nn-nav-solid.nn-nav-light .nav{',
-  '  background:rgba(255,255,255,.88)!important;',
-  '  box-shadow:0 1px 0 rgba(20,18,15,.10),0 12px 30px -22px rgba(20,18,15,.35)!important}',
+  /* 바탕막: 띠보다 30px 더 내려와 그 구간에서 투명하게 사라진다. 흐림(blur)도 같은 모양으로 옅어진다 */
+  'html .nav::before{content:"";position:absolute;left:0;right:0;top:0;bottom:-30px;z-index:-1;pointer-events:none;',
+  '  background:rgba(7,7,9,.84);',
+  '  -webkit-backdrop-filter:blur(12px) saturate(1.12);backdrop-filter:blur(12px) saturate(1.12);',
+  '  -webkit-mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 44px),rgba(0,0,0,.55) calc(100% - 24px),transparent 100%);',
+  '  mask-image:linear-gradient(180deg,#000 0,#000 calc(100% - 44px),rgba(0,0,0,.55) calc(100% - 24px),transparent 100%);',
+  '  opacity:0;transition:opacity .55s cubic-bezier(.22,1,.36,1),background-color .4s ease}',
+  'html.nn-nav-solid .nav::before{opacity:1}',
+  /* 밝은 바탕 위 — 막도 밝게, 글자는 어둡게 */
+  'html.nn-nav-light .nav::before{background:rgba(251,250,247,.9)}',
+  '@media (prefers-reduced-motion:reduce){html .nav::before{transition:none}}',
   /* 드롭다운 안의 버튼은 어두운 판 위에 있으므로 제외 — 띠에 직접 놓인 것만 */
   'html.nn-nav-light .nav .nav-links > .nbtn,',
   'html.nn-nav-light .nav .nav-links > .nav-group > .nbtn.nav-trigger{color:#2b2823!important;text-shadow:none!important}',

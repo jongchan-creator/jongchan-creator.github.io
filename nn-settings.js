@@ -370,6 +370,8 @@
   '#nnSet button.st-b,#nnSet a.st-b{flex:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;text-decoration:none;white-space:nowrap;',
   '  font:600 var(--nn-fs-sm) var(--nn-font);padding:7px 12px;border-radius:var(--nn-r);color:var(--nn-ink);background:var(--nn-surface-3);border:1px solid var(--nn-line-2)}',
   '#nnSet .st-b:hover{background:rgba(255,255,255,.1)}',
+  '#nnSet .st-seg{display:flex;gap:5px;flex:none}',
+  '#nnSet .st-seg .st-b{padding:7px 10px}',
   '#nnSet .st-b.pri{color:#14120f;background:var(--nn-gold-2);border-color:var(--nn-gold-2)}',
   '#nnSet .st-b.pri:hover{filter:brightness(1.06)}',
   '#nnSet .st-b.ghost{background:transparent;border-color:transparent;color:var(--nn-ink-3);padding-left:6px;padding-right:6px}',
@@ -581,7 +583,37 @@
       + '<div class="st-row"><div class="st-l"><div class="st-n">보호 PIN</div><div class="st-d">백업 파일을 내려받거나 불러올 때 묻는 번호입니다' + (lsGet('nn_db_pin') ? '.' : ' — 아직 정하지 않았습니다.') + '</div></div>'
       + '<button type="button" class="st-b" data-act="pin">' + (lsGet('nn_db_pin') ? 'PIN 바꾸기' : 'PIN 정하기') + '</button></div>'
       + '</div>';
+    h += srsSection();
     return h;
+  }
+  /* 단어 복습 (FSRS) — nn-srs.js 가 있으면 */
+  function srsSection(){
+    var S = window.__nnSrs; if (!S || !S.logStats) return '';
+    var st = S.logStats(), P = S.params(), ret = Math.round(P.retention * 100);
+    return '<div class="st-sec">단어 복습 (FSRS)</div>'
+      + '<div class="st-note">VOCAB QUIZ 는 FSRS-5 로 다음 복습일을 정합니다. 단추를 누를 때마다 기록이 한 줄씩 남고(최근 3,000번 · 클라우드 동기화), 이 기록으로 나에게 맞춘 매개변수를 만들 수 있습니다.</div>'
+      + '<div class="st-card">'
+      + '<div class="st-row"><div class="st-l"><div class="st-n">복습 기록</div><div class="st-d">'
+      +   (st.n ? '모두 <b>' + st.n.toLocaleString('ko-KR') + '번</b> · 단어 ' + st.cards + '개 · 최근 30일 ' + st.d30 + '번 · 마지막 ' + esc(st.last) : '아직 없습니다 — 퀴즈에서 단추를 누르면 쌓입니다.')
+      +   '<br>CSV 는 FSRS 최적화기가 읽는 형식입니다 (card_id · review_time · review_rating · review_state · review_duration).</div></div>'
+      +   '<button type="button" class="st-b" data-act="srs-csv"' + (st.n ? '' : ' disabled') + '>CSV 내려받기</button></div>'
+      + '<div class="st-row"><div class="st-l"><div class="st-n">목표 기억률</div><div class="st-d">다시 볼 때 기억하고 있을 확률입니다. 높일수록 더 자주 나옵니다 (권장 90%).</div></div>'
+      +   '<div class="st-seg">' + [85, 90, 95].map(function(v){ return '<button type="button" class="st-b' + (ret === v ? ' pri' : '') + '" data-act="srs-ret" data-v="' + v + '" aria-pressed="' + (ret === v) + '">' + v + '%</button>'; }).join('') + '</div></div>'
+      + '<div class="st-row"><div class="st-l"><div class="st-n">매개변수</div><div class="st-d">' + (P.custom ? '직접 넣은 값 19개를 쓰는 중입니다.' : 'FSRS-5 기본값을 쓰는 중입니다.') + ' 최적화기로 만든 값을 넣으면 나에게 맞춰집니다.</div></div>'
+      +   '<button type="button" class="st-b" data-act="srs-w">' + (P.custom ? '바꾸기' : '넣기') + '</button></div>'
+      + '</div>';
+  }
+  function askSrsW(){
+    var S = window.__nnSrs; if (!S || !window.__nnPrompt) return;
+    var P = S.params();
+    window.__nnPrompt({ icon:'🧠', title:'FSRS 매개변수', sub:'FSRS-5 의 숫자 19개를 쉼표로 구분해 붙여넣으세요. 비우고 저장하면 기본값으로 돌아갑니다.',
+      label:'매개변수 19개', placeholder:S.defaults.join(', '), value:P.custom ? P.w.join(', ') : '', ok:'저장',
+      onOk:function(v){
+        if (!v){ S.setParams({ w:null }); toast('매개변수를 기본값으로 돌렸습니다'); if (isOpen()) render(); return; }
+        var w = String(v).replace(/[\[\]]/g, ' ').split(/[\s,]+/).filter(Boolean).map(Number);
+        if (w.length !== 19 || w.some(function(x){ return !isFinite(x); })){ toast('숫자 19개가 아닙니다(' + w.length + '개) — FSRS-5 매개변수만 넣을 수 있습니다', true); return; }
+        S.setParams({ w:w }); toast('✓ 매개변수를 바꿨습니다 — 다음 복습부터 적용됩니다'); if (isOpen()) render();
+      } });
   }
   var bkRows = null, snapRows = null, dataSeq = 0;
   function fillData(){
@@ -728,6 +760,12 @@
     else if (a === 'export'){ close(); setTimeout(function(){ if (window.dbLock) window.dbLock('export'); }, 200); }
     else if (a === 'import'){ close(); setTimeout(function(){ if (window.dbLock) window.dbLock('import'); }, 200); }
     else if (a === 'pin'){ if (window.dbChangePin) window.dbChangePin(); }
+    else if (a === 'srs-csv'){ if (window.__nnSrs && window.__nnSrs.downloadCsv()) toast('✓ 복습 기록을 CSV 로 내려받았습니다'); }
+    else if (a === 'srs-ret'){
+      var rv = +t.getAttribute('data-v') || 90;
+      if (window.__nnSrs){ window.__nnSrs.setParams({ retention: rv / 100 }); render(); toast('목표 기억률 ' + rv + '% — 다음 복습부터 적용됩니다'); }
+    }
+    else if (a === 'srs-w'){ askSrsW(); }
   }
   document.addEventListener('submit', function(e){
     var f = e.target; if (!f || !f.getAttribute || !f.getAttribute('data-form') || !sheet || !sheet.contains(f)) return;

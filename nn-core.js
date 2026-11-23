@@ -6031,8 +6031,12 @@ window.addEventListener('storage', function(e){
     books:{lb:'BOOKS', c:'#e8c47e', page:'books'},
     media:{lb:'MEDIA', c:'#7fbef5', page:'media'},
     lexicon:{lb:'LEXICON', c:'#aeb1b4', page:'lexicon'},
-    economics:{lb:'ECON', c:'#7fd58c', page:'economics'}
+    economics:{lb:'ECON', c:'#7fd58c', page:'economics'},
+    /* 2026-11-23 (개선제안 S-3): 일기도 '최근 기록'과 통계에 넣는다 — 예전에는 빠져 있었다 */
+    daily:{lb:'DAILY', c:'#c2a0e8', page:'daily'}
   };
+  /* 일기는 연 적이 없으면 mtime 이 없다 — 그 날짜(정오)를 대신 쓴다 */
+  function dayTs(day){ var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(day||'')); return m? new Date(+m[1],+m[2]-1,+m[3],12).getTime() : 0; }
   function timeAgo(ts){
     if(!ts) return '';
     var s=Math.floor((Date.now()-ts)/1000);
@@ -6053,15 +6057,17 @@ window.addEventListener('storage', function(e){
     Object.keys(TYPE_META).forEach(function(t){
       (kn.data[t]||[]).forEach(function(n,i){
         if(!n||!n.id) return;
+        var mt=n.mtime||0;
+        if(t==='daily'){ if(!stripHtml(n.content)) return; mt=Math.max(mt, dayTs(n.day)); }   /* 빈 일기는 세지 않는다 */
         all.push({type:t, id:n.id, title:(n.title||'').trim()||'제목 없음',
-          snippet:stripHtml(n.content).slice(0,52), mtime:n.mtime||0, idx:i});
+          snippet:stripHtml(n.content).slice(0,52), mtime:mt, idx:i, day:n.day||''});
       });
     });
     if(!all.length){ host.innerHTML='<div class="dd-empty">아직 기록이 없습니다 — KNOWLEDGE 탭에서 첫 기록을 남겨보세요.</div>'; return; }
     all.sort(function(a,b){ return (b.mtime-a.mtime) || (b.idx-a.idx); });
     host.innerHTML=all.slice(0,4).map(function(n){
       var m=TYPE_META[n.type];
-      return '<div class="dd-note" data-type="'+n.type+'" data-id="'+esc(n.id)+'">'
+      return '<div class="dd-note" data-type="'+n.type+'" data-id="'+esc(n.id)+'"'+(n.day?' data-day="'+esc(n.day)+'"':'')+'>'
         + '<span class="ddn-badge" style="color:'+m.c+';border-color:'+m.c+'55;background:'+m.c+'14">'+m.lb+'</span>'
         + '<span class="ddn-body"><span class="ddn-t">'+esc(n.title)+'</span>'
         + (n.snippet?'<span class="ddn-s">'+esc(n.snippet)+'</span>':'')
@@ -6074,6 +6080,13 @@ window.addEventListener('storage', function(e){
       el.onclick=function(){
         var t=el.getAttribute('data-type'), id=el.getAttribute('data-id');
         var m=TYPE_META[t];
+        /* 일기는 날짜로 연다 — 달력과 같은 길을 타야 화면이 맞게 바뀐다 */
+        var dd=el.getAttribute('data-day');
+        if(t==='daily' && dd && window.__nnDaily && window.__nnDaily.open){
+          try{ if(typeof switchPage==='function') switchPage('daily'); }catch(e){}
+          setTimeout(function(){ try{ window.__nnDaily.open(dd); }catch(e){} }, 200);
+          return;
+        }
         try{ if(typeof switchPage==='function') switchPage(m.page); }catch(e){}
         setTimeout(function(){
           try{

@@ -7,6 +7,11 @@
       MACRO 의 뉴스 줄 · 관심 종목 카드에는 [＋ 일기] 버튼이 붙어, 제목 · 링크 · 그때 값이 한 번에 담긴다.
       담은 뒤 5초 안에는 되돌릴 수 있다.
 
+   ③ 휴대폰 모서리의 ＋ (개선제안 S-4 마무리 · 2026-11-23)
+      휴대폰에는 N 키가 없다. 화면 오른쪽 아래의 둥근 ＋ 를 누르면 어디서든 한 줄 담기가 열린다.
+      글을 쓰는 중(자판이 올라온 때) · 다른 창이 떠 있을 때 · 아래로 훑어 내리는 중에는 숨고, 위로 올리면 다시 나온다.
+      마우스를 쓰는 넓은 화면에서는 보이지 않는다(N 키와 [담기] 버튼이 있다).
+
    ② 글을 읽다가 고른 낱말 바로 찾기 (개선제안 S-5)
       노트 본문에서 낱말을 끌어 고르면 작은 [뜻 찾기] 단추가 뜬다.
       누르면 그 자리에서 뜻이 보이고(내 사전에 이미 있으면 그것부터), [＋ 용어집에 저장]을 누르면
@@ -52,6 +57,7 @@
       + body + '</p>';
     var before = note.content || '';
     var after = before + line;
+    note.mtime = Date.now();   /* 홈의 '최근 기록'에 바로 올라오게 */
     if (typeof k.update === 'function') k.update('daily', note.id, 'content', after);
     else { note.content = after; k.save(); }
     /* 그 일기가 편집기에 열려 있으면 다시 그린다 — 옛 화면이 방금 담은 줄을 덮어쓰지 않게 */
@@ -118,7 +124,19 @@
   '#selPop .sp-s.done{color:#9fe3b9;border-color:rgba(74,222,128,.4);cursor:default}',
   '#selPop .sp-m{font-size:12.5px;color:rgba(240,237,230,.6);padding:4px 0}',
   '#selPop .sp-f{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,255,255,.08);font-size:12px}',
-  '#selPop .sp-f a,#selPop .sp-f button{color:#e0c389;background:none;border:none;padding:0;cursor:pointer;font:600 12px \'Pretendard\',sans-serif;text-decoration:none}'
+  '#selPop .sp-f a,#selPop .sp-f button{color:#e0c389;background:none;border:none;padding:0;cursor:pointer;font:600 12px \'Pretendard\',sans-serif;text-decoration:none}',
+
+  /* ③ 휴대폰 ＋ */
+  '#capFab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom, 0px));z-index:2800000;width:54px;height:54px;border-radius:50%;',
+  '  display:none;align-items:center;justify-content:center;padding:0;cursor:pointer;border:none;color:#14120f;',
+  '  background:linear-gradient(160deg,#f2d8a2,#c9a96e);box-shadow:0 14px 30px -12px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.25);',
+  '  font:600 30px/1 \'Pretendard\',sans-serif;-webkit-tap-highlight-color:transparent;',
+  '  transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .2s ease}',
+  '#capFab span{display:block;margin-top:-3px}',
+  '#capFab:active{transform:scale(.93)}',
+  '#capFab.hide{transform:translateY(96px);opacity:0;pointer-events:none}',
+  '@media (max-width:700px),(hover:none) and (pointer:coarse) and (max-width:1024px){#capFab{display:flex}}',
+  '@media print{#capFab{display:none!important}}'
   ].join('\n');
   function injectCss(){
     if (document.getElementById('nnCaptureCss')) return;
@@ -163,7 +181,7 @@
     return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || !!(t.closest && t.closest('[contenteditable="true"]'));
   }
   function modalOpen(){
-    if (document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm, .ks-ov, #capOv, #nnSetOv, #tkOv')) return true;
+    if (document.querySelector('.hub-modal-ov, .wd-ov, .nn-lightbox, .bga-ov, .cover-modal-ov, .lex-confirm, .ks-ov, #capOv, #nnSetOv, #tkOv, #siEdOv')) return true;
     var c = document.getElementById('cmdkOv'); return !!(c && c.classList.contains('show'));
   }
   document.addEventListener('keydown', function(e){
@@ -323,11 +341,39 @@
     toast('📇 “' + esc(note.title) + '” 용어집에 저장');
   }
 
-  window.__nnCapture = { open: open, append: append, decorate: decorate };
+  /* ── ③ 휴대폰 ＋ ── */
+  var fab = null, lastY = 0, scrollHide = false;
+  function fabUpdate(){
+    if (!fab) return;
+    var hide = scrollHide || modalOpen() || typing(document.activeElement) || !!document.querySelector('#siEdOv, #selPop.show');
+    if (fab.classList.contains('hide') !== hide) fab.classList.toggle('hide', hide);
+  }
+  function makeFab(){
+    if (fab || document.getElementById('capFab')) return;
+    fab = document.createElement('button');
+    fab.type = 'button'; fab.id = 'capFab'; fab.title = '한 줄 담기 — 오늘 일기에';
+    fab.setAttribute('aria-label', '한 줄 담기 — 오늘 일기 끝에 붙입니다');
+    fab.innerHTML = '<span aria-hidden="true">＋</span>';
+    fab.addEventListener('click', function(){ open(); fabUpdate(); });
+    document.body.appendChild(fab);
+    window.addEventListener('scroll', function(){
+      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if (Math.abs(y - lastY) < 14) return;
+      scrollHide = y > lastY && y > 160;   /* 내려가는 중이면 숨기고, 올라가면 보인다 */
+      lastY = y; fabUpdate();
+    }, { passive: true });
+    document.addEventListener('focusin', fabUpdate);
+    document.addEventListener('focusout', function(){ setTimeout(fabUpdate, 60); });
+    try { new MutationObserver(fabUpdate).observe(document.body, { childList: true }); } catch(e) {}
+    fabUpdate();
+  }
+
+  window.__nnCapture = { open: open, append: append, decorate: decorate, fab: function(){ return fab; } };
 
   function boot(){
     injectCss();
     decorate();
+    makeFab();
     try {
       new MutationObserver(function(m){
         for (var i = 0; i < m.length; i++){ if (m[i].addedNodes && m[i].addedNodes.length){ decorate(); break; } }

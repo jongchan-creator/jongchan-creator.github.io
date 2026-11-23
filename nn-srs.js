@@ -6,13 +6,20 @@
       이제 답을 본 뒤 [다시 · 어려움 · 알맞음 · 쉬움] 을 누르면 그 단어의 다음 복습일이 정해진다.
       퀴즈는 '오늘 볼 차례인 단어'만 낸다. 다 보면 "오늘 복습 끝"과 내일 볼 개수가 나온다.
 
-      저장: 용어 노트 안의 note.srs = { due:'YYYY-MM-DD', ivl:일수, ease:배수, reps:횟수, lapses:틀린 횟수, last:'YYYY-MM-DD' }
-            노트 안에 있으므로 클라우드 동기화 · 백업에 그대로 따라간다. 원본 코드는 이 칸을 무시한다(지우지 않는다).
-      계산: SM-2 를 단순하게 줄인 것 — 처음 '알맞음'은 1일 → 3일 → 그다음부터 간격 × 쉬움 정도(ease, 1.3~3.0).
-            '다시'는 오늘 한 번 더, 다음 간격은 1일로. 나중에 FSRS 로 바꿀 수 있게 ease·reps·lapses 를 남겨 둔다.
+      저장: 용어 노트 안의 note.srs — 노트 안에 있으므로 클라우드 동기화 · 백업에 그대로 따라간다.
+            원본 코드는 이 칸을 무시한다(지우지 않는다).
+      계산: 2026-11-23 부터 FSRS-5 (아래 '간격 계산' 설명). 그 전에는 SM-2 를 줄인 계산이었고,
+            그 형식(ease · ivl)으로 저장된 카드는 다음에 볼 때 FSRS 기억 상태로 옮겨진다.
+            '다시'는 오늘 이 자리에서 한 번 더(같은 날 다시 보는 FSRS-5 단기 공식), 그 밖에는 하루 이상.
+      복습 기록: 누를 때마다 nn_srs_log_v1 에 한 줄씩 — 설정 › 데이터에서 CSV(FSRS 최적화기 형식)로 받는다.
       카드의 ○ ✓ ✕ 표시와도 이어진다: 간격이 21일을 넘으면 ✓(외웠어요), '다시'를 누르면 ✕(헷갈려요).
       새 단어는 하루 15개까지만 섞는다(복습이 쌓이지 않게). 범위 칩으로 그룹(경제 · 일반 · 영어 …)을 고를 수 있다.
       window.__nnSrs.dueCount() 를 홈의 '돌아볼 것'(nn-review.js)과 빠른 실행 줄이 쓴다.
+
+   ③ VOCAB QUIZ 와 LOOK UP 이 겹치지 않게 (2026-11-23)
+      퀴즈는 제목 오른쪽에 떠 있다(nn-style.css 의 position:absolute). 정답을 펼치거나 범위 칩이 두 줄이 되면
+      키가 커져서 아래 LOOK UP 칸을 덮었다. 퀴즈의 아래 끝을 재서 LOOK UP 을 그만큼 내린다(넓은 화면에서만 —
+      휴대폰에서는 퀴즈가 원래 본문 흐름 안에 있다). 퀴즈 키가 바뀔 때마다(ResizeObserver) 다시 잰다.
 
    ② 단어 보드 (개선제안 V-4)
       · 세 칸이 내용 길이에 맞게 (예전에는 가장 긴 칸에 맞춰 흰 면이 길게 늘어났다)
@@ -106,37 +113,154 @@
     return n;
   }
 
-  /* ── 간격 계산 ── */
-  function plan(n, grade){
-    var s = n.srs || {}, reps = s.reps || 0, ivl = s.ivl || 0, ease = s.ease || 2.5;
-    var out = { ease: ease, ivl: 0, reps: reps + 1, lapses: s.lapses || 0 };
-    if (grade === 'again'){
-      out.ivl = 0; out.lapses++; out.ease = Math.max(1.3, ease - 0.2); out.reps = 0;
-    } else if (reps === 0){
-      out.ivl = { hard: 1, good: 1, easy: 4 }[grade];
-      if (grade === 'easy') out.ease = Math.min(3, ease + 0.15);
-    } else if (reps === 1){
-      out.ivl = { hard: 2, good: 3, easy: 6 }[grade];
-      if (grade === 'hard') out.ease = Math.max(1.3, ease - 0.15);
-      if (grade === 'easy') out.ease = Math.min(3, ease + 0.15);
-    } else {
-      if (grade === 'hard'){ out.ivl = Math.max(ivl + 1, Math.round(ivl * 1.2)); out.ease = Math.max(1.3, ease - 0.15); }
-      else if (grade === 'good'){ out.ivl = Math.max(ivl + 1, Math.round(ivl * ease)); }
-      else { out.ivl = Math.max(ivl + 2, Math.round(ivl * ease * 1.3)); out.ease = Math.min(3, ease + 0.15); }
-    }
-    out.ivl = Math.min(out.ivl, 3650);
-    return out;
+  /* ── 간격 계산: FSRS-5 (2026-11-23 · 개선제안 R-1 마무리) ──
+     저장 칸은 FSRS(ts-fsrs 의 Card)와 같은 이름이다 — 다른 FSRS 도구로 옮기거나 매개변수를 최적화할 수 있게.
+       note.srs = { due:'YYYY-MM-DD', stability, difficulty, elapsed_days, scheduled_days, reps, lapses,
+                    state: 0 새 단어 · 1 배우는 중 · 2 복습 · 3 다시 배우는 중, last_review: ISO 시각,
+                    ivl(= scheduled_days) · last('YYYY-MM-DD') — 예전 코드 · 정렬용 별칭, algo:'fsrs5' }
+     공식 (FSRS-5, 기본 매개변수 19개 · 목표 기억률 90%)
+       기억률   R(t,S) = (1 + 19/81 · t/S)^-0.5           간격 I = S/(19/81) · (r^(1/-0.5) − 1) → 90%면 I = S
+       처음     S0 = w[G−1] · D0 = w4 − e^(w5·(G−1)) + 1
+       난이도   D' = D − w6·(G−3)·(10−D)/9 → w7·D0(4) + (1−w7)·D' 로 되돌림, 1~10
+       기억함   S' = S·(1 + e^w8 · (11−D) · S^−w9 · (e^(w10·(1−R)) − 1) · (어려움이면 w15) · (쉬움이면 w16))
+       잊음     S' = min(S, w11 · D^−w12 · ((S+1)^w13 − 1) · e^(w14·(1−R)))
+       같은 날  S' = S · e^(w17·(G − 3 + w18))       ('다시' 뒤에 오늘 다시 볼 때)
+       간격 순서: 어려움 ≤ 알맞음 < 쉬움 (ts-fsrs 와 같게 맞춘다)
+     예전 형식(ease · ivl)의 카드 → 안정도 = 간격, 난이도 = 11 − (ease−1)/(e^w8 · S^−w9 · (e^(0.1·w10) − 1))
+       (SM-2 의 ease 가 FSRS 의 '기억함' 배수와 같아지는 난이도 — Anki 가 SM-2 카드를 옮길 때와 같은 생각)
+     매개변수: nn_srs_param_v1 = { w:[19개], retention:0.9 } — 없으면 기본값. 설정 › 데이터에서 바꾼다. */
+  var W_DEF = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
+  var DECAY = -0.5, FACTOR = 19 / 81, MAX_IVL = 3650;
+  var PARAM_KEY = 'nn_srs_param_v1', LOG_KEY = 'nn_srs_log_v1', LOG_MAX = 3000;
+  var GRADE = { again:1, hard:2, good:3, easy:4 };
+
+  function validW(w){
+    if (!Array.isArray(w) || w.length !== 19) return false;
+    for (var i = 0; i < 19; i++) if (typeof w[i] !== 'number' || !isFinite(w[i])) return false;
+    return w[0] > 0 && w[1] > 0 && w[2] > 0 && w[3] > 0;
   }
+  function params(){
+    var p = null; try { p = JSON.parse(lsGet(PARAM_KEY, 'null')); } catch(e) {}
+    var custom = !!(p && validW(p.w));
+    var r = p ? +p.retention : 0.9; if (!(r >= 0.7 && r <= 0.97)) r = 0.9;
+    return { w: custom ? p.w : W_DEF, retention: r, custom: custom };
+  }
+  function setParams(o){
+    var cur = params(), nx = { w: cur.custom ? cur.w : null, retention: cur.retention };
+    if (o && 'w' in o) nx.w = o.w && validW(o.w) ? o.w : null;
+    if (o && 'retention' in o) nx.retention = +o.retention;
+    if (!nx.w && Math.abs(nx.retention - 0.9) < 1e-9) lsSet(PARAM_KEY, ''); else lsSet(PARAM_KEY, JSON.stringify(nx.w ? nx : { retention: nx.retention }));
+    try { refresh(); } catch(e) {}
+  }
+  function clampD(d){ return Math.min(10, Math.max(1, d)); }
+  function retr(t, S){ return Math.pow(1 + FACTOR * t / S, DECAY); }
+  function ivlOf(S, P){ return Math.min(MAX_IVL, Math.max(1, Math.round(S / FACTOR * (Math.pow(P.retention, 1 / DECAY) - 1)))); }
+  function d0(w, g){ return w[4] - Math.exp(w[5] * (g - 1)) + 1; }
+  function nextD(w, D, g){ var dp = D - w[6] * (g - 3) * (10 - D) / 9; return clampD(w[7] * d0(w, 4) + (1 - w[7]) * dp); }
+  function sRecall(w, D, S, r, g){
+    return S * (1 + Math.exp(w[8]) * (11 - D) * Math.pow(S, -w[9]) * (Math.exp(w[10] * (1 - r)) - 1) * (g === 2 ? w[15] : 1) * (g === 4 ? w[16] : 1));
+  }
+  function sForget(w, D, S, r){ return Math.min(S, w[11] * Math.pow(D, -w[12]) * (Math.pow(S + 1, w[13]) - 1) * Math.exp(w[14] * (1 - r))); }
+  function sShort(w, S, g){ return S * Math.exp(w[17] * (g - 3 + w[18])); }
+  function r4(x){ return Math.round(x * 10000) / 10000; }
+
+  /* 카드의 지금 기억 상태 — FSRS 칸이 있으면 그대로, 예전 형식이면 옮겨서, 새 단어면 0 */
+  function mem(n){
+    var s = (n && n.srs) || {};
+    var last = s.last || (s.last_review ? dstr(new Date(s.last_review)) : '');
+    if (typeof s.stability === 'number' && s.stability > 0 && typeof s.difficulty === 'number'){
+      return { S: s.stability, D: clampD(s.difficulty), st: s.state == null ? 2 : +s.state, last: last, reps: s.reps || 0, lapses: s.lapses || 0 };
+    }
+    if (!s.due) return { S: 0, D: 0, st: 0, last: '', reps: 0, lapses: 0 };
+    var w = params().w, ivl = +s.ivl || 0, ease = +s.ease || 2.5;
+    var S = ivl > 0 ? ivl : w[0];
+    var D = clampD(11 - (ease - 1) / (Math.exp(w[8]) * Math.pow(S, -w[9]) * (Math.exp(0.1 * w[10]) - 1)));
+    return { S: S, D: D, st: ivl > 0 ? 2 : 3, last: last, reps: s.reps || 0, lapses: s.lapses || 0, legacy: true };
+  }
+  function plan1(n, g, P){
+    var w = P.w, m = mem(n), t = today();
+    var el = m.last ? Math.max(0, daysBetween(m.last, t)) : 0;
+    var S, D, st;
+    if (m.st === 0){ S = w[g - 1]; D = clampD(d0(w, g)); st = g === 1 ? 1 : 2; }
+    else if (el === 0){ S = sShort(w, m.S, g); D = nextD(w, m.D, g); st = g === 1 ? (m.st === 2 ? 3 : m.st) : 2; }
+    else {
+      var r = retr(el, m.S);
+      D = nextD(w, m.D, g);
+      if (g === 1){ S = sForget(w, m.D, m.S, r); st = 3; }
+      else { S = sRecall(w, m.D, m.S, r, g); st = 2; }
+    }
+    S = Math.max(0.01, S);
+    return { g: g, S: S, D: D, st: st, ivl: g === 1 ? 0 : ivlOf(S, P), el: el, before: m.st,
+             reps: m.reps + 1, lapses: m.lapses + (g === 1 && m.st === 2 ? 1 : 0) };
+  }
+  /* 네 버튼의 결과를 한꺼번에 — 간격 순서(어려움 ≤ 알맞음 < 쉬움)를 맞춘다 */
+  function planAll(n){
+    var P = params(), o = { again: plan1(n, 1, P), hard: plan1(n, 2, P), good: plan1(n, 3, P), easy: plan1(n, 4, P) };
+    o.hard.ivl = Math.min(o.hard.ivl, o.good.ivl);
+    o.good.ivl = Math.min(MAX_IVL, Math.max(o.good.ivl, o.hard.ivl + 1));
+    o.easy.ivl = Math.min(MAX_IVL, Math.max(o.easy.ivl, o.good.ivl + 1));
+    return o;
+  }
+  function plan(n, grade){ var o = planAll(n); return o[grade] || o.good; }
   function label(d){
     if (d <= 0) return '오늘 다시';
     if (d < 30) return d + '일';
     if (d < 365) return Math.round(d / 30) + '달';
     return (Math.round(d / 36.5) / 10) + '년';
   }
+
+  /* ── 복습 기록 ──
+     nn_srs_log_v1 = [[노트 id, 시각(ms), 평가 1~4, 보기 전 상태 0~3, 걸린 시간(ms), 지난 날수, 정한 날수], …]
+     최근 3,000개까지(약 150KB) · 클라우드 동기화(misc). 두 기기에서 따로 쌓인 기록은 올릴 때 합친다(index.html). */
+  var shownId = '', shownAt = 0;
+  function readLog(){ try { var a = JSON.parse(lsGet(LOG_KEY, '[]') || '[]'); return Array.isArray(a) ? a : []; } catch(e) { return []; } }
+  function writeLog(a){ if (a.length > LOG_MAX) a = a.slice(a.length - LOG_MAX); lsSet(LOG_KEY, JSON.stringify(a)); }
+  function logReview(id, p){
+    var dur = (shownId === id && shownAt) ? Math.min(600000, Date.now() - shownAt) : 0;
+    var a = readLog(); a.push([id, Date.now(), p.g, p.before, dur, p.el, p.ivl]); writeLog(a);
+    shownId = ''; shownAt = 0;
+  }
+  /* 클라우드 쪽 기록과 합치기 — 같은 (id, 시각)은 하나로 */
+  function mergeLog(remote){
+    var b = remote; if (typeof b === 'string'){ try { b = JSON.parse(b); } catch(e) { b = null; } }
+    if (!Array.isArray(b) || !b.length) return 0;
+    var a = readLog(), seen = {}, added = 0;
+    a.forEach(function(e){ if (Array.isArray(e)) seen[e[0] + '|' + e[1]] = 1; });
+    b.forEach(function(e){ if (Array.isArray(e) && e.length >= 4 && !seen[e[0] + '|' + e[1]]){ seen[e[0] + '|' + e[1]] = 1; a.push(e); added++; } });
+    if (!added) return 0;
+    a.sort(function(x, y){ return x[1] - y[1]; });
+    writeLog(a);
+    return added;
+  }
+  function logStats(){
+    var a = readLog(), ids = {}, last = 0, d30 = 0, cut = Date.now() - 30 * 86400000;
+    a.forEach(function(e){ ids[e[0]] = 1; if (e[1] > last) last = e[1]; if (e[1] >= cut) d30++; });
+    return { n: a.length, cards: Object.keys(ids).length, last: last ? dstr(new Date(last)) : '', d30: d30 };
+  }
+  /* FSRS 최적화기가 읽는 형식: card_id,review_time,review_rating,review_state,review_duration */
+  function exportCsv(){
+    var a = readLog().slice().sort(function(x, y){ return x[1] - y[1]; });
+    var map = {}, next = 1, rows = ['card_id,review_time,review_rating,review_state,review_duration'];
+    a.forEach(function(e){ if (!map[e[0]]) map[e[0]] = next++; rows.push(map[e[0]] + ',' + e[1] + ',' + e[2] + ',' + e[3] + ',' + (e[4] || 0)); });
+    return rows.join('\n') + '\n';
+  }
+  function downloadCsv(){
+    var csv = exportCsv();
+    try {
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' }), u = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = u; a.download = 'newnormal-revlog-' + today().replace(/-/g, '') + '.csv';
+      document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 800);
+      return true;
+    } catch(e) { return false; }
+  }
+
   function rate(n, grade){
     var k = KN(); if (!k || !n) return;
     var wasNew = isNew(n), p = plan(n, grade), t = today();
-    n.srs = { due: addDays(t, p.ivl), ivl: p.ivl, ease: Math.round(p.ease * 100) / 100, reps: p.reps, lapses: p.lapses, last: t };
+    n.srs = { due: addDays(t, p.ivl), stability: r4(p.S), difficulty: r4(p.D), elapsed_days: p.el, scheduled_days: p.ivl,
+              reps: p.reps, lapses: p.lapses, state: p.st, last_review: new Date().toISOString(),
+              ivl: p.ivl, last: t, algo: 'fsrs5' };
+    logReview(n.id, p);
     /* 카드의 ○ ✓ ✕ 와 잇는다 */
     if (grade === 'again') n.mem = 'hard';
     else if (p.ivl >= 21) n.mem = 'known';
@@ -257,6 +381,7 @@
       wire(gp); return gp;
     }
 
+    if (!state.practice && shownId !== cur.id){ shownId = cur.id; shownAt = Date.now(); }   /* 복습 기록의 '걸린 시간' */
     var tag = gname(groupOf(cur));
     var def = plain(cur.content);
     var shown = state.shown;
@@ -267,9 +392,10 @@
     } else if (state.practice){
       btns = '<div class="lq-btns"><button type="button" class="lq-b lq-next">다음 단어 →</button><button type="button" class="lq-b lq-back">복습으로</button></div>';
     } else {
+      var pa = planAll(cur);
       btns = '<div class="lq-rate">' + ['again', 'hard', 'good', 'easy'].map(function(g){
         var nm = { again:'다시', hard:'어려움', good:'알맞음', easy:'쉬움' }[g];
-        return '<button type="button" class="lq-r" data-g="' + g + '">' + nm + '<small>' + label(plan(cur, g).ivl) + '</small></button>';
+        return '<button type="button" class="lq-r" data-g="' + g + '">' + nm + '<small>' + label(pa[g].ivl) + '</small></button>';
       }).join('') + '</div><div class="lq-kbd">자판 1 · 2 · 3 · 4</div>';
     }
     gp.innerHTML = top
@@ -284,6 +410,41 @@
   function refresh(){
     var host = document.getElementById('lexQuizHost');
     if (host){ host.innerHTML = ''; host.appendChild(build()); }
+    fitQuiz();
+  }
+
+  /* ── ③ 퀴즈가 LOOK UP 을 덮지 않게 ── */
+  var FIT_GAP = 22;
+  function fitQuiz(){
+    var q = document.getElementById('lexQuizHost'), lk = document.getElementById('lkPanel'), pane = document.getElementById('page-lexicon');
+    if (!q || !lk || !pane || !pane.offsetParent) return;
+    var abs = false; try { abs = getComputedStyle(q).position === 'absolute'; } catch(e) {}
+    var old = lk.style.marginTop || '';
+    if (!abs || !q.firstChild){ if (old){ lk.style.transition = 'none'; lk.style.marginTop = ''; } return; }
+    /* 원래 자리를 잰다 — 잠깐 덧붙인 여백을 빼고(전환도 끈 채) 재고, 그리기 전에 되돌린다 */
+    lk.style.transition = 'none'; lk.style.marginTop = '';
+    var natTop = lk.getBoundingClientRect().top, base = 0;
+    try { base = parseFloat(getComputedStyle(lk).marginTop) || 0; } catch(e) {}
+    var need = Math.max(0, Math.ceil(q.getBoundingClientRect().bottom + FIT_GAP - natTop));
+    var target = need ? (base + need) + 'px' : '';
+    lk.style.marginTop = old; void lk.offsetHeight;
+    if (target === old) return;
+    /* 처음 맞출 때는 바로, 그다음(정답 펼치기 등)부터는 부드럽게 */
+    lk.style.transition = lk.__nnFitted ? 'margin-top .32s cubic-bezier(.22,1,.36,1)' : 'none';
+    lk.__nnFitted = true;
+    lk.style.marginTop = target;
+  }
+  var fitRaf = 0;
+  function fitSoon(){ if (!fitRaf) fitRaf = requestAnimationFrame(function(){ fitRaf = 0; fitQuiz(); }); }
+  function watchFit(){
+    var q = document.getElementById('lexQuizHost');
+    if (!q) return;
+    if (typeof ResizeObserver === 'function'){
+      try { new ResizeObserver(fitSoon).observe(q); } catch(e) {}
+      var head = q.parentNode; if (head) try { new ResizeObserver(fitSoon).observe(head); } catch(e) {}
+    }
+    window.addEventListener('resize', fitSoon);
+    window.addEventListener('load', fitSoon);
   }
   function wire(gp){
     gp.querySelectorAll('.lq-sc').forEach(function(b){
@@ -456,9 +617,14 @@
     document.addEventListener('input', function(e){ if (e.target && e.target.id === 'lkQ') filterMine(); }, true);
     document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('#lkX')) setTimeout(filterMine, 0); }, true);
     window.addEventListener('nn:vault-reloaded', function(){ try { refresh(); } catch(e) {} });
+    watchFit(); fitSoon();
   }
 
-  window.__nnSrs = { dueCount: dueAll, counts: counts, queue: queue, rate: rate, plan: plan, refresh: refresh, applyBoard: applyBoard };
+  window.__nnSrs = { dueCount: dueAll, counts: counts, queue: queue, rate: rate, plan: plan, planAll: planAll, mem: mem, refresh: refresh, applyBoard: applyBoard,
+                     params: params, setParams: setParams, defaults: W_DEF.slice(), log: readLog, logStats: logStats, mergeLog: mergeLog,
+                     exportCsv: exportCsv, downloadCsv: downloadCsv, fitQuiz: fitQuiz };
+  /* index.html 의 동기화가 다른 기기와 어긋났을 때 부른다 (misc 그룹 — 복습 기록 합치기) */
+  window.__nnSrsMergeLog = mergeLog;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 0); });
   else setTimeout(boot, 0);
 })();

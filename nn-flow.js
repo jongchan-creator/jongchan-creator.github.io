@@ -27,6 +27,10 @@
         ['economics','media','lexicon','thesis'].forEach(function(t){
           out.notes += (k.data[t] || []).length;
         });
+        /* 2026-11-23 (개선제안 S-3): 일기도 '기록한다'에 센다 — 내용이 있는 것만 */
+        (k.data.daily || []).forEach(function(n){
+          if(n && n.id && String(n.content || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim()) out.notes++;
+        });
       }
     }catch(e){}
     try{

@@ -21,7 +21,13 @@
       맥락 칸 아래에 [＋ NVDA 논거와 잇기] 칩이 뜬다. 누르면 그 논거와 이어지고(되돌리기 가능),
       논거 화면의 맥락 칸에 이 일기가 나타난다. 논거가 없는 종목은 [NVDA ↗](종목 한 장)만 보인다.
 
-   window.__nnTicker = { list, get, resolve, mentions, open, close }
+   ④ 2026-11-23 더한 것
+      · 논거 화면에 '이 종목이 나온 일기'를 날짜순으로 모은다 (R-3 마무리) — 줄마다 [＋ 잇기] · 누르면 그 일기로
+      · 자동완성을 종목 분석(Tenbagger Lab) 칸에도 (S-6)
+      · 관심 종목 추가 · 마퀴 종목 편집의 검색칸 아래에 '내 종목' 칩 — 쳐 넣은 글자로 걸러지고, 누르면 티커 칸이 채워진다
+        (그 두 칸은 Worker 검색 결과 목록이 따로 있어 브라우저 자동완성 목록을 붙이면 목록이 둘이 된다 — 그래서 칩으로)
+
+   window.__nnTicker = { list, get, resolve, mentions, open, close, refresh, diaries, diaryBlock }
    색과 크기는 nn-tokens.css 의 이름표만 쓴다(V-6).
    로딩 순서: … → nn-capture.js → nn-ticker.js → nn-notes.js
    ══════════════════════════════════════════════════════════════════ */
@@ -134,7 +140,7 @@
 
   /* ── 자동완성 · 이름 맞추기 ── */
   var DL_ID = 'nnTkList';
-  var LIST_IDS = { cvA:1, jnA:1, haTk:1, pmBuyTk:1, twAdd:1, wlSymIn:1 };
+  var LIST_IDS = { cvA:1, jnA:1, haTk:1, pmBuyTk:1, twAdd:1, wlSymIn:1, researchInput:1 };
   var NORM_IDS = { cvA:1, jnA:1 };
   function tickerInput(el){
     if (!el || el.tagName !== 'INPUT') return 0;
@@ -238,7 +244,32 @@
   '.dl-tks button:hover{background:rgba(232,196,126,.26)}',
   '.dl-tks button.done{color:#1d7a46;background:rgba(74,222,128,.1);border-color:rgba(29,122,70,.3)}',
   '.dl-tks button.tk{color:var(--nn-paper-ink-2);background:transparent;border-color:var(--nn-paper-line)}',
-  '.dl-tks button.tk:hover{color:var(--nn-paper-ink);border-color:rgba(0,0,0,.3)}'
+  '.dl-tks button.tk:hover{color:var(--nn-paper-ink);border-color:rgba(0,0,0,.3)}',
+
+  /* 논거 화면 — 이 종목이 나온 일기 */
+  '.cv-dy-n{margin-left:8px;font-weight:500;letter-spacing:0;color:var(--nn-ink-3)}',
+  '.cv-dy-list{display:flex;flex-direction:column}',
+  '.cv-dy-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--nn-line)}',
+  '.cv-dy-row:last-child{border-bottom:none}',
+  '.cv-dy-open{flex:1;min-width:0;display:flex;gap:12px;align-items:baseline;text-align:left;cursor:pointer;background:none;border:none;padding:0;color:var(--nn-ink);font:400 var(--nn-fs-md)/1.6 var(--nn-font)}',
+  '.cv-dy-open:hover .cv-dy-s{color:var(--nn-ink)}',
+  '.cv-dy-d{flex:none;font:600 var(--nn-fs-sm) var(--nn-font);color:var(--nn-ink-2);font-variant-numeric:tabular-nums;min-width:86px}',
+  '.cv-dy-s{min-width:0;color:var(--nn-ink-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}',
+  '.cv-dy-s mark{background:rgba(232,196,126,.22);color:inherit;border-radius:3px;padding:0 2px}',
+  '.cv-dy-link{flex:none;cursor:pointer;font:600 var(--nn-fs-xs) var(--nn-font);padding:5px 9px;border-radius:999px;white-space:nowrap;',
+  '  color:var(--nn-gold-2);background:var(--nn-gold-soft);border:1px solid rgba(232,196,126,.35)}',
+  '.cv-dy-link:hover{background:rgba(232,196,126,.24)}',
+  '.cv-dy-link.on{color:var(--nn-good);background:var(--nn-good-soft);border-color:rgba(74,222,128,.35)}',
+  '.cv-dy-more{margin-top:8px;cursor:pointer;font:600 var(--nn-fs-sm) var(--nn-font);color:var(--nn-gold-2);background:none;border:none;padding:0}',
+  '.cv-dy-empty{font:400 var(--nn-fs-md)/1.6 var(--nn-font);color:var(--nn-ink-3)}',
+  /* 검색칸 아래 '내 종목' 칩 */
+  '.tk-mine{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:6px 0 2px}',
+  '.tk-mine[hidden]{display:none}',
+  '.tk-mine > span{font:600 var(--nn-fs-xs) var(--nn-font);color:var(--nn-ink-3);margin-right:2px}',
+  '.tk-mine button{cursor:pointer;display:inline-flex;align-items:baseline;gap:5px;font:500 var(--nn-fs-sm) var(--nn-font);padding:4px 9px;border-radius:999px;',
+  '  color:var(--nn-ink-2);background:var(--nn-surface-3);border:1px solid var(--nn-line-2)}',
+  '.tk-mine button b{font-weight:800;color:var(--nn-ink)}',
+  '.tk-mine button:hover,.tk-mine button.on{border-color:var(--nn-gold-line);background:var(--nn-gold-soft)}'
   ].join('\n');
   function injectCss(){
     if (document.getElementById('nnTickerCss')) return;
@@ -570,5 +601,120 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 0); });
   else setTimeout(boot, 0);
 
-  window.__nnTicker = { list:list, get:get, resolve:resolve, mentions:mentions, open:open, close:close, refresh:function(){ cache = null; } };
+  /* ── ④ 논거 화면: 이 종목이 나온 일기 (날짜순) ── */
+  function diaryHits(tk){
+    tk = up(tk); if (!tk) return [];
+    var e = get(tk) || { tk:tk, name:'', names:{}, src:{} }, out = [], k = KN();
+    ((k && k.data && k.data.daily) || []).forEach(function(n){
+      if (!n || !n.id) return;
+      var text = strip(n.content), w = hit(text, e);
+      if (!w){ text = sp(n.title); w = hit(text, e); }
+      if (!w) return;
+      var at = text.indexOf(w); if (at < 0) at = text.toLowerCase().indexOf(w.toLowerCase());
+      var s0 = Math.max(0, at - 30), s1 = Math.min(text.length, at + w.length + 70);
+      out.push({ id:n.id, day:n.day || '', title:n.title || '',
+        sn:{ pre:(s0 > 0 ? '…' : '') + text.slice(s0, at), w:text.substr(at, w.length), post:text.slice(at + w.length, s1) + (s1 < text.length ? '…' : '') } });
+    });
+    out.sort(function(a, b){ return String(b.day).localeCompare(String(a.day)); });
+    return out;
+  }
+  var DY_MAX = 12;
+  function diaryBlock(tk, thId){
+    injectCss();
+    tk = up(tk);
+    var box = document.createElement('div');
+    box.className = 'cv-blk cv-dy'; box.setAttribute('data-tk', tk);
+    var paint = function(all){
+      var R = window.__nnRel, me = 'thesis:' + thId, e = get(tk);
+      var list = all ? box.__hits : box.__hits.slice(0, DY_MAX);
+      var h = '<div class="cv-blk-t">이 종목이 나온 일기<span class="cv-dy-n">' + box.__hits.length + '편 · 최근부터</span></div>';
+      if (!box.__hits.length){
+        h += '<div class="cv-dy-empty">아직 ' + esc(tk) + (e && e.name ? ' · ' + esc(e.name) : '') + ' 이(가) 나온 일기가 없습니다. 일기에 티커나 이름을 적으면 여기에 날짜순으로 모입니다.</div>';
+      } else {
+        h += '<div class="cv-dy-list">' + list.map(function(x){
+          var on = !!(R && thId && R.exists(R.makeRef('note', 'daily', x.id), me));
+          return '<div class="cv-dy-row" data-id="' + esc(x.id) + '" data-day="' + esc(x.day) + '">'
+            + '<button type="button" class="cv-dy-open" title="이 일기 열기"><span class="cv-dy-d">' + esc(x.day || x.title) + '</span><span class="cv-dy-s">' + hl(x.sn) + '</span></button>'
+            + (R && thId ? '<button type="button" class="cv-dy-link' + (on ? ' on' : '') + '" aria-pressed="' + on + '">' + (on ? '✓ 이어짐' : '＋ 잇기') + '</button>' : '')
+            + '</div>';
+        }).join('') + '</div>';
+        if (!all && box.__hits.length > DY_MAX) h += '<button type="button" class="cv-dy-more">그 밖에 ' + (box.__hits.length - DY_MAX) + '편 더 보기</button>';
+      }
+      box.innerHTML = h;
+    };
+    box.__hits = diaryHits(tk);
+    paint(false);
+    box.addEventListener('click', function(ev){
+      var t = ev.target.closest ? ev.target.closest('button') : null; if (!t) return;
+      if (t.classList.contains('cv-dy-more')){ paint(true); return; }
+      var row = t.closest('.cv-dy-row'); if (!row) return;
+      var id = row.getAttribute('data-id'), day = row.getAttribute('data-day');
+      if (t.classList.contains('cv-dy-open')){
+        if (typeof switchPage === 'function') switchPage('daily');
+        setTimeout(function(){ try { if (day && window.__nnDaily && window.__nnDaily.open) window.__nnDaily.open(day); else if (KN()) KN().select('daily', id); } catch(x) {} }, 200);
+        return;
+      }
+      if (t.classList.contains('cv-dy-link')){
+        var R = window.__nnRel; if (!R || !thId) return;
+        var me = R.makeRef('note', 'daily', id), ref = 'thesis:' + thId;
+        if (R.exists(me, ref)){ toast('이미 이어져 있습니다 — 아래 맥락 칸에서 끊을 수 있습니다'); return; }
+        var rec = R.add(me, ref, '일기에서 ' + tk + ' 언급');
+        paint(false); repaintThesisRel(ref);
+        toast('📔 ' + esc(day) + ' 일기를 이 논거에 이었습니다', { undo: function(){ if (rec && rec.id && R.remove) R.remove(rec.id); paint(false); repaintThesisRel(ref); } });
+      }
+    });
+    return box;
+  }
+  function repaintThesisRel(ref){
+    try {
+      var old = document.querySelector('#page-conviction .rl-panel[data-ref="' + ref + '"]');
+      if (old && window.__nnRelPanel) old.parentNode.replaceChild(window.__nnRelPanel(ref), old);
+    } catch(e) {}
+  }
+
+  /* ── ④ 검색칸 아래 '내 종목' 칩 (관심 종목 추가 · 마퀴 종목 편집) ── */
+  var MINE_FOR = { wlSearchIn:{ sym:'wlSymIn' }, tkSearch:{ sym:'tkSym', name:'tkName' } };
+  function minePaint(inp){
+    var cfg = MINE_FOR[inp.id]; if (!cfg) return;
+    injectCss();
+    var box = inp.__tkMine;
+    if (!box || !box.parentNode){
+      box = document.createElement('div'); box.className = 'tk-mine'; box.setAttribute('role', 'group'); box.setAttribute('aria-label', '내 종목에서 고르기');
+      inp.parentNode.insertBefore(box, inp.nextSibling);
+      inp.__tkMine = box;
+      box.addEventListener('mousedown', function(e){ e.preventDefault(); });   /* 칩을 눌러도 검색칸 초점이 그대로 */
+      box.addEventListener('click', function(e){
+        var b = e.target.closest ? e.target.closest('button[data-tk]') : null; if (!b) return;
+        var tk = b.getAttribute('data-tk'), ent = get(tk) || {};
+        var root = inp.closest('.hub-modal') || document;
+        var symIn = root.querySelector('#' + cfg.sym);
+        if (cfg.sym === 'wlSymIn'){
+          var m = /^\d{6}$/.test(tk) ? 'kr' : 'us';
+          var mb = root.querySelector('.wl-mkt-opt[data-m="' + m + '"]'); if (mb) mb.click();
+        }
+        if (symIn){ symIn.value = tk; try { symIn.dispatchEvent(new Event('input', { bubbles:true })); } catch(x) {} }
+        if (cfg.name){ var nmIn = root.querySelector('#' + cfg.name); if (nmIn && !nmIn.value) nmIn.value = ent.name || tk; }
+        box.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); });
+        if (symIn) try { symIn.focus(); } catch(x) {}
+      });
+    }
+    var q = sp(inp.value).toLowerCase();
+    var rows = list().filter(function(e){ return !e.src.mega || Object.keys(e.src).length > 1; });   /* 시총 상위 목록에서만 온 것은 '내 종목'이 아니다 */
+    if (q) rows = rows.filter(function(e){
+      if (e.tk.toLowerCase().indexOf(q) >= 0) return true;
+      return Object.keys(e.names).some(function(n){ return n.indexOf(q) >= 0; });
+    });
+    rows = rows.slice().sort(function(a, b){ return (rank(a) - rank(b)) || (a.tk < b.tk ? -1 : a.tk > b.tk ? 1 : 0); }).slice(0, 8);   /* 보유 · 논거 먼저 */
+    if (!rows.length){ box.hidden = true; box.innerHTML = ''; return; }
+    box.hidden = false;
+    var h = '<span>내 종목</span>' + rows.map(function(e){
+      return '<button type="button" data-tk="' + esc(e.tk) + '" title="' + esc((e.name || e.tk) + ' — 티커 칸에 넣기') + '"><b>' + esc(e.tk) + '</b>' + (e.name ? esc(String(e.name).slice(0, 12)) : '') + '</button>';
+    }).join('');
+    if (box.__h !== h){ box.innerHTML = h; box.__h = h; }
+  }
+  document.addEventListener('focusin', function(e){ var t = e.target; if (t && MINE_FOR[t.id]) { try { minePaint(t); } catch(x) {} } }, true);
+  document.addEventListener('input', function(e){ var t = e.target; if (t && MINE_FOR[t.id]) { try { minePaint(t); } catch(x) {} } }, true);
+
+  window.__nnTicker = { list:list, get:get, resolve:resolve, mentions:mentions, open:open, close:close, refresh:function(){ cache = null; },
+                        diaries:diaryHits, diaryBlock:diaryBlock };
 })();
