@@ -10,7 +10,9 @@
 
    지금
      ① 카드 — 넓은 화면 3열 · 중간 2열 · 휴대폰은 옆으로 넘기는 한 줄. 카드를 누르면 그 줄 바로 아래에 상세가 펼쳐진다
-        카드: 사진 · 이름 · 분기 · 상위 3종목이 차지하는 몫(가는 막대, 한 색 + 나머지 회색) · 상위 종목 · 종목 수 · 합계 · 신규/매도 수
+        2026-11-23 오후(회장님 요청): 예전 목록의 '굵고 큰 흰 이름'을 살렸다 — 상자를 걷고 위쪽 괘선만, 이름은 카드 폭에 맞춰
+        26~46px 굵게(두 줄로 고르게), 올리면 금색 밑줄이 그어지고 흑백 사진(4:3 액자)에 색이 돌아온다. /0.1 번호 · 운용사 줄도 예전 그대로.
+        카드: 번호 · 운용사 · 분기 / 큰 이름 · 한글 이름 · 사진 / 상위 3종목 몫(가는 막대) · 상위 종목 · 종목 수 · 합계 · 신규/매도 수
         상세: 상위 15종목 순위 막대(한 색, 큰 것부터) · 지난 분기 대비(▲ 늘림 · ▼ 줄임 · 신규) · 다 판 종목 · SEC 원문 링크
         종목 이름을 누르면 '종목 한 장'(nn-ticker.js)이 열린다 — 내 노트 · 보유 · 논거와 함께 본다
      ② 자동 갱신 — 내 Worker 의 /sec13f 가 SEC EDGAR 에서 가장 최근 13F-HR 두 건을 읽어 준다(worker.js v15)
@@ -312,7 +314,16 @@
       rows: m.fb.h.map(function(p){ return { lb: p[0], tk: /^[A-Z.\-]{1,8}$/.test(p[0]) ? p[0] : '', nm: p[1], pct: +p[2] || 0, chg: null }; }) };
     return { mode: 'none', rows: [] };
   }
-  function cardHTML(m){
+  function photoHTML(m, extra){
+    return '<span class="si-ph' + (extra ? ' ' + extra : '') + '" aria-hidden="true"><i>' + esc(initials(m.en)) + '</i>'
+      + (m.img ? '<img src="' + esc(m.img) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" draggable="false" onerror="this.remove()">' : '') + '</span>';
+  }
+  /* 아주 긴 낱말(띄어쓰기 없는 이름)은 글자를 조금 줄여 낱말 가운데서 끊기지 않게 */
+  function fitCls(name){
+    var L = 0; String(name || '').split(/\s+/).forEach(function(w){ var n = 0; for (var i = 0; i < w.length; i++) n += /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF\u4E00-\u9FFF]/.test(w.charAt(i)) ? 1.7 : 1; if (n > L) L = n; });
+    return L >= 18 ? ' xl' : L >= 14 ? ' l' : '';
+  }
+  function cardHTML(m, idx){
     var L = getList(), v = view(m), busy = m.cik && st.busy[m.cik], err = m.cik ? st.err[m.cik] : '';
     var q = v.mode === 'live' ? qShort(v.period) : v.mode === 'demo' ? '예시' : v.mode === 'manual' ? '직접' : '';
     var top3 = v.rows.slice(0, 3), sum3 = 0;
@@ -338,12 +349,12 @@
     if (busy && v.mode !== 'none') meta += ' · <span class="si-spin" aria-label="받는 중"></span>';
     else if (err && v.mode !== 'none' && v.mode !== 'live') meta += ' · ' + esc(ERR[err] || '');
     return '<div class="si-card' + (st.open === m.id ? ' on' : '') + '" data-id="' + esc(m.id) + '" role="button" tabindex="0" aria-expanded="' + (st.open === m.id) + '" aria-label="' + esc(m.en + ' 포트폴리오 ' + (st.open === m.id ? '접기' : '펼치기')) + '">'
-      + '<div class="si-top">' + avatar(m)
-      +   '<span class="si-who"><b class="si-en">' + esc(m.en) + '</b><span class="si-sub">' + esc([m.kr, m.corp].filter(Boolean).join(' · ')) + '</span></span>'
-      +   (q ? '<span class="si-q' + (v.mode === 'live' ? '' : ' demo') + '">' + esc(q) + '</span>' : '')
-      + '</div>' + seg
-      + (chips ? '<div class="si-chips">' + chips + '</div>' : '')
-      + '<div class="si-meta">' + meta + '</div>'
+      + '<div class="si-head"><span class="si-idx">/0.' + ((idx || 0) + 1) + '</span><span class="si-corp">' + esc(m.corp || m.tag || '') + '</span>'
+      +   (q ? '<span class="si-q' + (v.mode === 'live' ? '' : ' demo') + '">' + esc(q) + '</span>' : '') + '</div>'
+      + '<div class="si-who"><b class="si-en' + fitCls(m.en) + '">' + esc(m.en) + '</b>' + (m.kr ? '<span class="si-kr">' + esc(m.kr) + '</span>' : '') + '</div>'
+      + '<div class="si-data">' + photoHTML(m) + '<div class="si-dcol">' + seg
+      +   (chips ? '<div class="si-chips">' + chips + '</div>' : '')
+      +   '<div class="si-meta">' + meta + '</div></div></div>'
       + '</div>';
   }
   function detailHTML(m){
@@ -356,7 +367,7 @@
         + (d.prev ? '<br>지난 분기(' + esc(qLabel(d.prev.period)) + ')와 비교' : '')
         + '<br><a href="' + esc(d.url || edgar) + '" target="_blank" rel="noopener">SEC 원문 ↗</a>';
     } else if (edgar) right = '<a href="' + esc(edgar) + '" target="_blank" rel="noopener">SEC 13F 목록 ↗</a>';
-    var h = '<div class="sid-hd"><div class="sid-who">' + avatar(m)
+    var h = '<div class="sid-hd"><div class="sid-who">' + photoHTML(m, 'sid-ph')
       + '<div class="sid-id"><div class="sid-en">' + esc(m.en) + '</div><div class="sid-sub">' + esc([m.kr, m.corp].filter(Boolean).join(' · ')) + (m.tag ? '<span class="sid-tag">' + esc(m.tag) + '</span>' : '') + '</div>'
       + (m.bio ? '<div class="sid-bio">' + esc(m.bio) + '</div>' : '') + '</div></div>'
       + '<div class="sid-meta">' + right + '</div></div>';
@@ -366,6 +377,7 @@
         + '<span>상위 10종목 <b>' + pctTxt(v.rows.slice(0, 10).reduce(function(a, r){ return a + r.pct; }, 0)) + '</b></span></div>';
     }
     if (rows.length){
+      h += '<div class="sid-lbl">TOP HOLDINGS<span>' + (v.mode === 'live' ? '상위 ' + rows.length + '종목 · 13F 합계 대비 비중' : v.mode === 'demo' ? '예시 값' : '직접 적은 값') + '</span></div>';
       h += '<div class="sid-rows" role="table" aria-label="' + esc(m.en) + ' 보유 상위 종목">'
         + rows.map(function(r, i){
           var tip = r.nm + (r.pc ? ' (' + r.pc + ')' : '') + ' · ' + pctTxt(r.pct) + (r.value ? ' · ' + money(r.value) : '') + (r.shares ? ' · ' + Math.round(r.shares).toLocaleString('en-US') + '주' : '');
@@ -394,9 +406,14 @@
   /* 색은 한 곳에서 — 밝은 바탕(홈의 종이 화면)에서는 아래에서 바꾼다 */
   '.masters-section{--si-ink:#f0ede6;--si-ink2:rgba(240,237,230,.72);--si-ink3:rgba(240,237,230,.5);--si-line:rgba(255,255,255,.1);',
   '  --si-card:rgba(255,255,255,.03);--si-card-h:rgba(255,255,255,.055);--si-acc:#c9a96e;--si-acc2:#e8c47e;--si-track:rgba(255,255,255,.13);',
-  '  --si-up:#7ee7a6;--si-dn:#ff9d8f;--si-chip:rgba(255,255,255,.045)}',
+  '  --si-up:#7ee7a6;--si-dn:#ff9d8f;--si-chip:rgba(255,255,255,.045);',
+  '  --si-name:rgba(248,245,238,.94);--si-name-h:#fff;--si-name-sh:0 1px 3px rgba(0,0,0,.45);--si-idx:rgba(255,255,255,.32);',
+  '  --si-sheen:linear-gradient(100deg,rgba(255,255,255,.07),rgba(201,169,110,.05) 62%,transparent);',
+  '  --si-panel:linear-gradient(165deg,rgba(24,22,19,.9),rgba(11,11,13,.84))}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .masters-section{--si-ink:#14120F;--si-ink2:#575145;--si-ink3:#7d7566;--si-line:rgba(20,18,15,.12);',
-  '  --si-card:rgba(255,255,255,.66);--si-card-h:#fff;--si-acc:#8A6A24;--si-acc2:#8A6A24;--si-track:rgba(20,18,15,.1);--si-up:#1e7a4b;--si-dn:#b23a2c;--si-chip:rgba(20,18,15,.035)}',
+  '  --si-card:rgba(255,255,255,.66);--si-card-h:#fff;--si-acc:#8A6A24;--si-acc2:#8A6A24;--si-track:rgba(20,18,15,.1);--si-up:#1e7a4b;--si-dn:#b23a2c;--si-chip:rgba(20,18,15,.035);',
+  '  --si-name:#14120F;--si-name-h:#000;--si-name-sh:none;--si-idx:rgba(20,18,15,.38);',
+  '  --si-sheen:linear-gradient(100deg,rgba(138,106,36,.075),rgba(138,106,36,.03) 62%,transparent);--si-panel:rgba(255,255,255,.86)}',
   '.masters-section .ref-lane-header{flex-wrap:wrap;row-gap:8px}',
   '.si-tools{margin-left:auto;display:inline-flex;align-items:center;gap:6px}',
   '.si-tools .hub-edit-toggle{margin-left:0}',
@@ -412,49 +429,76 @@
   '.si-status.warn{color:var(--si-ink2)}.si-status.bad{color:var(--si-dn)}',
   '.si-status button{font:700 12px var(--nn-font);padding:4px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--si-acc);background:transparent;color:var(--si-acc2)}',
   '.si-spin{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--si-track);border-top-color:var(--si-acc2);animation:siRot .8s linear infinite;vertical-align:-1px}',
-  '#siGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}',
+  '#siGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:clamp(18px,2.6vw,40px);border-bottom:1px solid var(--si-line)}',
   '@media (max-width:1099px){#siGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
-  '.si-card{position:relative;display:flex;flex-direction:column;gap:11px;min-width:0;padding:16px 16px 14px;border-radius:14px;cursor:pointer;',
-  '  background:var(--si-card);border:1px solid var(--si-line);transition:background-color .22s,border-color .22s,box-shadow .22s;outline:none}',
-  '.si-card:hover{background:var(--si-card-h);border-color:rgba(201,169,110,.42)}',
-  '.si-card:focus-visible{box-shadow:0 0 0 2px #e8c47e}',
-  '.si-card.on{border-color:var(--si-acc);box-shadow:inset 0 0 0 1px var(--si-acc)}',
-  '.si-top{display:flex;align-items:center;gap:11px;min-width:0}',
+  /* 카드 — 상자 대신 위쪽 괘선 하나(예전 목록처럼). 올리면 은은한 빛이 깔리고 괘선이 금색으로 */
+  '.si-card{position:relative;isolation:isolate;container-type:inline-size;display:flex;flex-direction:column;gap:12px;min-width:0;',
+  '  padding:18px clamp(10px,1.2vw,18px) 20px;cursor:pointer;outline:none;border-top:1px solid var(--si-line);transition:border-color .42s cubic-bezier(.22,1,.36,1)}',
+  '.si-card::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--si-sheen);opacity:0;transition:opacity .42s cubic-bezier(.22,1,.36,1)}',
+  '.si-card:hover::before,.si-card.on::before{opacity:1}',
+  '.si-card:hover{border-top-color:rgba(201,169,110,.42)}',
+  '.si-card.on{border-top-color:var(--si-acc)}',
+  '.si-card:focus-visible{outline:2px solid #e8c47e;outline-offset:-2px}',
+  '.si-head{display:flex;align-items:baseline;gap:10px;min-width:0}',
+  '.si-idx{flex:none;font:700 11px var(--nn-font-label);letter-spacing:.1em;color:var(--si-idx);transition:color .35s}',
+  '.si-card:hover .si-idx,.si-card.on .si-idx{color:var(--si-acc2)}',
+  '.si-corp{flex:1;min-width:0;font:500 12.5px/1.4 var(--nn-font);color:var(--si-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .35s}',
+  '.si-card:hover .si-corp,.si-card.on .si-corp{color:var(--si-ink)}',
+  '.si-q{flex:none;font:700 11px var(--nn-font-label);letter-spacing:.08em;color:var(--si-acc2)}',
+  '.si-q.demo{font-family:var(--nn-font);letter-spacing:0;color:var(--si-ink3)}',
+  /* 이름 — 예전의 굵고 큰 흰 글씨. 카드 폭에 맞춰 26~46px, 두 줄이면 고르게 나눈다 */
+  '.si-who{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}',
+  '.si-en{position:relative;display:block;max-width:100%;padding-bottom:6px;font-family:var(--nn-font);font-weight:800;letter-spacing:-.03em;line-height:1.02;',
+  '  font-size:clamp(1.6rem,2.4vw,2.4rem);font-size:clamp(26px,11cqi,46px);color:var(--si-name);text-shadow:var(--si-name-sh);',
+  '  text-wrap:balance;word-break:keep-all;overflow-wrap:break-word;transition:color .38s ease}',
+  '.si-en::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:linear-gradient(90deg,rgba(201,169,110,.9),rgba(201,169,110,.15));',
+  '  transform:scaleX(0);transform-origin:left;transition:transform .55s cubic-bezier(.22,1,.36,1)}',
+  '.si-card:hover .si-en::after,.si-card.on .si-en::after{transform:scaleX(1)}',
+  '.si-card:hover .si-en,.si-card.on .si-en{color:var(--si-name-h)}',
+  '.si-en.l{font-size:clamp(1.4rem,2vw,2rem);font-size:clamp(24px,8.6cqi,38px)}',
+  '.si-en.xl{font-size:clamp(1.2rem,1.6vw,1.6rem);font-size:clamp(20px,6.6cqi,30px)}',
+  '.si-kr{font:500 12px var(--nn-font);letter-spacing:.02em;color:var(--si-ink3);transition:color .4s}',
+  '.si-card:hover .si-kr,.si-card.on .si-kr{color:var(--si-acc2)}',
+  /* 사진 — 4:3 액자. 흑백이었다가 올리거나 펼치면 색이 돌아온다(예전 목록과 같은 움직임) */
+  '.si-data{display:flex;align-items:center;gap:clamp(12px,4cqi,18px);min-width:0;margin-top:auto;padding-top:3px}',   /* 같은 줄 카드끼리 아래 칸을 맞춘다 */
+  '.si-dcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}',
+  '.si-ph{flex:none;position:relative;width:88px;width:clamp(70px,22cqi,104px);aspect-ratio:4/3;border-radius:10px;overflow:hidden;display:grid;place-items:center;',
+  '  background:var(--si-chip);color:var(--si-acc2);font:700 13px var(--nn-font-label);letter-spacing:.06em}',
+  '.si-ph i{font-style:normal;opacity:.75}',
+  '.si-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:grayscale(1) brightness(.85);transform:scale(1.05);',
+  '  transition:filter .5s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}',
+  '.si-card:hover .si-ph img,.si-card.on .si-ph img,.si-detail .si-ph img{filter:none;transform:scale(1)}',
   '.si-av{flex:none;position:relative;width:42px;height:42px;border-radius:50%;overflow:hidden;display:grid;place-items:center;',
   '  background:rgba(201,169,110,.15);color:var(--si-acc2);font:800 13px var(--nn-font);letter-spacing:.02em}',
   '.si-av i{font-style:normal}',
-  '.si-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:grayscale(1);transition:filter .35s}',
-  '.si-card:hover .si-av img,.si-card.on .si-av img,.si-detail .si-av img{filter:none}',
-  '.si-who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}',
-  '.si-en{font:800 16px/1.25 var(--nn-font);letter-spacing:-.01em;color:var(--si-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-  '.si-sub{font:500 12px/1.35 var(--nn-font);color:var(--si-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-  '.si-q{flex:none;align-self:flex-start;font:700 11px var(--nn-font-label);letter-spacing:.06em;padding:3px 7px;border-radius:6px;color:var(--si-acc2);border:1px solid var(--si-acc)}',
-  '.si-q.demo{color:var(--si-ink3);border-color:var(--si-line);font-family:var(--nn-font);letter-spacing:0}',
+  '.si-av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}',
   /* 가는 막대: 상위 3종목(한 색 · 2px 틈) + 나머지(회색). 글자는 옆에 */
   '.si-bar{display:flex;align-items:center;gap:10px}',
-  '.si-seg{flex:1;min-width:0;display:flex;gap:2px;height:8px}',
+  '.si-seg{flex:1;min-width:0;display:flex;gap:2px;height:4px}',
   '.si-seg i{display:block;height:100%;border-radius:999px;background:var(--si-acc)}',
   '.si-seg i.rest{flex:1 1 0;min-width:4px;background:var(--si-track)}',
   '.si-c3{flex:none;font:600 12px var(--nn-font);color:var(--si-ink3);font-variant-numeric:tabular-nums}',
-  '.si-chips{display:flex;flex-wrap:wrap;gap:6px}',
-  '.si-chip{display:inline-flex;align-items:baseline;gap:5px;padding:4px 8px;border-radius:7px;background:var(--si-chip);border:1px solid var(--si-line);',
-  '  font:500 12px var(--nn-font);color:var(--si-ink2);font-variant-numeric:tabular-nums;white-space:nowrap}',
-  '.si-chip b{font-weight:800;color:var(--si-ink)}',
+  /* 상위 종목 — 칸 없이 글자로: 티커는 굵게, 비중은 옅게 */
+  '.si-chips{display:flex;flex-wrap:wrap;gap:4px 16px}',
+  '.si-chip{display:inline-flex;align-items:baseline;gap:6px;font:500 13px var(--nn-font);color:var(--si-ink3);font-variant-numeric:tabular-nums;white-space:nowrap}',
+  '.si-chip b{font-weight:800;color:var(--si-ink);letter-spacing:.01em}',
   '.si-pc{font-style:normal;font-size:12px;color:var(--si-ink3);margin-left:-2px}',
   '.si-chip em,.sid-chg em{font-style:normal;font-weight:700}',
   '.si-up{color:var(--si-up)}.si-dn{color:var(--si-dn)}.si-new{color:var(--si-acc2)}.si-eq{color:var(--si-ink3);font-weight:500!important}',
   '.si-meta{font:500 12px/1.4 var(--nn-font);color:var(--si-ink3);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
   '.si-meta .si-old{color:var(--si-ink2)}',
   /* 상세 — 카드가 있는 줄 바로 아래 */
-  '.si-detail{grid-column:1/-1;border-radius:16px;border:1px solid var(--si-acc);background:var(--si-card-h);padding:20px 22px 18px}',
+  '.si-detail{grid-column:1/-1;margin:4px 0 22px;border-radius:16px;border:1px solid rgba(201,169,110,.4);background:var(--si-panel);padding:clamp(18px,2.4vw,30px)}',
   '.si-detail.anim{animation:siIn .32s cubic-bezier(.22,1,.36,1)}',
   '@keyframes siIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}',
   '.sid-hd{display:flex;gap:14px 20px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}',
-  '.sid-who{display:flex;gap:14px;align-items:flex-start;min-width:0;flex:1 1 360px}',
-  '.sid-who .si-av{width:56px;height:56px;font-size:16px}',
+  '.sid-who{display:flex;gap:18px;align-items:center;min-width:0;flex:1 1 380px}',
+  '.si-ph.sid-ph{width:clamp(96px,10vw,144px);border-radius:12px;font-size:15px}',
   '.sid-id{min-width:0}',
-  '.sid-en{font:800 22px/1.2 var(--nn-font);letter-spacing:-.015em;color:var(--si-ink)}',
-  '.sid-sub{font:500 13px/1.5 var(--nn-font);color:var(--si-ink2);margin-top:2px}',
+  '.sid-en{font:800 clamp(1.9rem,3.2vw,3.1rem)/1.02 var(--nn-font);letter-spacing:-.03em;color:var(--si-name);text-shadow:var(--si-name-sh)}',
+  '.sid-lbl{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin:20px 0 4px;font:700 11px var(--nn-font-label);letter-spacing:.26em;color:var(--si-acc2)}',
+  '.sid-lbl span{font:500 12px var(--nn-font);letter-spacing:0;color:var(--si-ink3)}',
+  '.sid-sub{font:500 13px/1.5 var(--nn-font);color:var(--si-ink2);margin-top:8px}',
   '.sid-tag{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;border:1px solid var(--si-line);font-size:12px;color:var(--si-ink3)}',
   '.sid-bio{font:400 13px/1.55 var(--nn-font);color:var(--si-ink3);margin-top:6px;max-width:620px}',
   '.sid-meta{flex:none;text-align:right;font:500 12px/1.65 var(--nn-font);color:var(--si-ink3)}',
@@ -483,12 +527,14 @@
   '@media (max-width:899px){.sid-rows{grid-template-columns:1fr}.sid-meta{text-align:left}}',
   /* 휴대폰 — 옆으로 넘기는 한 줄 */
   '@media (max-width:699px){',
-  '  #siGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 8px;margin:0 -2px}',
+  '  #siGrid{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -2px;border-bottom:0}',
   '  #siGrid::-webkit-scrollbar{display:none}',
-  '  #siGrid .si-card{flex:0 0 84%;scroll-snap-align:start}',
+  '  #siGrid .si-card{flex:0 0 84%;scroll-snap-align:start;border-bottom:1px solid var(--si-line)}',
+  '  #siGrid .si-card + .si-card{border-left:1px solid var(--si-line)}',
   '  .si-detail{margin-top:10px;padding:16px 14px}',
   '  .sid-row{grid-template-columns:20px 62px minmax(0,1fr) 48px 56px;gap:6px}',
-  '  .sid-en{font-size:19px}',
+  '  .sid-en{font-size:clamp(1.6rem,8vw,2.2rem)}',
+  '  .si-ph.sid-ph{width:96px}',
   '}',
   '@media (prefers-reduced-motion:reduce){.si-detail.anim{animation:none}.si-spin,#siRefresh.spin{animation:none}}',
 
@@ -571,7 +617,7 @@
     var g = $('siGrid'), L = getList();
     var keepScroll = g.scrollLeft;
     var det = $('siDetail'); if (det) det.remove();
-    g.innerHTML = L.list.length ? L.list.map(function(it){ return cardHTML(full(it)); }).join('')
+    g.innerHTML = L.list.length ? L.list.map(function(it, i){ return cardHTML(full(it), i); }).join('')
       : '<div class="si-status">고른 투자자가 없습니다. <button type="button" data-si="edit">고르기</button></div>';
     g.scrollLeft = keepScroll;
     placeDetail();
