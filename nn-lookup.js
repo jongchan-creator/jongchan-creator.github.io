@@ -22,6 +22,9 @@
      결과마다 제목·뜻을 고칠 수 있는 칸이 있고, LEXICON 의 실제 그룹(경제·일반·영어 …)이
      버튼으로 뜬다. 출처에 맞는 그룹이 미리 골라져 있다.
      LEXICON 카드의 뜻은 '줄바꿈 없는 글'이라(nn-core _buildLexCard) 한 문단으로 다듬어 넣는다.
+     2026-11-26 — '담을 내용 고르기': 뜻을 조각(문장 · 뜻 번호 · 한글 뜻)으로 나눠 누르면 넣고 빼고,
+     아래 칸에 만들어지는 글을 바로 고쳐 쓴 뒤 한 번에 저장한다(단어장에서 다시 고칠 필요 없게).
+     저장한 뒤에 다시 고르거나 고치면 새 카드를 만들지 않고 '저장한 카드에 반영'.
 
    로딩 순서: … → nn-tradelog.js → nn-lookup.js → nn-notes.js
    ══════════════════════════════════════════════════════════════════════ */
@@ -43,7 +46,10 @@
     });
   }
   function clean(s){
-    return String(s || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ')
+    /* 2026-11-26: 표준국어대사전은 책 이름 · 편 이름을 <월세가(越世家)> 처럼 꺾쇠로 감싸 보낸다.
+       예전에는 이것을 HTML 태그로 알고 지워서 '≪사기≫의 와 ≪십팔사략≫' 처럼 말이 빠졌다.
+       한글 · 한자로 시작하는 꺾쇠는 태그가 아니므로 〈 〉 로 바꿔 남긴다(태그는 영문자나 / 로 시작한다). */
+    return String(s || '').replace(/<([가-힣㐀-鿿][^<>]*)>/g, '〈$1〉').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ')
       .replace(/&lt;/g, '‹').replace(/&gt;/g, '›').replace(/&amp;/g, '&')
       .replace(/[<>]/g, ' ').replace(/\s+/g, ' ').trim();
   }
@@ -56,6 +62,56 @@
     while((m = re.exec(t)) && i < n){ out += m[0]; i++; if(out.length >= max) break; }
     out = out.trim() || t;
     return out.length > max ? out.slice(0, max).replace(/\s+\S*$/, '') + '…' : out;
+  }
+
+  /* ════════ 담을 내용 고르기 (2026-11-26) ════════
+     회장님: "찾아서 나온 설명 중에 넣고 싶은 것과 넣고 싶지 않은 것이 있는데, 지금은 일단 단어장에 넣고
+             단어장에서 다시 고쳐 저장해야 해서 불편하다."
+     → 결과마다 뜻을 '조각'(문장 · 뜻 번호 · 한글 뜻 하나하나)으로 나눠 보여 주고, 누르면 넣고 뺀다.
+       아래 칸에는 고른 조각으로 만든 글이 바로 보이고, 거기서 고쳐 써도 된다. 저장은 한 번.
+     조각: 표준국어대사전 — 뜻(①②…)마다 문장으로 · 영어 사전 — 한글 뜻 하나하나 + 발음 · 영영 풀이 · 예문
+           위키백과 · 한국은행 경제용어 — 문장으로
+     처음 골라 두는 것(예전 '짧게'와 같은 자리): 국어사전은 앞의 두 뜻의 첫 문장(와신상담의 긴 유래 이야기는 빠진다),
+           영어는 한글 뜻 전부, 위키 · 경제용어는 앞의 두 문장. */
+  var NUM = ['①','②','③','④','⑤','⑥','⑦','⑧'];
+  /* 문장으로 나누기 — 마침표 · 물음표 뒤에 빈칸(또는 끝)이 올 때만 자른다(3.5% 같은 숫자는 그대로). 아주 짧은 토막은 앞 문장에 붙인다 */
+  function sents(text, max){
+    var t = clean(text), out = [], re = /[\s\S]*?[.!?。](?=\s|$)/g, m, last = 0;
+    function put(s){ s = s.trim(); if(!s) return; if(out.length && s.length < 6) out[out.length - 1] += ' ' + s; else out.push(s); }
+    while((m = re.exec(t))){ put(m[0]); last = re.lastIndex; }
+    put(t.slice(last));
+    if(max && out.length > max) out = out.slice(0, max);
+    return out;
+  }
+  /* 고른 조각으로 글 만들기 */
+  function compose(r, sel){
+    sel = sel || r.sel || [];
+    var pcs = r.pcs || [];
+    if(r.src === 'std'){
+      var by = {}, order = [];
+      pcs.forEach(function(pc, i){ if(!sel[i]) return; if(!by[pc.s]){ by[pc.s] = []; order.push(pc.s); } by[pc.s].push(pc.t); });
+      var ss = order.map(function(s){ var pos = (r.spos || [])[s]; return (pos ? '[' + pos + '] ' : '') + by[s].join(' '); });
+      return ss.length === 1 ? ss[0] : ss.map(function(x, k){ return (NUM[k] || (k + 1) + '.') + ' ' + x; }).join(' ');
+    }
+    if(r.src === 'en'){
+      var ko = [], rest = [];
+      pcs.forEach(function(pc, i){
+        if(!sel[i]) return;
+        if(pc.k === 'ko') ko.push(pc.t);
+        else if(pc.k === 'def') rest.push((pc.pos ? '[' + pc.pos + '] ' : '') + pc.t);
+        else if(pc.k === 'ex') rest.push('예) ' + pc.t);
+        else rest.push(pc.t);
+      });
+      return (ko.length ? [ko.join(', ')] : []).concat(rest).join(' · ');
+    }
+    return pcs.filter(function(pc, i){ return sel[i]; }).map(function(pc){ return pc.t; }).join(' ');
+  }
+  /* 결과 하나에 처음 고를 것 · 짧은 글을 정해 둔다 (sel0 은 '처음대로' 단추가 되돌아갈 자리) */
+  function prep(r, sel0){
+    r.sel0 = sel0; r.sel = sel0.slice();
+    if(r.pcs && r.pcs.length && !sel0.some(Boolean)) r.sel0[0] = r.sel[0] = true;
+    r.short = compose(r) || r.short || '';
+    return r;
   }
 
   function getJSON(url, ms){
@@ -93,9 +149,11 @@
         return ax - bx || a.word.length - b.word.length;
       });
       return {list: list.slice(0, 3).map(function(r){
-        return { src: 'ecos', badge: '한국은행 경제용어', kind: 'econ', title: r.word,
-                 full: r.text, short: brief(r.text, 2, 240),
-                 url: 'https://www.bok.or.kr/portal/ecEdu/ecWordDicary/search.do?menuNo=200688' };
+        var it = { src: 'ecos', badge: '한국은행 경제용어', kind: 'econ', title: r.word,
+                   full: r.text, short: brief(r.text, 2, 240),
+                   url: 'https://www.bok.or.kr/portal/ecEdu/ecWordDicary/search.do?menuNo=200688' };
+        it.pcs = sents(r.text, 10).map(function(s){ return {t: s}; });
+        return prep(it, it.pcs.map(function(pc, j){ return j < 2; }));
       })};
     });
   }
@@ -115,9 +173,11 @@
         var t = clean(p.extract);
         if(!t || t.length < 20) return;
         if(/(다음을 가리킨다|다른 뜻은 다음과 같다|다음 뜻으로 쓰인다|동음이의)/.test(t)) return;   /* 동음이의 안내 문서 */
-        list.push({ src: 'wiki', badge: '위키백과', kind: 'general', title: clean(p.title),
-                    full: t, short: brief(t, 2, 240),
-                    url: p.fullurl || ('https://ko.wikipedia.org/wiki/' + encodeURIComponent(p.title)) });
+        var it = { src: 'wiki', badge: '위키백과', kind: 'general', title: clean(p.title),
+                   full: t, short: brief(t, 2, 240),
+                   url: p.fullurl || ('https://ko.wikipedia.org/wiki/' + encodeURIComponent(p.title)) };
+        it.pcs = sents(t, 8).map(function(s){ return {t: s}; });
+        list.push(prep(it, it.pcs.map(function(pc, j){ return j < 2; })));
       });
       return {list: list};
     });
@@ -148,20 +208,27 @@
         senses.forEach(function(sn){
           var d = clean(sn.definition);
           if(!w || !d) return;
-          if(!byWord[w]){ byWord[w] = {defs: [], link: sn.link || ''}; order.push(w); }
-          byWord[w].defs.push((it.pos && it.pos !== '품사 없음' ? '[' + clean(it.pos) + '] ' : '') + d);
+          if(!byWord[w]){ byWord[w] = {defs: [], senses: [], link: sn.link || ''}; order.push(w); }
+          var pos = it.pos && it.pos !== '품사 없음' ? clean(it.pos) : '';
+          byWord[w].defs.push((pos ? '[' + pos + '] ' : '') + d);
+          byWord[w].senses.push({pos: pos, text: d});
         });
       });
       /* 찾은 말과 똑같은 표제어를 먼저 */
       var ql = q.replace(/\s+/g, '');
       order.sort(function(a, b){ return (a === ql ? 0 : 1) - (b === ql ? 0 : 1); });
-      var NUM = ['①','②','③','④','⑤','⑥'];
       return {list: order.slice(0, 2).map(function(w){
         var d = byWord[w].defs;
         function join(n){ return d.length === 1 ? d[0] : d.slice(0, n).map(function(x, i){ return NUM[i] + ' ' + x; }).join(' '); }
-        return { src: 'std', badge: '표준국어대사전', kind: 'general', title: w,
-                 full: join(6), short: join(2),
-                 url: 'https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=' + encodeURIComponent(w) };
+        var it = { src: 'std', badge: '표준국어대사전', kind: 'general', title: w,
+                   full: join(6), short: join(2),
+                   url: 'https://stdict.korean.go.kr/search/searchResult.do?searchKeyword=' + encodeURIComponent(w) };
+        /* 조각: 뜻(최대 6개)마다 문장으로. s = 몇 번째 뜻, lead = 그 뜻의 첫 문장 */
+        var ss = byWord[w].senses.slice(0, 6);
+        it.spos = ss.map(function(x){ return x.pos; });
+        it.pcs = [];
+        ss.forEach(function(x, si){ sents(x.text).forEach(function(s, j){ it.pcs.push({t: s, s: si, lead: j === 0}); }); });
+        return prep(it, it.pcs.map(function(pc){ return pc.lead && pc.s < 2; }));
       })};
     });
   }
@@ -213,13 +280,19 @@
       defs.forEach(function(x){ parts.push((x.p ? '[' + x.p + '] ' : '') + x.t); });
       if(ex) parts.push('예) ' + ex);
       var simple = ko.length ? ko.join(', ') : (defs.length ? (defs[0].p ? '[' + defs[0].p + '] ' : '') + defs[0].t : '');
-      return {list: [{
+      var it = {
         src: 'en', badge: '영어 사전', kind: 'english', title: (d && d.word) || word,
         full: parts.join(' · '), short: simple, rows: 2,
-        moreLabel: '영영 풀이·예문도 넣기', lessLabel: '한글 뜻만',
         url: 'https://en.dict.naver.com/#/search?query=' + encodeURIComponent(word),
         ko: ko, phon: phon
-      }]};
+      };
+      /* 조각: 한글 뜻 하나하나 · 발음 · 영영 풀이 · 예문 — 처음에는 한글 뜻만(없으면 첫 풀이) */
+      it.pcs = [];
+      ko.forEach(function(t){ it.pcs.push({t: t, k: 'ko'}); });
+      if(phon) it.pcs.push({t: phon, k: 'phon'});
+      defs.forEach(function(x){ it.pcs.push({t: x.t, k: 'def', pos: x.p}); });
+      if(ex) it.pcs.push({t: ex, k: 'ex'});
+      return {list: [prep(it, it.pcs.map(function(pc, j){ return ko.length ? pc.k === 'ko' : (pc.k === 'def' && j === (phon ? 1 : 0)); }))]};
     });
   }
 
@@ -257,18 +330,79 @@
     var chips = g.map(function(x){
       return '<button type="button" class="lk-g' + (x.id === gid ? ' on' : '') + '" data-i="' + i + '" data-g="' + esc(x.id) + '">' + esc(x.name || '그룹') + '</button>';
     }).join('');
+    var picking = !!(r.pcs && r.pcs.length > 1);
+    if(!r.sel) r.sel = [];
+    r.made = compose(r) || r.short || '';   /* 지금 칸에 들어간 글 — 손으로 고쳤는지 알아보는 기준 */
     return '<div class="lk-card lk-' + r.src + '" data-i="' + i + '">'
       + '<div class="lk-ch"><span class="lk-badge">' + esc(r.badge) + '</span>'
       +   (exists(r.title) ? '<span class="lk-dup">이미 사전에 있는 말</span>' : '')
       +   (r.url ? '<a class="lk-src" href="' + esc(r.url) + '" target="_blank" rel="noopener">원문 ↗</a>' : '')
       + '</div>'
       + '<input type="text" class="lk-title" data-i="' + i + '" value="' + esc(r.title) + '" aria-label="단어">'
-      + '<textarea class="lk-def" data-i="' + i + '" rows="' + (r.rows || 3) + '" aria-label="뜻">' + esc(r.short) + '</textarea>'
+      + (picking ? pickHTML(r, i) : '')
+      + (picking ? '<div class="lk-dl"><span>단어장에 들어갈 글</span><i>여기서 고쳐 써도 돼요</i>'
+                   + '<button type="button" class="lk-undo" data-i="' + i + '" hidden>↶ 고친 글 되살리기</button></div>' : '')
+      + '<textarea class="lk-def" data-i="' + i + '" rows="' + (r.rows || 3) + '" aria-label="단어장에 들어갈 뜻">' + esc(r.made) + '</textarea>'
       + '<div class="lk-cf">'
-      +   (r.full && r.full !== r.short ? '<button type="button" class="lk-more" data-i="' + i + '" data-on="0">' + (r.moreLabel || '전문 넣기') + '</button>' : '')
       +   '<span class="lk-gs">' + chips + '</span>'
       +   '<button type="button" class="lk-save" data-i="' + i + '">＋ 사전에 저장</button>'
       + '</div></div>';
+  }
+
+  /* 담을 내용 고르기 — 조각 단추들 */
+  function pickHTML(r, i){
+    var many = r.src === 'std' && (r.spos || []).length > 1;
+    var chips = '', rows = '';
+    r.pcs.forEach(function(pc, p){
+      var on = !!r.sel[p];
+      var cls = 'lk-pc' + (on ? ' on' : '') + (r.src === 'en' && pc.k === 'ko' ? ' chip' : '') + (r.src === 'std' && !pc.lead ? ' sub' : '');
+      var pre = '';
+      if(r.src === 'std' && pc.lead){
+        if(many) pre += '<b class="lk-pc-n">' + (NUM[pc.s] || (pc.s + 1) + '.') + '</b>';
+        if((r.spos || [])[pc.s]) pre += '<em class="lk-pc-tag">' + esc(r.spos[pc.s]) + '</em>';
+      } else if(r.src === 'en' && pc.k !== 'ko'){
+        pre = '<em class="lk-pc-tag">' + (pc.k === 'phon' ? '발음' : pc.k === 'ex' ? '예문' : esc(pc.pos || '풀이')) + '</em>';
+      }
+      var b = '<button type="button" class="' + cls + '" data-i="' + i + '" data-p="' + p + '" aria-pressed="' + on + '">'
+        + '<span class="lk-pc-i" aria-hidden="true"></span><span class="lk-pc-t">' + pre + esc(pc.t) + '</span></button>';
+      if(r.src === 'en' && pc.k === 'ko') chips += b; else rows += b;
+    });
+    return '<div class="lk-pick" data-i="' + i + '">'
+      + '<div class="lk-pk-h"><span class="lk-pk-l">담을 내용 고르기<i>누르면 넣고 빠져요</i></span>'
+      +   '<span class="lk-pk-n">' + pickCount(r) + '</span>'
+      +   '<span class="lk-pk-as"><button type="button" class="lk-pk-a" data-i="' + i + '" data-a="all">모두</button>'
+      +   '<button type="button" class="lk-pk-a" data-i="' + i + '" data-a="base">처음대로</button></span></div>'
+      + (chips ? '<div class="lk-pcs lk-pcs-ko"><span class="lk-pk-sec">한글 뜻</span>' + chips + '</div>' : '')
+      + (rows ? '<div class="lk-pcs">' + rows + '</div>' : '')
+      + '</div>';
+  }
+  function pickCount(r){ var n = 0; (r.sel || []).forEach(function(v){ if(v) n++; }); return '<b>' + n + '</b> / ' + r.pcs.length + ' 골랐어요'; }
+  function autosize(ta){
+    if(!ta || !ta.isConnected) return;
+    ta.style.height = '0px';                       /* 'auto' 로 재면 rows(3줄) 높이가 바닥이 된다 — 0 으로 두고 글 높이만 잰다 */
+    ta.style.height = Math.max(ta.scrollHeight + 2, 44) + 'px';
+  }
+  /* 조각을 바꾼 뒤 — 단추 모양 · 개수 · 아래 글을 새로. 손으로 고친 글을 덮어쓰게 되면 한 번 되살릴 수 있게 남긴다 */
+  function refreshPick(i){
+    var r = results[i], box = $('lkOut'); if(!r || !box) return;
+    var el = box.querySelector('.lk-card[data-i="' + i + '"]'); if(!el) return;
+    el.querySelectorAll('.lk-pc').forEach(function(b){
+      var on = !!r.sel[+b.getAttribute('data-p')];
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var n = el.querySelector('.lk-pk-n'); if(n) n.innerHTML = pickCount(r);
+    var ta = el.querySelector('.lk-def'), undo = el.querySelector('.lk-undo');
+    var next = compose(r);
+    if(ta.value !== r.made && ta.value.trim()){ r.kept = ta.value; if(undo) undo.hidden = false; }
+    else if(undo) undo.hidden = true;
+    ta.value = next; r.made = next; autosize(ta);
+    reopenSave(el, r);
+  }
+  /* 저장한 뒤에 고르기 · 글을 바꾸면 — 새 카드를 또 만들지 않고 방금 저장한 카드에 반영한다 */
+  function reopenSave(el, r){
+    var sv = el && el.querySelector('.lk-save');
+    if(!sv || !r || !r.savedId || !sv.classList.contains('done')) return;
+    sv.textContent = '↻ 저장한 카드에 반영'; sv.classList.remove('done'); sv.classList.add('again'); sv.disabled = false;
   }
 
   function paint(q, state, notes){
@@ -288,6 +422,7 @@
     if(notes.std === 'badkey') hint.push('표준국어대사전이 <b>인증키를 받아 주지 않았습니다</b> — 아래 설정에서 키를 다시 확인해 주세요.');
     if(hint.length) h += '<div class="lk-hint">' + hint.join('<br>') + '</div>';
     out.innerHTML = h + links(q);
+    out.querySelectorAll('.lk-def').forEach(autosize);
   }
 
   function search(q){
@@ -320,6 +455,17 @@
     var def = clean(cardEl.querySelector('.lk-def').value);
     if(!title){ toast('단어 칸이 비어 있습니다'); return; }
     if(!k.data.lexicon) k.data.lexicon = [];
+    var btn0 = cardEl.querySelector('.lk-save');
+    /* 이미 저장한 결과를 고쳐서 다시 누르면 — 그 카드에 반영 (같은 단어 카드를 두 장 만들지 않는다) */
+    var had = r.savedId ? k.data.lexicon.filter(function(n){ return n && n.id === r.savedId; })[0] : null;
+    if(had){
+      had.title = title; had.content = def; had.groupId = r.group || had.groupId || null;
+      try{ k.save(); k.renderSidebar('lexicon'); }catch(e){}
+      toast('📇 “' + title + '” 고친 내용을 반영했습니다');
+      if(btn0){ btn0.textContent = '✓ 반영됨'; btn0.classList.remove('again'); btn0.classList.add('done'); btn0.disabled = true; }
+      flash(had.id);
+      return;
+    }
     var note = {
       id: 'note_' + Date.now() + Math.floor(Math.random() * 900 + 100),
       title: title, content: def,
@@ -331,10 +477,14 @@
     var gname = '';
     groups().forEach(function(g){ if(g.id === r.group) gname = g.name || ''; });
     toast('📇 “' + title + '” 저장' + (gname ? ' → ' + gname : ''));
+    r.savedId = note.id;
     var btn = cardEl.querySelector('.lk-save');
     if(btn){ btn.textContent = '✓ 저장됨'; btn.classList.add('done'); btn.disabled = true; }
+    flash(note.id);
+  }
+  function flash(id){
     setTimeout(function(){
-      var el = document.getElementById('item-' + note.id);
+      var el = document.getElementById('item-' + id);
       if(el){ el.classList.add('lk-flash'); setTimeout(function(){ el.classList.remove('lk-flash'); }, 2200); }
     }, 120);
   }
@@ -388,6 +538,24 @@
     p.addEventListener('click', function(e){
       var t = e.target;
       if(!t || !t.classList) return;
+      /* 담을 내용 고르기 (2026-11-26) */
+      var pc = t.closest ? t.closest('.lk-pc') : null;
+      if(pc){
+        var ri = +pc.getAttribute('data-i'), pi = +pc.getAttribute('data-p'), rr = results[ri];
+        if(rr && rr.sel){ rr.sel[pi] = !rr.sel[pi]; refreshPick(ri); }
+        return;
+      }
+      if(t.classList.contains('lk-pk-a')){
+        var ra = results[+t.getAttribute('data-i')];
+        if(ra && ra.pcs){ ra.sel = t.getAttribute('data-a') === 'all' ? ra.pcs.map(function(){ return true; }) : ra.sel0.slice(); refreshPick(+t.getAttribute('data-i')); }
+        return;
+      }
+      if(t.classList.contains('lk-undo')){
+        var ru = results[+t.getAttribute('data-i')], cu = t.closest('.lk-card'), tu = cu && cu.querySelector('.lk-def');
+        if(ru && tu && ru.kept != null){ tu.value = ru.kept; ru.kept = null; autosize(tu); reopenSave(cu, ru); }
+        t.hidden = true;
+        return;
+      }
       if(t.classList.contains('lk-howto')){
         var d = $('lkSet'); d.open = true; probeWorker();
         try{ d.scrollIntoView({behavior: 'smooth', block: 'center'}); }catch(x){}
@@ -400,16 +568,17 @@
         if(results[i]) results[i].group = t.getAttribute('data-g');
         var sib = t.parentNode.querySelectorAll('.lk-g');
         for(var s = 0; s < sib.length; s++) sib[s].classList.toggle('on', sib[s] === t);
+        reopenSave(t.closest('.lk-card'), results[i]);
         return;
       }
-      if(t.classList.contains('lk-more') && results[i]){
-        var on = t.getAttribute('data-on') === '1';
-        var ta = t.parentNode.parentNode.querySelector('.lk-def');
-        ta.value = on ? results[i].short : results[i].full;
-        ta.rows = on ? (results[i].rows || 3) : 7;
-        t.setAttribute('data-on', on ? '0' : '1');
-        t.textContent = on ? (results[i].moreLabel || '전문 넣기') : (results[i].lessLabel || '줄여서 넣기');
-      }
+      /* (예전 '전문 넣기 / 한글 뜻만' 단추는 2026-11-26 '담을 내용 고르기'로 바뀌었다) */
+    });
+    /* 아래 글을 손으로 고치면 — 칸 높이를 맞추고, 이미 저장했다면 '저장한 카드에 반영'으로 */
+    p.addEventListener('input', function(e){
+      var t = e.target;
+      if(!t || !t.classList || !(t.classList.contains('lk-def') || t.classList.contains('lk-title'))) return;
+      if(t.classList.contains('lk-def')) autosize(t);
+      reopenSave(t.closest('.lk-card'), results[+t.getAttribute('data-i')]);
     });
     paintRecent();
     paintCall();
@@ -434,6 +603,7 @@
     var p = $('lkPanel'), b = $('lkFold'); if(!p || !b) return;
     p.classList.toggle('lk-folded', !!on);
     b.textContent = on ? '펼치기 ▾' : '접기 ▴';
+    if(!on){ var o = $('lkOut'); if(o) o.querySelectorAll('.lk-def').forEach(autosize); }   /* 접혀 있는 동안에는 높이를 잴 수 없었다 */
   }
 
   /* ════════ 표준국어대사전 인증키 — 눈에 보이는 자리 ════════
@@ -619,6 +789,55 @@
   '  border:1px solid #e2e5e8;background:#e2e5e8;color:#101114;transition:.15s;white-space:nowrap}',
   '.lk-save:hover{background:#fff;box-shadow:0 0 18px -4px #e2e5e8}',
   '.lk-save.done{background:transparent;color:#9fe3aa;border-color:rgba(127,213,140,.6);cursor:default;box-shadow:none}',
+  '.lk-save.again{background:rgba(245,199,92,.16);color:#f7d98a;border-color:rgba(245,199,92,.6)}',
+  '.lk-save.again:hover{background:rgba(245,199,92,.3);color:#fff;box-shadow:none}',
+  /* 담을 내용 고르기 (2026-11-26) — 조각마다 누르면 넣고 빠진다. 출처 색을 따라간다 */
+  '.lk-card{--lk-ac:#aeb1b4;--lk-ac-bg:rgba(174,177,180,.10);--lk-ac-bd:rgba(174,177,180,.42)}',
+  '.lk-card.lk-std{--lk-ac:#f5c75c;--lk-ac-bg:rgba(245,199,92,.09);--lk-ac-bd:rgba(245,199,92,.42)}',
+  '.lk-card.lk-en{--lk-ac:#7fbef5;--lk-ac-bg:rgba(127,190,245,.10);--lk-ac-bd:rgba(127,190,245,.45)}',
+  '.lk-card.lk-ecos{--lk-ac:#7fd58c;--lk-ac-bg:rgba(127,213,140,.09);--lk-ac-bd:rgba(127,213,140,.42)}',
+  '.lk-pick{margin-top:11px}',
+  '.lk-pk-h{display:flex;align-items:baseline;gap:6px 10px;flex-wrap:wrap;margin-bottom:7px}',
+  '.lk-pk-l{font-size:12px;font-weight:800;color:rgba(255,255,255,.86)}',
+  '.lk-pk-l i{font-style:normal;font-weight:500;font-size:11px;color:rgba(255,255,255,.42);margin-left:7px}',
+  '.lk-pk-n{font-size:11px;color:rgba(255,255,255,.45)}',
+  '.lk-pk-n b{color:var(--lk-ac);font-weight:800}',
+  '.lk-pk-as{margin-left:auto;display:flex;gap:4px}',
+  '.lk-pk-a{cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;',
+  '  border:1px solid rgba(255,255,255,.14);background:transparent;color:rgba(255,255,255,.6);transition:.15s}',
+  '.lk-pk-a:hover{color:#fff;border-color:rgba(255,255,255,.4)}',
+  '.lk-pcs{display:flex;flex-direction:column;gap:5px}',
+  '.lk-pcs + .lk-pcs{margin-top:8px}',
+  '.lk-pcs-ko{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}',
+  '.lk-pk-sec{font-size:11px;font-weight:700;color:rgba(255,255,255,.45);margin-right:2px}',
+  '.lk-pc{display:flex;align-items:flex-start;gap:9px;width:100%;box-sizing:border-box;text-align:left;cursor:pointer;',
+  '  font-family:inherit;font-size:13px;line-height:1.62;padding:8px 12px 8px 10px;border-radius:9px;',
+  '  border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);color:rgba(255,255,255,.46);',
+  '  transition:background .15s,border-color .15s,color .15s}',
+  '.lk-pc:hover{border-color:rgba(255,255,255,.26);color:rgba(255,255,255,.74)}',
+  '.lk-pc:focus-visible{outline:2px solid var(--lk-ac);outline-offset:2px}',
+  '.lk-pc.on{background:var(--lk-ac-bg);border-color:var(--lk-ac-bd);color:rgba(255,255,255,.94)}',
+  '.lk-pc.sub{margin-left:28px;width:calc(100% - 28px)}',
+  '.lk-pc-i{flex:0 0 auto;width:18px;height:18px;margin-top:2px;border-radius:50%;box-sizing:border-box;',
+  '  border:1.5px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;',
+  '  font-size:11px;font-weight:900;line-height:1;transition:.15s}',
+  '.lk-pc-i::before{content:"+";color:rgba(255,255,255,.55)}',
+  '.lk-pc.on .lk-pc-i{background:var(--lk-ac);border-color:var(--lk-ac)}',
+  '.lk-pc.on .lk-pc-i::before{content:"✓";color:#101114}',
+  '.lk-pc-t{flex:1;min-width:0;overflow-wrap:anywhere}',
+  '.lk-pc-n{font-weight:800;color:var(--lk-ac);margin-right:6px}',
+  '.lk-pc-tag{font-style:normal;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:5px;margin-right:7px;',
+  '  vertical-align:1px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.66)}',
+  '.lk-pc.chip{width:auto;align-items:center;padding:5px 13px 5px 7px;border-radius:999px;font-size:14px;font-weight:700}',
+  '.lk-pc.chip .lk-pc-i{margin-top:0}',
+  '.lk-dl{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;margin-top:12px}',
+  '.lk-dl span{font-size:12px;font-weight:800;color:rgba(255,255,255,.86)}',
+  '.lk-dl i{font-style:normal;font-size:11px;color:rgba(255,255,255,.42)}',
+  '.lk-dl + .lk-def{margin-top:6px}',
+  '.lk-undo{margin-left:auto;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;background:none;border:none;',
+  '  padding:0;color:#f7d98a;text-decoration:underline}',
+  '.lk-undo:hover{color:#fff}',
+  '.lk-undo[hidden]{display:none}',
   '.lk-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;',
   '  border-top:1px solid rgba(255,255,255,.08)}',
   '.lk-links span{font-size:11px;color:rgba(255,255,255,.4)}',
@@ -696,6 +915,8 @@
   '  .lk-panel{padding:14px 13px}',
   '  .lk-gs{margin-left:0;width:100%}',
   '  .lk-save{width:100%}',
+  '  .lk-pc.sub{margin-left:16px;width:calc(100% - 16px)}',
+  '  .lk-pc{font-size:13.5px}',
   '}'
   ].join('');
   var s = document.createElement('style');

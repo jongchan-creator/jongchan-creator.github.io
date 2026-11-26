@@ -326,11 +326,27 @@
   '.lex-card.lx-hide{display:none!important}',
   '.lex-card.lx-hit{box-shadow:0 0 0 2px rgba(232,196,126,.75)!important}',
   /* 목록 보기 — 한 줄에 단어와 뜻 */
-  '#lexicon-sidebar-list.lx-list .note-group-body,#lexicon-sidebar-list.lx-list .note-ungrouped{grid-template-columns:1fr!important;gap:6px!important}',
-  '#lexicon-sidebar-list.lx-list .lex-card{display:flex!important;flex-direction:row!important;align-items:baseline;gap:10px;padding:8px 34px 8px 12px!important;min-height:0!important}',
+  /* 2026-11-26 고침: 칸 폭을 1fr 로 두면 한 줄로 줄인(nowrap) 긴 뜻의 글자 폭만큼 칸이 넓어져
+     와신상담 · 좌고우면처럼 긴 뜻이 있는 그룹 전체가 오른쪽으로 넘쳐 잘렸다(2,400px 넘게) → minmax(0,1fr) + 카드 min-width:0 */
+  '#lexicon-sidebar-list.lx-list .note-group-body,#lexicon-sidebar-list.lx-list .note-ungrouped{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}',
+  '#lexicon-sidebar-list.lx-list .lex-card{display:flex!important;flex-direction:row!important;align-items:baseline;gap:10px;padding:8px 34px 8px 12px!important;min-height:0!important;min-width:0;max-width:100%;box-sizing:border-box}',
   '#lexicon-sidebar-list.lx-list .lex-card .lex-term{flex:0 0 auto;max-width:45%;font-size:13.5px!important;margin:0!important}',
   '#lexicon-sidebar-list.lx-list .lex-card .lex-def{flex:1 1 auto;min-width:0;margin:0!important;font-size:12.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-  '#lexicon-sidebar-list.lx-list .lex-card .lex-def:focus{white-space:normal}',
+  '#lexicon-sidebar-list.lx-list .lex-card .lex-def:focus{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}',
+  /* 뜻을 눌러 고칠 때는 뜻이 단어 아래 줄로 내려가 카드 폭을 다 쓴다(좁은 오른쪽 기둥에 갇히지 않게) */
+  '#lexicon-sidebar-list.lx-list .lex-card:has(> .lex-def:focus){flex-wrap:wrap;row-gap:5px}',
+  '#lexicon-sidebar-list.lx-list .lex-card > .lex-def:focus{flex:1 0 100%}',
+  /* 오늘 넣은 단어 — 단어 옆 작은 today (2026-11-26) */
+  '.lx-today{display:inline-flex;align-items:center;flex:0 0 auto;align-self:center;box-sizing:border-box;',
+  '  font:800 9.5px/1 \'Pretendard\',sans-serif;letter-spacing:.05em;color:#e0527a;background:#fff0f4;',
+  '  border:1px solid rgba(224,82,122,.28);border-radius:999px;padding:3px 7px 3px;white-space:nowrap;',
+  '  pointer-events:none;user-select:none;-webkit-user-select:none}',
+  /* 카드 보기: today 는 단어 바로 옆 — 자리가 모자라면(오른쪽 위 ○ 단추와 겹칠 것 같으면) 단어 아래로 내려간다. 뜻은 늘 그다음 줄 전체 폭 */
+  '#lexicon-sidebar-list:not(.lx-list) .lex-card.lx-new{flex-direction:row;flex-wrap:wrap;align-items:center;align-content:flex-start;column-gap:6px;row-gap:6px}',
+  '#lexicon-sidebar-list:not(.lx-list) .lex-card.lx-new > .lex-term{flex:0 1 auto;min-width:0;max-width:100%}',
+  '#lexicon-sidebar-list:not(.lx-list) .lex-card.lx-new > .lx-today{margin-right:30px}',
+  '#lexicon-sidebar-list:not(.lx-list) .lex-card.lx-new > .lex-def{flex:1 0 100%;min-width:0}',
+  '#lexicon-sidebar-list.lx-list .lex-card .lx-today{margin:0 -2px}',
   '#lexicon-sidebar-list.lx-list .lex-card .lex-actions{top:50%!important;transform:translateY(-50%)}',
   '#lexicon-sidebar-list.lx-list .lex-card .lex-mem{display:none}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) #lxBar button.on{color:#fff;background:#3d3a33;border-color:#3d3a33}'
@@ -562,7 +578,31 @@
       if (same) return;
       sorted.forEach(function(c){ par.insertBefore(c, anchor); });
     });
+    markToday(list, byId, t);
     filterMine();
+  }
+  /* 오늘 넣은 단어에 작은 'today' (2026-11-26 · 회장님: "오늘 새로 넣은 단어에 today 라고 작게 붙여 주면 귀여울 것 같다")
+     넣은 날 = 카드를 만들 때 적힌 date('2026.11.26 09:12' — 단어장은 고쳐도 date 가 바뀌지 않는다), 없으면 id 의 13자리 시각.
+     글자는 단어 · 뜻 칸 밖에 따로 둔다 — 고쳐 쓰는 칸 안에 넣으면 단어 이름에 'today' 가 섞여 저장된다. */
+  function addedDay(n){
+    var m = /^(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/.exec(String(n.date || ''));
+    if (m) return m[1] + '-' + pad(+m[2]) + '-' + pad(+m[3]);
+    var id = /(\d{13})/.exec(String(n.id || ''));
+    return id ? dstr(new Date(+id[1])) : '';
+  }
+  function markToday(list, byId, t){
+    list.querySelectorAll('.lex-card').forEach(function(c){
+      var n = byId[String(c.id).replace(/^item-/, '')];
+      var on = !!(n && addedDay(n) === t), tag = null;
+      for (var x = c.firstElementChild; x; x = x.nextElementSibling){ if (x.classList.contains('lx-today')){ tag = x; break; } }
+      c.classList.toggle('lx-new', on);
+      if (on && !tag){
+        tag = document.createElement('span'); tag.className = 'lx-today'; tag.textContent = 'today';
+        tag.title = '오늘 넣은 단어'; tag.setAttribute('aria-label', '오늘 넣은 단어');
+        var term = c.querySelector('.lex-term');
+        c.insertBefore(tag, term ? term.nextSibling : null);
+      } else if (!on && tag) c.removeChild(tag);
+    });
   }
 
   /* LOOK UP 칸에 친 글자로 내 사전 카드를 거른다 */
@@ -573,7 +613,8 @@
     var hits = 0, first = null;
     list.querySelectorAll('.lex-card').forEach(function(c){
       if (!q){ c.classList.remove('lx-hide', 'lx-hit'); return; }
-      var tx = (c.textContent || '').toLowerCase();
+      var tm0 = c.querySelector('.lex-term'), df0 = c.querySelector('.lex-def');   /* 단어 · 뜻만 (today 표시 · 단추 글자는 빼고) */
+      var tx = ((tm0 ? tm0.textContent : '') + ' ' + (df0 ? df0.textContent : '')).toLowerCase();
       var ok = tx.indexOf(q) >= 0;
       c.classList.toggle('lx-hide', !ok);
       var term = c.querySelector('.lex-term');
