@@ -323,7 +323,18 @@
   '#lkMine{margin:8px 2px 0;font:600 12.5px \'Pretendard\',sans-serif;color:rgba(240,237,230,.72);cursor:pointer}',
   '#lkMine b{color:#e8c47e}',
   '#lkMine[hidden]{display:none}',
-  '.lex-card.lx-hide{display:none!important}',
+  /* 거르기는 두 보기에서 똑같이 — 목록 보기의 display:flex!important(아이디 선택자)보다 세게 (2026-11-26) */
+  '.lex-card.lx-hide,#lexicon-sidebar-list .lex-card.lx-hide,#lexicon-sidebar-list.lx-list .lex-card.lx-hide{display:none!important}',
+  '#lxFlt{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:-4px 0 12px;padding:8px 10px 8px 14px;border-radius:10px;',
+  '  background:rgba(232,196,126,.10);border:1px solid rgba(232,196,126,.45);font:600 12.5px/1.5 \'Pretendard\',sans-serif;color:rgba(240,237,230,.86)}',
+  '#lxFlt b{color:#e8c47e;font-weight:800}',
+  '#lxFlt .lx-flt-x{margin-left:auto;cursor:pointer;font:700 12px \'Pretendard\',sans-serif;padding:5px 12px;border-radius:999px;',
+  '  border:1px solid rgba(232,196,126,.6);background:transparent;color:#e8c47e;white-space:nowrap}',
+  '#lxFlt .lx-flt-x:hover{background:rgba(232,196,126,.18);color:#fff}',
+  '#lxFlt[hidden]{display:none}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) #lxFlt{background:rgba(201,169,110,.14);border-color:rgba(160,120,50,.45);color:#3d3a33}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) #lxFlt b,html.nn-bgmode-hero:not(.nn-bgscroll-dark) #lxFlt .lx-flt-x{color:#8a6420}',
+  'html.nn-bgmode-hero:not(.nn-bgscroll-dark) #lxFlt .lx-flt-x{border-color:rgba(138,100,32,.55)}',
   '.lex-card.lx-hit{box-shadow:0 0 0 2px rgba(232,196,126,.75)!important}',
   /* 목록 보기 — 한 줄에 단어와 뜻 */
   /* 2026-11-26 고침: 칸 폭을 1fr 로 두면 한 줄로 줄인(nowrap) 긴 뜻의 글자 폭만큼 칸이 넓어져
@@ -606,22 +617,32 @@
   }
 
   /* LOOK UP 칸에 친 글자로 내 사전 카드를 거른다 */
+  /* 2026-11-26 고침 (회장님: "목록 보기는 단어가 다 보이는데 카드 보기로 바꾸면 단어가 안 보인다")
+     원인: LOOK UP 칸에 남아 있는 검색어(예: 방금 찾은 '와신상담')로 단어장을 거르는데,
+       ① 목록 보기는 카드에 display:flex!important(아이디 선택자)가 걸려 있어 거르기가 먹히지 않았고(그래서 다 보임)
+       ② 카드 보기에서만 걸러졌다 — 찾은 말이 단어장에 없으면 단어가 하나도 안 남는데 아무 안내도 없었다.
+     → 두 보기 모두 똑같이 거르고, 맞는 단어가 하나도 없으면 거르지 않는다(전부 보임).
+       거르는 동안에는 단어장 위에 '‘…’ 이 들어간 단어만 보는 중 · N개 중 M개 [✕ 모두 보기]' 를 띄운다. */
   function filterMine(){
     var inp = document.getElementById('lkQ'), list = document.getElementById('lexicon-sidebar-list');
     if (!list) return;
     var q = inp ? String(inp.value || '').trim().toLowerCase() : '';
-    var hits = 0, first = null;
-    list.querySelectorAll('.lex-card').forEach(function(c){
-      if (!q){ c.classList.remove('lx-hide', 'lx-hit'); return; }
+    var hits = 0, first = null, cards = list.querySelectorAll('.lex-card'), okList = [], exList = [];
+    cards.forEach(function(c){
+      if (!q){ okList.push(false); exList.push(false); return; }
       var tm0 = c.querySelector('.lex-term'), df0 = c.querySelector('.lex-def');   /* 단어 · 뜻만 (today 표시 · 단추 글자는 빼고) */
       var tx = ((tm0 ? tm0.textContent : '') + ' ' + (df0 ? df0.textContent : '')).toLowerCase();
       var ok = tx.indexOf(q) >= 0;
-      c.classList.toggle('lx-hide', !ok);
-      var term = c.querySelector('.lex-term');
-      var exact = ok && term && String(term.textContent || '').trim().toLowerCase() === q;
-      c.classList.toggle('lx-hit', !!exact);
+      okList.push(ok);
+      exList.push(!!(ok && tm0 && String(tm0.textContent || '').trim().toLowerCase() === q));
       if (ok){ hits++; if (!first) first = c; }
     });
+    var filtering = !!q && hits > 0 && hits < cards.length;
+    cards.forEach(function(c, i){
+      c.classList.toggle('lx-hide', filtering && !okList[i]);
+      c.classList.toggle('lx-hit', !!q && exList[i]);
+    });
+    paintFilter(filtering ? q : '', hits, cards.length, inp ? String(inp.value || '').trim() : '');
     var form = document.getElementById('lkForm'), mine = document.getElementById('lkMine');
     if (form && !mine){
       mine = document.createElement('div'); mine.id = 'lkMine'; mine.hidden = true;
@@ -632,9 +653,29 @@
       });
     }
     if (mine){
-      if (q && hits){ mine.hidden = false; mine.innerHTML = '내 사전에서 <b>' + hits + '개</b> 찾음 — 아래 목록에 걸러 두었습니다 ↓'; }
+      if (q && hits){ mine.hidden = false; mine.innerHTML = '내 사전에서 <b>' + hits + '개</b> 찾음 — 아래 단어장에 ' + (filtering ? '그것만 걸러 두었습니다' : '표시해 두었습니다') + ' ↓'; }
       else { mine.hidden = true; mine.innerHTML = ''; }
     }
+  }
+  /* 거르는 중이라는 띠 — 단어장 바로 위(정렬 · 보기 줄 아래). [✕ 모두 보기] = LOOK UP 칸을 비운다(✕ 단추와 같다) */
+  function paintFilter(q, hits, total, raw){
+    var bar = document.getElementById('lxBar');
+    var f = document.getElementById('lxFlt');
+    if (!q){ if (f){ f.hidden = true; f.innerHTML = ''; } return; }
+    if (!bar) return;
+    if (!f){
+      f = document.createElement('div'); f.id = 'lxFlt'; f.setAttribute('role', 'status');
+      bar.parentNode.insertBefore(f, bar.nextSibling);
+      f.addEventListener('click', function(e){
+        if (!e.target.closest || !e.target.closest('.lx-flt-x')) return;
+        var i = document.getElementById('lkQ');
+        if (i){ i.value = ''; try { i.dispatchEvent(new Event('input', { bubbles: true })); } catch(x) {} }
+        filterMine();
+      });
+    }
+    f.hidden = false;
+    f.innerHTML = '<span>LOOK UP 칸의 <b>‘' + esc(raw) + '’</b> 이(가) 들어간 단어만 보는 중 · 전체 ' + total + '개 중 <b>' + hits + '개</b></span>'
+      + '<button type="button" class="lx-flt-x">✕ 모두 보기</button>';
   }
 
   /* ── 엮기 ── */
