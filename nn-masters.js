@@ -428,8 +428,10 @@
   }
   /* 상세 — 2026-11-24: 한 화면에 들어오게(넓은 화면은 3열 · 자세한 설명은 접어 둠) · 말로 풀어 준 요약 */
   function rowsCols(){
-    var g = $('siGrid'), w = (g ? g.clientWidth : window.innerWidth) - 56;
-    return w >= 1060 ? 3 : w >= 600 ? 2 : 1;
+    /* 상세 안쪽 폭 = 표 폭 − 좌우 여백(clamp(20px,2.6vw,38px) × 2) − 테두리. 2026-11-26 여백을 넓히며 3열 문턱도 1,120px 로(종목 이름 칸이 너무 좁아지지 않게) */
+    var g = $('siGrid'), vw = window.innerWidth || 1200, pad = Math.min(38, Math.max(20, vw * 0.026));
+    var w = (g ? g.clientWidth : vw) - pad * 2 - 2;
+    return w >= 1120 ? 3 : w >= 600 ? 2 : 1;
   }
   function tile(k, v, sub, tip){
     return '<div class="sid-tile"' + (tip ? ' title="' + esc(tip) + '"' : '') + '><span class="k">' + k + '</span><b class="v">' + v + '</b>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>';
@@ -458,7 +460,8 @@
     var tip = TAG_TIP[m.tag] || '';
 
     /* 머리 — 큰 이름 · 사진 · 소개 · 닫기 */
-    var h = '<div class="sid-hd">' + photoHTML(m, 'sid-ph')
+    var h = '<div class="sid-hd">' + (m.img ? photoHTML(m, 'sid-ph')
+        : '<button type="button" class="si-ph sid-ph sid-addph" data-si="photo" data-id="' + esc(m.id) + '" title="사진 넣기 — 사진 주소(이미지 링크)를 붙여 넣는 칸이 열립니다" aria-label="' + esc(m.en) + ' 사진 넣기"><i>' + esc(initials(m.en)) + '</i><span>＋ 사진</span></button>')
       + '<div class="sid-id"><div class="sid-en">' + esc(m.en) + '</div>'
       +   '<div class="sid-sub">' + esc([m.kr, m.corp].filter(Boolean).join(' · '))
       +     (m.tag ? '<span class="sid-tag">' + esc(m.tag) + '</span>' + (tip ? '<span class="sid-tip">' + esc(tip) + '</span>' : '') : '') + '</div>'
@@ -525,13 +528,23 @@
   '  --si-up:#7ee7a6;--si-dn:#ff9d8f;--si-chip:rgba(255,255,255,.045);',
   '  --si-name:rgba(248,245,238,.94);--si-name-h:#fff;--si-name-sh:0 1px 3px rgba(0,0,0,.45);--si-idx:rgba(255,255,255,.32);',
   '  --si-sheen:linear-gradient(100deg,rgba(255,255,255,.07),rgba(201,169,110,.05) 62%,transparent);',
-  '  --si-rule:rgba(255,255,255,.15);--si-cell:linear-gradient(165deg,rgba(255,255,255,.04),rgba(255,255,255,.008) 58%);',
-  '  --si-panel:linear-gradient(165deg,rgba(24,22,19,.9),rgba(11,11,13,.84))}',
+  '  --si-rule:rgba(255,255,255,.15);--si-cell:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 55%,rgba(255,255,255,.008));',
+  '  --si-panel:linear-gradient(165deg,rgba(24,22,19,.92),rgba(11,11,13,.86));',
+  '  --si-cardbd:rgba(255,255,255,.085);--si-cardbd-h:rgba(201,169,110,.42);',
+  '  --si-cardsh:inset 0 1px 0 rgba(255,255,255,.05),0 20px 40px -32px rgba(0,0,0,.95);',
+  '  --si-cardsh-h:inset 0 1px 0 rgba(255,255,255,.07),0 30px 56px -30px rgba(0,0,0,.95),0 0 0 1px rgba(201,169,110,.1);',
+  '  --si-cardsh-on:inset 0 1px 0 rgba(255,255,255,.07),0 0 0 1px rgba(201,169,110,.35),0 30px 56px -30px rgba(0,0,0,.95);',
+  '  --si-detbd:rgba(201,169,110,.34);--si-detsh:inset 0 1px 0 rgba(255,255,255,.05),0 36px 70px -40px rgba(0,0,0,.95)}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .masters-section{--si-ink:#14120F;--si-ink2:#575145;--si-ink3:#7d7566;--si-line:rgba(20,18,15,.12);',
   '  --si-card:rgba(255,255,255,.66);--si-card-h:#fff;--si-acc:#8A6A24;--si-acc2:#8A6A24;--si-track:rgba(20,18,15,.1);--si-up:#1e7a4b;--si-dn:#b23a2c;--si-chip:rgba(20,18,15,.035);',
   '  --si-name:#14120F;--si-name-h:#000;--si-name-sh:none;--si-idx:rgba(20,18,15,.38);',
   '  --si-sheen:linear-gradient(100deg,rgba(138,106,36,.075),rgba(138,106,36,.03) 62%,transparent);--si-panel:rgba(255,255,255,.86);',
-  '  --si-rule:rgba(20,18,15,.15);--si-cell:linear-gradient(165deg,rgba(255,255,255,.82),rgba(255,255,255,.34) 62%)}',
+  '  --si-rule:rgba(20,18,15,.15);--si-cell:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,255,255,.55) 62%);',
+  '  --si-cardbd:rgba(20,18,15,.1);--si-cardbd-h:rgba(138,106,36,.45);',
+  '  --si-cardsh:0 1px 2px rgba(20,18,15,.05),0 14px 30px -22px rgba(20,18,15,.25);',
+  '  --si-cardsh-h:0 2px 4px rgba(20,18,15,.06),0 24px 44px -24px rgba(20,18,15,.32);',
+  '  --si-cardsh-on:0 0 0 1px rgba(138,106,36,.35),0 24px 44px -24px rgba(20,18,15,.32);',
+  '  --si-detbd:rgba(138,106,36,.32);--si-detsh:0 26px 50px -30px rgba(20,18,15,.3)}',
   '.masters-section .ref-lane-header{flex-wrap:wrap;row-gap:8px}',
   '.si-tools{margin-left:auto;display:inline-flex;align-items:center;gap:6px}',
   '.si-tools .hub-edit-toggle{margin-left:0}',
@@ -541,7 +554,11 @@
   '#siRefresh.spin{animation:siRot 1s linear infinite}',
   'html.nn-bgmode-hero:not(.nn-bgscroll-dark) #siRefresh{background:transparent;border-color:rgba(138,106,36,.42);color:#8A6A24}',
   '@keyframes siRot{to{transform:rotate(360deg)}}',
-  '.si-status{display:block;margin:2px 0 14px;font:500 13px/1.7 var(--nn-font);color:var(--si-ink3)}',
+  /* 2026-11-26 (회장님: 머리글과 '2026 Q3 13F 까지 반영 …' 사이를 레퍼런스 데스크의 머리글 ↔ 단추 사이만큼):
+     레퍼런스 데스크는 금색 줄이 머리글에 바로 붙고(위 0) 줄 아래 52px + 단추 4px = 56px 뒤에 단추가 온다.
+     nn-style.css 의 '.masters-section .cove-line{margin:18px 0 30px}' 를 같은 리듬으로 — 줄 아래 52px(레퍼런스 데스크의 단추 판과 같은 자리) + 글줄 위 여백 ≈ 56px */
+  '.masters-section .cove-line{margin:0 0 52px!important}',
+  '.si-status{display:block;margin:2px 0 20px;font:500 13px/1.7 var(--nn-font);color:var(--si-ink3)}',
   '.si-status button{margin-left:6px;vertical-align:1px}',
   '.si-status b{color:var(--si-ink);font-weight:700}',
   '.si-status.warn{color:var(--si-ink2)}.si-status.bad{color:var(--si-dn)}',
@@ -550,17 +567,20 @@
   /* 2026-11-25 (회장님: "칸이 잘 구분 안 된다 — 붙어 있어도 칸이 딱 구분되게"): 칸 사이 틈을 없애고 괘선 표처럼 —
      바깥 테두리 + 칸과 칸 사이 1px 선을 한 줄로 공유하고(겹쳐 두꺼워지지 않게 표 왼쪽 · 위쪽은 표가, 칸은 오른쪽 · 아래만 긋는다),
      칸마다 왼쪽 위에서 옅어지는 바탕을 깔아 한 칸 한 칸이 판처럼 보이게 했다. 올리면 칸 윗변에 금색 줄 · 빛 */
-  '#siGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--si-rule);border-left:1px solid var(--si-rule)}',
+  /* 2026-11-26 (회장님: "칸들이 다닥다닥 붙어 답답하다 — 이쁘고 모던하게 띄워 달라"): 괘선 표 → 틈을 둔 카드.
+     카드마다 둥근 모서리 · 옅은 테두리 · 아래로 깔리는 그림자, 올리면 살짝 떠오르며 테두리가 금빛, 펼친 카드는 금색 테두리 */
+  '#siGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.5vw,22px)}',
   '@media (max-width:1099px){#siGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
-  '#siGrid>.si-status{grid-column:1/-1;margin:0;padding:16px 18px;border-right:1px solid var(--si-rule);border-bottom:1px solid var(--si-rule)}',
-  '.si-card{position:relative;isolation:isolate;container-type:inline-size;display:flex;flex-direction:column;gap:12px;min-width:0;',
-  '  padding:20px clamp(14px,1.6vw,24px) 22px;cursor:pointer;outline:none;background:var(--si-cell);',
-  '  border-right:1px solid var(--si-rule);border-bottom:1px solid var(--si-rule);transition:box-shadow .42s cubic-bezier(.22,1,.36,1)}',
-  '.si-card::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--si-sheen);opacity:0;transition:opacity .42s cubic-bezier(.22,1,.36,1)}',
+  '#siGrid>.si-status{grid-column:1/-1;margin:0;padding:18px 20px;border:1px solid var(--si-cardbd);border-radius:18px;background:var(--si-cell)}',
+  '.si-card{position:relative;isolation:isolate;container-type:inline-size;display:flex;flex-direction:column;gap:14px;min-width:0;',
+  '  padding:24px clamp(18px,1.7vw,26px);cursor:pointer;outline:none;background:var(--si-cell);border:1px solid var(--si-cardbd);border-radius:20px;',
+  '  box-shadow:var(--si-cardsh);transition:transform .5s cubic-bezier(.22,1,.36,1),border-color .35s ease,box-shadow .5s cubic-bezier(.22,1,.36,1)}',
+  '.si-card::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:var(--si-sheen);opacity:0;transition:opacity .45s cubic-bezier(.22,1,.36,1)}',
   '.si-card:hover::before,.si-card.on::before{opacity:1}',
-  '.si-card:hover{box-shadow:inset 0 2px 0 rgba(201,169,110,.55)}',
-  '.si-card.on{box-shadow:inset 0 2px 0 var(--si-acc)}',
-  '.si-card:focus-visible{outline:2px solid #e8c47e;outline-offset:-2px}',
+  '.si-card:hover{transform:translateY(-4px);border-color:var(--si-cardbd-h);box-shadow:var(--si-cardsh-h)}',
+  '.si-card.on{border-color:var(--si-acc);box-shadow:var(--si-cardsh-on)}',
+  '.si-card:focus-visible{outline:2px solid #e8c47e;outline-offset:3px}',
+  '@media (prefers-reduced-motion:reduce){.si-card,.si-card:hover{transition:none;transform:none}}',
   '.si-head{display:flex;align-items:baseline;gap:10px;min-width:0}',
   '.si-idx{flex:none;font:700 11px var(--nn-font-label);letter-spacing:.1em;color:var(--si-idx);transition:color .35s}',
   '.si-card:hover .si-idx,.si-card.on .si-idx{color:var(--si-acc2)}',
@@ -584,9 +604,10 @@
   /* 사진 — 4:3 액자. 흑백이었다가 올리거나 펼치면 색이 돌아온다(예전 목록과 같은 움직임) */
   '.si-data{display:flex;align-items:center;gap:clamp(12px,4cqi,18px);min-width:0;margin-top:auto;padding-top:3px}',   /* 같은 줄 카드끼리 아래 칸을 맞춘다 */
   '.si-dcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}',
-  '.si-ph{flex:none;position:relative;width:88px;width:clamp(70px,22cqi,104px);aspect-ratio:4/3;border-radius:10px;overflow:hidden;display:grid;place-items:center;',
-  '  background:var(--si-chip);color:var(--si-acc2);font:700 13px var(--nn-font-label);letter-spacing:.06em}',
-  '.si-ph i{font-style:normal;opacity:.75}',
+  '.si-ph{flex:none;position:relative;width:84px;width:clamp(68px,20cqi,96px);aspect-ratio:4/3;border-radius:12px;overflow:hidden;display:grid;place-items:center;',
+  '  background:radial-gradient(120% 120% at 18% 8%,rgba(201,169,110,.22),rgba(201,169,110,.05) 58%,rgba(255,255,255,.02));',
+  '  box-shadow:inset 0 0 0 1px rgba(201,169,110,.2);color:var(--si-acc2);font:800 15px var(--nn-font-label);letter-spacing:.12em}',
+  '.si-ph i{font-style:normal;opacity:.85}',
   '.si-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;filter:grayscale(1) brightness(.85);transform:scale(1.05);',
   '  transition:filter .5s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1)}',
   '.si-card:hover .si-ph img,.si-card.on .si-ph img,.si-detail .si-ph img{filter:none;transform:scale(1)}',
@@ -601,7 +622,7 @@
   '.si-seg i.rest{flex:1 1 0;min-width:4px;background:var(--si-track)}',
   '.si-c3{flex:none;font:600 12px var(--nn-font);color:var(--si-ink3);font-variant-numeric:tabular-nums}',
   /* 상위 종목 — 칸 없이 글자로: 티커는 굵게, 비중은 옅게 */
-  '.si-chips{display:flex;flex-wrap:wrap;gap:4px 16px}',
+  '.si-chips{display:flex;flex-wrap:wrap;gap:4px 12px}',
   '.si-chip{display:inline-flex;align-items:baseline;gap:6px;font:500 13px var(--nn-font);color:var(--si-ink3);font-variant-numeric:tabular-nums;white-space:nowrap}',
   '.si-chip b{font-weight:800;color:var(--si-ink);letter-spacing:.01em}',
   '.si-pc{font-style:normal;font-size:12px;color:var(--si-ink3);margin-left:-2px}',
@@ -611,25 +632,31 @@
   '.si-meta .si-old{color:var(--si-ink2)}',
   /* 상세 — 카드가 있는 줄 바로 아래 */
   /* 넓은 화면: 표 안의 한 줄(칸 선을 그대로 잇는다) — 위쪽에 금색 실선 */
-  '.si-detail{grid-column:1/-1;margin:0;border-radius:0;border:0;border-right:1px solid var(--si-rule);border-bottom:1px solid var(--si-rule);box-shadow:inset 0 1px 0 rgba(201,169,110,.5);',
-  '  background:var(--si-panel);padding:clamp(16px,1.8vw,24px) clamp(16px,2vw,28px) 14px}',
+  /* 2026-11-26: 카드처럼 떨어진 둥근 판 — 안쪽 여백 · 칸 사이를 넉넉하게(회장님: 상세 안이 촘촘해 답답하다) */
+  '.si-detail{position:relative;grid-column:1/-1;margin:0;border-radius:22px;border:1px solid var(--si-detbd);box-shadow:var(--si-detsh);',
+  '  background:var(--si-panel);padding:clamp(22px,2.3vw,34px) clamp(20px,2.6vw,38px) clamp(18px,1.9vw,26px)}',
   '.si-detail.anim{animation:siIn .32s cubic-bezier(.22,1,.36,1)}',
   '@keyframes siIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}',
   /* 머리 — 사진 · 큰 이름 · 소개 · 닫기 */
-  '.sid-hd{position:relative;display:flex;gap:clamp(14px,1.6vw,22px);align-items:flex-start;padding-right:40px}',
+  '.sid-hd{position:relative;display:flex;gap:clamp(18px,2vw,28px);align-items:flex-start;padding-right:44px}',
   '.si-ph.sid-ph{width:clamp(92px,8.4vw,124px);border-radius:12px;font-size:15px}',
+  /* 사진이 없을 때 상세의 사진 자리 = [＋ 사진] 단추 */
+  'button.sid-addph{cursor:pointer;border:0;padding:0;font-family:var(--nn-font-label);align-content:center;gap:6px;transition:box-shadow .2s ease}',
+  'button.sid-addph span{font:700 11px var(--nn-font);letter-spacing:0;color:var(--si-ink3);transition:color .2s ease}',
+  'button.sid-addph:hover,button.sid-addph:focus-visible{box-shadow:inset 0 0 0 1px var(--si-acc);outline:none}',
+  'button.sid-addph:hover span,button.sid-addph:focus-visible span{color:var(--si-acc2)}',
   '.sid-id{flex:1;min-width:0}',
   '.sid-en{font:800 clamp(1.8rem,2.7vw,2.6rem)/1.04 var(--nn-font);letter-spacing:-.03em;color:var(--si-name);text-shadow:var(--si-name-sh)}',
-  '.sid-sub{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font:500 13px/1.5 var(--nn-font);color:var(--si-ink2);margin-top:6px}',
+  '.sid-sub{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;font:500 13px/1.5 var(--nn-font);color:var(--si-ink2);margin-top:10px}',
   '.sid-tag{display:inline-block;padding:1px 8px;border-radius:999px;border:1px solid var(--si-acc);font-size:12px;font-weight:700;color:var(--si-acc2)}',
   '.sid-tip{font-size:12.5px;color:var(--si-ink3)}',
-  '.sid-kd{font:400 13.5px/1.6 var(--nn-font);color:var(--si-ink2);margin-top:6px;max-width:860px;word-break:keep-all}',
+  '.sid-kd{font:400 13.5px/1.75 var(--nn-font);color:var(--si-ink2);margin-top:12px;max-width:860px;word-break:keep-all}',
   '.sid-x{position:absolute;top:-4px;right:-6px;width:34px;height:34px;border-radius:9px;cursor:pointer;display:grid;place-items:center;font-size:15px;line-height:1;',
   '  color:var(--si-ink2);background:transparent;border:1px solid var(--si-line);transition:background-color .15s,color .15s}',
   '.sid-x:hover{color:var(--si-ink);background:var(--si-chip);border-color:var(--si-acc)}',
   /* 숫자를 말로 — 다섯 칸 */
-  '.sid-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:14px 0 10px}',
-  '.sid-tile{display:flex;flex-direction:column;gap:2px;min-width:0;padding:9px 12px 10px;border-radius:10px;background:var(--si-chip);border:1px solid var(--si-line)}',
+  '.sid-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:26px 0 18px}',
+  '.sid-tile{display:flex;flex-direction:column;gap:4px;min-width:0;padding:14px 16px 15px;border-radius:14px;background:var(--si-chip);border:1px solid var(--si-line)}',
   '.sid-tile .k{font:600 12px var(--nn-font);color:var(--si-ink3)}',
   '.sid-tile .v{font:800 17px/1.3 var(--nn-font);color:var(--si-ink);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
   '.sid-tile .v em{font-style:normal;font-weight:600;font-size:12.5px;color:var(--si-ink2);margin-left:4px}',
@@ -637,32 +664,32 @@
   '.sid-tile .s{font:500 12px/1.45 var(--nn-font);color:var(--si-ink3)}',
   '.sid-tile .s .fx{opacity:.8}',
   /* 이번 분기 한눈에 */
-  '.sid-qs{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin:2px 0 4px;font:500 13px/1.5 var(--nn-font);color:var(--si-ink2)}',
+  '.sid-qs{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;margin:4px 0 6px;font:500 13px/1.6 var(--nn-font);color:var(--si-ink2)}',
   '.sid-qs-h{font:700 12px var(--nn-font);color:var(--si-ink3);margin-right:2px}',
   '.sid-q b{font-weight:800;margin-right:4px}',
   '.sid-q i{font-style:normal;color:var(--si-ink3)}',
   '.sid-q.new b{color:var(--si-acc2)}.sid-q.up b{color:var(--si-up)}.sid-q.dn b{color:var(--si-dn)}.sid-q.sold b{color:var(--si-ink2)}',
-  '.sid-note{margin:12px 0 4px;padding:10px 14px;border-radius:10px;background:var(--si-chip);border:1px dashed var(--si-line);font:500 13px/1.6 var(--nn-font);color:var(--si-ink2)}',
-  '.sid-lbl{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin:14px 0 2px;font:700 11px var(--nn-font-label);letter-spacing:.26em;color:var(--si-acc2)}',
+  '.sid-note{margin:18px 0 6px;padding:13px 16px;border-radius:12px;background:var(--si-chip);border:1px dashed var(--si-line);font:500 13px/1.6 var(--nn-font);color:var(--si-ink2)}',
+  '.sid-lbl{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:28px 0 10px;font:700 11px var(--nn-font-label);letter-spacing:.26em;color:var(--si-acc2)}',
   '.sid-lbl span{font:500 12px/1.5 var(--nn-font);letter-spacing:0;color:var(--si-ink3)}',
   '.sid-lbl span b{color:var(--si-ink2);font-weight:700}',
   /* 보유 종목 — 열마다 위에서 아래로 순위 */
-  '.sid-rows{display:grid;grid-auto-flow:column;column-gap:28px}',
-  '.sid-row{display:grid;grid-template-columns:20px 60px minmax(0,1fr) 46px 64px;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--si-line)}',
+  '.sid-rows{display:grid;grid-auto-flow:column;column-gap:44px}',
+  '.sid-row{display:grid;grid-template-columns:22px 64px minmax(0,1fr) 52px 70px;align-items:center;gap:12px;padding:10px 6px;margin:0 -6px;border-radius:8px;border-bottom:1px solid var(--si-line)}',
   '.sid-rk{font:700 11px var(--nn-font-label);color:var(--si-ink3);font-variant-numeric:tabular-nums}',
   '.sid-tk{font:800 13px var(--nn-font);color:var(--si-ink);background:none;border:0;padding:0;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
   'button.sid-tk:hover{color:var(--si-acc2);text-decoration:underline}',
   '.sid-tk.nolink{cursor:default;font-weight:700}',
-  '.sid-nm{display:flex;flex-direction:column;gap:4px;min-width:0}',
+  '.sid-nm{display:flex;flex-direction:column;gap:6px;min-width:0}',
   '.sid-nm span{font:400 12px var(--nn-font);color:var(--si-ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
   /* 순위 막대 — 한 색, 왼쪽(기준선)은 각지고 끝은 4px 둥글게 */
   '.sid-nm i{display:block;height:5px;border-radius:0 4px 4px 0;background:var(--si-acc)}',
   '.sid-pct{font:700 13px var(--nn-font);color:var(--si-ink);text-align:right;font-variant-numeric:tabular-nums}',
   '.sid-chg{font:700 12px var(--nn-font);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}',
-  '.sid-morerows{margin-top:8px;cursor:pointer;font:700 12.5px var(--nn-font);padding:6px 12px;border-radius:8px;color:var(--si-acc2);background:transparent;border:1px solid var(--si-acc)}',
+  '.sid-morerows{margin-top:16px;cursor:pointer;font:700 12.5px var(--nn-font);padding:6px 12px;border-radius:8px;color:var(--si-acc2);background:transparent;border:1px solid var(--si-acc)}',
   '.sid-empty{padding:16px 0 4px;font:500 13px var(--nn-font);color:var(--si-ink3)}',
   /* 발 — 읽는 법(접어 둠) · 원문 */
-  '.sid-foot{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:6px 18px;margin-top:12px;font:400 12.5px/1.65 var(--nn-font);color:var(--si-ink3)}',
+  '.sid-foot{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:8px 20px;margin-top:22px;padding-top:16px;border-top:1px solid var(--si-line);font:400 12.5px/1.65 var(--nn-font);color:var(--si-ink3)}',
   '.sid-help{flex:1 1 420px;min-width:0}',
   '.sid-help summary{cursor:pointer;font-weight:700;color:var(--si-ink2);list-style:none}',
   '.sid-help summary::-webkit-details-marker{display:none}',
@@ -675,24 +702,24 @@
   '.sid-src a{color:var(--si-acc2);font-weight:700;text-decoration:none}',
   '.sid-src a:hover{text-decoration:underline}',
   /* 화면이 낮을 때 — 여백과 사진을 줄인다 (nn-masters.js 의 fitDetail 이 붙인다) */
-  '.si-detail.tight{padding-top:12px;padding-bottom:10px}',
-  '.si-detail.tight .si-ph.sid-ph{width:80px}',
+  '.si-detail.tight{padding-top:20px;padding-bottom:16px}',
+  '.si-detail.tight .si-ph.sid-ph{width:84px}',
   '.si-detail.tight .sid-en{font-size:clamp(1.6rem,2.2vw,2.1rem)}',
-  '.si-detail.tight .sid-kd{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}',
-  '.si-detail.tight .sid-tiles{margin:10px 0 6px}',
-  '.si-detail.tight .sid-tile{padding:6px 10px 7px}',
-  '.si-detail.tight .sid-lbl{margin-top:8px}',
-  '.si-detail.tight .sid-row{padding:4px 0}',
-  '.si-detail.tight .sid-foot{margin-top:8px}',
+  '.si-detail.tight .sid-kd{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;margin-top:8px}',
+  '.si-detail.tight .sid-tiles{margin:18px 0 12px;gap:10px}',
+  '.si-detail.tight .sid-tile{padding:10px 14px 11px}',
+  '.si-detail.tight .sid-lbl{margin:18px 0 6px}',
+  '.si-detail.tight .sid-row{padding:7px 6px}',
+  '.si-detail.tight .sid-foot{margin-top:14px;padding-top:12px}',
   '@media (max-width:900px){.sid-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}',
   '@media (max-width:760px){.sid-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.sid-hd{padding-right:36px}}',
   /* 휴대폰 — 옆으로 넘기는 한 줄 */
   '@media (max-width:699px){',
-  '  #siGrid{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -2px;border-top:0;border-left:0}',
+  '  #siGrid{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:4px 16px 14px;scroll-padding:0 16px}',
   '  #siGrid::-webkit-scrollbar{display:none}',
-  '  #siGrid .si-card{flex:0 0 84%;scroll-snap-align:start;border-top:1px solid var(--si-rule)}',
-  '  #siGrid .si-card:first-child{border-left:1px solid var(--si-rule)}',
-  '  .si-detail{margin-top:10px;padding:14px 13px 12px;border-radius:14px;border:1px solid rgba(201,169,110,.4);box-shadow:none}',
+  '  #siGrid .si-card{flex:0 0 82%;scroll-snap-align:start;padding:20px 18px}',
+  '  #siGrid .si-card:hover{transform:none}',
+  '  .si-detail{margin-top:4px;padding:20px 16px 16px;border-radius:18px}',
   '  .sid-hd{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:12px;row-gap:3px;align-items:center}',
   '  .sid-hd .si-ph.sid-ph{grid-row:1/span 2;width:76px}',
   '  .sid-id{display:contents}',
@@ -700,7 +727,7 @@
   '  .sid-sub{margin-top:0}',
   '  .sid-kd{grid-column:1/-1;margin:8px -40px 0 0}',
   '  .sid-tile .v{white-space:normal}',
-  '  .sid-row{grid-template-columns:20px 58px minmax(0,1fr) 46px 60px;gap:6px}',
+  '  .sid-row{grid-template-columns:20px 58px minmax(0,1fr) 46px 60px;gap:8px;padding:9px 4px;margin:0 -4px}',
   '  .sid-en{font-size:clamp(1.6rem,8vw,2.2rem)}',
   '  .si-ph.sid-ph{width:84px}',
   '  .sid-tile .v{font-size:15px}',
@@ -974,6 +1001,20 @@
   /* ── 고르기 · 편집 창 ── */
   var ed = { q: '', tag: '', editing: '', cikRes: null, probe: null };
   function edOpen(){ return !!$('siEdOv'); }
+  /* 2026-11-26: 사진이 없는 사람의 상세에서 [＋ 사진] — 고르기 · 편집 창을 열고 그 사람의 '사진 주소' 칸에 바로 커서.
+     (사진을 인터넷에서 저절로 찾아 붙이지는 않는다 — 회장님이 고른 사진의 주소를 붙여 넣는다. 처음 9명도 그렇게 넣은 사진이다) */
+  function editPhoto(id){
+    if (!id || !byId(id)) return;
+    ed.editing = id; openEditor();
+    setTimeout(function(){
+      var bd = $('siEdBd'); if (!bd) return;
+      var forms = bd.querySelectorAll('.sie-form'), f = null;
+      for (var i = 0; i < forms.length; i++) if (forms[i].getAttribute('data-form') === id){ f = forms[i]; break; }
+      var inp = f && f.querySelector('.sie-in[data-f="img"]'); if (!inp) return;
+      try { inp.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch(e) {}
+      try { inp.focus({ preventScroll: true }); } catch(e) { inp.focus(); }
+    }, 90);
+  }
   function openEditor(section){
     injectCss();
     if (!edOpen()){
@@ -1023,7 +1064,7 @@
       h += '<label>운용사</label><input class="sie-in" data-f="corp" value="' + esc(m.corp) + '" maxlength="80">';
     }
     h += '<label>한글 이름</label><input class="sie-in" data-f="kr" value="' + esc(m.kr) + '" maxlength="40">';
-    h += '<label>사진 주소 <span style="font-weight:400;color:var(--nn-ink-3)">(비우면 이니셜)</span></label><input class="sie-in" data-f="img" value="' + esc(it.img || (m.dir ? '' : m.img)) + '" placeholder="https://…" maxlength="400">';
+    h += '<label>사진 주소 <span style="font-weight:400;color:var(--nn-ink-3)">(이미지 링크를 붙여 넣으세요 · 비우면 이니셜)</span></label><input class="sie-in" data-f="img" value="' + esc(it.img || (m.dir ? '' : m.img)) + '" placeholder="https://…" maxlength="400">';
     if (m.manual){
       var port = (it.port || []).map(function(p){ return p[0] + ' | ' + p[1] + ' | ' + p[2] + '%'; }).join('\n');
       h += '<label>보유 종목 <span style="font-weight:400;color:var(--nn-ink-3)">(한 줄에 하나 · 티커 | 종목명 | 비중%)</span></label><textarea class="sie-in" data-f="port" placeholder="AAPL | Apple Inc. | 25%">' + esc(port) + '</textarea>';
@@ -1767,6 +1808,7 @@
       if (a === 'connect'){ if (window.__nnSettingsOpen) window.__nnSettingsOpen('keys'); return; }
       if (a === 'help'){ openEditor('help'); return; }
       if (a === 'edit'){ openEditor(); return; }
+      if (a === 'photo'){ editPhoto(b.getAttribute('data-id')); return; }
       if (a === 'close-detail'){
         var cid = st.open; st.open = ''; render();
         var cc = cid && document.querySelector('#siGrid .si-card[data-id="' + (window.CSS && CSS.escape ? CSS.escape(cid) : cid) + '"]');
