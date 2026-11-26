@@ -2083,8 +2083,13 @@ window.updateClock = function(){
 };
 
 var runParallax = function(){
-  const cards = document.querySelectorAll('.comp-card');
-  if(!cards.length) return;
+  /* 2026-11-25 홀딩스 허브 버벅임의 큰 원인 하나를 고침:
+     예전에는 처음 열 때의 .comp-card 를 모두 잡았는데, 지금 그 카드들은 허브 무대의 '숨은 팝업'(.hn-pop) 안에 있다.
+     그래서 허브 근처를 스크롤할 때마다 보이지도 않는 카드 8장의 위치를 매 프레임 읽고(getBoundingClientRect) 바로 쓰기를
+     번갈아 해 레이아웃을 장마다 다시 계산했고(프레임당 약 9ms), 카드에 걸린 transition 까지 매 프레임 새로 시작됐다.
+     → 숨은 팝업 · 편집 중 카드는 빼고, 읽기를 모두 끝낸 뒤 한꺼번에 쓴다. 잡을 카드가 없으면 아예 돌지 않는다. */
+  function pick(){ return [].filter.call(document.querySelectorAll('.comp-card'), function(c){ return !c.closest('.hn-pop') && !c.classList.contains('hub-editing'); }); }
+  let cards = pick(), pickedAt = Date.now();
   let lastY = window.scrollY; let velocity = 0; let targetVelocity = 0;
   let running = false; let idleFrames = 0;
   function lerp(a, b, t){ return a + (b - a) * t; }
@@ -2094,9 +2099,11 @@ var runParallax = function(){
     if(Math.abs(velocity) < 0.08) velocity = 0; // 서브픽셀 꼬리 제거(하단 플리커 방지)
 
     let anyVisible = false;
-    cards.forEach(function(card){
-      const rect = card.getBoundingClientRect(); const vh = window.innerHeight;
-      if(rect.bottom < -100 || rect.top > vh + 100){ return; }
+    const vh = window.innerHeight;
+    const rects = cards.map(function(card){ return card.isConnected ? card.getBoundingClientRect() : null; });   // 읽기 먼저 (한 번에)
+    cards.forEach(function(card, ci){
+      const rect = rects[ci];
+      if(!rect || rect.bottom < -100 || rect.top > vh + 100){ return; }
       anyVisible = true;
       const ratio = card.dataset.parallax ? parseFloat(card.dataset.parallax) : 0.14;
       const centerOffset = (rect.top + rect.height / 2) - vh / 2;
@@ -2125,7 +2132,12 @@ var runParallax = function(){
     if(idleFrames > 30 || !anyVisible){ running = false; return; }
     requestAnimationFrame(tick);
   }
-  function start(){ if(!running){ running = true; idleFrames = 0; tick(); } }
+  function start(){
+    if(running) return;
+    if(Date.now() - pickedAt > 1000){ cards = pick(); pickedAt = Date.now(); }   // 카드가 새로 그려졌을 수 있다 — 1초에 한 번만 다시 찾는다
+    if(!cards.length) return;
+    running = true; idleFrames = 0; lastY = window.scrollY; tick();
+  }
   window.addEventListener('scroll', start, {passive:true});
   start();
 };
@@ -5518,8 +5530,10 @@ window.addEventListener('storage', function(e){
     };
     hero.appendChild(cue);
     /* 스크롤을 시작하면 사라짐 */
+    var gone=null;
     function fade(){
-      cue.classList.toggle('gone', window.pageYOffset>60);
+      var g=window.pageYOffset>60;
+      if(g!==gone){ gone=g; cue.classList.toggle('gone', g); }   /* 2026-11-25: 상태가 바뀔 때만 (스크롤마다 class 를 다시 쓰지 않는다) */
     }
     window.addEventListener('scroll',fade,{passive:true});
     fade();
@@ -7773,8 +7787,9 @@ window.__nnGoWatchlist = function(){
     {g:'홈', k:'ddBrief',  lb:"TODAY'S BRIEFING", sel:'.dd-brief',        rgb:'0,0,0',    def:.55},
     {g:'홈', k:'ddCard',   lb:'퀵 글랜스 · D-DAY · 최근 노트', sel:'.dd-card', rgb:'0,0,0', def:.55},
     {g:'홈', k:'ddmItem',  lb:'퀵 글랜스 링크 버튼', sel:'.ddm-item',      rgb:'255,255,255', def:.035},
-    {g:'홈', k:'hubSec',   lb:'레퍼런스 데스크',   sel:'.hub-section',     rgb:'0,0,0',    def:.55},
-    {g:'홈', k:'cmpSec',   lb:'홀딩스 허브 무대',  sel:'.company-section', rgb:'0,0,0',    def:.55},
+    /* 2026-11-25: 홀딩스 허브의 검은 바탕은 이제 섹션이 아니라 안쪽 '액자'(.hub-frame)에 그린다 — 같은 값을 액자에도 준다 */
+    {g:'홈', k:'hubSec',   lb:'레퍼런스 데스크',   sel:'.hub-section,.hub-section>.hub-frame',         rgb:'0,0,0',    def:.55},
+    {g:'홈', k:'cmpSec',   lb:'홀딩스 허브 무대',  sel:'.company-section,.company-section>.hub-frame', rgb:'0,0,0',    def:.55},
     {g:'MACRO', k:'mcCard', lb:'매크로 카드',      sel:'.macro-card',      rgb:'8,8,8',    def:.55},
     {g:'MACRO', k:'mcPanel',lb:'API 설정 패널',   sel:'.macro-panel',     rgb:'26,20,17', def:.55},
     {g:'MACRO', k:'mcGuide',lb:'상세 안내 패널',   sel:'.macro-keyguide',  rgb:'44,28,20', def:.55},

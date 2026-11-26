@@ -355,14 +355,17 @@
       if(c && c.px!=null && c.py!=null) return [c.px, c.py];
       return HUB_POS[i % HUB_POS.length];
     }
-    var lines='';
+    /* 2026-11-25: 선을 두 장(짝·홀)으로 나눠 그린다 — 선마다 따로 깜빡이던 것(SVG 안쪽 애니메이션 = 매 프레임 다시 그림)을
+       '장' 단위 투명도 애니메이션(GPU 합성만)으로 바꿨다. 두 장의 박자를 엇갈려 예전처럼 선마다 다르게 숨 쉬는 느낌은 남긴다 */
+    var linesA='', linesB='';
     for(var i=0;i<data.length;i++){
       var p=posOf(data[i],i), a=HUB_ANCH[hubClusterOf(p)];
-      lines+='<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+a[0]+'" y2="'+a[1]+'" style="--i:'+i+'"/>';
+      var ln='<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+a[0]+'" y2="'+a[1]+'"/>';
+      if(i%2) linesB+=ln; else linesA+=ln;
     }
     /* 좌·우 앵커만 중앙 카피 쪽으로 연결 (글씨 앞에서 멈춤) · 상·하는 세로선이 글씨를 관통해 제외 */
-    lines+='<line class="hl-core" x1="'+HUB_ANCH[0][0]+'" y1="'+HUB_ANCH[0][1]+'" x2="29" y2="49" style="--i:9"/>';
-    lines+='<line class="hl-core" x1="'+HUB_ANCH[1][0]+'" y1="'+HUB_ANCH[1][1]+'" x2="71" y2="49" style="--i:11"/>';
+    linesA+='<line class="hl-core" x1="'+HUB_ANCH[0][0]+'" y1="'+HUB_ANCH[0][1]+'" x2="29" y2="49"/>';
+    linesB+='<line class="hl-core" x1="'+HUB_ANCH[1][0]+'" y1="'+HUB_ANCH[1][1]+'" x2="71" y2="49"/>';
 
     /* 중앙 카피 */
     var center=''
@@ -406,45 +409,104 @@
         + '</div>';
     }
 
-    stage.innerHTML='<svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">'+lines+'</svg>'+center+nodes;
+    stage.innerHTML='<div class="hub-lw" aria-hidden="true">'
+      + '<svg class="hub-lines hl-a" viewBox="0 0 100 100" preserveAspectRatio="none">'+linesA+'</svg>'
+      + '<svg class="hub-lines hl-b" viewBox="0 0 100 100" preserveAspectRatio="none">'+linesB+'</svg></div>'+center+nodes;
     var gridEl=sec.querySelector('.company-grid');
     if(gridEl) sec.insertBefore(stage, gridEl); else sec.appendChild(stage);
     initHubExpand(sec);
   }
 
-  /* ── 스크롤 단계 확장: 안쪽 라운드 박스 → 화면 가득 (Anthropic 방식) ── */
+  /* ── 스크롤 확장: 안쪽 라운드 박스 → 화면 가득 (Anthropic 방식) ──
+     2026-11-25 다시 만듦 (회장님: "스크롤할 때마다 약간씩 커지는 게 버벅여서 부자연스럽다")
+     예전: 두 번에 걸쳐 단(段)으로 커졌다 — 단이 바뀔 때마다 섹션 자체의 폭 · 안쪽 여백 · 모서리를 0.85초 동안 바꿨고,
+           그동안 매 프레임 섹션 안의 모든 것(제목 · 선 · 카드 · 그림자)을 다시 배치하고 다시 그렸다. 섹션을 가운데 맞추는
+           translateX(-50%) 도 폭을 따라 매 프레임 바뀌어 안쪽이 통째로 다시 그려졌다. 1440px 에서 두 번째 단은 겨우 100px 라
+           '툭' 하고 끊기는 느낌까지 더해졌다.
+     지금: 섹션은 처음부터 화면 폭 그대로 두고(다시 배치할 일이 없다), 검은 바탕 · 테두리 · 둥근 모서리는 안이 빈 '액자' 한 장
+           (.hub-frame · 자기 층)에만 그린다. 스크롤 위치에 따라 액자의 좌우 여백과 모서리만 연속으로 줄인다 —
+           매 프레임 하는 일은 빈 상자 하나의 크기 바꾸기뿐이라 버벅일 일이 없다. 카드 · 선은 예전처럼 중간쯤에서 나타난다.
+           안쪽(제목 · 카드 배치)의 폭은 예전 1단계 폭으로 고정 — 커질 때 제목줄이 옆으로 밀리던 것도 없어졌다. */
+  var HUB_FX_CSS=[
+    '.hub-section.hub-fx{max-width:none!important;padding-left:0!important;padding-right:0!important;border-radius:0!important;',
+    '  background:transparent!important;border-color:transparent!important;box-shadow:none!important;transition:none!important}',
+    '.hub-section.hub-fx.hub-step-2{border-left:1px solid transparent!important;border-right:1px solid transparent!important}',   /* 가득 단계에서 테두리를 빼며 1px 밀리던 것 방지 */
+    '.hub-fx>.hub-frame{position:absolute;top:0;bottom:0;left:var(--hx,0px);right:var(--hx,0px);z-index:-1;pointer-events:none;',
+    '  border-radius:var(--hr,0px);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.16);',
+    '  border-left-color:rgba(255,255,255,calc(.16 * var(--hb,1)));border-right-color:rgba(255,255,255,calc(.16 * var(--hb,1)));',
+    '  box-shadow:0 30px 90px -40px rgba(0,0,0,.9);contain:strict;will-change:transform}',
+    'html.nn-bgmode-hero:not(.nn-bgscroll-dark) .hub-fx>.hub-frame{display:none!important}',
+    /* 안쪽 폭 — 제목줄은 처음 상자 안쪽 폭, 무대 · 편집 칸은 예전 1단계 안쪽 폭 (JS 가 화면 폭으로 계산해 넣는다) */
+    '.hub-fx .port-header,.hub-fx .cove-line{max-width:min(1100px,var(--hub-hw,1032px))!important}',
+    '.hub-fx .hub-stage{width:auto;max-width:var(--hub-cw,1252px);margin-left:auto;margin-right:auto}',
+    '.hub-fx .company-grid{width:auto;max-width:var(--hub-hw,1032px);margin-left:auto;margin-right:auto}',   /* 편집 칸은 처음 상자 안쪽 폭 — 어느 단계에서 편집해도 액자 밖으로 안 나간다 */
+    /* 선: 두 장을 통째로 숨 쉬게(합성만) · 카드가 나타날 때 함께 나타난다 */
+    '.hub-fx .hub-lw{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .9s cubic-bezier(.22,1,.36,1)}',
+    '.hub-fx.hub-step-1 .hub-lw,.hub-fx.hub-step-2 .hub-lw{opacity:1}',
+    '.hub-fx .hub-lines line{animation:none!important;opacity:1!important;transition:none!important}',
+    '.hub-fx .hub-lines{will-change:opacity;animation:hubLinesBreath 7s ease-in-out infinite}',
+    '.hub-fx .hub-lines.hl-b{animation-delay:-3.5s}',
+    '@keyframes hubLinesBreath{0%,100%{opacity:.42}50%{opacity:.82}}',
+    '@media (max-width:1100px){.hub-fx .hub-lw{display:none}}',
+    '@media (prefers-reduced-motion:reduce){.hub-fx .hub-lines{animation:none;opacity:.62}}'
+  ].join('\n');
+  function hubFxCss(){
+    if(document.getElementById('nnHubFxCss')) return;
+    var s=document.createElement('style'); s.id='nnHubFxCss'; s.textContent=HUB_FX_CSS;
+    (document.head||document.documentElement).appendChild(s);
+  }
   function initHubExpand(sec){
-    if(sec.__expandBound) return;
+    if(!sec || sec.__expandBound) return;
     sec.__expandBound=true;
-    var raf=null;
-    var curStep=-1;
+    hubFxCss();
+    var fr=null;
+    for(var c=sec.firstElementChild;c;c=c.nextElementSibling){ if(c.classList.contains('hub-frame')){ fr=c; break; } }
+    if(!fr){ fr=document.createElement('div'); fr.className='hub-frame'; fr.setAttribute('aria-hidden','true'); sec.insertBefore(fr, sec.firstChild); }
+    sec.classList.add('hub-fx');
+    var raf=0, geo=null, lastKey='', step=-1;
+    /* 화면 폭이 바뀔 때만 — 섹션 폭 · 안쪽 폭을 정한다 (스크롤 중에는 건드리지 않는다) */
+    function measure(){
+      var vw=document.documentElement.clientWidth||window.innerWidth||1200;
+      var W0=Math.min(1080,vw-72), W1=Math.min(1340,vw-32);
+      geo={vw:vw, W0:W0};
+      sec.style.setProperty('width',vw+'px','important');
+      sec.style.setProperty('--hub-hw',Math.max(0,W0-48)+'px');
+      sec.style.setProperty('--hub-cw',Math.max(0,W1-88)+'px');
+      lastKey='';
+    }
     function apply(){
-      raf=null;
-      var r=sec.getBoundingClientRect(), vh=window.innerHeight||800, vw=window.innerWidth||1200;
-      var p=1-(r.top-vh*0.02)/(vh*0.78);
-      p=Math.max(0,Math.min(1,p));
-      /* 딱 2번에 걸쳐 확장: 0단계(기본) → 1단계 → 2단계(가득) · 히스테리시스로 떨림 방지 */
-      var step=curStep<0?0:curStep;
-      if(p>0.30) step=Math.max(step,1);
-      if(p<0.22) step=Math.min(step,0);
-      if(p>0.62) step=2;
-      if(p<0.52) step=Math.min(step,1);
-      if(step===curStep) return;
-      curStep=step;
-      var W=[Math.min(1080,vw-72), Math.min(1340,vw-32), vw];
-      var R=[30,18,0], PX=[24,44,64];
-      sec.style.setProperty('width',W[step].toFixed(0)+'px','important');
-      sec.style.setProperty('max-width','none','important');
-      sec.style.setProperty('border-radius',R[step]+'px','important');
-      sec.style.setProperty('padding-left',PX[step]+'px','important');
-      sec.style.setProperty('padding-right',PX[step]+'px','important');
-      sec.style.setProperty('--hubP', step===0?'0':(step===1?'0.6':'1'));
-      sec.classList.remove('hub-step-0','hub-step-1','hub-step-2');
-      sec.classList.add('hub-step-'+step);
+      raf=0;
+      if(!geo) measure();
+      var r=sec.getBoundingClientRect(), vh=window.innerHeight||800;
+      /* 섹션 윗변이 화면 80% 지점 → 2% 지점으로 올라오는 동안 0 → 1 */
+      var p=1-(r.top-vh*0.02)/(vh*0.78); p=p<0?0:(p>1?1:p);
+      var t=(p-0.10)/0.58; t=t<0?0:(t>1?1:t);
+      var e=t*t*(3-2*t);                                   /* 양끝을 부드럽게 (smoothstep) */
+      var W=geo.W0+(geo.vw-geo.W0)*e, hx=Math.max(0,(geo.vw-W)/2), R=30*(1-e);
+      var key=hx.toFixed(1)+'|'+R.toFixed(1);
+      if(key!==lastKey){
+        lastKey=key;
+        fr.style.setProperty('--hx',hx.toFixed(1)+'px');
+        fr.style.setProperty('--hr',R.toFixed(1)+'px');
+        fr.style.setProperty('--hb',Math.min(1,hx/18).toFixed(2));   /* 화면 가득에 가까워지면 좌우 테두리는 스르르 사라진다 */
+      }
+      /* 카드 · 선 등장(1단계) · 가득(2단계) — 문턱 근처에서 떨리지 않게 올라갈 때와 내려갈 때 문턱을 달리 둔다 */
+      var s=step<0?(e>=0.92?2:(e>=0.40?1:0)):step;
+      if(s<1 && e>=0.40) s=1;
+      if(s>=1 && e<0.28) s=0;
+      if(s<2 && e>=0.92) s=2;
+      if(s===2 && e<0.84) s=1;
+      if(s!==step){
+        step=s;
+        sec.classList.remove('hub-step-0','hub-step-1','hub-step-2');
+        sec.classList.add('hub-step-'+s);
+        sec.style.setProperty('--hubP', s===0?'0':(s===1?'0.6':'1'));
+      }
     }
     function onScroll(){ if(!raf) raf=requestAnimationFrame(apply); }
+    function onResize(){ geo=null; onScroll(); }
     window.addEventListener('scroll',onScroll,{passive:true});
-    window.addEventListener('resize',onScroll);
+    window.addEventListener('resize',onResize);
     apply();
   }
 
