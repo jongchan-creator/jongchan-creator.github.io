@@ -424,9 +424,19 @@
            translateX(-50%) 도 폭을 따라 매 프레임 바뀌어 안쪽이 통째로 다시 그려졌다. 1440px 에서 두 번째 단은 겨우 100px 라
            '툭' 하고 끊기는 느낌까지 더해졌다.
      지금: 섹션은 처음부터 화면 폭 그대로 두고(다시 배치할 일이 없다), 검은 바탕 · 테두리 · 둥근 모서리는 안이 빈 '액자' 한 장
-           (.hub-frame · 자기 층)에만 그린다. 스크롤 위치에 따라 액자의 좌우 여백과 모서리만 연속으로 줄인다 —
-           매 프레임 하는 일은 빈 상자 하나의 크기 바꾸기뿐이라 버벅일 일이 없다. 카드 · 선은 예전처럼 중간쯤에서 나타난다.
-           안쪽(제목 · 카드 배치)의 폭은 예전 1단계 폭으로 고정 — 커질 때 제목줄이 옆으로 밀리던 것도 없어졌다. */
+           (.hub-frame · 자기 층)에만 그린다. 액자의 좌우 여백과 모서리만 연속으로 줄인다 — 매 프레임 하는 일은 빈 상자 하나의
+           크기 바꾸기뿐이라 버벅일 일이 없다. 카드 · 선은 예전처럼 중간쯤에서 나타난다.
+           안쪽(제목 · 카드 배치)의 폭은 예전 1단계 폭으로 고정 — 커질 때 제목줄이 옆으로 밀리던 것도 없어졌다.
+     2026-11-27 한 번 더 (회장님: "스크롤에 따라 확장되는 효과를 그냥 부드럽게 쭉 이어지면서 자연스럽게 커지도록")
+       남아 있던 끊김 두 가지를 없앴다.
+       ① 마우스 휠은 한 칸씩 '툭툭' 굴러간다. 액자 폭을 스크롤 위치에 바로 붙여 두었더니 휠 한 칸마다 액자도 한 칸씩
+          커졌다 멈췄다를 되풀이했다. 이제 스크롤 위치는 '목표'만 정하고, 화면의 액자는 임계 감쇠 용수철(critically damped
+          spring)로 그 목표를 따라간다 — 휠 칸 사이가 메워져 굴리는 동안 끊김 없이 쭉 이어서 커지고, 멈출 때도 스르르
+          멈춘다(넘치거나 되튀지 않는다). 커지는 구간도 조금 길게 잡았다(섹션 윗변이 화면 88% → 22%).
+       ② 가운데 큰 글(HOLDINGS HUB 제목 묶음)은 0 → 0.6 → 1 세 칸으로 0.85초씩 커졌다(--hubP). 이제 액자와 같은 값으로
+          단 없이 함께 커진다. 움직이는 동안만 자기 층(will-change)을 주고, 멈추면 풀어서 글자를 또렷하게 다시 그린다.
+       매 프레임 하는 일은 숫자 몇 개 계산 + 빈 액자 크기 · 제목 크기 바꾸기뿐. 멈춰 있으면 아무것도 돌지 않는다.
+       '움직임 줄이기' 설정이면 용수철 없이 바로 맞춘다. */
   var HUB_FX_CSS=[
     '.hub-section.hub-fx{max-width:none!important;padding-left:0!important;padding-right:0!important;border-radius:0!important;',
     '  background:transparent!important;border-color:transparent!important;box-shadow:none!important;transition:none!important}',
@@ -440,6 +450,8 @@
     '.hub-fx .port-header,.hub-fx .cove-line{max-width:min(1100px,var(--hub-hw,1032px))!important}',
     '.hub-fx .hub-stage{width:auto;max-width:var(--hub-cw,1252px);margin-left:auto;margin-right:auto}',
     '.hub-fx .company-grid{width:auto;max-width:var(--hub-hw,1032px);margin-left:auto;margin-right:auto}',   /* 편집 칸은 처음 상자 안쪽 폭 — 어느 단계에서 편집해도 액자 밖으로 안 나간다 */
+    /* 가운데 큰 글 — 크기는 JS 가 액자와 같은 값으로 매 프레임 준다 (예전 0.85초 단계 전환은 끈다) */
+    '.hub-fx .hub-center{transition:none!important}',
     /* 선: 두 장을 통째로 숨 쉬게(합성만) · 카드가 나타날 때 함께 나타난다 */
     '.hub-fx .hub-lw{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .9s cubic-bezier(.22,1,.36,1)}',
     '.hub-fx.hub-step-1 .hub-lw,.hub-fx.hub-step-2 .hub-lw{opacity:1}',
@@ -455,15 +467,21 @@
     var s=document.createElement('style'); s.id='nnHubFxCss'; s.textContent=HUB_FX_CSS;
     (document.head||document.documentElement).appendChild(s);
   }
+  var HUB_OMEGA=6.2;   /* 용수철 세기 — 클수록 빨리 따라붙는다 (6.2 → 휠을 멈추면 약 0.6초 안에 스르르 멈춤) */
   function initHubExpand(sec){
-    if(!sec || sec.__expandBound) return;
+    if(!sec) return;
+    if(sec.__expandBound){ if(sec.__hubRefresh) sec.__hubRefresh(); return; }   /* 무대를 다시 그렸을 때 — 새 제목 묶음에 지금 크기를 바로 준다 */
     sec.__expandBound=true;
     hubFxCss();
     var fr=null;
     for(var c=sec.firstElementChild;c;c=c.nextElementSibling){ if(c.classList.contains('hub-frame')){ fr=c; break; } }
     if(!fr){ fr=document.createElement('div'); fr.className='hub-frame'; fr.setAttribute('aria-hidden','true'); sec.insertBefore(fr, sec.firstChild); }
     sec.classList.add('hub-fx');
-    var raf=0, geo=null, lastKey='', step=-1;
+    var RM=!!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var MQ=window.matchMedia ? window.matchMedia('(max-width:1100px)') : null;
+    var raf=0, geo=null, lastKey='', step=-1, need=true, first=true;
+    var tgt=0, cur=0, vel=0, lastT=0, snapUntil=performance.now()+700;   /* 막 열렸을 때(브라우저가 스크롤 자리를 되살리는 동안)는 바로 맞춘다 */
+    var cen=null, cenS=-1, cenLive=false;
     /* 화면 폭이 바뀔 때만 — 섹션 폭 · 안쪽 폭을 정한다 (스크롤 중에는 건드리지 않는다) */
     function measure(){
       var vw=document.documentElement.clientWidth||window.innerWidth||1200;
@@ -474,14 +492,23 @@
       sec.style.setProperty('--hub-cw',Math.max(0,W1-88)+'px');
       lastKey='';
     }
-    function apply(){
-      raf=0;
-      if(!geo) measure();
+    /* 목표: 섹션 윗변이 화면 88% 지점 → 22% 지점으로 올라오는 동안 0 → 1 */
+    function target(){
       var r=sec.getBoundingClientRect(), vh=window.innerHeight||800;
-      /* 섹션 윗변이 화면 80% 지점 → 2% 지점으로 올라오는 동안 0 → 1 */
-      var p=1-(r.top-vh*0.02)/(vh*0.78); p=p<0?0:(p>1?1:p);
-      var t=(p-0.10)/0.58; t=t<0?0:(t>1?1:t);
-      var e=t*t*(3-2*t);                                   /* 양끝을 부드럽게 (smoothstep) */
+      var p=(vh*0.88-r.top)/(vh*0.66);
+      return p<0?0:(p>1?1:p);
+    }
+    /* 가운데 큰 글 — 액자와 같은 값으로 1 → 1.11 (휴대폰 배치에서는 손대지 않는다) */
+    function center(e, moving){
+      if(MQ && MQ.matches){ if(cen){ cen.style.transform=''; cen.style.willChange=''; } cen=null; cenS=-1; cenLive=false; return; }
+      if(!cen || !cen.isConnected){ cen=sec.querySelector('.hub-center'); cenS=-1; cenLive=false; if(!cen) return; }
+      if(moving && !cenLive){ cen.style.willChange='transform'; cenLive=true; }
+      var s=1+0.11*e;
+      if(Math.abs(s-cenS)>0.0002){ cenS=s; cen.style.transform='translate(-50%,-50%) scale('+s.toFixed(4)+')'; }
+      if(!moving && cenLive){ cen.style.willChange=''; cenLive=false; }        /* 멈추면 층을 풀어 글자를 또렷하게 */
+    }
+    function paint(x, moving){
+      var e=x*x*(3-2*x);                                   /* 양끝을 부드럽게 (smoothstep) */
       var W=geo.W0+(geo.vw-geo.W0)*e, hx=Math.max(0,(geo.vw-W)/2), R=30*(1-e);
       var key=hx.toFixed(1)+'|'+R.toFixed(1);
       if(key!==lastKey){
@@ -490,6 +517,7 @@
         fr.style.setProperty('--hr',R.toFixed(1)+'px');
         fr.style.setProperty('--hb',Math.min(1,hx/18).toFixed(2));   /* 화면 가득에 가까워지면 좌우 테두리는 스르르 사라진다 */
       }
+      center(e, moving);
       /* 카드 · 선 등장(1단계) · 가득(2단계) — 문턱 근처에서 떨리지 않게 올라갈 때와 내려갈 때 문턱을 달리 둔다 */
       var s=step<0?(e>=0.92?2:(e>=0.40?1:0)):step;
       if(s<1 && e>=0.40) s=1;
@@ -500,14 +528,33 @@
         step=s;
         sec.classList.remove('hub-step-0','hub-step-1','hub-step-2');
         sec.classList.add('hub-step-'+s);
-        sec.style.setProperty('--hubP', s===0?'0':(s===1?'0.6':'1'));
       }
     }
-    function onScroll(){ if(!raf) raf=requestAnimationFrame(apply); }
-    function onResize(){ geo=null; onScroll(); }
+    function frame(now){
+      raf=0;
+      if(!geo) measure();
+      if(need){
+        need=false; tgt=target();
+        if(first || RM || now<snapUntil){ first=false; cur=tgt; vel=0; lastT=0; paint(cur,false); return; }   /* 처음 · 움직임 줄이기: 바로 맞춤 */
+      }
+      /* 임계 감쇠 용수철 — 정확한 해(프레임이 늦어도 같은 곡선) */
+      var dt=lastT ? Math.max(0,Math.min(0.05,(now-lastT)/1000)) : 1/60; lastT=now;
+      var x0=cur-tgt, c1=vel+HUB_OMEGA*x0, ex=Math.exp(-HUB_OMEGA*dt);
+      cur=tgt+(x0+c1*dt)*ex;
+      vel=(vel-HUB_OMEGA*c1*dt)*ex;
+      var done=Math.abs(cur-tgt)<0.0005 && Math.abs(vel)<0.003;
+      if(done){ cur=tgt; vel=0; lastT=0; }
+      paint(cur<0?0:(cur>1?1:cur), !done);
+      if(!done) raf=requestAnimationFrame(frame);
+    }
+    function kick(){ if(!raf) raf=requestAnimationFrame(frame); }
+    function onScroll(){ need=true; kick(); }
+    function onResize(){ geo=null; need=true; kick(); }
+    sec.__hubRefresh=function(){ cen=null; cenS=-1; cenLive=false; lastKey=''; need=true; kick(); };
+    sec.__hubState=function(){ return { tgt:tgt, cur:cur, vel:vel, step:step, live:!!raf }; };   /* 시험용 */
     window.addEventListener('scroll',onScroll,{passive:true});
     window.addEventListener('resize',onResize);
-    apply();
+    frame(performance.now());
   }
 
   function render(){
