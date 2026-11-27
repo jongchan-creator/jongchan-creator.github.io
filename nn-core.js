@@ -934,35 +934,76 @@ function polLoad(){
 }
 function polSave(o){ try{ localStorage.setItem(POL_KEY, JSON.stringify(o)); }catch(e){} }
 function polEcosKey(){ try{ return (localStorage.getItem('nn_ecos_key')||'').trim(); }catch(e){ return ''; } }
-var polBusy=false, polMsg='', polErr={};
+var polBusy=false, polBusyAt=0, polMsg='', polErr={};
 
-/* 프록시 경유 (Worker 우선 → 공용 프록시) */
-/* ⚠ check(body) — 받은 내용이 '진짜 그 자료'인지 확인한다 (2026-09-21)
-   프록시(Worker)에 /fred · /ecos 기능이 없으면 모르는 주소에도 200 과 엉뚱한 JSON 을 돌려준다.
-   예전엔 그걸 성공으로 믿고 멈춰서, 뒤의 공용 프록시는 시도조차 안 했다.
-   ('자료가 비어 있습니다' 오류가 6번 다 똑같이 뜬 원인) 이제 내용이 틀리면 다음 경로로 넘어간다. */
-var polSkip={};   /* 이번 방문에서 '엉뚱한 응답'·CORS 로 실패한 경로는 다시 두드리지 않는다 */
-async function polFetch(target, workerPath, check){
+/* ══════════ 2026-11-26 다시 짬 — '기준금리를 받는 중…' 이 끝나지 않던 것 ══════════
+   회장님: "오늘 한국 기준금리를 올렸는데 매크로는 그대로이고 3일 전 갱신이라고 나온다. 최신으로 받는 단추도 없고
+            '기준금리를 받는 중…' 이라고만 계속 뜬다."
+   원인
+     ① 한 번 묻는 데 9초 제한을 걸었지만 **응답 머리가 온 뒤 본문을 받는 동안은 제한이 없었다** — 공용 프록시가 본문을
+        흘리다 멈추면 영원히 기다렸고, 그동안 polBusy 가 풀리지 않아 '받는 중…' 이 페이지를 닫을 때까지 떠 있었다.
+        (타이머를 함수 전체에서 같이 쓰는 변수에 담아, 앞 시도의 타이머가 뒤 시도를 끊는 일도 있었다)
+     ② 미국을 다 받은 다음에야 한국을 받았다 — 미국 쪽 경로 10개가 하나씩 9초씩 기다리면 한국은 시작도 못 했다.
+     ③ 한국은 '월별' 자료를 먼저 물었다 — 이번 달 값은 달이 끝나야 올라오므로, 금리를 바꾼 달에는 지난달 값에 머문다.
+        또 후보 중 817Y002/010101000 은 기준금리가 아니라 **콜금리**였다.
+     ④ ECOS 인증키가 든 주소를 공용 프록시(allorigins 등)로도 보냈다 — 키는 내 Worker 로만 보낸다.
+     ⑤ 자동 갱신은 미국 · 한국 중 하나라도 12시간 안에 받았으면 쉬었다 — 한국이 실패해도 미국이 되면 다시 묻지 않았다.
+   지금
+     - 한 번 묻기(polGet) = 머리 + 본문까지 제한 시간 안에. 미국 · 한국을 **함께** 묻고 각각 25초가 지나면 포기.
+       45초 넘게 '받는 중' 이면 걸린 것으로 보고 새로 시작할 수 있다. 끝나면 반드시(finally) 풀린다.
+     - 한국: 722Y001(한국은행 기준금리) **일별 → 월별**, 받은 줄 중 가장 늦은 날짜의 값. 키는 Worker /ecos 와 직접 호출에만.
+     - 금리 카드 아래 한 줄: '미국 … · 한국 11/23 자료 · 3분 전 확인' + [↻ 지금 받기] + [✎ 한국 직접 넣기]
+     - 한국은행 통계(ECOS)는 결정 뒤 며칠 늦게 올라온다(2026-11-26 결정 → 그날 ECOS 최신은 11/23 자료).
+       그래서 결정 당일에는 [✎ 한국 직접 넣기]로 새 금리 · 결정일을 넣어 두면 그 값을 보여 주고,
+       ECOS 에 그 날짜 이후 자료가 들어오면 저절로 ECOS 값으로 돌아간다. */
+
+/* 한 번 묻기 — 응답 머리와 본문까지 ms 안에 끝나지 않으면 끊는다 */
+function polGet(u, ms, fresh){
+  return new Promise(function(res, rej){
+    var done=false, ctl=(typeof AbortController==='function')?new AbortController():null;
+    var t=setTimeout(function(){
+      if(done) return; done=true;
+      try{ if(ctl) ctl.abort(); }catch(x){}
+      var e=new Error('시간 초과'); e.name='TimeoutError'; rej(e);
+    }, ms||8000);
+    var o={}; if(ctl) o.signal=ctl.signal; if(fresh) o.cache='no-store';
+    fetch(u, o).then(function(r){
+      if(!r.ok){ var e=new Error('HTTP '+r.status); e.status=r.status; throw e; }
+      return r.text();
+    }).then(function(tx){ if(done) return; done=true; clearTimeout(t); res(tx); },
+            function(e){ if(done) return; done=true; clearTimeout(t); rej(e); });
+  });
+}
+function polWithin(p, ms){
+  return Promise.race([p, new Promise(function(_, rej){ setTimeout(function(){ var e=new Error('시간 초과'); e.name='TimeoutError'; rej(e); }, ms); })]);
+}
+
+/* 프록시 경유 (Worker 우선 → 직접 → 공용 프록시)
+   ⚠ check(body) — 받은 내용이 '진짜 그 자료'인지 확인한다 (2026-09-21)
+   프록시(Worker)에 /fred · /ecos 기능이 없으면 모르는 주소에도 200 과 엉뚱한 JSON 을 돌려주던 때가 있었다 — 내용이 틀리면 다음 경로로.
+   opt.noPublic — 인증키가 든 주소는 공용 프록시로 보내지 않는다 · opt.budget — 이 자료 하나에 쓸 전체 시간 */
+var polSkip={};   /* 이번 방문에서 '엉뚱한 응답' · CORS · 시간 초과로 실패한 경로는 다시 두드리지 않는다([↻ 지금 받기]는 처음부터) */
+async function polFetch(target, workerPath, check, opt){
+  opt=opt||{};
   var W=(typeof workerUrl==='function')?workerUrl():'';
   var tries=[];
   if(W && workerPath) tries.push({k:'worker', u:W+workerPath});
   tries.push({k:'direct', u:target});   /* 자료 쪽이 브라우저 직접 호출(CORS)을 허용하면 이게 가장 빠르다 */
-  /* 공용 프록시는 자주 막히거나 느려진다 — 하나만 믿지 않고 차례로 시도한다 */
-  tries.push({k:'allorigins', u:'https://api.allorigins.win/raw?url='+encodeURIComponent(target)});
-  tries.push({k:'corsproxy',  u:'https://corsproxy.io/?url='+encodeURIComponent(target)});
-  tries.push({k:'codetabs',   u:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(target)});
+  if(!opt.noPublic){
+    /* 공용 프록시는 자주 막히거나 느려진다 — 하나만 믿지 않고 차례로 시도한다 */
+    tries.push({k:'allorigins', u:'https://api.allorigins.win/raw?url='+encodeURIComponent(target)});
+    tries.push({k:'corsproxy',  u:'https://corsproxy.io/?url='+encodeURIComponent(target)});
+    tries.push({k:'codetabs',   u:'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(target)});
+  }
   var host=String(target).replace(/^https?:\/\//,'').split('/')[0];
-  var last=null;
+  var last=null, t0=Date.now(), budget=opt.budget||20000;
   for(var i=0;i<tries.length;i++){
     var key=host+'|'+tries[i].k;
     if(polSkip[key]) continue;
+    var left=budget-(Date.now()-t0);
+    if(left<1200) break;
     try{
-      var ctl=(typeof AbortController==='function')?new AbortController():null;
-      var tm=ctl?setTimeout(function(){ try{ctl.abort();}catch(x){} },9000):null;
-      var r=await fetch(tries[i].u, ctl?{signal:ctl.signal}:undefined);
-      if(tm) clearTimeout(tm);
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      var body=await r.text();
+      var body=await polGet(tries[i].u, Math.min(opt.each||8000, left), opt.fresh);
       /* 프록시가 오류 페이지(HTML)를 200 으로 돌려주는 경우를 걸러 낸다 */
       if(/^\s*<(!doctype|html)/i.test(body)){ polSkip[key]=1; throw new Error('proxy html'); }
       if(check && !check(body)){ polSkip[key]=1; throw new Error('엉뚱한 응답'); }
@@ -970,6 +1011,7 @@ async function polFetch(target, workerPath, check){
     }catch(e){
       last=e;
       if(tries[i].k==='direct' && e && e.name==='TypeError') polSkip[key]=1;   /* CORS 로 막힘 */
+      if(e && e.name==='TimeoutError') polSkip[key]=1;                         /* 느린 경로는 이번에 다시 기다리지 않는다 */
     }
   }
   throw last||new Error('fail');
@@ -977,18 +1019,18 @@ async function polFetch(target, workerPath, check){
 
 /* 미국 — ① 뉴욕 연은 공식 API (키 불필요, 목표범위 포함) → ② FRED CSV
    FRED 는 클라우드 서버·공용 프록시 요청을 자주 막아서 뉴욕 연은을 먼저 쓴다 (2026-09-21) */
-async function polUSnyfed(){
+async function polUSnyfed(fresh){
   var txt=await polFetch('https://markets.newyorkfed.org/api/rates/unsecured/effr/last/5.json', null,
-    function(b){ return /targetRateFrom/.test(b); });
+    function(b){ return /targetRateFrom/.test(b); }, {budget:12000, fresh:fresh});
   var d=JSON.parse(txt), a=(d&&d.refRates)||[];
   a=a.filter(function(x){ return x.targetRateFrom!=null && x.targetRateTo!=null; })
      .sort(function(x,y){ return String(y.effectiveDate).localeCompare(String(x.effectiveDate)); });
   if(!a.length) throw new Error('no data');
   return { lo:+a[0].targetRateFrom, hi:+a[0].targetRateTo, date:String(a[0].effectiveDate||''), src:'NY Fed' };
 }
-async function polUS(){
-  try{ return await polUSnyfed(); }catch(e){}
-  var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL,DFEDTARU', '/fred?id=DFEDTARL,DFEDTARU', function(b){ return /^\s*(observation_date|DATE)\s*,/i.test(b); });
+async function polUS(fresh){
+  try{ return await polUSnyfed(fresh); }catch(e){}
+  var txt=await polFetch('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DFEDTARL,DFEDTARU', '/fred?id=DFEDTARL,DFEDTARU', function(b){ return /^\s*(observation_date|DATE)\s*,/i.test(b); }, {budget:12000, fresh:fresh});
   var lines=String(txt||'').trim().split(/\r?\n/);
   if(lines.length<2) throw new Error('no data');
   for(var i=lines.length-1;i>=1;i--){
@@ -1003,161 +1045,160 @@ async function polUS(){
 /* 미국 — FMP 실효 연방기금금리 (FRED 가 막혔을 때의 대안) */
 async function polUSfmp(){
   var K=(typeof fmpKey==='function')?fmpKey():''; if(!K) return null;
-  var r=await fetch('https://financialmodelingprep.com/stable/economic-indicators?name=federalFunds&apikey='+encodeURIComponent(K));
-  if(!r.ok) return null;
-  var a=await r.json(); if(!Array.isArray(a)||!a.length) return null;
+  var tx=await polGet('https://financialmodelingprep.com/stable/economic-indicators?name=federalFunds&apikey='+encodeURIComponent(K), 8000);
+  var a=JSON.parse(tx); if(!Array.isArray(a)||!a.length) return null;
   a.sort(function(x,y){ return String(y.date||'').localeCompare(String(x.date||'')); });
   var v=parseFloat(a[0].value); if(isNaN(v)) return null;
   return { v:v, date:String(a[0].date||'') };
 }
 
-/* 한국 — 한국은행 ECOS (무료 키 필요). 722Y001 / 0101000 = 한국은행 기준금리 */
-async function polKR(){
+/* 한국 — 한국은행 ECOS (무료 키 필요). 722Y001 / 0101000 = 한국은행 기준금리
+   일별(D)을 먼저 — 결정이 가장 빨리 들어오는 쪽이다. 월별(M)은 그 달이 끝나야 그 달 값이 생긴다.
+   (예전 후보 817Y002/010101000 은 기준금리가 아니라 콜금리라 뺐다) */
+async function polKR(fresh){
   var k=polEcosKey();
   if(!k) throw new Error('ECOS 인증키가 없습니다');
   function d8(dt){ return dt.getFullYear()+String(dt.getMonth()+1).padStart(2,'0')+String(dt.getDate()).padStart(2,'0'); }
-  var to=new Date(), from=new Date(); from.setDate(from.getDate()-400);
-  /* 한국은행 기준금리 — 통계코드가 개편되며 바뀌어 왔다.
-     하나만 쓰면 '데이터 없음'이 나므로 알려진 조합을 차례로 시도한다.
-       722Y001 / 0101000 : 한국은행 기준금리 (일별)
-       098Y001 / 0101000 : 시장금리 계열의 기준금리
-       722Y001 / 0101000 (월별 M) : 일별이 비어 있을 때 대비 */
-  /* 한국은행 기준금리 통계 조합.
-     ECOS는 개편이 잦아 코드·주기·항목이 맞아야 자료가 나온다.
-     722Y001/0101000 : 한국은행 기준금리 (가장 널리 쓰이는 조합)
-     817Y002/010101000 : 시장금리 계열 (콜금리 등과 함께 제공)
-     098Y001 계열은 항목코드가 다르므로 여러 형태를 시도한다. */
-  var CANDS = [
-    { code:'722Y001', cycle:'M', item:'0101000' },
-    { code:'722Y001', cycle:'D', item:'0101000' },
-    { code:'722Y001', cycle:'M', item:'' },
-    { code:'817Y002', cycle:'D', item:'010101000' },
-    { code:'817Y002', cycle:'M', item:'010101000' },
-    { code:'098Y001', cycle:'M', item:'' }
-  ];
-  var lastErr = null, j = null, used = null;
-
+  var to=new Date(), fromD=new Date(), fromM=new Date();
+  fromD.setDate(fromD.getDate()-60); fromM.setMonth(fromM.getMonth()-13);
+  var CANDS=[ { code:'722Y001', cycle:'D', item:'0101000' }, { code:'722Y001', cycle:'M', item:'0101000' } ];
+  var lastErr=null, t0=Date.now();
   for(var ci=0; ci<CANDS.length; ci++){
-    var C = CANDS[ci];
-    var f8 = (C.cycle === 'M') ? d8(from).slice(0,6) : d8(from);
-    var t8 = (C.cycle === 'M') ? d8(to).slice(0,6)   : d8(to);
-    var url = 'https://ecos.bok.or.kr/api/StatisticSearch/' + encodeURIComponent(k)
-            + '/json/kr/1/200/' + C.code + '/' + C.cycle + '/' + f8 + '/' + t8
-      + (C.item ? '/' + C.item : '');
+    var C=CANDS[ci];
+    var f8=(C.cycle==='M')?d8(fromM).slice(0,6):d8(fromD);
+    var t8=(C.cycle==='M')?d8(to).slice(0,6):d8(to);
+    var url='https://ecos.bok.or.kr/api/StatisticSearch/'+encodeURIComponent(k)+'/json/kr/1/200/'+C.code+'/'+C.cycle+'/'+f8+'/'+t8+'/'+C.item;
+    var left=22000-(Date.now()-t0); if(left<2000) break;
     try{
-      var txt = await polFetch(url, '/ecos?key=' + encodeURIComponent(k)
-              + '&code=' + C.code + '&cycle=' + C.cycle + '&item=' + C.item
-              + '&from=' + f8 + '&to=' + t8,
-              function(b){ return /"(StatisticSearch|RESULT)"/.test(b); });
-      var jj = JSON.parse(txt);
-
+      var txt=await polFetch(url, '/ecos?key='+encodeURIComponent(k)+'&code='+C.code+'&cycle='+C.cycle+'&item='+C.item+'&from='+f8+'&to='+t8,
+        function(b){ return /"(StatisticSearch|RESULT)"/.test(b); }, {noPublic:true, budget:left, each:9000, fresh:fresh});
+      var jj=JSON.parse(txt);
       if(jj && jj.RESULT && jj.RESULT.CODE){
-        var cd = String(jj.RESULT.CODE || ''), ms = String(jj.RESULT.MESSAGE || '');
-        /* 키 문제면 다른 코드를 시도해도 소용없다 — 즉시 알린다 */
-        if(cd === 'INFO-100' || cd === 'INFO-300'){
-          throw new Error('인증키가 올바르지 않습니다 · 한국은행에서 받은 키를 다시 확인해 주세요 (' + cd + ')');
-        }
-        lastErr = new Error('ECOS ' + cd + (ms ? ' · ' + ms : ''));
-        continue;   /* 자료 없음 등은 다음 조합으로 */
+        var cd=String(jj.RESULT.CODE||''), ms=String(jj.RESULT.MESSAGE||'');
+        /* 키 문제면 다른 주기를 물어도 소용없다 — 즉시 알린다 */
+        if(cd==='INFO-100' || cd==='INFO-300') throw new Error('인증키가 올바르지 않습니다 · 한국은행에서 받은 키를 다시 확인해 주세요 ('+cd+')');
+        lastErr=new Error('ECOS '+cd+(ms?' · '+ms:'')); continue;   /* 자료 없음 등은 다음 주기로 */
       }
-      if(jj && jj.StatisticSearch && jj.StatisticSearch.row && jj.StatisticSearch.row.length){
-        j = jj; used = C; break;
-      }
-      lastErr = new Error('자료가 비어 있습니다 (' + C.code + '/' + C.cycle + ')');
+      var rows=(jj && jj.StatisticSearch && jj.StatisticSearch.row) || [], best=null;
+      rows.forEach(function(r){ var v=parseFloat(r.DATA_VALUE), tm=String(r.TIME||''); if(!isNaN(v) && tm && (!best || tm>best.date)) best={ v:v, date:tm }; });
+      if(best) return { v:best.v, date:best.date, src:'ECOS', cyc:C.cycle };
+      lastErr=new Error('자료가 비어 있습니다 ('+C.code+'/'+C.cycle+')');
     }catch(e){
-      if(e && /인증키/.test(e.message || '')) throw e;
-      lastErr = e;
+      if(e && /인증키/.test(e.message||'')) throw e;
+      lastErr=e;
     }
   }
-  if(!j){
-    var m0 = (lastErr && lastErr.message) || '';
-    throw new Error('기준금리 자료를 찾지 못했습니다 · ' + CANDS.length + '가지 통계코드를 시도했습니다'
-      + (m0 ? ' (마지막: ' + m0.slice(0,60) + ')' : ''));
-  }
-
-  var rows=j && j.StatisticSearch && j.StatisticSearch.row;
-  if(!rows || !rows.length) throw new Error('데이터가 없습니다');
-  for(var i=rows.length-1;i>=0;i--){
-    var v=parseFloat(rows[i].DATA_VALUE);
-    if(!isNaN(v)) return { v:v, date:String(rows[i].TIME||''), src:'ECOS' };
-  }
-  throw new Error('유효한 값이 없습니다');
+  var m0=(lastErr && lastErr.message) || '';
+  throw new Error('기준금리 자료를 받지 못했습니다'+(m0?' ('+m0.slice(0,60)+')':''));
 }
 
 async function polRefresh(manual){
-  if(polBusy) return;
-  polBusy=true; polMsg=''; renderRates();
-  var P=polLoad(), okN=0, errs=[];
-  /* 나라별로 결과를 따로 담는다. 예전에는 오류를 한 줄로 합쳐
-     한국 키를 넣었는데 '미국'만 보이는 혼란이 있었다. */
-  var usErr='', krErr='';
-  try{ var u=await polUS(); P.us={lo:u.lo, hi:u.hi, date:u.date, src:u.src, at:Date.now()}; okN++; }
-  catch(e){
-    /* FRED 가 막히면 FMP 의 실효 연방기금금리로 대신한다 (키가 있을 때) */
-    var eff=null;
-    try{ eff=await polUSfmp(); }catch(e2){}
-    if(eff){ P.us={eff:eff.v, date:eff.date, src:'FMP', at:Date.now()}; okN++; }
-    else { usErr = (e && e.message) || '연결 실패'; errs.push('미국'); }
-  }
-  if(polEcosKey()){
-    try{ var k2=await polKR(); P.kr={v:k2.v, date:k2.date, src:k2.src, at:Date.now()}; okN++; }
-    catch(e){ krErr = (e && e.message) || '연결 실패'; errs.push('한국'); }
-  }
-  polSave(P);
-  polBusy=false;
-  polErr = { us: usErr, kr: krErr, at: Date.now() };
-  polMsg = errs.length ? (errs.join(' · ')+' 조회 실패') : '';
+  /* 이미 받는 중이면 기다린다 — 다만 45초가 넘었으면 걸린 것이므로 새로 시작한다 */
+  if(polBusy && Date.now()-polBusyAt < 45000) return;
+  polBusy=true; polBusyAt=Date.now(); polMsg='';
+  if(manual) polSkip={};
   renderRates();
+  var got={}, okN=0, errs=[], usErr='', krErr='';
+  var fresh=!!manual;
+  var usJob=polWithin((async function(){
+      try{ return await polUS(fresh); }
+      catch(e){
+        /* 뉴욕 연은 · FRED 가 막히면 FMP 의 실효 연방기금금리로 대신한다 (키가 있을 때) */
+        var eff=null; try{ eff=await polUSfmp(); }catch(e2){}
+        if(eff) return { eff:eff.v, date:eff.date, src:'FMP' };
+        throw e;
+      }
+    })(), 25000)
+    .then(function(u){ got.us=u; okN++; }, function(e){ usErr=(e && e.message) || '연결 실패'; errs.push('미국'); });
+  var krJob=polEcosKey()
+    ? polWithin(polKR(fresh), 25000).then(function(k){ got.kr=k; okN++; }, function(e){ krErr=(e && e.message) || '연결 실패'; errs.push('한국'); })
+    : Promise.resolve();
+  try{ await Promise.all([usJob, krJob]); }
+  finally{
+    var P=polLoad(), now=Date.now();                 /* 그사이 '직접 넣기'가 바뀌었을 수 있어 다시 읽는다 */
+    if(got.us) P.us = got.us.eff!=null ? { eff:got.us.eff, date:got.us.date, src:got.us.src, at:now } : { lo:got.us.lo, hi:got.us.hi, date:got.us.date, src:got.us.src, at:now };
+    if(got.kr){
+      P.kr = { v:got.kr.v, date:got.kr.date, src:got.kr.src, cyc:got.kr.cyc, at:now };
+      if(P.krOver && polD8(P.kr.date) >= polD8(P.krOver.date)) delete P.krOver;   /* ECOS 가 따라잡았으면 직접 넣은 값은 내려놓는다 */
+    }
+    P.check = now;
+    polSave(P);
+    polBusy=false;
+    polErr = { us: usErr, kr: krErr, at: now };
+    polMsg = errs.length ? (errs.join(' · ')+' 조회 실패') : '';
+    renderRates();
+  }
   if(manual && typeof fmpToast==='function'){
-    /* 한국 키를 방금 넣었다면 한국 결과를 먼저 알려 준다 */
-    var hasKey = !!polEcosKey();
-    var msg;
-    if(hasKey && !krErr && P.kr){
-      msg = '✅ 한국 기준금리 ' + P.kr.v + '% (' + (P.kr.date||'') + ') 반영됨'
-          + (usErr ? ' · 미국은 실패' : '');
+    var P2=polLoad(), hasKey=!!polEcosKey(), msg;
+    if(hasKey && !krErr && P2.kr){
+      msg='✅ 한국 기준금리 '+P2.kr.v.toFixed(2)+'% ('+polDTxt(P2.kr.date)+' 자료) 받음'+(usErr?' · 미국은 실패':'');
+      if(polStale(P2.kr)) msg+=' — 한국은행 통계는 결정 뒤 며칠 늦게 올라옵니다';
     } else if(hasKey && krErr){
-      /* 긴 기술 메시지는 화면 위에 띄우지 않는다 — 자세한 이유는 금리 카드 아래에 */
-      msg = /인증키/.test(krErr) ? '한국 기준금리 — 인증키를 다시 확인해 주세요'
-                                  : '한국 기준금리를 아직 받지 못했습니다 · 이유는 금리 카드 아래에';
+      msg=/인증키/.test(krErr) ? '한국 기준금리 — 인증키를 다시 확인해 주세요' : '한국 기준금리를 받지 못했습니다 · 이유는 금리 카드 아래에';
     } else if(okN){
-      msg = '✅ 기준금리를 갱신했습니다' + (errs.length ? ' (' + errs.join('·') + ' 실패)' : '');
+      msg='✅ 기준금리를 새로 받았습니다'+(errs.length?' ('+errs.join('·')+' 실패)':'');
     } else {
-      msg = '기준금리를 불러오지 못했습니다 · 이유는 금리 카드 아래에';
+      msg='기준금리를 불러오지 못했습니다 · 이유는 금리 카드 아래에';
     }
     fmpToast(msg, (hasKey ? !krErr : okN) ? 'ok' : 'out');
   }
 }
 window.__polRefresh=polRefresh;
-/* 진입 시 자동 갱신 — 마지막 성공에서 12시간 지났을 때만 (불필요한 호출 방지) */
+/* 진입할 때(그리고 매크로를 보는 동안 5분마다) — 미국은 6시간, 한국은 3시간이 지났으면 다시 묻는다 (따로 본다) */
 function polMaybeRefresh(){
-  var P=polLoad();
-  var last=Math.max((P.us&&P.us.at)||0, (P.kr&&P.kr.at)||0);
-  var needKR = !!polEcosKey() && !(P.kr&&P.kr.at);
-  if(needKR || Date.now()-last > 12*3600000) polRefresh(false);
+  var P=polLoad(), now=Date.now();
+  var usOld = !(P.us && P.us.at) || now-P.us.at > 6*3600000;
+  var krOld = !!polEcosKey() && (!(P.kr && P.kr.at) || now-P.kr.at > 3*3600000);
+  if(usOld || krOld) polRefresh(false);
 }
 
-/* 표시용 문자열 — 자동값 > 수동값 > 내장 기본값 순 */
+/* 날짜 — ECOS 는 일별 '20261123' · 월별 '202610', 뉴욕 연은 · FRED 는 '2026-11-25' */
+function polD8(s){ s=String(s||'').replace(/[^0-9]/g,''); if(s.length===6) return s+'31'; return s.slice(0,8); }
+function polDTxt(s){
+  s=String(s||'').replace(/[^0-9]/g,'');
+  if(s.length>=8) return (+s.slice(4,6))+'/'+(+s.slice(6,8));
+  if(s.length===6) return s.slice(0,4)+'.'+s.slice(4,6)+' 월별';
+  return s||'?';
+}
+/* 자료 날짜가 오늘보다 2일 넘게 이르면 '늦게 올라온다' 안내 */
+function polStale(o){
+  if(!o || !o.date) return false;
+  var d=polD8(o.date); if(d.length<8) return false;
+  var dt=new Date(+d.slice(0,4), +d.slice(4,6)-1, +d.slice(6,8));
+  return (Date.now()-dt.getTime()) > 2.5*86400000;
+}
+/* 직접 넣은 한국 금리 — ECOS 자료가 그 결정일보다 이르면 이것을 보여 준다 */
+function polKROver(P){
+  P=P||polLoad();
+  var o=P.krOver; if(!o || o.v==null || !o.date) return null;
+  if(P.kr && P.kr.date && polD8(P.kr.date) >= polD8(o.date)) return null;
+  return o;
+}
+
+/* 표시용 문자열 — 직접 넣은 결정(ECOS 가 아직 못 따라온 동안) > 자동값 > 예전 수동값 > 내장 기본값 */
 function polUSTxt(){
   var P=polLoad();
-  if(P.us && P.us.hi!=null) return { txt:P.us.lo.toFixed(2)+'–'+P.us.hi.toFixed(2)+'%', sub:'Fed Funds · '+polAgo(P.us.at), live:true };
+  if(P.us && P.us.hi!=null) return { txt:P.us.lo.toFixed(2)+'–'+P.us.hi.toFixed(2)+'%', sub:'Fed Funds · '+(P.us.date?polDTxt(P.us.date)+' · ':'')+polAgo(P.us.at), live:true };
   if(P.us && P.us.eff!=null) return { txt:P.us.eff.toFixed(2)+'%', sub:'Fed Funds 실효 · '+polAgo(P.us.at), live:true };
   var m=(P.manual&&P.manual.us||'').trim();
   if(m) return { txt:m, sub:'Fed Funds · 직접 입력', live:false };
   return { txt:'3.50–3.75%', sub:'Fed Funds · 참고값', live:false };
 }
 function polKRTxt(){
-  var P=polLoad();
-  if(P.kr && P.kr.v!=null) return { txt:P.kr.v.toFixed(2)+'%', sub:'BOK Base · '+polAgo(P.kr.at), live:true };
+  var P=polLoad(), o=polKROver(P);
+  if(o) return { txt:(+o.v).toFixed(2)+'%', sub:'BOK Base · '+polDTxt(o.date)+' 결정 · 직접 넣음 (한국은행 통계에 들어오면 자동으로 바뀜)', live:true, over:true };
+  if(P.kr && P.kr.v!=null) return { txt:P.kr.v.toFixed(2)+'%', sub:'BOK Base · '+polDTxt(P.kr.date)+' 자료 · '+polAgo(P.kr.at), live:true };
   var m=(P.manual&&P.manual.kr||'').trim();
   if(m) return { txt:(/%$/.test(m)?m:m+'%'), sub:'BOK Base · 직접 입력', live:false };
-  return { txt:'2.75%', sub:'BOK Base · 참고값 (2026.7 인상 반영)', live:false };
+  return { txt:'3.25%', sub:'BOK Base · 참고값 (2026.11.26 인상 반영)', live:false };
 }
 function polAgo(ts){
   if(!ts) return '실시간';
   var s=Math.floor((Date.now()-ts)/1000);
-  if(s<3600) return '방금 갱신';
-  if(s<86400) return Math.floor(s/3600)+'시간 전 갱신';
-  return Math.floor(s/86400)+'일 전 갱신';
+  if(s<120) return '방금 확인';
+  if(s<3600) return Math.floor(s/60)+'분 전 확인';
+  if(s<86400) return Math.floor(s/3600)+'시간 전 확인';
+  return Math.floor(s/86400)+'일 전 확인';
 }
 
 /* ══════════ 미국 국채 금리 (2026-09-21 재작성) ══════════
@@ -1236,11 +1277,60 @@ function paintRates(o){
     else if(yldBusy){ tag.textContent='불러오는 중'; tag.className='sim-tag'; }
     else { tag.textContent=polLive?'국채 금리 연결 필요':'연결 필요'; tag.className='sim-tag'; }
   }
-  host.insertAdjacentHTML('beforeend', polWarnHTML());
+  host.insertAdjacentHTML('beforeend', polBarHTML() + polWarnHTML());
 }
+/* 금리 카드 아래 한 줄 (2026-11-26) — 기준금리를 언제 받았는지 + [↻ 지금 받기] + [✎ 한국 직접 넣기]
+   한국은행 통계(ECOS)는 결정 뒤 며칠 늦게 올라오므로, 결정 당일에는 직접 넣어 두면 그 값을 보여 주고
+   ECOS 에 그 결정일 이후 자료가 들어오면 저절로 ECOS 값으로 돌아간다(polKROver · polRefresh 가 내려놓는다). */
+var polEditOpen=false;
+function polBarHTML(){
+  var P=polLoad(), o=polKROver(P), hasKey=!!polEcosKey(), bits=[];
+  if(P.kr && P.kr.date) bits.push('한국 <b>'+polDTxt(P.kr.date)+'</b> 자료');
+  else if(!hasKey) bits.push('한국은 ECOS 키를 넣으면 자동');
+  if(P.us && P.us.date) bits.push('미국 '+polDTxt(P.us.date));
+  if(P.check) bits.push(polAgo(P.check));
+  var note='';
+  if(o) note='<div class="pol-note">직접 넣은 한국 기준금리 <b>'+(+o.v).toFixed(2)+'%</b>('+polDTxt(o.date)+' 결정)를 보여 주는 중 — 한국은행 통계에 그날 이후 자료가 들어오면 저절로 그 값으로 바뀝니다. '
+    +'<button type="button" class="pol-lnk" onclick="window.__polClearOver&&window.__polClearOver()">직접 넣은 값 지우기</button></div>';
+  else if(P.kr && polStale(P.kr)) note='<div class="pol-note">한국은행 통계(ECOS)는 금리 결정 뒤 며칠 늦게 올라옵니다 — 지금 받은 최신 자료가 '+polDTxt(P.kr.date)+' 것입니다. 오늘 결정이 있었다면 <b>✎ 한국 직접 넣기</b>로 먼저 넣어 두세요.</div>';
+  var ed='';
+  if(polEditOpen){
+    var cur=o ? (+o.v) : (P.kr && P.kr.v!=null ? P.kr.v : parseFloat(polKRTxt().txt));
+    var t=new Date(), td=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+    ed='<div class="pol-edit" role="group" aria-label="한국 기준금리 직접 넣기">'
+      +'<label>한국 기준금리 <input id="polOvV" type="number" inputmode="decimal" step="0.25" min="0" max="25" value="'+(isNaN(cur)?'':cur.toFixed(2))+'"> %</label>'
+      +'<label>결정일 <input id="polOvD" type="date" value="'+(o?(o.date.slice(0,4)+'-'+o.date.slice(4,6)+'-'+o.date.slice(6,8)):td)+'"></label>'
+      +'<button type="button" class="pol-btn pri" onclick="window.__polSaveOver&&window.__polSaveOver()">넣기</button>'
+      +'<button type="button" class="pol-btn" onclick="window.__polEdit&&window.__polEdit(false)">취소</button></div>';
+  }
+  return '<div class="pol-bar"><span class="pol-bar-t">기준금리 · '+(bits.join(' · ')||'아직 받지 않음')+'</span>'
+    +'<span class="pol-bar-a"><button type="button" class="pol-btn" id="polNow"'+(polBusy?' disabled aria-busy="true"':'')+' onclick="window.__polRefresh&&window.__polRefresh(true)">'
+    +(polBusy?'<i class="pol-spin" aria-hidden="true"></i>받는 중…':'↻ 지금 받기')+'</button>'
+    +'<button type="button" class="pol-btn" onclick="window.__polEdit&&window.__polEdit()" aria-expanded="'+(polEditOpen?'true':'false')+'">✎ 한국 직접 넣기</button></span></div>'
+    +ed+note;
+}
+window.__polEdit=function(v){
+  polEditOpen = (v===undefined) ? !polEditOpen : !!v;
+  paintRates(yldLoad());
+  if(polEditOpen) setTimeout(function(){ var i=document.getElementById('polOvV'); if(i){ try{ i.focus(); i.select(); }catch(e){} } }, 30);
+};
+window.__polSaveOver=function(){
+  var vi=document.getElementById('polOvV'), di=document.getElementById('polOvD');
+  var v=parseFloat(vi && vi.value), d=String((di && di.value)||'').replace(/[^0-9]/g,'');
+  if(isNaN(v) || v<0 || v>25){ if(typeof fmpToast==='function') fmpToast('금리를 숫자로 넣어 주세요 (예: 3.25)','out'); return; }
+  if(!/^\d{8}$/.test(d)){ if(typeof fmpToast==='function') fmpToast('결정일을 골라 주세요','out'); return; }
+  var P=polLoad(); P.krOver={ v:Math.round(v*100)/100, date:d, at:Date.now() };
+  if(P.kr && P.kr.date && polD8(P.kr.date) >= d){ delete P.krOver; }
+  polSave(P); polEditOpen=false; paintRates(yldLoad());
+  if(typeof fmpToast==='function'){
+    if(P.krOver) fmpToast('✅ 한국 기준금리 '+v.toFixed(2)+'% ('+polDTxt(d)+' 결정)를 넣었습니다 · 한국은행 통계에 들어오면 저절로 바뀝니다','ok');
+    else fmpToast('한국은행 통계에 이미 그날 이후 자료가 있어 그 값을 그대로 보여 줍니다','out');
+  }
+};
+window.__polClearOver=function(){ var P=polLoad(); delete P.krOver; polSave(P); paintRates(yldLoad()); };
 /* 기준금리를 못 받았을 때 카드 아래에 붙는 안내 — 예전엔 10px·흐린 빨강이라 안 보였다 */
 function polWarnHTML(){
-  if(polBusy) return '<div class="rt-warn rt-busy"><b>기준금리를 받는 중…</b></div>';
+  if(polBusy) return '';   /* 받는 중은 아래 한 줄의 [받는 중…] 단추가 보여 준다 (2026-11-26) */
   var e=polErr||{}, lines=[];
   if(e.us){
     lines.push('<li><b>미국</b> — 뉴욕 연은·FRED 어느 쪽에도 닿지 못했습니다. '
@@ -1274,7 +1364,27 @@ function polWarnHTML(){
     '.rt-warn li b{color:#fff}',
     '.rt-warn li span{color:rgba(255,236,215,.62)}',
     '.rt-warn code{font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(0,0,0,.35);color:#ffd4a3}',
-    '.rt-busy{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}'
+    '.rt-busy{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15)}',
+    /* 2026-11-26 기준금리 한 줄 · 직접 넣기 */
+    '.pol-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:12px 0 2px;padding:9px 0 0;border-top:1px dashed rgba(255,255,255,.12);font-family:Pretendard,sans-serif}',
+    '.pol-bar-t{flex:1 1 220px;min-width:0;font-size:12px;line-height:1.55;color:rgba(240,237,230,.6)}',
+    '.pol-bar-t b{color:rgba(240,237,230,.9);font-weight:700}',
+    '.pol-bar-a{display:inline-flex;gap:6px;flex-wrap:wrap}',
+    '.pol-btn{cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid rgba(232,196,126,.55);',
+    '  background:rgba(232,196,126,.08);color:#e8c47e;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;transition:background .15s,color .15s}',
+    '.pol-btn:hover{background:rgba(232,196,126,.2);color:#fff}',
+    '.pol-btn[disabled]{cursor:default;opacity:.75}',
+    '.pol-btn.pri{background:#e8c47e;color:#14120f}.pol-btn.pri:hover{background:#f3d79a;color:#14120f}',
+    '.pol-spin{width:11px;height:11px;border-radius:50%;border:2px solid rgba(232,196,126,.3);border-top-color:#e8c47e;animation:polRot .8s linear infinite}',
+    '@keyframes polRot{to{transform:rotate(360deg)}}',
+    '@media (prefers-reduced-motion:reduce){.pol-spin{animation:none}}',
+    '.pol-edit{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(232,196,126,.35);font-family:Pretendard,sans-serif;font-size:12.5px;color:rgba(240,237,230,.85)}',
+    '.pol-edit label{display:inline-flex;align-items:center;gap:6px}',
+    '.pol-edit input{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:7px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.35);color:#fff;color-scheme:dark}',
+    '.pol-edit input[type=number]{width:84px}',
+    '.pol-note{margin-top:8px;font-family:Pretendard,sans-serif;font-size:11.5px;line-height:1.6;color:rgba(240,237,230,.58)}',
+    '.pol-note b{color:#e8c47e}',
+    '.pol-lnk{cursor:pointer;background:none;border:0;padding:0;font:inherit;font-weight:700;color:#e8c47e;text-decoration:underline}'
   ].join('');
   document.head.appendChild(st);
 })();
@@ -1297,7 +1407,7 @@ function renderRatesWorker(){ var c=yldLoad(); if(c){ c.at=0; yldSave(c); } rend
 /* 매크로 탭을 보고 있는 동안 5분마다 금리를 새로 받는다 */
 setInterval(function(){
   var pg=document.getElementById('page-macro');
-  if(pg && pg.classList.contains('active') && !document.hidden) renderRates();
+  if(pg && pg.classList.contains('active') && !document.hidden){ renderRates(); if(typeof polMaybeRefresh==='function') polMaybeRefresh(); }   /* 2026-11-26: 기준금리도 (미국 6시간 · 한국 3시간 지났으면) */
 }, 300000);
 
 function setSmYield(y){

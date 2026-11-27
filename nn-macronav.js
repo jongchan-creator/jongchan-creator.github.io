@@ -13,6 +13,8 @@
      ② 카드마다 [접기] — 제목 줄만 남긴다. 접은 카드는 칩이 흐려진다.
         TradingView 카드는 접혀 있는 동안 불러오지 않는다(원래 화면에 보일 때 불러오는 방식이라).
      ③ [맨 위로] — 그 카드를 맨 위로 올린다. 칩 줄 끝의 [기본 순서]로 처음 배치로 돌아간다.
+        2026-11-26 (회장님: "맨 위로 올리는 기능은 있는데 원래 자리로 돌리는 기능이 없다"):
+        올린 카드의 제목 줄에 [↩ 원래 자리](늘 보임) — 그 카드만 처음 자리로. 칩 줄의 [↺ 원래 순서로]는 전부를(휴대폰에서도 보임).
         카드는 실제로 옮기지 않고 CSS order 로만 자리를 바꾼다 — TradingView 창(iframe)을 옮기면 다시 불러오기 때문.
 
    기억 (이 기기에만 — 휴대폰과 PC 의 보기 습관이 다르므로)
@@ -53,6 +55,9 @@
   '#mcChips .mc-act{flex:none;cursor:pointer;font:600 var(--nn-fs-sm,12px)/1 var(--nn-font,\'Pretendard\',sans-serif);padding:8px 10px;border-radius:var(--nn-r,9px);white-space:nowrap;',
   '  color:var(--nn-ink-3,rgba(240,237,230,.5));background:transparent;border:0}',
   '#mcChips .mc-act:hover{color:var(--nn-ink,#f0ede6)}',
+  '#mcChips .mc-act.mc-reset{color:var(--nn-gold-2,#e8c47e);border:1px solid rgba(232,196,126,.45);border-radius:999px;padding:7px 11px}',
+  '#mcChips .mc-act.mc-reset:hover{color:#fff;background:rgba(232,196,126,.14)}',
+  'html.nn-nav-light #mcChips .mc-act.mc-reset{color:#8a6420;border-color:rgba(138,100,32,.45)}',
   '#mcChips .mc-sep{flex:none;width:1px;height:18px;background:rgba(255,255,255,.12);margin:0 2px}',
   /* 카드 제목 줄의 단추 */
   '#page-macro .macro-card-title .mc-ctl{order:2;margin-left:auto;display:inline-flex;align-items:center;gap:2px;flex:none;padding-left:10px}',
@@ -60,6 +65,9 @@
   '  padding:5px 8px;border-radius:7px;color:var(--nn-ink-3,rgba(240,237,230,.5));background:transparent;border:1px solid transparent;transition:color .15s,background-color .15s,opacity .15s}',
   '#page-macro .mc-ctl button:hover{color:var(--nn-ink,#f0ede6);background:rgba(255,255,255,.07)}',
   '#page-macro .mc-ctl .mc-top{opacity:0}',
+  '#page-macro .mc-ctl .mc-back{color:var(--nn-gold-2,#e8c47e);border-color:rgba(232,196,126,.45)}',
+  '#page-macro .mc-ctl .mc-back:hover{color:#fff;background:rgba(232,196,126,.16)}',
+  '#page-macro .mc-ctl button[hidden]{display:none}',
   '#page-macro .macro-card:hover .mc-ctl .mc-top,#page-macro .mc-ctl .mc-top:focus-visible{opacity:1}',
   '@media (hover:none),(pointer:coarse){#page-macro .mc-ctl .mc-top{opacity:.7}}',
   '#page-macro .mc-ctl .mc-fold i{display:inline-block;margin-left:3px;transition:transform .2s ease;font-style:normal}',
@@ -75,7 +83,8 @@
   'html.nn-nav-light #mcChips{background:rgba(250,248,243,.86);border-color:rgba(20,18,15,.12)}',
   'html.nn-nav-light #mcChips .mcc{color:rgba(26,26,26,.7)}html.nn-nav-light #mcChips .mcc.on{color:#fff;background:#3d3a33}',
   '@media (max-width:768px){#mcChips{margin:0 -4px 14px;padding:6px;border-radius:10px}#mcChips .mcc{padding:8px 11px;font-size:var(--nn-fs-sm,12px)}#mcChips .mc-act.wide{display:none}',
-  '  #page-macro .mc-ctl{padding-left:6px}#page-macro .mc-ctl .mc-top{font-size:0;padding:5px 8px}#page-macro .mc-ctl .mc-top::before{content:"⤒";font-size:14px;line-height:1}}',
+  '  #page-macro .mc-ctl{padding-left:6px}#page-macro .mc-ctl .mc-top{font-size:0;padding:5px 8px}#page-macro .mc-ctl .mc-top::before{content:"⤒";font-size:14px;line-height:1}',
+  '  #mcChips .mc-act.mc-reset{padding:7px 9px}}',
   '@media (prefers-reduced-motion: reduce){#mcChips .mc-list{scroll-behavior:auto}#page-macro .macro-card.mc-flash{animation:none}}'
   ].join('\n');
 
@@ -118,6 +127,7 @@
       var b = c.querySelector('.mc-ctl .mc-fold');
       if (b){ b.firstChild.nodeValue = fold[k] ? '펼치기' : '접기'; b.setAttribute('aria-expanded', fold[k] ? 'false' : 'true'); }
       var tp = c.querySelector('.mc-ctl .mc-top'); if (tp) tp.hidden = (i === 0);
+      var bk = c.querySelector('.mc-ctl .mc-back'); if (bk) bk.hidden = (i < 0);   /* 올린 카드에만 — 늘 보인다 */
     });
   }
   function decorate(){
@@ -126,7 +136,8 @@
       var t = c.querySelector('.macro-card-title'); if (!t) return;
       var k = keyOf(c), name = titleOf(c);
       var w = document.createElement('span'); w.className = 'mc-ctl';
-      w.innerHTML = '<button type="button" class="mc-top" title="이 카드를 맨 위로" aria-label="' + esc(name) + ' 맨 위로">맨 위로</button>'
+      w.innerHTML = '<button type="button" class="mc-back" hidden title="이 카드를 처음 자리로 돌려놓기" aria-label="' + esc(name) + ' 원래 자리로">↩ 원래 자리</button>'
+        + '<button type="button" class="mc-top" title="이 카드를 맨 위로" aria-label="' + esc(name) + ' 맨 위로">맨 위로</button>'
         + '<button type="button" class="mc-fold" aria-expanded="true" title="접기 · 펼치기" aria-label="' + esc(name) + ' 접기 · 펼치기">접기<i aria-hidden="true">▾</i></button>';
       w.setAttribute('data-k', k);
       t.appendChild(w);
@@ -147,7 +158,16 @@
     wr(ORDER_KEY, o); applyState(); paintChips();
     var c = cardByKey(k); if (c) setTimeout(function(){ jump(c); }, 30);
   }
-  function resetOrder(){ wr(ORDER_KEY, []); applyState(); paintChips(); }
+  function restore(k){
+    var o = rd(ORDER_KEY, []); if (!Array.isArray(o)) o = [];
+    var c = cardByKey(k), name = c ? titleOf(c) : '';
+    wr(ORDER_KEY, o.filter(function(x){ return x !== k; })); applyState(); paintChips();
+    if (window.__nnToast) try { window.__nnToast('↩ ' + (name ? '‘' + name.split(/\s{2,}|\s+[A-Z]{2,}/)[0].trim() + '’ 카드를 ' : '카드를 ') + '원래 자리로 돌려놓았습니다'); } catch(e) {}
+  }
+  function resetOrder(){
+    var had = rd(ORDER_KEY, []); wr(ORDER_KEY, []); applyState(); paintChips();
+    if (Array.isArray(had) && had.length && window.__nnToast) try { window.__nnToast('↺ 모든 카드를 원래 순서로 돌려놓았습니다'); } catch(e) {}
+  }
   function allFolded(){ var f = rd(FOLD_KEY, {}); var cs = cards(); return cs.length && cs.every(function(c){ return f[keyOf(c)]; }); }
   function foldAll(v){
     var f = {}; if (v) cards().forEach(function(c){ f[keyOf(c)] = 1; });
@@ -187,7 +207,7 @@
       return '<button type="button" role="listitem" class="mcc' + (f[x[0]] ? ' fold' : '') + (x[0] === cur ? ' on' : '') + '" data-k="' + x[0] + '"'
         + (f[x[0]] ? ' title="접혀 있음 — 누르면 펼쳐서 보여 줍니다"' : '') + '>' + esc(x[1]) + '</button>';
     }).join('') + '</div><span class="mc-sep" aria-hidden="true"></span>'
-      + (Array.isArray(o) && o.length ? '<button type="button" class="mc-act wide" data-a="reset" title="맨 위로 올린 카드를 처음 자리로">기본 순서</button>' : '')
+      + (Array.isArray(o) && o.length ? '<button type="button" class="mc-act mc-reset" data-a="reset" title="맨 위로 올린 카드를 모두 처음 자리로">↺ 원래 순서로</button>' : '')
       + '<button type="button" class="mc-act" data-a="all">' + (allFolded() ? '모두 펼치기' : '모두 접기') + '</button>';
     if (b.__h !== h){
       var sl = b.querySelector('.mc-list'), keep = sl ? sl.scrollLeft : 0;
@@ -221,6 +241,7 @@
     var k = b.parentNode.getAttribute('data-k');
     if (b.classList.contains('mc-fold')){ var c = cardByKey(k); fold(k, !(c && c.classList.contains('mc-folded'))); }
     else if (b.classList.contains('mc-top')) toTop(k);
+    else if (b.classList.contains('mc-back')) restore(k);
   }, true);
 
   /* ── 지금 보고 있는 카드 ── */
@@ -262,5 +283,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(start, 0); });
   else setTimeout(start, 0);
 
-  window.__nnMacro = { fold: fold, toTop: toTop, reset: resetOrder, foldAll: foldAll, refresh: boot };
+  window.__nnMacro = { fold: fold, toTop: toTop, restore: restore, reset: resetOrder, foldAll: foldAll, refresh: boot };
 })();
